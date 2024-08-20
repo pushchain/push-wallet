@@ -3,7 +3,6 @@ import {
   ActiveValidator,
   JsonRpcRequest,
   JsonRpcResponse,
-  TokenReply,
   ValidatorContract,
 } from './pushValidator.types'
 import axios from 'axios'
@@ -139,26 +138,12 @@ export class PushValidator {
    * @description Get calls to validator
    * @returns Reply of the call
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public call = async <T>(fnName: string, params?: any): Promise<T> => {
-    return await PushValidator.sendJsonRpcRequest<T>(
-      this.activeValidatorURL,
-      fnName,
-      params
-    )
-  }
-
-  /**
-   * @description Send a Tx to Push Network
-   * @param tx Tx data
-   * @returns Tx Hash
-   */
-  public sendTx = async (tx: string): Promise<string> => {
-    const token = await this.call<TokenReply>('push_getApiToken')
-    return await PushValidator.sendJsonRpcRequest<string>(
-      token.validatorUrl,
-      'push_sendTransaction',
-      [tx, token.validatorToken]
-    )
+  public call = async <T>(
+    fnName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    params?: any,
+    url: string = this.activeValidatorURL
+  ): Promise<T> => {
+    return await PushValidator.sendJsonRpcRequest<T>(url, fnName, params)
   }
 }
