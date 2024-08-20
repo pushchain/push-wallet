@@ -138,18 +138,18 @@ export class PushEncryption {
   ) => {
     const pushEncryption = new PushEncryption(signer)
     switch (encryptionVersion) {
-      case ENCRYPTION_TYPE.V1: {
-        break
-      }
-      case ENCRYPTION_TYPE.V2: {
-        break
-      }
+      // case ENCRYPTION_TYPE.V1: {
+      //   break
+      // }
+      // case ENCRYPTION_TYPE.V2: {
+      //   break
+      // }
       case ENCRYPTION_TYPE.V3: {
         return pushEncryption.encryptV3(privateKey)
       }
-      case ENCRYPTION_TYPE.V4: {
-        break
-      }
+      // case ENCRYPTION_TYPE.V4: {
+      //   break
+      // }
       default: {
         throw new Error('Invalid Key Encryption')
       }
