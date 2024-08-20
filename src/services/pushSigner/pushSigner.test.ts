@@ -19,7 +19,7 @@ describe('PushSigner', () => {
     const pushSigner = await PushSigner.initialize(walletClient)
     expect(pushSigner).toEqual({
       account: expect.any(String),
-      chainId: expect.any(Number),
+      source: expect.any(String),
       signMessage: expect.any(Function),
     })
 
@@ -41,7 +41,7 @@ describe('PushSigner', () => {
 
     // Test the PushSignerType returned
     expect(pushSigner.account).toBe(`eip155:${chainId}:${account}`)
-    expect(pushSigner.chainId).toBe(chainId)
+    expect(pushSigner.source).toBe(`eip155:${chainId}`)
   })
 
   it('should throw an error if WalletClient is not provided', async () => {

@@ -29,7 +29,7 @@ export class PushSigner {
       }
       return {
         account: `eip155:${chainId}:${account.address}`, // viem signers are valid only for evm (eip155) chains
-        chainId,
+        source: `eip155:${chainId}`,
         signMessage,
       }
     } catch (err) {
