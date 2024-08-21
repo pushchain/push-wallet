@@ -1,0 +1,16 @@
+syntax = "proto3";
+package push;
+
+// EMAIL
+
+message Attachment {
+    string filename = 1;
+    string type = 2;
+    string content = 3;  // base64 encoded
+}
+
+message Email {
+    string subject = 1;
+    string body = 2;  // Plain text or HTML body of the email
+    repeated Attachment attachments = 3;
+}

@@ -1,9 +1,9 @@
-// package: tx.v1
-// file: tx/v1/tx.proto
+// package: push
+// file: tx.proto
 
 import * as jspb from "google-protobuf";
 
-export class Tx extends jspb.Message {
+export class Transaction extends jspb.Message {
   getType(): number;
   setType(value: number): void;
 
@@ -42,16 +42,16 @@ export class Tx extends jspb.Message {
   setFee(value: string): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): Tx.AsObject;
-  static toObject(includeInstance: boolean, msg: Tx): Tx.AsObject;
+  toObject(includeInstance?: boolean): Transaction.AsObject;
+  static toObject(includeInstance: boolean, msg: Transaction): Transaction.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-  static serializeBinaryToWriter(message: Tx, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): Tx;
-  static deserializeBinaryFromReader(message: Tx, reader: jspb.BinaryReader): Tx;
+  static serializeBinaryToWriter(message: Transaction, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Transaction;
+  static deserializeBinaryFromReader(message: Transaction, reader: jspb.BinaryReader): Transaction;
 }
 
-export namespace Tx {
+export namespace Transaction {
   export type AsObject = {
     type: number,
     category: string,

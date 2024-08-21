@@ -1,5 +1,5 @@
 syntax = "proto3";
-package tx.v1;
+package push;
 
 message InitDid {
     string did = 1;

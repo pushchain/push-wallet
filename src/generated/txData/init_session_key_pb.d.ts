@@ -1,5 +1,5 @@
-// package: tx.v1
-// file: tx/v1/txData/init_session_key.proto
+// package: push
+// file: txData/init_session_key.proto
 
 import * as jspb from "google-protobuf";
 
