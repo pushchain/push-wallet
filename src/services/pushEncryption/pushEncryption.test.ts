@@ -127,8 +127,7 @@ describe('(PushEncryption as any)', () => {
     it('should throw an error when attempting to decrypt with an invalid signer', async () => {
       const invalidSigner: Signer = {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        signMessage: async (dataToBeSigned: string) =>
-          new Promise(() => 'invalidSignature'),
+        signMessage: async (dataToBeSigned: string) => 'invalidSignature',
         account: 'fake',
         source: 'fake',
       }
@@ -137,7 +136,6 @@ describe('(PushEncryption as any)', () => {
       const encryptedPrivateKey = await pushEncryption.encryptV5(privateKey)
 
       const invalidPushEncryption = new (PushEncryption as any)(invalidSigner)
-
       await expect(
         invalidPushEncryption.decryptV5(encryptedPrivateKey)
       ).rejects.toThrow()
