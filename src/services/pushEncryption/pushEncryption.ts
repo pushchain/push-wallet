@@ -1,9 +1,8 @@
 import { Signer } from '../pushSigner/pushSigner.types'
-import { hexToBytes, bytesToHex } from '@noble/hashes/utils'
 import { EncryptedPrivateKey, ENCRYPTION_TYPE } from './pushEncryption.types'
-
+import { bytesToHex, hexToBytes } from '@noble/hashes/utils'
 export class PushEncryption {
-  // TODO: Bring V1, V2, V4 schemes later ( Backward compatibility will be taken care later )
+  // TODO: Bring V1, V2, V3 V4 schemes later ( Backward compatibility will be taken care later )
 
   private constructor(private signer: Signer) {}
 
@@ -96,36 +95,34 @@ export class PushEncryption {
     return new Uint8Array(decrypted)
   }
 
-  private encryptV3 = async (
+  private encryptV5 = async (
     privateKey: string
   ): Promise<EncryptedPrivateKey> => {
     const input = bytesToHex(await crypto.getRandomValues(new Uint8Array(32)))
-    const enableProfileMessage = 'Enable Push Profile \n' + input
-    const secret =
-      'eip191' + (await this.signer.signMessage(enableProfileMessage))
+    const enableProfileMessage = 'Enable Push Network Profile \n' + input
+    const secret = await this.signer.signMessage(enableProfileMessage)
     const enc = new TextEncoder()
     const encodedPrivateKey = enc.encode(privateKey)
     const encryptedPrivateKey = await this.aesGcmEncryption(
       encodedPrivateKey,
-      hexToBytes(secret)
+      hexToBytes(secret.slice(2))
     )
     return {
       ...encryptedPrivateKey,
-      version: ENCRYPTION_TYPE.V3,
+      version: ENCRYPTION_TYPE.V5,
       preKey: input,
     }
   }
 
-  private decryptV3 = async (
+  private decryptV5 = async (
     encryptedPrivateKey: EncryptedPrivateKey
   ): Promise<string> => {
     const enableProfileMessage =
-      'Enable Push Profile \n' + encryptedPrivateKey.preKey
-    const secret =
-      'eip191' + (await this.signer.signMessage(enableProfileMessage))
+      'Enable Push Network Profile \n' + encryptedPrivateKey.preKey
+    const secret = await this.signer.signMessage(enableProfileMessage)
     const encodedPrivateKey = await this.aesGcmDecryption(
       encryptedPrivateKey,
-      hexToBytes(secret)
+      hexToBytes(secret.slice(2))
     )
     const dec = new TextDecoder()
     return dec.decode(encodedPrivateKey)
@@ -144,12 +141,15 @@ export class PushEncryption {
       // case ENCRYPTION_TYPE.V2: {
       //   break
       // }
-      case ENCRYPTION_TYPE.V3: {
-        return pushEncryption.encryptV3(privateKey)
-      }
+      // case ENCRYPTION_TYPE.V3: {
+      //   break
+      // }
       // case ENCRYPTION_TYPE.V4: {
       //   break
       // }
+      case ENCRYPTION_TYPE.V5: {
+        return await pushEncryption.encryptV5(privateKey)
+      }
       default: {
         throw new Error('Invalid Key Encryption')
       }
@@ -162,17 +162,20 @@ export class PushEncryption {
   ) => {
     const pushEncryption = new PushEncryption(signer)
     switch (encryptedPrivateKey.version) {
-      case ENCRYPTION_TYPE.V1: {
-        break
-      }
-      case ENCRYPTION_TYPE.V2: {
-        break
-      }
-      case ENCRYPTION_TYPE.V3: {
-        return pushEncryption.decryptV3(encryptedPrivateKey)
-      }
-      case ENCRYPTION_TYPE.V4: {
-        break
+      // case ENCRYPTION_TYPE.V1: {
+      //   break
+      // }
+      // case ENCRYPTION_TYPE.V2: {
+      //   break
+      // }
+      // case ENCRYPTION_TYPE.V3: {
+      //   break
+      // }
+      // case ENCRYPTION_TYPE.V4: {
+      //   break
+      // }
+      case ENCRYPTION_TYPE.V5: {
+        return pushEncryption.decryptV5(encryptedPrivateKey)
       }
       default: {
         throw new Error('Invalid Key Encryption')

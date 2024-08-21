@@ -14,4 +14,5 @@ export enum ENCRYPTION_TYPE {
   V2 = 'aes256GcmHkdfSha256',
   V3 = 'eip191-aes256-gcm-hkdf-sha256',
   V4 = 'pgpv1:nft',
+  V5 = 'push:v5', // TODO: finalize naming
 }
