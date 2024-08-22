@@ -131,7 +131,7 @@ export class PushEncryption {
   public static encrypt = async (
     privateKey: string,
     signer: Signer,
-    encryptionVersion: ENCRYPTION_TYPE = ENCRYPTION_TYPE.V3
+    encryptionVersion: ENCRYPTION_TYPE = ENCRYPTION_TYPE.V5
   ) => {
     const pushEncryption = new PushEncryption(signer)
     switch (encryptionVersion) {
