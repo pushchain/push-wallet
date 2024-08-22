@@ -1,7 +1,7 @@
-import { uuid } from 'uuidv4'
-import { UnsignedTx, TxCategory, SignedTx, InitDidTxData } from './pushTx.types'
-import { Tx } from '../../generated/tx/v1/tx_pb'
-import { InitDid } from '../../generated/tx/v1/txData/init_did_pb'
+import { v4 as uuidv4, parse } from 'uuid'
+import { Tx, TxCategory, InitDidTxData } from './pushTx.types'
+import { Transaction } from '../../generated/tx'
+import { InitDid } from '../../generated/txData/init_did'
 
 export class PushTx {
   /**
@@ -10,57 +10,79 @@ export class PushTx {
    * @param recipients Tx recipients
    * @param data Tx payload data
    * @param source Sender's source chain
+   * @param apiToken Validator API token
    * @returns Unsigned Tx
    */
   static createTx = (
     category: TxCategory,
     recipients: string[],
-    data: UnsignedTx['data'],
+    data: Tx['data'],
     source: string,
-    apiToken: string
-  ): UnsignedTx => {
+    apiToken: Uint8Array
+  ): Tx => {
     return {
       type: 0, // Phase 0 only has non-value transfers
       category,
       source,
       recipients,
       data,
-      salt: uuid(),
+      salt: parse(uuidv4()),
       apiToken,
+      signature: new Uint8Array(0),
       fee: '0', // Fee is 0 as of now
     }
   }
 
-  static serializeTx = (tx: UnsignedTx | SignedTx): Uint8Array => {
-    const transaction = new Tx()
-    transaction.setType(tx.type)
-    transaction.setCategory(tx.category)
-    transaction.setSource(tx.source)
-    transaction.setRecipientsList(tx.recipients)
-    transaction.setData(PushTx.serializeTxData(tx.data, tx.category))
-    transaction.setSalt(tx.salt)
-    transaction.setApitoken(tx.apiToken)
-    if ((tx as SignedTx).signature) {
-      transaction.setSignature((tx as SignedTx).signature)
+  static serializeTx = (tx: Tx): Uint8Array => {
+    const transaction = Transaction.create({
+      ...tx,
+      data: PushTx.serializeTxData(tx.data, tx.category),
+    })
+    return Transaction.encode(transaction).finish()
+  }
+
+  static deserializeTx = (tx: Uint8Array): Tx => {
+    const transaction = Transaction.decode(tx)
+    const data = this.deserializeTxData(
+      transaction.data,
+      transaction.category as TxCategory
+    )
+    return {
+      ...transaction,
+      data,
+      category: transaction.category as TxCategory,
     }
-    transaction.setFee(tx.fee)
-    return transaction.serializeBinary()
   }
 
   private static serializeTxData = (
-    txData: SignedTx['data'],
+    txData: Tx['data'],
     category: TxCategory
   ): Uint8Array => {
     switch (category) {
       case TxCategory.INIT_DID: {
         const data = txData as InitDidTxData
-        const initTxData = new InitDid()
-        initTxData.setDid(data.did)
-        initTxData.setMasterpubkey(data.masterPubKey)
-        initTxData.setDerivedkeyindex(data.derivedKeyIndex)
-        initTxData.setDerivedpubkey(data.derivedPubKey)
-        initTxData.setEncderivedprivkey(data.encDerivedPrivKey)
-        return initTxData.serializeBinary()
+        const initTxData = InitDid.create(data)
+        return InitDid.encode(initTxData).finish()
+      }
+      // case TxCategory.NOTIFICATION: {
+      //   break
+      // }
+      // case TxCategory.EMAIL: {
+      //   break
+      // }
+      default: {
+        throw new Error('Invalid Tx Category')
+      }
+    }
+  }
+
+  private static deserializeTxData = (
+    txData: Uint8Array,
+    category: TxCategory
+  ): Tx['data'] => {
+    switch (category) {
+      case TxCategory.INIT_DID: {
+        return InitDid.decode(txData)
       }
       // case TxCategory.NOTIFICATION: {
       //   break

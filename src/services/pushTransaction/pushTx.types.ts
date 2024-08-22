@@ -5,19 +5,16 @@ export enum TxCategory {
   EMAIL = 'EMAIL',
 }
 
-export type UnsignedTx = {
-  type: 0 | 1
+export type Tx = {
+  type: number
   category: TxCategory
   source: string
   recipients: string[]
   data: InitDidTxData | NotificationTxData | EmailTxData
-  salt: string
-  apiToken: string
+  salt: Uint8Array
+  apiToken: Uint8Array
+  signature: Uint8Array
   fee: string
-}
-
-export type SignedTx = UnsignedTx & {
-  signature: string
 }
 
 export type InitDidTxData = {
