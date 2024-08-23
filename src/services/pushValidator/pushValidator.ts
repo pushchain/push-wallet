@@ -7,7 +7,7 @@ import {
 } from './pushValidator.types'
 import axios from 'axios'
 import { createPublicClient, getContract, http } from 'viem'
-import * as config from '../../config'
+import config, { VALIDATOR_CONFIG } from '../../config'
 import { ENV } from '../../constants'
 
 /**
@@ -63,12 +63,12 @@ export class PushValidator {
     env: ENV
   ): ValidatorContract => {
     const client = createPublicClient({
-      chain: config.VALIDATOR_CONFIG[env].NETWORK,
+      chain: VALIDATOR_CONFIG[env].NETWORK,
       transport: http(),
     })
     return getContract({
       abi: config.ABIS.VALIDATOR,
-      address: config.VALIDATOR_CONFIG[env].VALIDATOR_CONTRACT as `0x${string}`,
+      address: VALIDATOR_CONFIG[env].VALIDATOR_CONTRACT as `0x${string}`,
       client: {
         public: client,
       },
