@@ -9,7 +9,7 @@ import { Config } from './config.types.ts'
 const env = import.meta.env.VITE_APP_ENV
 
 // dynamic import
-const dynamicConfigModule = await import(`./config-${env}`)
+const dynamicConfigModule = await import(/* @vite-ignore */ `./config-${env}`)
 const dynamicConfig = dynamicConfigModule.config
 
 // combine config
