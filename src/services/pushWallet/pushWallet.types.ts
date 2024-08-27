@@ -17,3 +17,8 @@ export type Key = {
   publicKey: string
   index: number
 }
+
+export type AppConnection = {
+  origin: string
+  isPending: boolean
+}

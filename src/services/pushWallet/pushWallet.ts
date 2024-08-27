@@ -7,7 +7,12 @@ import {
   randomBytes,
   utf8ToBytes,
 } from '@noble/hashes/utils'
-import { Key, EncPushAccount, DecPushAccount } from './pushWallet.types'
+import {
+  Key,
+  EncPushAccount,
+  DecPushAccount,
+  AppConnection,
+} from './pushWallet.types'
 import { WalletClient } from 'viem'
 import { PushValidator } from '../pushValidator/pushValidator'
 import { PushSigner } from '../pushSigner/pushSigner'
@@ -28,13 +33,16 @@ export class PushWallet {
   */
   private static rootPath: `m/44'/60'/${string}` = "m/44'/60'/0'"
   private static pushValidator: PushValidator
+  public appConnections: AppConnection[]
 
   private constructor(
-    private did: string,
-    private account: string,
+    public did: string,
+    public account: string,
     private derivedHDNode: HDKey,
     private mnemonic: string | undefined = undefined
-  ) {}
+  ) {
+    this.appConnections = []
+  }
 
   /**
    * @param walletClient Connected web3 signer
@@ -43,13 +51,17 @@ export class PushWallet {
    */
   public static initialize = async (
     walletClient: WalletClient,
-    options: { mnemonic?: string; env: ENV }
+    options?: { mnemonic?: string; env: ENV }
   ): Promise<PushWallet> => {
-    this.pushValidator = await PushValidator.initalize({ env: options.env })
+    this.pushValidator = await PushValidator.initalize({ env: options?.env })
     const pushSigner = await PushSigner.initialize(walletClient)
     const pushAccount = await this.getPushAccount(pushSigner.account)
     const decryptedPushAccount = pushAccount
-      ? await this.decryptPushAccount(pushAccount, pushSigner, options.mnemonic)
+      ? await this.decryptPushAccount(
+          pushAccount,
+          pushSigner,
+          options?.mnemonic
+        )
       : await this.createPushAccount(pushSigner)
 
     return new PushWallet(
@@ -67,6 +79,8 @@ export class PushWallet {
   private static getPushAccount = async (
     account: string
   ): Promise<null | EncPushAccount> => {
+    // TODO: REMOVE RETURN STATEMENT
+    return null
     return await this.pushValidator.call<null | EncPushAccount>(
       'push_accountInfo',
       [account]
@@ -110,7 +124,14 @@ export class PushWallet {
     )
 
     // 3. Create Init Tx
-    const token = await this.pushValidator.call<TokenReply>('push_getApiToken')
+    // TODO: REMOVE HARDCODED TOKEN
+    const token = {
+      validatorToken:
+        'eyJub2RlcyI6W3sibm9kZUlkIjoiMHg4ZTEyZEUxMkMzNWVBQmYzNWI1NmIwNEU1M0M0RTQ2OGU0NjcyN0U4IiwidHNNaWxsaXMiOjE3MjA2Mjk4MTAwODIsInJhbmRvbUhleCI6ImEyODBmNzU1ZTc5NmFkZTYyYzIzMTFkMjUxMjIxMjI2NWRjZWJhNzAiLCJwaW5nUmVzdWx0cyI6W3sibm9kZUlkIjoiMHhmREFFYWY3YWZDRmJiNGU0ZDE2REM2NmJEMjAzOWZkNjAwNENGY2U4IiwidHNNaWxsaXMiOjE3MjA2Mjk3ODAxNTMsInN0YXR1cyI6MX0seyJub2RlSWQiOiIweDk4RjlEOTEwQWVmOUIzQjlBNDUxMzdhZjFDQTc2NzVlRDkwYTUzNTUiLCJ0c01pbGxpcyI6MTcyMDYyOTc4MDE1MCwic3RhdHVzIjoxfV0sInNpZ25hdHVyZSI6IjB4NzBiMmVkYjMzYTgzZWM3MWFlYmZiYjc4NmU3MGQ0MTQyMmFjMDM5ZGY4NDNlOWQ1YjNlYjhiZDJmY2VkYWQ3YTY1MjI4N2QxYWNlNWYxMTQ3ODM3YzJjM2QzMmM5Yzg0MzUzZTViZmUxZmVkYjZlN2Y4MThmOTg5Y2RhOWMxZDMxYyJ9LHsibm9kZUlkIjoiMHhmREFFYWY3YWZDRmJiNGU0ZDE2REM2NmJEMjAzOWZkNjAwNENGY2U4IiwidHNNaWxsaXMiOjE3MjA2Mjk4MTAxMTcsInJhbmRvbUhleCI6IjQ5YjdlYzBlZDZjNzU2Zjg4NWIwYjYwZTkxZTBmYzBmNGM5ZDU1OTMiLCJwaW5nUmVzdWx0cyI6W3sibm9kZUlkIjoiMHg4ZTEyZEUxMkMzNWVBQmYzNWI1NmIwNEU1M0M0RTQ2OGU0NjcyN0U4IiwidHNNaWxsaXMiOjE3MjA2Mjk3ODAwOTUsInN0YXR1cyI6MX0seyJub2RlSWQiOiIweDk4RjlEOTEwQWVmOUIzQjlBNDUxMzdhZjFDQTc2NzVlRDkwYTUzNTUiLCJ0c01pbGxpcyI6MTcyMDYyOTc4MDA4MSwic3RhdHVzIjoxfV0sInNpZ25hdHVyZSI6IjB4OWY1ZWNiZjEyZjIwOTg2MmQzZDgwZTEwMmNkZjkzYzNkYzJhNTI1YTUxMzFiMWZhOWI2YzlkZTljNDg4NTUxMTZhZWUwNzYxNzRjY2Y2MzA2N2UxODFhODNhNGNkOGM0MjhiYzc2NDJkYWFjODU4YThlODZiY2YwYjk1OGJiNzgxYiJ9LHsibm9kZUlkIjoiMHg5OEY5RDkxMEFlZjlCM0I5QTQ1MTM3YWYxQ0E3Njc1ZUQ5MGE1MzU1IiwidHNNaWxsaXMiOjE3MjA2Mjk4MTAwODMsInJhbmRvbUhleCI6Ijg1NzkxYWEyNGMwZjJmMTU2M2Y2NTk4OTNlMjkyNzgxMzcxNjZjYjEiLCJwaW5nUmVzdWx0cyI6W3sibm9kZUlkIjoiMHg4ZTEyZEUxMkMzNWVBQmYzNWI1NmIwNEU1M0M0RTQ2OGU0NjcyN0U4IiwidHNNaWxsaXMiOjE3MjA2Mjk3ODAxNDYsInN0YXR1cyI6MX0seyJub2RlSWQiOiIweGZEQUVhZjdhZkNGYmI0ZTRkMTZEQzY2YkQyMDM5ZmQ2MDA0Q0ZjZTgiLCJ0c01pbGxpcyI6MTcyMDYyOTc4MDEyOSwic3RhdHVzIjoxfV0sInNpZ25hdHVyZSI6IjB4YmE2MzU1MjhiNmUxMWQ0N2I1YTA1NzlmZDgxZGNhMjFkMDIxMzdiZTQzYjhhY2QzN2EwMGFjYzc4YTQ1NWUyZDE4MDc3MTUwZDdjMWNkMzgyNzNhMTI1MjEzNWQyZjEyMGRiMmNiZjA5NjU4ZDkxZTMyYjZmZjdmOGQwYjhlYWYxYiJ9XX0=',
+      validatorUrl: 'https://v1.push.org',
+    }
+    // const token = await this.pushValidator.call<TokenReply>('push_getApiToken')
+
     const txData: InitDidTxData = {
       did: bytesToHex(sha256(masterNode.publicKey as Uint8Array)),
       masterPubKey: bytesToHex(masterNode.publicKey as Uint8Array),
@@ -136,11 +157,12 @@ export class PushWallet {
     const serializedSignedTx = PushTx.serializeTx({ ...unsignedTx, signature })
 
     // 6. Send Serialized Tx to Push Network
-    await this.pushValidator.call(
-      'push_sendTransaction',
-      [serializedSignedTx],
-      token.validatorUrl
-    )
+    // TODO: UNCOMMENT VALIDATOR CALL
+    // await this.pushValidator.call(
+    //   'push_sendTransaction',
+    //   [serializedSignedTx],
+    //   token.validatorUrl
+    // )
 
     return {
       did: bytesToHex(sha256(masterNode.publicKey as Uint8Array)),
@@ -221,5 +243,50 @@ export class PushWallet {
     // TODO: Create a RevokeSessionKey Tx
     // TODO: Sign Tx with derivedKey
     // TODO: Send Tx to vnodes
+  }
+
+  /**
+   * Sign Data with Derived Key
+   */
+  public sign = (data: string, origin?: string): Uint8Array => {
+    if (origin) {
+      const appFound = this.appConnections.find(
+        (each) => each.origin === origin
+      )
+      if (!appFound) throw new Error('App not Connected')
+    }
+    const hash = sha256(data)
+    return this.derivedHDNode.sign(hash)
+  }
+
+  public ConnectionStatus = (
+    origin: string
+  ): { isConnected: boolean; isPending: boolean } => {
+    const appFound = this.appConnections.find((each) => each.origin === origin)
+    if (!appFound) {
+      return { isConnected: false, isPending: false }
+    } else {
+      return { isConnected: !appFound.isPending, isPending: appFound.isPending }
+    }
+  }
+
+  public requestToConnect = (origin: string) => {
+    const appFound = this.appConnections.find((each) => each.origin === origin)
+    if (!appFound) {
+      this.appConnections.push({ origin, isPending: true })
+    }
+  }
+
+  public acceptConnectionReq = (origin: string) => {
+    const appFound = this.appConnections.find((each) => each.origin === origin)
+    if (appFound) {
+      appFound.isPending = false
+    }
+  }
+
+  public rejectConnectionReq = (origin: string) => {
+    this.appConnections = this.appConnections.filter(
+      (each) => each.origin !== origin
+    )
   }
 }

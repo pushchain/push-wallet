@@ -1,0 +1,42 @@
+.connect-wallet {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+  }
+  
+  .initialize-button,
+  .sign-button {
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .data-input {
+    padding: 10px;
+    margin: 10px;
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .signed-data {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .signed-data h3 {
+    margin-bottom: 10px;
+  }
+  
+  .signed-data p {
+    word-break: break-word;
+    background-color: #3d3e3f;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  

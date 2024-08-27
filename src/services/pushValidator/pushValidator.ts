@@ -29,8 +29,12 @@ export class PushValidator {
     private validatorContractClient: ValidatorContract
   ) {}
 
-  static initalize = async (options?: { env: ENV }): Promise<PushValidator> => {
-    const settings = options || { env: ENV.STAGING }
+  static initalize = async (options?: {
+    env?: ENV
+  }): Promise<PushValidator> => {
+    const settings = {
+      env: options?.env || ENV.STAGING,
+    }
 
     /**
      * @dev - If instance is not created or env is different, create a new instance

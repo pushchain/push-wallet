@@ -1,31 +1,25 @@
 import { useEffect, useState } from 'react'
 import { useConnectWallet } from '@web3-onboard/react'
-import type { TokenSymbol } from '@web3-onboard/common'
 import { createWalletClient, custom } from 'viem'
 import { mainnet } from 'viem/chains'
-import { PushWallet } from '../services/pushWallet/pushWallet'
-import { ENV } from '../constants'
-
-interface Account {
-  address: string
-  balance: Record<TokenSymbol, string> | null
-  ens: { name: string | undefined; avatar: string | undefined }
-}
+import './ConnectWallet.css'
+import { PushSigner } from '../services/pushSigner/pushSigner'
+import Wallet from './PushWallet'
 
 export default function ConnectWallet() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
-  const [account, setAccount] = useState<Account | null>(null)
+  const [account, setAccount] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (wallet?.provider) {
-      const { name, avatar } = wallet?.accounts[0].ens ?? {}
-      setAccount({
-        address: wallet.accounts[0].address,
-        balance: wallet.accounts[0].balance,
-        ens: { name, avatar: avatar?.url },
-      })
-    }
-  }, [wallet])
+  //   useEffect(() => {
+  //     if (wallet?.provider) {
+  //       const { name, avatar } = wallet?.accounts[0].ens ?? {}
+  //       setAccount({
+  //         address: wallet.accounts[0].address,
+  //         balance: wallet.accounts[0].balance,
+  //         ens: { name, avatar: avatar?.url },
+  //       })
+  //     }
+  //   }, [wallet])
 
   useEffect(() => {
     // If the wallet has a provider than the wallet is connected
@@ -39,27 +33,31 @@ export default function ConnectWallet() {
           chain: mainnet,
           transport: custom(wallet.provider),
         })
-        const pushWallet = await PushWallet.initialize(client, { env: ENV.DEV })
-        console.log(pushWallet)
+        const pushSigner = await PushSigner.initialize(client)
+        setAccount(pushSigner.account)
       }
       pushWalletFn()
+    } else {
+      setAccount(null)
     }
   }, [wallet])
 
   if (wallet?.provider && account) {
     return (
       <div>
-        {account.ens?.avatar ? (
+        {/* {account.ens?.avatar ? (
           <img src={account.ens?.avatar} alt="ENS Avatar" />
-        ) : null}
-        <div>{account.ens?.name ? account.ens.name : account.address}</div>
+        ) : null} */}
+        <div>{account}</div>
         <button
+          className="connectionBtn"
           onClick={() => {
             disconnect({ label: wallet.label })
           }}
         >
           Disconnect
         </button>
+        <Wallet />
       </div>
     )
   }
