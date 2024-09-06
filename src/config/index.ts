@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable no-undef */
 // load the appropriate config as per the server state
 import { ENV } from '../constants.ts'
 import { mainnet, localhost, sepolia } from 'viem/chains'

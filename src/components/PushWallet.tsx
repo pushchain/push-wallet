@@ -38,9 +38,9 @@ export default function Wallet() {
     }
   }
 
-  const handleSign = async () => {
+  const handleSign = () => {
     if (pushWallet && data) {
-      const signed = await pushWallet.sign(data)
+      const signed = pushWallet.sign(data)
       setSignedData(bytesToHex(signed))
     }
   }

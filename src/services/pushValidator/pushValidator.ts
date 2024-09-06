@@ -130,6 +130,10 @@ export class PushValidator {
     const activeValidators =
       await validatorContractClient.read.getActiveVNodes()
     const validator = getRandomElement(activeValidators)
+
+    // TODO: REMOVE RETURN STATEMENT
+    return validator
+
     const isListening = await this.ping(validator.nodeApiBaseUrl)
     if (isListening) {
       return validator
