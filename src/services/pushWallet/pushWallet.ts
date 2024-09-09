@@ -1,28 +1,26 @@
 import * as bip39 from '@scure/bip39'
 import { wordlist } from '@scure/bip39/wordlists/english'
 import { HDKey } from '@scure/bip32'
+import { bytesToHex, randomBytes } from '@noble/hashes/utils'
 import {
-  bytesToHex,
-  hexToBytes,
-  randomBytes,
-  utf8ToBytes,
-} from '@noble/hashes/utils'
+  Validator as PushValidator,
+  Tx as PushTx,
+} from '@pushprotocol/node-core'
+import { TxCategory } from '@pushprotocol/node-core/src/lib/tx/tx.types'
+import { InitDid } from '@pushprotocol/node-core/src/lib/generated/txData/init_did'
 import {
   Key,
   EncPushAccount,
   DecPushAccount,
   AppConnection,
 } from './pushWallet.types'
-import { WalletClient } from 'viem'
-import { PushValidator } from '../pushValidator/pushValidator'
+import { createWalletClient, http, WalletClient } from 'viem'
 import { PushSigner } from '../pushSigner/pushSigner'
 import { Signer } from '../pushSigner/pushSigner.types'
 import { PushEncryption } from '../pushEncryption/pushEncryption'
 import { sha256 } from '@noble/hashes/sha256'
-import { PushTx } from '../pushTransaction/pushTx'
-import { InitDidTxData, TxCategory } from '../pushTransaction/pushTx.types'
-import { TokenReply } from '../pushValidator/pushValidator.types'
 import { ENV } from '../../constants'
+import { mnemonicToAccount } from 'viem/accounts'
 
 export class PushWallet {
   /*
@@ -33,6 +31,9 @@ export class PushWallet {
   */
   private static rootPath: `m/44'/60'/${string}` = "m/44'/60'/0'"
   private static pushValidator: PushValidator
+  private static unRegisteredProfile = false
+  private static walletToEncDerivedKey: { [key: string]: string } = {}
+
   public appConnections: AppConnection[]
 
   private constructor(
@@ -44,33 +45,67 @@ export class PushWallet {
     this.appConnections = []
   }
 
-  /**
-   * @param walletClient Connected web3 signer
-   * @param mnemonic Optional - In case user wants to derive keys from mnemonic itself rather than decrypting
-   * @returns Push Wallet Instance
-   */
-  public static initialize = async (
-    walletClient: WalletClient,
-    options?: { mnemonic?: string; env: ENV }
-  ): Promise<PushWallet> => {
-    this.pushValidator = await PushValidator.initalize({ env: options?.env })
-    const pushSigner = await PushSigner.initialize(walletClient)
-    const pushAccount = await this.getPushAccount(pushSigner.account)
-    const decryptedPushAccount = pushAccount
-      ? await this.decryptPushAccount(
-          pushAccount,
-          pushSigner,
-          options?.mnemonic
-        )
-      : await this.createPushAccount(pushSigner)
-
+  public static signUp = async () => {
+    PushWallet.unRegisteredProfile = true
+    const decryptedPushAccount = await PushWallet.generatePushAccount()
     return new PushWallet(
       decryptedPushAccount.did,
-      pushSigner.account,
+      mnemonicToAccount(decryptedPushAccount.mnemonic).address,
       decryptedPushAccount.derivedHDNode,
       decryptedPushAccount.mnemonic
     )
   }
+
+  public static logInWithMnemonic = async (
+    mnemonic: string,
+    env: ENV = ENV.STAGING
+  ) => {
+    this.pushValidator = await PushValidator.initalize({ env })
+    const account = mnemonicToAccount(mnemonic)
+    // TODO: Change this to encoded Push Address
+    const encPushAccount = await PushWallet.getPushAccount(account.address)
+    if (encPushAccount == null) {
+      throw Error('Push Account Not Found!')
+    } else {
+      const decryptedPushAccount = await PushWallet.decryptPushAccount(
+        encPushAccount,
+        undefined,
+        mnemonic
+      )
+      return new PushWallet(
+        decryptedPushAccount.did,
+        account.address,
+        decryptedPushAccount.derivedHDNode,
+        decryptedPushAccount.mnemonic
+      )
+    }
+  }
+
+  public static loginWithWallet = async (
+    walletClient: WalletClient,
+    env: ENV = ENV.STAGING
+  ) => {
+    this.pushValidator = await PushValidator.initalize({ env })
+    const pushSigner = await PushSigner.initialize(walletClient)
+    const encPushAccount = await PushWallet.getPushAccount(pushSigner.account)
+    if (encPushAccount == null) {
+      throw Error('Push Account Not Found!')
+    } else {
+      const decryptedPushAccount = await PushWallet.decryptPushAccount(
+        encPushAccount,
+        pushSigner
+      )
+      return new PushWallet(
+        decryptedPushAccount.did,
+        pushSigner.account,
+        decryptedPushAccount.derivedHDNode,
+        decryptedPushAccount.mnemonic
+      )
+    }
+  }
+
+  // TODO: Implement Later
+  private static loginWithSocial = async () => {}
 
   /**
    * Get Push Account details from Push Network
@@ -108,62 +143,24 @@ export class PushWallet {
     }
   }
 
-  private static createPushAccount = async (
-    signer: Signer
-  ): Promise<DecPushAccount> => {
-    // 1. Create mnemonic and derived HD keys
+  private static generatePushAccount = async () => {
+    // 1. Generate Mnemonic
     const mnemonic = bip39.generateMnemonic(wordlist) // 128 bit ( 12 words )
     const seed = await bip39.mnemonicToSeed(mnemonic)
     const masterNode = HDKey.fromMasterSeed(seed)
+    // 2. Create Derived Keys
     const derivedKey = await this.generateDerivedKey(mnemonic)
-
-    // 2. Encrypt derived key's extended private key
+    // 3. Encrypt Derived Keys with PushWallet's 1st Account Signer
+    const account = mnemonicToAccount(mnemonic)
+    const walletClient = createWalletClient({ account, transport: http() })
+    const signer = await PushSigner.initialize(walletClient)
     const encDerivedPrivKey = await PushEncryption.encrypt(
       derivedKey.privateExtendedKey,
       signer
     )
-
-    // 3. Create Init Tx
-    // TODO: REMOVE HARDCODED TOKEN
-    const token = {
-      validatorToken:
-        'eyJub2RlcyI6W3sibm9kZUlkIjoiMHg4ZTEyZEUxMkMzNWVBQmYzNWI1NmIwNEU1M0M0RTQ2OGU0NjcyN0U4IiwidHNNaWxsaXMiOjE3MjA2Mjk4MTAwODIsInJhbmRvbUhleCI6ImEyODBmNzU1ZTc5NmFkZTYyYzIzMTFkMjUxMjIxMjI2NWRjZWJhNzAiLCJwaW5nUmVzdWx0cyI6W3sibm9kZUlkIjoiMHhmREFFYWY3YWZDRmJiNGU0ZDE2REM2NmJEMjAzOWZkNjAwNENGY2U4IiwidHNNaWxsaXMiOjE3MjA2Mjk3ODAxNTMsInN0YXR1cyI6MX0seyJub2RlSWQiOiIweDk4RjlEOTEwQWVmOUIzQjlBNDUxMzdhZjFDQTc2NzVlRDkwYTUzNTUiLCJ0c01pbGxpcyI6MTcyMDYyOTc4MDE1MCwic3RhdHVzIjoxfV0sInNpZ25hdHVyZSI6IjB4NzBiMmVkYjMzYTgzZWM3MWFlYmZiYjc4NmU3MGQ0MTQyMmFjMDM5ZGY4NDNlOWQ1YjNlYjhiZDJmY2VkYWQ3YTY1MjI4N2QxYWNlNWYxMTQ3ODM3YzJjM2QzMmM5Yzg0MzUzZTViZmUxZmVkYjZlN2Y4MThmOTg5Y2RhOWMxZDMxYyJ9LHsibm9kZUlkIjoiMHhmREFFYWY3YWZDRmJiNGU0ZDE2REM2NmJEMjAzOWZkNjAwNENGY2U4IiwidHNNaWxsaXMiOjE3MjA2Mjk4MTAxMTcsInJhbmRvbUhleCI6IjQ5YjdlYzBlZDZjNzU2Zjg4NWIwYjYwZTkxZTBmYzBmNGM5ZDU1OTMiLCJwaW5nUmVzdWx0cyI6W3sibm9kZUlkIjoiMHg4ZTEyZEUxMkMzNWVBQmYzNWI1NmIwNEU1M0M0RTQ2OGU0NjcyN0U4IiwidHNNaWxsaXMiOjE3MjA2Mjk3ODAwOTUsInN0YXR1cyI6MX0seyJub2RlSWQiOiIweDk4RjlEOTEwQWVmOUIzQjlBNDUxMzdhZjFDQTc2NzVlRDkwYTUzNTUiLCJ0c01pbGxpcyI6MTcyMDYyOTc4MDA4MSwic3RhdHVzIjoxfV0sInNpZ25hdHVyZSI6IjB4OWY1ZWNiZjEyZjIwOTg2MmQzZDgwZTEwMmNkZjkzYzNkYzJhNTI1YTUxMzFiMWZhOWI2YzlkZTljNDg4NTUxMTZhZWUwNzYxNzRjY2Y2MzA2N2UxODFhODNhNGNkOGM0MjhiYzc2NDJkYWFjODU4YThlODZiY2YwYjk1OGJiNzgxYiJ9LHsibm9kZUlkIjoiMHg5OEY5RDkxMEFlZjlCM0I5QTQ1MTM3YWYxQ0E3Njc1ZUQ5MGE1MzU1IiwidHNNaWxsaXMiOjE3MjA2Mjk4MTAwODMsInJhbmRvbUhleCI6Ijg1NzkxYWEyNGMwZjJmMTU2M2Y2NTk4OTNlMjkyNzgxMzcxNjZjYjEiLCJwaW5nUmVzdWx0cyI6W3sibm9kZUlkIjoiMHg4ZTEyZEUxMkMzNWVBQmYzNWI1NmIwNEU1M0M0RTQ2OGU0NjcyN0U4IiwidHNNaWxsaXMiOjE3MjA2Mjk3ODAxNDYsInN0YXR1cyI6MX0seyJub2RlSWQiOiIweGZEQUVhZjdhZkNGYmI0ZTRkMTZEQzY2YkQyMDM5ZmQ2MDA0Q0ZjZTgiLCJ0c01pbGxpcyI6MTcyMDYyOTc4MDEyOSwic3RhdHVzIjoxfV0sInNpZ25hdHVyZSI6IjB4YmE2MzU1MjhiNmUxMWQ0N2I1YTA1NzlmZDgxZGNhMjFkMDIxMzdiZTQzYjhhY2QzN2EwMGFjYzc4YTQ1NWUyZDE4MDc3MTUwZDdjMWNkMzgyNzNhMTI1MjEzNWQyZjEyMGRiMmNiZjA5NjU4ZDkxZTMyYjZmZjdmOGQwYjhlYWYxYiJ9XX0=',
-      validatorUrl: 'https://v1.push.org',
-    }
-    // const token = await this.pushValidator.call<TokenReply>('push_getApiToken')
-
-    const txData: InitDidTxData = {
-      did: bytesToHex(sha256(masterNode.publicKey as Uint8Array)),
-      masterPubKey: bytesToHex(masterNode.publicKey as Uint8Array),
-      derivedKeyIndex: derivedKey.index,
-      derivedPubKey: derivedKey.publicKey,
-      encDerivedPrivKey: JSON.stringify(encDerivedPrivKey),
-    }
-    const unsignedTx = PushTx.createTx(
-      TxCategory.INIT_DID,
-      [],
-      txData,
-      signer.source,
-      utf8ToBytes(token.validatorToken)
-    )
-
-    // 4. Sign Serialized Unsigned Tx
-    const serializedUnsignedTx = PushTx.serializeTx(unsignedTx)
-    const signature = hexToBytes(
-      (await signer.signMessage(bytesToHex(serializedUnsignedTx))).slice(2)
-    )
-
-    // 5. Serialize Tx
-    const serializedSignedTx = PushTx.serializeTx({ ...unsignedTx, signature })
-
-    // 6. Send Serialized Tx to Push Network
-    // TODO: UNCOMMENT VALIDATOR CALL
-    // await this.pushValidator.call(
-    //   'push_sendTransaction',
-    //   [serializedSignedTx],
-    //   token.validatorUrl
-    // )
-
+    // TODO: Change this to encoded Push Address
+    PushWallet.walletToEncDerivedKey[signer.account] =
+      JSON.stringify(encDerivedPrivKey)
     return {
       did: bytesToHex(sha256(masterNode.publicKey as Uint8Array)),
       mnemonic,
@@ -177,19 +174,21 @@ export class PushWallet {
    */
   private static decryptPushAccount = async (
     pushAccount: EncPushAccount,
-    signer: Signer,
-    mnemonic?: string
+    signer: Signer | undefined = undefined,
+    mnemonic: string | undefined = undefined
   ): Promise<DecPushAccount> => {
     let privateExtendedKey: string
     if (mnemonic) {
       privateExtendedKey = (
         await this.generateDerivedKey(mnemonic, pushAccount.derivedKeyIndex)
       ).privateExtendedKey
-    } else {
+    } else if (signer) {
       privateExtendedKey = (await PushEncryption.decrypt(
         JSON.parse(pushAccount.encDerivedPrivKey),
         signer
       )) as string
+    } else {
+      throw Error('Unable to Decrypt Push Account without Signer or Mnemonic!')
     }
     const derivedHDNode = HDKey.fromExtendedKey(privateExtendedKey)
     return {
@@ -199,62 +198,52 @@ export class PushWallet {
     }
   }
 
-  /**
-   * Generates a random session key (hardened key) from derived key
-   * @dev - To avoid any collisions ( theoretically ), no. of possible comb. = (2^31)^9
-   */
-  private generateRandomSessionKey = (): {
-    privateKey: string | undefined
-    publicKey: string | undefined
-  } => {
-    let derivedNode = this.derivedHDNode
-
-    // Randomness = (2^31)^9
-    const levels = 9
-    for (let i = 0; i < levels; i++) {
-      // Generate a random 32-bit index within the hardened range
-      const randomBuffer = randomBytes(4)
-      // Convert the buffer to an unsigned 32-bit integer (big-endian)
-      const randomIndex =
-        (randomBuffer[0] << 24) |
-        (randomBuffer[1] << 16) |
-        (randomBuffer[2] << 8) |
-        randomBuffer[3]
-      const hardenedIndex = randomIndex + 2 ** 31
-      // Derive the next hardened child key
-      derivedNode = derivedNode.deriveChild(hardenedIndex)
-    }
-    return {
-      privateKey: derivedNode.privateKey?.toString(),
-      publicKey: derivedNode.publicKey?.toString(),
-    }
+  public connectWalletWithAccount = async (signer: WalletClient) => {
+    if (!PushWallet.unRegisteredProfile)
+      throw Error('Only Allowed for Unregistered Profile')
+    const pushSigner = await PushSigner.initialize(signer)
+    const encDerivedPrivKey = await PushEncryption.encrypt(
+      this.derivedHDNode.privateExtendedKey,
+      pushSigner
+    )
+    PushWallet.walletToEncDerivedKey[pushSigner.account] =
+      JSON.stringify(encDerivedPrivKey)
   }
 
-  public addSessionKey = (origin: string | null = null) => {
-    const sessionKeys = this.generateRandomSessionKey()
-    console.log(origin, sessionKeys)
-    // TODO: Create a AddSessionKey Tx
-    // TODO: Sign Tx with derivedKey
-    // TODO: Send Tx to vnodes
-  }
-
-  public revokeSessionKey = (publicKey: string) => {
-    console.log(publicKey)
-    // TODO: Create a RevokeSessionKey Tx
-    // TODO: Sign Tx with derivedKey
-    // TODO: Send Tx to vnodes
+  public registerPushAccount = async (env: ENV = ENV.STAGING) => {
+    if (!PushWallet.unRegisteredProfile)
+      throw Error('Only Allowed for Unregistered Profile')
+    // 1. Create Init_did tx
+    const seed = await bip39.mnemonicToSeed(this.mnemonic as string)
+    const masterNode = HDKey.fromMasterSeed(seed)
+    const txData: InitDid = {
+      did: bytesToHex(sha256(masterNode.publicKey as Uint8Array)),
+      masterPubKey: bytesToHex(masterNode.publicKey as Uint8Array),
+      derivedKeyIndex: this.derivedHDNode.index,
+      derivedPubKey: bytesToHex(this.derivedHDNode.publicKey as Uint8Array),
+      walletToEncDerivedKey: PushWallet.walletToEncDerivedKey,
+    }
+    const pushTx = await PushTx.initialize(env)
+    const initDIDTx = await pushTx.createUnsigned(
+      TxCategory.INIT_DID,
+      [],
+      PushTx.serializeData(txData, TxCategory.INIT_DID)
+    )
+    // 2. Send Tx
+    await pushTx.send(initDIDTx)
+    PushWallet.walletToEncDerivedKey = {}
+    PushWallet.unRegisteredProfile = false
   }
 
   /**
-   * Sign Data with Derived Key
+   * SIGN DATA WITH DERIVED KEY
+   * @param data data to be signed
+   * @param origin origin from where the sig Req is incoming
+   * @returns signature
    */
-  public sign = (data: string, origin?: string): Uint8Array => {
-    if (origin) {
-      const appFound = this.appConnections.find(
-        (each) => each.origin === origin
-      )
-      if (!appFound) throw new Error('App not Connected')
-    }
+  public sign = (data: string, origin: string): Uint8Array => {
+    const appFound = this.appConnections.find((each) => each.origin === origin)
+    if (!appFound) throw Error('App not Connected')
     const hash = sha256(data)
     return this.derivedHDNode.sign(hash)
   }
@@ -288,5 +277,53 @@ export class PushWallet {
     this.appConnections = this.appConnections.filter(
       (each) => each.origin !== origin
     )
+  }
+
+  /**
+   * Generates a random session key (hardened key) from derived key
+   * @dev - To avoid any collisions ( theoretically ), no. of possible comb. = (2^31)^9
+   */
+  private generateRandomSessionKey = (): {
+    privateKey: string | undefined
+    publicKey: string | undefined
+  } => {
+    let derivedNode = this.derivedHDNode
+
+    // Randomness = (2^31)^9
+    const levels = 9
+    for (let i = 0; i < levels; i++) {
+      // Generate a random 32-bit index within the hardened range
+      const randomBuffer = randomBytes(4)
+      // Convert the buffer to an unsigned 32-bit integer (big-endian)
+      const randomIndex =
+        (randomBuffer[0] << 24) |
+        (randomBuffer[1] << 16) |
+        (randomBuffer[2] << 8) |
+        randomBuffer[3]
+      const hardenedIndex = randomIndex + 2 ** 31
+      // Derive the next hardened child key
+      derivedNode = derivedNode.deriveChild(hardenedIndex)
+    }
+    return {
+      privateKey: derivedNode.privateKey?.toString(),
+      publicKey: derivedNode.publicKey?.toString(),
+    }
+  }
+
+  // TODO: Implement Later
+  public addSessionKey = (origin: string | null = null) => {
+    const sessionKeys = this.generateRandomSessionKey()
+    console.log(origin, sessionKeys)
+    // TODO: Create a AddSessionKey Tx
+    // TODO: Sign Tx with derivedKey
+    // TODO: Send Tx to vnodes
+  }
+
+  // TODO: Implement Later
+  public revokeSessionKey = (publicKey: string) => {
+    console.log(publicKey)
+    // TODO: Create a RevokeSessionKey Tx
+    // TODO: Sign Tx with derivedKey
+    // TODO: Send Tx to vnodes
   }
 }
