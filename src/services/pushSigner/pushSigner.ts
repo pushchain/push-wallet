@@ -6,7 +6,7 @@ import { Signer } from './pushSigner.types'
  */
 export class PushSigner {
   static initialize = async (
-    signer: WalletClient // | SolanaClinet | BtcSigner
+    signer: WalletClient // | SolanaClient | BtcSigner
   ): Promise<Signer> => {
     // TODO: Have checks to determine which type of signer is it
     return this.convertViemWalletClient(signer as WalletClient)
@@ -29,7 +29,6 @@ export class PushSigner {
       }
       return {
         account: `eip155:${chainId}:${account.address}`, // viem signers are valid only for evm (eip155) chains
-        source: `eip155:${chainId}`,
         signMessage,
       }
     } catch (err) {
