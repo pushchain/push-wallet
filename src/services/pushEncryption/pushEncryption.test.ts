@@ -129,7 +129,6 @@ describe('(PushEncryption as any)', () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         signMessage: async (dataToBeSigned: string) => 'invalidSignature',
         account: 'fake',
-        source: 'fake',
       }
       const privateKey = 'mockPrivateKey'
       const pushEncryption = new (PushEncryption as any)(signer)
