@@ -19,7 +19,6 @@ describe('PushSigner', () => {
     const pushSigner = await PushSigner.initialize(walletClient)
     expect(pushSigner).toEqual({
       account: expect.any(String),
-      source: expect.any(String),
       signMessage: expect.any(Function),
     })
 
