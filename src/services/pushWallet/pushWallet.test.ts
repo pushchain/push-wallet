@@ -7,7 +7,7 @@ import { sepolia } from 'viem/chains'
 
 // Test Suite for PushWallet Class
 describe('PushWallet', () => {
-  const env = ENV.DEV
+  const env = ENV.LOCAL
   it('should successfully sign up and create a new PushWallet instance', async () => {
     const pushWallet = await PushWallet.signUp()
     expect(pushWallet).toBeInstanceOf(PushWallet)
@@ -20,7 +20,7 @@ describe('PushWallet', () => {
   // TODO : Unskip after registration is fixed
   it.skip('should log in with mnemonic and return a PushWallet instance', async () => {
     const pW = await PushWallet.signUp()
-    pW.registerPushAccount(env)
+    await pW.registerPushAccount(env)
     const pushWallet = await PushWallet.logInWithMnemonic(
       pW['mnemonic'] as string,
       env
@@ -65,7 +65,7 @@ describe('PushWallet', () => {
   // TODO : Unskip after registration is fixed
   it.skip('should throw an error if trying to connect wallet without unregistered profile', async () => {
     const pW = await PushWallet.signUp()
-    pW.registerPushAccount(env)
+    await pW.registerPushAccount(env)
     const pushWallet = await PushWallet.logInWithMnemonic(
       pW['mnemonic'] as string,
       env
