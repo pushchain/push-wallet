@@ -1,5 +1,3 @@
-import { sepolia } from 'viem/chains'
-
 export const config = {
   /**
    * APP INFO
@@ -22,12 +20,4 @@ export const config = {
     111557560, // Cyber testnet
   ],
   DEFAULT_CHAIN: 11155111,
-
-  /**
-   * VALIDATOR INFO
-   */
-  VALIDATOR: {
-    NETWORK: sepolia,
-    CONTRACT: 'TODO',
-  },
 }

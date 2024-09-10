@@ -1,5 +1,3 @@
-import { mainnet } from 'viem/chains'
-
 export const config = {
   /**
    * APP INFO
@@ -22,12 +20,4 @@ export const config = {
     7560, // Cyber mainnet
   ],
   DEFAULT_CHAIN: 1,
-
-  /**
-   * VALIDATOR INFO
-   */
-  VALIDATOR: {
-    NETWORK: mainnet,
-    CONTRACT: 'TODO',
-  },
 }
