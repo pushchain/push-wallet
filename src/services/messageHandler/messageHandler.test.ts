@@ -2,22 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { PostMessageHandler } from './messageHandler'
 import { PushWallet } from '../pushWallet/pushWallet'
 import { ACTION } from './messageHandler.types'
-import { createWalletClient, http } from 'viem'
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
-import { sepolia } from 'viem/chains'
-import { ENV } from '../../constants'
 describe('PostMessageHandler', () => {
   let pushWallet: PushWallet
 
   beforeEach(async () => {
-    const walletClient = createWalletClient({
-      account: privateKeyToAccount(generatePrivateKey()),
-      chain: sepolia,
-      transport: http(),
-    })
-    pushWallet = await PushWallet.initialize(walletClient, {
-      env: ENV.DEV,
-    })
+    pushWallet = await PushWallet.signUp()
   })
 
   it('should handle ERROR case when pushWallet is undefined', () => {
@@ -175,7 +164,7 @@ describe('PostMessageHandler', () => {
     // Verify the postMessage call for signature
     expect(postMessageSpy).toHaveBeenCalledWith({
       action: ACTION.SIGNATURE,
-      signature: pushWallet.sign('test-data'),
+      signature: pushWallet.sign('test-data', event.origin || ''),
     })
   })
 })
