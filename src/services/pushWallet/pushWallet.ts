@@ -21,6 +21,7 @@ import { PushEncryption } from '../pushEncryption/pushEncryption'
 import { sha256 } from '@noble/hashes/sha256'
 import { ENV } from '../../constants'
 import { mnemonicToAccount } from 'viem/accounts'
+import { mainnet } from 'viem/chains'
 
 export class PushWallet {
   /*
@@ -152,7 +153,11 @@ export class PushWallet {
     const derivedKey = await this.generateDerivedKey(mnemonic)
     // 3. Encrypt Derived Keys with PushWallet's 1st Account Signer
     const account = mnemonicToAccount(mnemonic)
-    const walletClient = createWalletClient({ account, transport: http() })
+    const walletClient = createWalletClient({
+      account,
+      chain: mainnet,
+      transport: http(),
+    })
     const signer = await PushSigner.initialize(walletClient)
     const encDerivedPrivKey = await PushEncryption.encrypt(
       derivedKey.privateExtendedKey,
