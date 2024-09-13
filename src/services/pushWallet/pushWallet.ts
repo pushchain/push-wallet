@@ -5,6 +5,7 @@ import { bytesToHex, randomBytes } from '@noble/hashes/utils'
 import {
   Validator as PushValidator,
   Tx as PushTx,
+  Address,
 } from '@pushprotocol/node-core'
 import { TxCategory } from '@pushprotocol/node-core/src/lib/tx/tx.types'
 import { InitDid } from '@pushprotocol/node-core/src/lib/generated/txData/init_did'
@@ -51,7 +52,9 @@ export class PushWallet {
     const decryptedPushAccount = await PushWallet.generatePushAccount()
     return new PushWallet(
       decryptedPushAccount.did,
-      mnemonicToAccount(decryptedPushAccount.mnemonic).address,
+      Address.toPushCAIP(
+        mnemonicToAccount(decryptedPushAccount.mnemonic).address
+      ),
       decryptedPushAccount.derivedHDNode,
       decryptedPushAccount.mnemonic
     )
@@ -62,9 +65,10 @@ export class PushWallet {
     env: ENV = ENV.STAGING
   ) => {
     this.pushValidator = await PushValidator.initalize({ env })
-    const account = mnemonicToAccount(mnemonic)
-    // TODO: Change this to encoded Push Address
-    const encPushAccount = await PushWallet.getPushAccount(account.address)
+    const pushCAIPAddress = Address.toPushCAIP(
+      mnemonicToAccount(mnemonic).address
+    )
+    const encPushAccount = await PushWallet.getPushAccount(pushCAIPAddress)
     if (encPushAccount == null) {
       throw Error('Push Account Not Found!')
     } else {
@@ -75,7 +79,7 @@ export class PushWallet {
       )
       return new PushWallet(
         decryptedPushAccount.did,
-        account.address,
+        pushCAIPAddress,
         decryptedPushAccount.derivedHDNode,
         decryptedPushAccount.mnemonic
       )
@@ -163,8 +167,7 @@ export class PushWallet {
       derivedKey.privateExtendedKey,
       signer
     )
-    // TODO: Change this to encoded Push Address
-    PushWallet.walletToEncDerivedKey[signer.account] =
+    PushWallet.walletToEncDerivedKey[Address.toPushCAIP(account.address)] =
       JSON.stringify(encDerivedPrivKey)
     return {
       did: bytesToHex(sha256(masterNode.publicKey as Uint8Array)),
@@ -229,13 +232,17 @@ export class PushWallet {
       walletToEncDerivedKey: PushWallet.walletToEncDerivedKey,
     }
     const pushTx = await PushTx.initialize(env)
-    const initDIDTx = await pushTx.createUnsigned(
+    const initDIDTx = pushTx.createUnsigned(
       TxCategory.INIT_DID,
       [],
       PushTx.serializeData(txData, TxCategory.INIT_DID)
     )
     // 2. Send Tx
-    await pushTx.send(initDIDTx)
+    const account = mnemonicToAccount(this.mnemonic as string)
+    await pushTx.send(initDIDTx, {
+      sender: Address.toPushCAIP(account.address),
+      privKey: `0x${bytesToHex(this.derivedHDNode.privateKey as Uint8Array)}`,
+    })
     PushWallet.walletToEncDerivedKey = {}
     PushWallet.unRegisteredProfile = false
   }
