@@ -2,7 +2,7 @@ export const config = {
   /**
    * APP INFO
    */
-  APP_NAME: 'Push Local Keys',
+  APP_NAME: 'Push Local Wallet',
   NODE_ENV: 'local',
   APP_ENV: 'local',
   /**

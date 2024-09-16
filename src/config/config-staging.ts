@@ -2,7 +2,7 @@ export const config = {
   /**
    * APP INFO
    */
-  APP_NAME: 'Push Staging Keys',
+  APP_NAME: 'Push Testnet Wallet',
   NODE_ENV: 'staging',
   APP_ENV: 'staging',
 

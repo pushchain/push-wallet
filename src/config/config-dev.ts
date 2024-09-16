@@ -2,7 +2,7 @@ export const config = {
   /**
    * APP INFO
    */
-  APP_NAME: 'Push Dev Keys',
+  APP_NAME: 'Push Devnet Wallet',
   NODE_ENV: 'dev',
   APP_ENV: 'dev',
   /**
