@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { WALLET_STATE } from '../constants'
 import { Uninitialized } from '../components/wallet/Uninitialized'
-import { Signup } from '../components/wallet/signup'
+import { Signup } from '../components/wallet/Signup'
 import { Login } from '../components/wallet/Login'
 import { Initialized } from '../components/wallet/Initialized'
 
