@@ -42,7 +42,7 @@ export class PushWallet {
     public did: string,
     public account: string,
     private derivedHDNode: HDKey,
-    private mnemonic: string | undefined = undefined
+    public mnemonic: string | undefined = undefined
   ) {
     this.appConnections = []
   }
