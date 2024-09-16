@@ -1,12 +1,13 @@
-import './App.css'
 import config from './config'
-import ConnectWallet from './components/ConnectWallet'
+import Home from './pages/Home'
 
 function App() {
   return (
-    <div className="App">
-      <h1>{config.APP_NAME}</h1>
-      <ConnectWallet />
+    <div className="min-h-screen flex flex-col">
+      <h1 className="text-4xl font-bold mt-8 text-center">{config.APP_NAME}</h1>
+      <div className="flex-1 flex items-center justify-center">
+        <Home />
+      </div>
     </div>
   )
 }

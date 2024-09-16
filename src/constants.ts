@@ -10,3 +10,13 @@ export enum ENV {
    */
   LOCAL = 'local',
 }
+
+/**
+ * WALLET STATES
+ */
+export enum WALLET_STATE {
+  UNINITIALIZED,
+  SIGNUP,
+  LOGIN,
+  INITIALIZED,
+}

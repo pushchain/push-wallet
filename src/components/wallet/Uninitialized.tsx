@@ -1,8 +1,21 @@
-export const Uninitialized = () => {
+import { WALLET_STATE } from '../../constants'
+import { WalletProps } from './types'
+
+export const Uninitialized: React.FC<WalletProps> = ({ changeWalletState }) => {
   return (
-    <div style={{ display: 'flex', gap: '10px' }}>
-      <button onClick={() => console.log('Sign Up clicked')}>Sign Up</button>
-      <button onClick={() => console.log('Login clicked')}>Login</button>
+    <div className="flex gap-5">
+      <button
+        onClick={() => changeWalletState(WALLET_STATE.SIGNUP)}
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg w-44"
+      >
+        Sign Up
+      </button>
+      <button
+        onClick={() => changeWalletState(WALLET_STATE.LOGIN)}
+        className="bg-green-600 text-white px-6 py-3 rounded-lg w-44"
+      >
+        Login
+      </button>
     </div>
   )
 }
