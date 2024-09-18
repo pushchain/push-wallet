@@ -11,7 +11,7 @@ export default function App() {
           {config.APP_NAME}
         </h1>
         <div className="flex-1 flex items-center justify-center">
-          <Router basename="/push-keys">
+          <Router>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="login" element={<Login />} />
