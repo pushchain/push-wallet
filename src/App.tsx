@@ -19,8 +19,8 @@ export default function App() {
           <Router basename="/push-keys">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
+              <Route path="login" element={<Login />} />
+              <Route path="signup" element={<Signup />} />
               {/* Redirect to home if route is not found */}
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>

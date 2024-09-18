@@ -30,7 +30,7 @@ export const InitializedWallet: React.FC = () => {
         </button>
 
         <button
-          onClick={() => navigate('/login')}
+          onClick={() => navigate('login')}
           className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center"
         >
           <svg

@@ -6,13 +6,13 @@ export const UninitializedWallet: React.FC = () => {
   return (
     <div className="flex gap-5">
       <button
-        onClick={() => navigate('/signup')}
+        onClick={() => navigate('signup')}
         className="bg-blue-600 text-white px-6 py-3 rounded-lg w-44"
       >
         Sign Up
       </button>
       <button
-        onClick={() => navigate('/login')}
+        onClick={() => navigate('login')}
         className="bg-green-600 text-white px-6 py-3 rounded-lg w-44"
       >
         Login
