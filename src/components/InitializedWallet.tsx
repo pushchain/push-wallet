@@ -1,8 +1,9 @@
 import React from 'react'
-import { WALLET_STATE } from '../../constants'
-import { WalletProps } from './types'
+import { useNavigate } from 'react-router-dom'
 
-export const Initialized: React.FC<WalletProps> = ({ changeWalletState }) => {
+export const InitializedWallet: React.FC = () => {
+  const navigate = useNavigate()
+
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="p-8 w-full max-w-md">
@@ -29,7 +30,7 @@ export const Initialized: React.FC<WalletProps> = ({ changeWalletState }) => {
         </button>
 
         <button
-          onClick={() => changeWalletState(WALLET_STATE.LOGIN)}
+          onClick={() => navigate('/login')}
           className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center"
         >
           <svg
