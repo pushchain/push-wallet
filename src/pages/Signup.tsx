@@ -73,7 +73,7 @@ export default function Signup() {
           setSignupMethod('mnemonic')
           await handleMnemonicSignup()
         }}
-        className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64 mx-10"
       >
         Using Mnemonic
       </button>
@@ -177,7 +177,7 @@ export default function Signup() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="p-8 w-full max-w-lg">
+      <div className="p-8 w-full max-w-xl">
         {step === 1 && (
           <>
             {!signupMethod && renderSignupMethods()}
@@ -185,7 +185,7 @@ export default function Signup() {
           </>
         )}
         {step === 2 && (
-          <div className="space-y-2">
+          <div className="space-y-2 text-center">
             {attachedWallets.map((wallet) => {
               return (
                 <div
