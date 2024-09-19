@@ -12,6 +12,7 @@ import { useGlobalState } from '../context/GlobalContext'
 export default function Signup() {
   const [step, setStep] = useState(1)
   const [pushWallet, setPushWallet] = useState<PushWallet | null>(null)
+  const [attachedWallets, setAttachedWallets] = useState<string[]>([])
   const [mnemonicWords, setMnemonicWords] = useState<string[]>(
     Array(12).fill('')
   )
@@ -19,24 +20,6 @@ export default function Signup() {
   const [signupMethod, setSignupMethod] = useState<string | null>(null)
   const { dispatch } = useGlobalState()
   const navigate = useNavigate()
-
-  // useEffect(() => {
-  //   // If the wallet has a provider than the wallet is connected
-  //   if (wallet?.provider) {
-  //     const pushWalletFn = async () => {
-  //       const [account] = await wallet.provider.request({
-  //         method: 'eth_requestAccounts',
-  //       })
-  //       const client = createWalletClient({
-  //         account: account,
-  //         chain: mainnet,
-  //         transport: custom(wallet.provider),
-  //       })
-  //       pushWallet?.connectWalletWithAccount(client)
-  //     }
-  //     pushWalletFn()
-  //   }
-  // }, [wallet])
 
   useEffect(() => {
     if (pushWallet?.mnemonic) {
@@ -50,7 +33,8 @@ export default function Signup() {
   const registerPushAccount = async () => {
     if (pushWallet) {
       try {
-        await pushWallet.registerPushAccount(config.APP_ENV as ENV)
+        // TODO: Uncomment This
+        // await pushWallet.registerPushAccount(config.APP_ENV as ENV)
         dispatch({ type: 'INITIALIZE_WALLET', payload: pushWallet })
         navigate('/')
       } catch (err) {
@@ -63,9 +47,23 @@ export default function Signup() {
     try {
       const instance = await PushWallet.signUp()
       setPushWallet(instance)
+      setAttachedWallets(Object.keys(instance.walletToEncDerivedKey))
     } catch (err) {
       alert(err)
     }
+  }
+
+  const connectWalletToPushAccount = async () => {
+    const [account] = await wallet.provider.request({
+      method: 'eth_requestAccounts',
+    })
+    const client = createWalletClient({
+      account: account,
+      chain: mainnet,
+      transport: custom(wallet.provider),
+    })
+    await pushWallet?.connectWalletWithAccount(client)
+    setAttachedWallets(Object.keys(pushWallet.walletToEncDerivedKey))
   }
 
   const renderSignupMethods = () => (
@@ -84,7 +82,7 @@ export default function Signup() {
         className="border border-blue-600 text-blue-600 px-6 py-1 rounded-lg w-64"
         disabled={true}
       >
-        Social Login <br /> Coming Soon 🚀
+        Social Signup <br /> Coming Soon 🚀
       </button>
     </div>
   )
@@ -122,50 +120,60 @@ export default function Signup() {
     )
   }
 
-  const renderWalletConnection = () => (
-    <div className="text-center space-y-6">
-      <div className="flex flex-col items-center space-y-4">
-        {wallet && wallet.provider ? (
-          <button
-            className="border border-blue-600 text-blue-600 px-6 py-1 rounded-md"
-            onClick={() => {
-              disconnect({ label: wallet.label })
-            }}
-          >
-            Disconnect {wallet.accounts[0].address}
-          </button>
-        ) : (
-          <button
-            disabled={connecting}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
-            onClick={() => connect()}
-          >
-            Connect Web3 Account
-          </button>
-        )}
-      </div>
-      <button
-        onClick={registerPushAccount}
-        className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center"
-      >
-        <svg
-          className="w-5 h-5 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
+  const renderWalletConnection = () => {
+    return (
+      <div className="text-center space-y-6 mt-6">
+        <div className="flex flex-col items-center space-y-4">
+          {wallet && wallet.provider ? (
+            <>
+              <button
+                className="border border-blue-600 text-blue-600 px-6 py-1 rounded-md"
+                onClick={() => {
+                  disconnect({ label: wallet.label })
+                }}
+              >
+                Disconnect {wallet.accounts[0].address}
+              </button>
+              <button
+                className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center"
+                onClick={connectWalletToPushAccount}
+              >
+                Add to Push Account
+              </button>
+            </>
+          ) : (
+            <button
+              disabled={connecting}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
+              onClick={() => connect()}
+            >
+              Connect Web3 Account
+            </button>
+          )}
+        </div>
+        <button
+          onClick={registerPushAccount}
+          className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
-          />
-        </svg>
-        Register Push Account
-      </button>
-    </div>
-  )
+          <svg
+            className="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
+            />
+          </svg>
+          Register Push Account
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -176,50 +184,22 @@ export default function Signup() {
             {signupMethod === 'mnemonic' && renderMnemonicInput()}
           </>
         )}
+        {step === 2 && (
+          <div className="space-y-2">
+            {attachedWallets.map((wallet) => {
+              return (
+                <div
+                  key={wallet}
+                  className="inline-flex items-center bg-blue-100 text-blue-800 text-sm font-medium rounded-full px-4 py-2 border border-blue-300"
+                >
+                  <span className="font-mono">{wallet}</span>
+                </div>
+              )
+            })}
+          </div>
+        )}
         {step === 2 && renderWalletConnection()}
       </div>
     </div>
-
-    // <div className="flex items-center justify-center p-4">
-    //   {step === 1 && (
-    //     <div className="text-center space-y-6">
-    //       {/* First screen with centered buttons and spacing */}
-    //       <div className="flex flex-col items-center space-y-4">
-    //         {wallet && wallet.provider ? (
-    //           <button
-    //             className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
-    //             onClick={() => {
-    //               disconnect({ label: wallet.label })
-    //             }}
-    //           >
-    //             Disconnect {wallet.accounts[0].address.substring(0, 10)}....
-    //           </button>
-    //         ) : (
-    //           <button
-    //             disabled={connecting}
-    //             className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
-    //             onClick={() => connect()}
-    //           >
-    //             Connect Web3 Account
-    //           </button>
-    //         )}
-    //         <button
-    //           className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
-    //           onClick={() => console.log('Clicked')}
-    //         >
-    //           Add Socials
-    //         </button>
-    //       </div>
-    //       <button
-    //         className="border border-blue-600 text-blue-600 px-6 py-3 rounded-lg w-64"
-    //         onClick={goToNextStep}
-    //       >
-    //         Skip
-    //       </button>
-    //     </div>
-    //   )}
-
-    //   {step === 2 && renderMnemonicInput()}
-    // </div>
   )
 }

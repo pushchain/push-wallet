@@ -1,16 +1,17 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useGlobalState } from '../context/GlobalContext'
 
 export const InitializedWallet: React.FC = () => {
   const navigate = useNavigate()
-
+  const { state } = useGlobalState()
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="p-8 w-full max-w-md">
+      <div className="p-8 w-full">
         <input
           type="text"
           placeholder="Push Wallet Address"
-          value={''}
+          value={Object.keys(state.wallet.walletToEncDerivedKey)[0]}
           disabled={true}
           className="w-full px-4 py-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />

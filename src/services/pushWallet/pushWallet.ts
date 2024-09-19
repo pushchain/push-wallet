@@ -34,9 +34,9 @@ export class PushWallet {
   private static rootPath: `m/44'/60'/${string}` = "m/44'/60'/0'"
   private static pushValidator: PushValidator
   private static unRegisteredProfile = false
-  private static walletToEncDerivedKey: { [key: string]: string } = {}
 
   public appConnections: AppConnection[]
+  public walletToEncDerivedKey: { [key: string]: string } = {}
 
   private constructor(
     public did: string,
@@ -50,7 +50,19 @@ export class PushWallet {
   public static signUp = async () => {
     PushWallet.unRegisteredProfile = true
     const decryptedPushAccount = await PushWallet.generatePushAccount()
-    return new PushWallet(
+    // Encrypt Derived Keys with PushWallet's 1st Account Signer
+    const account = mnemonicToAccount(decryptedPushAccount.mnemonic)
+    const walletClient = createWalletClient({
+      account,
+      chain: mainnet,
+      transport: http(),
+    })
+    const signer = await PushSigner.initialize(walletClient)
+    const encDerivedPrivKey = await PushEncryption.encrypt(
+      decryptedPushAccount.derivedHDNode.privateExtendedKey,
+      signer
+    )
+    const pushWalletInstance = new PushWallet(
       decryptedPushAccount.did,
       Address.toPushCAIP(
         mnemonicToAccount(decryptedPushAccount.mnemonic).address
@@ -58,6 +70,10 @@ export class PushWallet {
       decryptedPushAccount.derivedHDNode,
       decryptedPushAccount.mnemonic
     )
+    pushWalletInstance.walletToEncDerivedKey[
+      Address.toPushCAIP(account.address)
+    ] = JSON.stringify(encDerivedPrivKey)
+    return pushWalletInstance
   }
 
   public static logInWithMnemonic = async (
@@ -155,20 +171,6 @@ export class PushWallet {
     const masterNode = HDKey.fromMasterSeed(seed)
     // 2. Create Derived Keys
     const derivedKey = await this.generateDerivedKey(mnemonic)
-    // 3. Encrypt Derived Keys with PushWallet's 1st Account Signer
-    const account = mnemonicToAccount(mnemonic)
-    const walletClient = createWalletClient({
-      account,
-      chain: mainnet,
-      transport: http(),
-    })
-    const signer = await PushSigner.initialize(walletClient)
-    const encDerivedPrivKey = await PushEncryption.encrypt(
-      derivedKey.privateExtendedKey,
-      signer
-    )
-    PushWallet.walletToEncDerivedKey[Address.toPushCAIP(account.address)] =
-      JSON.stringify(encDerivedPrivKey)
     return {
       did: bytesToHex(sha256(masterNode.publicKey as Uint8Array)),
       mnemonic,
@@ -214,7 +216,7 @@ export class PushWallet {
       this.derivedHDNode.privateExtendedKey,
       pushSigner
     )
-    PushWallet.walletToEncDerivedKey[pushSigner.account] =
+    this.walletToEncDerivedKey[pushSigner.account] =
       JSON.stringify(encDerivedPrivKey)
   }
 
@@ -229,7 +231,7 @@ export class PushWallet {
       masterPubKey: bytesToHex(masterNode.publicKey as Uint8Array),
       derivedKeyIndex: this.derivedHDNode.index,
       derivedPubKey: bytesToHex(this.derivedHDNode.publicKey as Uint8Array),
-      walletToEncDerivedKey: PushWallet.walletToEncDerivedKey,
+      walletToEncDerivedKey: this.walletToEncDerivedKey,
     }
     const pushTx = await PushTx.initialize(env)
     const initDIDTx = pushTx.createUnsigned(
@@ -243,7 +245,6 @@ export class PushWallet {
       sender: Address.toPushCAIP(account.address),
       privKey: `0x${bytesToHex(this.derivedHDNode.privateKey as Uint8Array)}`,
     })
-    PushWallet.walletToEncDerivedKey = {}
     PushWallet.unRegisteredProfile = false
   }
 
