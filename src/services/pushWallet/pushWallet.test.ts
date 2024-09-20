@@ -9,7 +9,7 @@ import { sepolia } from 'viem/chains'
 describe('PushWallet', () => {
   const env = ENV.LOCAL
   it('should successfully sign up and create a new PushWallet instance', async () => {
-    const pushWallet = await PushWallet.signUp()
+    const pushWallet = await PushWallet.signUp(env)
     expect(pushWallet).toBeInstanceOf(PushWallet)
     expect(pushWallet.did).toBeDefined()
     expect(pushWallet.account).toBeDefined()
@@ -19,8 +19,8 @@ describe('PushWallet', () => {
 
   // TODO : Unskip after registration is fixed
   it.skip('should log in with mnemonic and return a PushWallet instance', async () => {
-    const pW = await PushWallet.signUp()
-    await pW.registerPushAccount(env)
+    const pW = await PushWallet.signUp(env)
+    await pW.registerPushAccount()
     const pushWallet = await PushWallet.logInWithMnemonic(
       pW['mnemonic'] as string,
       env
@@ -51,7 +51,7 @@ describe('PushWallet', () => {
   })
 
   it('should connect a wallet with an unregistered profile', async () => {
-    const pushWallet = await PushWallet.signUp()
+    const pushWallet = await PushWallet.signUp(env)
     const walletClient = createWalletClient({
       account: privateKeyToAccount(generatePrivateKey()),
       chain: sepolia,
@@ -64,8 +64,8 @@ describe('PushWallet', () => {
 
   // TODO : Unskip after registration is fixed
   it.skip('should throw an error if trying to connect wallet without unregistered profile', async () => {
-    const pW = await PushWallet.signUp()
-    await pW.registerPushAccount(env)
+    const pW = await PushWallet.signUp(env)
+    await pW.registerPushAccount()
     const pushWallet = await PushWallet.logInWithMnemonic(
       pW['mnemonic'] as string,
       env
@@ -82,21 +82,21 @@ describe('PushWallet', () => {
 
   // TODO : Unskip after registration is fixed
   it.skip('should register a Push account when unregistered profile is true', async () => {
-    const pushWallet = await PushWallet.signUp()
-    await expect(pushWallet.registerPushAccount(env)).resolves.not.toThrow()
+    const pushWallet = await PushWallet.signUp(env)
+    await expect(pushWallet.registerPushAccount()).resolves.not.toThrow()
   })
 
   // TODO : Unskip after registration is fixed
   it.skip('should throw error if trying to register an already registered Push account', async () => {
-    const pushWallet = await PushWallet.signUp()
-    await pushWallet.registerPushAccount(env)
-    await expect(pushWallet.registerPushAccount(env)).rejects.toThrow(
+    const pushWallet = await PushWallet.signUp(env)
+    await pushWallet.registerPushAccount()
+    await expect(pushWallet.registerPushAccount()).rejects.toThrow(
       'Only Allowed for Unregistered Profile'
     )
   })
 
   it('should sign data using the derived key', async () => {
-    const pushWallet = await PushWallet.signUp()
+    const pushWallet = await PushWallet.signUp(env)
     const data = 'test data'
     const origin = 'https://test-wallet.com'
     pushWallet.requestToConnect(origin)
@@ -106,7 +106,7 @@ describe('PushWallet', () => {
   })
 
   it('should throw an error if trying to sign data for an unconnected app', async () => {
-    const pushWallet = await PushWallet.signUp()
+    const pushWallet = await PushWallet.signUp(env)
     const data = 'test data'
     const origin = 'unconnectedApp'
     await expect(() => pushWallet.sign(data, origin)).toThrow(
@@ -115,7 +115,7 @@ describe('PushWallet', () => {
   })
 
   it('should return connection status for a connected app', async () => {
-    const pushWallet = await PushWallet.signUp()
+    const pushWallet = await PushWallet.signUp(env)
     const origin = 'app1'
     pushWallet.requestToConnect(origin)
     const statusBefore = pushWallet.ConnectionStatus(origin)
@@ -127,7 +127,7 @@ describe('PushWallet', () => {
   })
 
   it('should handle rejecting connection requests', async () => {
-    const pushWallet = await PushWallet.signUp()
+    const pushWallet = await PushWallet.signUp(env)
     const origin = 'app1'
     pushWallet.requestToConnect(origin)
     pushWallet.rejectConnectionReq(origin)
@@ -137,7 +137,7 @@ describe('PushWallet', () => {
   })
 
   it('should generate random session keys', async () => {
-    const pushWallet = await PushWallet.signUp()
+    const pushWallet = await PushWallet.signUp(env)
     const sessionKey = pushWallet['generateRandomSessionKey']()
     expect(sessionKey).toBeDefined()
     expect(sessionKey.privateKey).toBeDefined()

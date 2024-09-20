@@ -34,7 +34,7 @@ export default function Signup() {
     if (pushWallet) {
       try {
         // TODO: Uncomment This
-        // await pushWallet.registerPushAccount(config.APP_ENV as ENV)
+        // await pushWallet.registerPushAccount()
         dispatch({ type: 'INITIALIZE_WALLET', payload: pushWallet })
         navigate('/')
       } catch (err) {
@@ -45,7 +45,7 @@ export default function Signup() {
 
   const handleMnemonicSignup = async () => {
     try {
-      const instance = await PushWallet.signUp()
+      const instance = await PushWallet.signUp(config.APP_ENV as ENV)
       setPushWallet(instance)
       setAttachedWallets(Object.keys(instance.walletToEncDerivedKey))
     } catch (err) {

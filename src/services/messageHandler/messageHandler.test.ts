@@ -2,11 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { PostMessageHandler } from './messageHandler'
 import { PushWallet } from '../pushWallet/pushWallet'
 import { ACTION } from './messageHandler.types'
+import { ENV } from '../../constants'
 describe('PostMessageHandler', () => {
   let pushWallet: PushWallet
+  const env = ENV.LOCAL
 
   beforeEach(async () => {
-    pushWallet = await PushWallet.signUp()
+    pushWallet = await PushWallet.signUp(env)
   })
 
   it('should handle ERROR case when pushWallet is undefined', () => {

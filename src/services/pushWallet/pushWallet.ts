@@ -42,12 +42,13 @@ export class PushWallet {
     public did: string,
     public account: string,
     private derivedHDNode: HDKey,
+    private env: ENV,
     public mnemonic: string | undefined = undefined
   ) {
     this.appConnections = []
   }
 
-  public static signUp = async () => {
+  public static signUp = async (env: ENV = ENV.STAGING) => {
     PushWallet.unRegisteredProfile = true
     const decryptedPushAccount = await PushWallet.generatePushAccount()
     // Encrypt Derived Keys with PushWallet's 1st Account Signer
@@ -65,13 +66,15 @@ export class PushWallet {
     const pushWalletInstance = new PushWallet(
       decryptedPushAccount.did,
       Address.toPushCAIP(
-        mnemonicToAccount(decryptedPushAccount.mnemonic).address
+        mnemonicToAccount(decryptedPushAccount.mnemonic).address,
+        env
       ),
       decryptedPushAccount.derivedHDNode,
+      env,
       decryptedPushAccount.mnemonic
     )
     pushWalletInstance.walletToEncDerivedKey[
-      Address.toPushCAIP(account.address)
+      Address.toPushCAIP(account.address, env)
     ] = JSON.stringify(encDerivedPrivKey)
     return pushWalletInstance
   }
@@ -82,7 +85,8 @@ export class PushWallet {
   ) => {
     this.pushValidator = await PushValidator.initalize({ env })
     const pushCAIPAddress = Address.toPushCAIP(
-      mnemonicToAccount(mnemonic).address
+      mnemonicToAccount(mnemonic).address,
+      env
     )
     const encPushAccount = await PushWallet.getPushAccount(pushCAIPAddress)
     if (encPushAccount == null) {
@@ -97,6 +101,7 @@ export class PushWallet {
         decryptedPushAccount.did,
         pushCAIPAddress,
         decryptedPushAccount.derivedHDNode,
+        env,
         decryptedPushAccount.mnemonic
       )
     }
@@ -120,6 +125,7 @@ export class PushWallet {
         decryptedPushAccount.did,
         pushSigner.account,
         decryptedPushAccount.derivedHDNode,
+        env,
         decryptedPushAccount.mnemonic
       )
     }
@@ -220,7 +226,7 @@ export class PushWallet {
       JSON.stringify(encDerivedPrivKey)
   }
 
-  public registerPushAccount = async (env: ENV = ENV.STAGING) => {
+  public registerPushAccount = async () => {
     if (!PushWallet.unRegisteredProfile)
       throw Error('Only Allowed for Unregistered Profile')
     // 1. Create Init_did tx
@@ -233,7 +239,7 @@ export class PushWallet {
       derivedPubKey: bytesToHex(this.derivedHDNode.publicKey as Uint8Array),
       walletToEncDerivedKey: this.walletToEncDerivedKey,
     }
-    const pushTx = await PushTx.initialize(env)
+    const pushTx = await PushTx.initialize(this.env)
     const initDIDTx = pushTx.createUnsigned(
       TxCategory.INIT_DID,
       [],
@@ -242,7 +248,7 @@ export class PushWallet {
     // 2. Send Tx
     const account = mnemonicToAccount(this.mnemonic as string)
     await pushTx.send(initDIDTx, {
-      sender: Address.toPushCAIP(account.address),
+      sender: Address.toPushCAIP(account.address, this.env),
       privKey: `0x${bytesToHex(this.derivedHDNode.privateKey as Uint8Array)}`,
     })
     PushWallet.unRegisteredProfile = false
