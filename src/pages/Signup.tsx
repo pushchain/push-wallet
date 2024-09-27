@@ -11,6 +11,7 @@ import { useGlobalState } from '../context/GlobalContext'
 
 export default function Signup() {
   const [step, setStep] = useState(1)
+  const [registering, setRegistering] = useState(false)
   const [pushWallet, setPushWallet] = useState<PushWallet | null>(null)
   const [attachedWallets, setAttachedWallets] = useState<string[]>([])
   const [mnemonicWords, setMnemonicWords] = useState<string[]>(
@@ -32,14 +33,15 @@ export default function Signup() {
 
   const registerPushAccount = async () => {
     if (pushWallet) {
+      setRegistering(true)
       try {
-        // TODO: Uncomment This
-        // await pushWallet.registerPushAccount()
+        await pushWallet.registerPushAccount()
         dispatch({ type: 'INITIALIZE_WALLET', payload: pushWallet })
         navigate('/')
       } catch (err) {
         alert(err)
       }
+      setRegistering(false)
     }
   }
 
@@ -152,24 +154,35 @@ export default function Signup() {
           )}
         </div>
         <button
+          disabled={registering}
           onClick={registerPushAccount}
-          className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center"
+          className={
+            registering
+              ? 'w-full py-3 bg-grey flex items-center justify-center'
+              : 'w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center'
+          }
         >
-          <svg
-            className="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
-            />
-          </svg>
-          Register Push Account
+          {!registering ? (
+            <span className="flex items-center">
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
+                />
+              </svg>
+              Register Push Account
+            </span>
+          ) : (
+            'Registering'
+          )}
         </button>
       </div>
     )

@@ -18,6 +18,14 @@ export class PostMessageHandler {
         })
       } else {
         switch (action) {
+          case ACTION.REQ_WALLET_DETAILS: {
+            const loggedInAddeess = this.pushWallet.account
+            event.source?.postMessage({
+              action: ACTION.WALLET_DETAILS,
+              address: loggedInAddeess,
+            })
+            break
+          }
           case ACTION.IS_CONNECTED: {
             const connectionStatus = this.pushWallet.ConnectionStatus(
               event.origin
