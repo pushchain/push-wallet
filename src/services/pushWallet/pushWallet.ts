@@ -7,7 +7,6 @@ import {
   Tx as PushTx,
   Address,
 } from '@pushprotocol/node-core'
-import { TxCategory } from '@pushprotocol/node-core/src/lib/tx/tx.types'
 import { InitDid } from '@pushprotocol/node-core/src/lib/generated/txData/init_did'
 import {
   Key,
@@ -241,9 +240,11 @@ export class PushWallet {
     }
     const pushTx = await PushTx.initialize(this.env)
     const initDIDTx = pushTx.createUnsigned(
-      TxCategory.INIT_DID,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      'INIT_DID' as any,
       [],
-      PushTx.serializeData(txData, TxCategory.INIT_DID)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      PushTx.serializeData(txData, 'INIT_DID' as any)
     )
     // 2. Send Tx
     const account = mnemonicToAccount(this.mnemonic as string)
