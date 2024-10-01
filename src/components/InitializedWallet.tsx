@@ -1,10 +1,30 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useGlobalState } from '../context/GlobalContext'
 
 export const InitializedWallet: React.FC = () => {
   const navigate = useNavigate()
-  const { state } = useGlobalState()
+  const { state, dispatch } = useGlobalState()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const openModal = () => setIsModalOpen(true)
+  const closeModal = () => setIsModalOpen(false)
+
+  const handleAccept = (origin: string) => {
+    state.wallet.acceptConnectionReq(origin)
+    dispatch({ type: 'INITIALIZE_WALLET', payload: state.wallet })
+  }
+
+  const handleReject = (origin: string) => {
+    state.wallet.rejectConnectionReq(origin)
+    dispatch({ type: 'INITIALIZE_WALLET', payload: state.wallet })
+  }
+
+  const handleRemove = (origin: string) => {
+    state.wallet.rejectConnectionReq(origin)
+    dispatch({ type: 'INITIALIZE_WALLET', payload: state.wallet })
+  }
+
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="p-8 w-full">
@@ -17,6 +37,7 @@ export const InitializedWallet: React.FC = () => {
         />
 
         <button
+          disabled={true}
           onClick={() => console.log('View Connected Accounts')}
           className="w-full py-3 mb-4 text-blue-600 bg-white border border-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
@@ -24,7 +45,7 @@ export const InitializedWallet: React.FC = () => {
         </button>
 
         <button
-          onClick={() => console.log('View Connected Apps')}
+          onClick={openModal}
           className="w-full py-3 mb-4 text-blue-600 bg-white border border-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           View App Connections
@@ -51,6 +72,57 @@ export const InitializedWallet: React.FC = () => {
           Lock Push Account
         </button>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg relative">
+            <button
+              onClick={closeModal}
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+            >
+              &times;
+            </button>
+            <h2 className="text-lg font-semibold mb-4">App Connections</h2>
+            <ul>
+              {state.wallet.appConnections.map((connection) => (
+                <li key={connection.origin} className="mb-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="font-medium">{connection.origin}</span>
+                    </div>
+                    <div className="space-x-2">
+                      {connection.isPending ? (
+                        <>
+                          <button
+                            onClick={() => handleAccept(connection.origin)}
+                            className="px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700"
+                          >
+                            Accept
+                          </button>
+                          <button
+                            onClick={() => handleReject(connection.origin)}
+                            className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700"
+                          >
+                            Reject
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => handleRemove(connection.origin)}
+                          className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-700"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
