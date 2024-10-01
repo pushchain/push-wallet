@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useReducer } from 'react'
-import { PushWallet } from '../services/pushWallet/pushWallet' // Ensure the import path is correct
+import { PushWallet } from '../services/pushWallet/pushWallet'
 import { PostMessageHandler } from '../services/messageHandler/messageHandler'
 
 // Define the shape of the global state
@@ -14,7 +14,6 @@ type GlobalAction =
   | { type: 'INITIALIZE_WALLET'; payload: PushWallet }
   | { type: 'RESET_WALLET' }
   | { type: 'SET_THEME'; payload: 'light' | 'dark' }
-  | { type: 'SET_MESSAGE_HANDLER'; payload: PostMessageHandler }
 
 // Initial state
 const initialState: GlobalState = {
@@ -27,13 +26,19 @@ const initialState: GlobalState = {
 function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
   switch (action.type) {
     case 'INITIALIZE_WALLET':
-      return { ...state, wallet: action.payload }
+      return {
+        ...state,
+        wallet: action.payload,
+        postMessageHandler: new PostMessageHandler(action.payload),
+      }
     case 'RESET_WALLET':
-      return { ...state, wallet: null }
+      return {
+        ...state,
+        wallet: null,
+        postMessageHandler: new PostMessageHandler(undefined),
+      }
     case 'SET_THEME':
       return { ...state, theme: action.payload }
-    case 'SET_MESSAGE_HANDLER':
-      return { ...state, postMessageHandler: action.payload }
     default:
       return state
   }
