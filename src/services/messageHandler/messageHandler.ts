@@ -30,7 +30,7 @@ export class PostMessageHandler {
         event.source?.postMessage(
           {
             action: ACTION.ERROR,
-            error: 'PushWallet Not Found',
+            error: 'PushWallet Not Logged In',
           },
           event.origin as any
         )

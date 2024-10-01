@@ -261,11 +261,12 @@ export class PushWallet {
    * @param origin origin from where the sig Req is incoming
    * @returns signature
    */
-  public sign = (data: string, origin: string): Uint8Array => {
+  public sign = (data: string, origin: string): `0x${string}` => {
     const appFound = this.appConnections.find((each) => each.origin === origin)
     if (!appFound) throw Error('App not Connected')
     const hash = sha256(data)
-    return this.derivedHDNode.sign(hash)
+    const sigBytes = this.derivedHDNode.sign(hash)
+    return `0x${bytesToHex(sigBytes)}`
   }
 
   public ConnectionStatus = (

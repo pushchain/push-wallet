@@ -5,7 +5,7 @@ import { ACTION } from './messageHandler.types'
 import { ENV } from '../../constants'
 describe('PostMessageHandler', () => {
   let pushWallet: PushWallet
-  const env = ENV.LOCAL
+  const env = ENV.DEV
 
   beforeEach(async () => {
     pushWallet = await PushWallet.signUp(env)
@@ -24,10 +24,13 @@ describe('PostMessageHandler', () => {
     window.dispatchEvent(new MessageEvent('message', event))
 
     // Verify the postMessage call for error
-    expect(postMessageSpy).toHaveBeenCalledWith({
-      action: ACTION.ERROR,
-      error: 'PushWallet Not Found',
-    })
+    expect(postMessageSpy).toHaveBeenCalledWith(
+      {
+        action: ACTION.ERROR,
+        error: 'PushWallet Not Logged In',
+      },
+      event.origin
+    )
   })
 
   it('should handle REQ_TO_CONNECT action and update connection status', () => {
@@ -43,11 +46,14 @@ describe('PostMessageHandler', () => {
     window.dispatchEvent(new MessageEvent('message', event))
 
     // Verify the postMessage call for connection status
-    expect(postMessageSpy).toHaveBeenCalledWith({
-      action: ACTION.CONNECTION_STATUS,
-      isPending: true,
-      isConnected: false,
-    })
+    expect(postMessageSpy).toHaveBeenCalledWith(
+      {
+        action: ACTION.CONNECTION_STATUS,
+        isPending: true,
+        isConnected: false,
+      },
+      event.origin
+    )
   })
 
   it('should handle REQ_TO_CONNECT action for already connected app', () => {
@@ -67,11 +73,14 @@ describe('PostMessageHandler', () => {
     window.dispatchEvent(new MessageEvent('message', event))
 
     // Verify the postMessage call for connection status
-    expect(postMessageSpy).toHaveBeenCalledWith({
-      action: ACTION.CONNECTION_STATUS,
-      isPending: false,
-      isConnected: true,
-    })
+    expect(postMessageSpy).toHaveBeenCalledWith(
+      {
+        action: ACTION.CONNECTION_STATUS,
+        isPending: false,
+        isConnected: true,
+      },
+      event.origin
+    )
   })
 
   it('should handle IS_CONNECTED action when pushWallet is defined', async () => {
@@ -87,11 +96,14 @@ describe('PostMessageHandler', () => {
     window.dispatchEvent(new MessageEvent('message', connectionEvent))
 
     // Verify the postMessage call
-    expect(postMessageSpy).toHaveBeenCalledWith({
-      action: ACTION.CONNECTION_STATUS,
-      isPending: false,
-      isConnected: false,
-    })
+    expect(postMessageSpy).toHaveBeenCalledWith(
+      {
+        action: ACTION.CONNECTION_STATUS,
+        isPending: false,
+        isConnected: false,
+      },
+      connectionEvent.origin
+    )
 
     const reqConnectEvent = {
       data: { action: ACTION.REQ_TO_CONNECT, data: null },
@@ -103,11 +115,14 @@ describe('PostMessageHandler', () => {
     window.dispatchEvent(new MessageEvent('message', reqConnectEvent))
 
     // Verify the postMessage call
-    expect(postMessageSpy).toHaveBeenCalledWith({
-      action: ACTION.CONNECTION_STATUS,
-      isPending: true,
-      isConnected: false,
-    })
+    expect(postMessageSpy).toHaveBeenCalledWith(
+      {
+        action: ACTION.CONNECTION_STATUS,
+        isPending: true,
+        isConnected: false,
+      },
+      reqConnectEvent.origin
+    )
 
     pushWallet.acceptConnectionReq(connectionEvent.origin || '')
 
@@ -115,11 +130,14 @@ describe('PostMessageHandler', () => {
     window.dispatchEvent(new MessageEvent('message', connectionEvent))
 
     // Verify the postMessage call
-    expect(postMessageSpy).toHaveBeenCalledWith({
-      action: ACTION.CONNECTION_STATUS,
-      isPending: false,
-      isConnected: true,
-    })
+    expect(postMessageSpy).toHaveBeenCalledWith(
+      {
+        action: ACTION.CONNECTION_STATUS,
+        isPending: false,
+        isConnected: true,
+      },
+      connectionEvent.origin
+    )
   })
 
   it('should handle REQ_TO_SIGN action with an error if the origin is not connected', () => {
@@ -136,10 +154,13 @@ describe('PostMessageHandler', () => {
     window.dispatchEvent(new MessageEvent('message', event))
 
     // Verify the postMessage call for error
-    expect(postMessageSpy).toHaveBeenCalledWith({
-      action: ACTION.ERROR,
-      error: 'Origin Not Connected',
-    })
+    expect(postMessageSpy).toHaveBeenCalledWith(
+      {
+        action: ACTION.ERROR,
+        error: 'Origin Not Connected',
+      },
+      event.origin
+    )
   })
 
   it('should handle REQ_TO_SIGN action and return a signature', () => {
@@ -164,9 +185,12 @@ describe('PostMessageHandler', () => {
     window.dispatchEvent(new MessageEvent('message', event))
 
     // Verify the postMessage call for signature
-    expect(postMessageSpy).toHaveBeenCalledWith({
-      action: ACTION.SIGNATURE,
-      signature: pushWallet.sign('test-data', event.origin || ''),
-    })
+    expect(postMessageSpy).toHaveBeenCalledWith(
+      {
+        action: ACTION.SIGNATURE,
+        signature: pushWallet.sign('test-data', event.origin || ''),
+      },
+      event.origin
+    )
   })
 })

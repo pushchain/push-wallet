@@ -7,7 +7,7 @@ import { sepolia } from 'viem/chains'
 
 // Test Suite for PushWallet Class
 describe('PushWallet', () => {
-  const env = ENV.LOCAL
+  const env = ENV.DEV
   it('should successfully sign up and create a new PushWallet instance', async () => {
     const pushWallet = await PushWallet.signUp(env)
     expect(pushWallet).toBeInstanceOf(PushWallet)
