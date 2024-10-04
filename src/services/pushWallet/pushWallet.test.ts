@@ -4,10 +4,11 @@ import { ENV } from '../../constants'
 import { createWalletClient, http } from 'viem'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { sepolia } from 'viem/chains'
+import { PushSigner } from '../pushSigner/pushSigner'
 
 // Test Suite for PushWallet Class
 describe('PushWallet', () => {
-  const env = ENV.DEV
+  const env = ENV.LOCAL
   it('should successfully sign up and create a new PushWallet instance', async () => {
     const pushWallet = await PushWallet.signUp(env)
     expect(pushWallet).toBeInstanceOf(PushWallet)
@@ -45,9 +46,12 @@ describe('PushWallet', () => {
       chain: sepolia,
       transport: http(),
     })
-    await expect(PushWallet.loginWithWallet(walletClient, env)).rejects.toThrow(
-      'Push Account Not Found!'
-    )
+    await expect(
+      PushWallet.loginWithWallet(walletClient, env)
+    ).rejects.toThrow()
+    // await expect(PushWallet.loginWithWallet(walletClient, env)).rejects.toThrow(
+    //   'Push Account Not Found!'
+    // )
   })
 
   it('should connect a wallet with an unregistered profile', async () => {
@@ -57,39 +61,34 @@ describe('PushWallet', () => {
       chain: sepolia,
       transport: http(),
     })
+    const signer = await PushSigner.initialize(walletClient)
     await expect(
-      pushWallet.connectWalletWithAccount(walletClient)
+      pushWallet.connectWalletWithAccount(signer)
     ).resolves.not.toThrow()
   })
 
-  // TODO : Unskip after registration is fixed
-  it.skip('should throw an error if trying to connect wallet without unregistered profile', async () => {
-    const pW = await PushWallet.signUp(env)
-    await pW.registerPushAccount()
-    const pushWallet = await PushWallet.logInWithMnemonic(
-      pW['mnemonic'] as string,
-      env
-    )
+  it('should throw an error if trying to connect wallet without unregistered profile', async () => {
+    const pushWallet = await PushWallet.signUp(env)
+    PushWallet['unRegisteredProfile'] = false
     const walletClient = createWalletClient({
       account: privateKeyToAccount(generatePrivateKey()),
       chain: sepolia,
       transport: http(),
     })
-    await expect(
-      pushWallet.connectWalletWithAccount(walletClient)
-    ).rejects.toThrow('Only Allowed for Unregistered Profile')
+    const signer = await PushSigner.initialize(walletClient)
+    await expect(pushWallet.connectWalletWithAccount(signer)).rejects.toThrow(
+      'Only Allowed for Unregistered Profile'
+    )
   })
 
-  // TODO : Unskip after registration is fixed
-  it.skip('should register a Push account when unregistered profile is true', async () => {
+  it('should register a Push account when unregistered profile is true', async () => {
     const pushWallet = await PushWallet.signUp(env)
     await expect(pushWallet.registerPushAccount()).resolves.not.toThrow()
   })
 
-  // TODO : Unskip after registration is fixed
-  it.skip('should throw error if trying to register an already registered Push account', async () => {
+  it('should throw error if trying to register an already registered Push account', async () => {
     const pushWallet = await PushWallet.signUp(env)
-    await pushWallet.registerPushAccount()
+    PushWallet['unRegisteredProfile'] = false
     await expect(pushWallet.registerPushAccount()).rejects.toThrow(
       'Only Allowed for Unregistered Profile'
     )

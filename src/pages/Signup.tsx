@@ -8,6 +8,7 @@ import { mainnet } from 'viem/chains'
 import { MnemonicGrid } from '../components/MnemonicGrid'
 import { useNavigate } from 'react-router-dom'
 import { useGlobalState } from '../context/GlobalContext'
+import { PushSigner } from '../services/pushSigner/pushSigner'
 
 export default function Signup() {
   const [step, setStep] = useState(1)
@@ -64,7 +65,8 @@ export default function Signup() {
       chain: mainnet,
       transport: custom(wallet.provider),
     })
-    await pushWallet?.connectWalletWithAccount(client)
+    const signer = await PushSigner.initialize(client)
+    await pushWallet?.connectWalletWithAccount(signer)
     setAttachedWallets(Object.keys(pushWallet.walletToEncDerivedKey))
   }
 

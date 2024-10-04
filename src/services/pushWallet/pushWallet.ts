@@ -1,13 +1,16 @@
 import * as bip39 from '@scure/bip39'
 import { wordlist } from '@scure/bip39/wordlists/english'
 import { HDKey } from '@scure/bip32'
-import { bytesToHex, randomBytes } from '@noble/hashes/utils'
+import { bytesToHex, hexToBytes, randomBytes } from '@noble/hashes/utils'
 import {
   Validator as PushValidator,
   Tx as PushTx,
   Address,
 } from '@pushprotocol/node-core'
-import { InitDid } from '@pushprotocol/node-core/src/lib/generated/txData/init_did'
+import {
+  InitDid,
+  EncryptedText,
+} from '@pushprotocol/node-core/src/lib/generated/txData/init_did'
 import {
   Key,
   EncPushAccount,
@@ -27,15 +30,21 @@ export class PushWallet {
   /*
     Purpose (44'): Specifies BIP-44.
     Coin Type (60'): Specifies Ethereum (60 is the coin type for Ethereum).
-    Account (0'): Used to manage different accounts in the wallet.
-    Change (0): 0 for external addresses, 1 for internal/change addresses.
+    Account Index (0'): Used to manage different accounts in the wallet.
+    Change Index (0): 0 for external addresses, 1 for internal/change addresses.
+    Address Index : Keeps incrementing for generating next accounts
   */
-  private static rootPath: `m/44'/60'/${string}` = "m/44'/60'/0'"
+  private static rootPath = "m/44'/60'/0'/0"
   private static pushValidator: PushValidator
   private static unRegisteredProfile = false
 
   public appConnections: AppConnection[]
-  public walletToEncDerivedKey: { [key: string]: string } = {}
+  public walletToEncDerivedKey: {
+    [key: string]: {
+      encDerivedPrivKey: EncryptedText
+      signature: Uint8Array
+    }
+  } = {}
 
   private constructor(
     public did: string,
@@ -58,23 +67,21 @@ export class PushWallet {
       transport: http(),
     })
     const signer = await PushSigner.initialize(walletClient)
-    const encDerivedPrivKey = await PushEncryption.encrypt(
-      decryptedPushAccount.derivedHDNode.privateExtendedKey,
-      signer
+    signer.account = Address.toPushCAIP(
+      mnemonicToAccount(decryptedPushAccount.mnemonic).address,
+      env
     )
+    const seed = await bip39.mnemonicToSeed(decryptedPushAccount.mnemonic)
+    const masterNode = HDKey.fromMasterSeed(seed)
+    const did = `PUSH_DID:${bytesToHex(sha256(masterNode.publicKey))}`
     const pushWalletInstance = new PushWallet(
-      decryptedPushAccount.did,
-      Address.toPushCAIP(
-        mnemonicToAccount(decryptedPushAccount.mnemonic).address,
-        env
-      ),
+      did,
+      signer.account,
       decryptedPushAccount.derivedHDNode,
       env,
       decryptedPushAccount.mnemonic
     )
-    pushWalletInstance.walletToEncDerivedKey[
-      Address.toPushCAIP(account.address, env)
-    ] = JSON.stringify(encDerivedPrivKey)
+    pushWalletInstance.connectWalletWithAccount(signer)
     return pushWalletInstance
   }
 
@@ -140,8 +147,6 @@ export class PushWallet {
   private static getPushAccount = async (
     account: string
   ): Promise<null | EncPushAccount> => {
-    // TODO: REMOVE RETURN STATEMENT
-    return null
     return await this.pushValidator.call<null | EncPushAccount>(
       'push_accountInfo',
       [account]
@@ -151,33 +156,31 @@ export class PushWallet {
   /**
    * @description Derives a hardened key from master key
    * @param mnemonic
-   * @param derivedKeyIndex
+   * @param derivedKeyIndex - Useful in case of flushing keys
+   * @param accountIndex - Might be useful when push wallet support multiple account
    */
   private static generateDerivedKey = async (
     mnemonic: string,
-    derivedKeyIndex: number = 0
+    derivedKeyIndex: number = 0,
+    accountIndex: number = 0
   ): Promise<Key> => {
+    const DERIVED_KEY_PATH = `${this.rootPath}/${accountIndex}/0'/${derivedKeyIndex}'`
     const seed = await bip39.mnemonicToSeed(mnemonic)
     const masterNode = HDKey.fromMasterSeed(seed)
-    const derivedNode = masterNode.derive(
-      `${PushWallet.rootPath}/0'/${derivedKeyIndex}'`
-    )
+    const derivedNode = masterNode.derive(DERIVED_KEY_PATH)
     return {
       privateExtendedKey: derivedNode.privateExtendedKey, // pk + chainCode
-      publicKey: bytesToHex(derivedNode.publicKey as Uint8Array),
+      publicKey: bytesToHex(derivedNode.publicKey),
       index: derivedNode.index,
     }
   }
 
   private static generatePushAccount = async () => {
-    // 1. Generate Mnemonic
-    const mnemonic = bip39.generateMnemonic(wordlist) // 128 bit ( 12 words )
-    const seed = await bip39.mnemonicToSeed(mnemonic)
-    const masterNode = HDKey.fromMasterSeed(seed)
+    // 1. Generate Mnemonic - 128 bit ( 12 words )
+    const mnemonic = bip39.generateMnemonic(wordlist)
     // 2. Create Derived Keys
     const derivedKey = await this.generateDerivedKey(mnemonic)
     return {
-      did: bytesToHex(sha256(masterNode.publicKey as Uint8Array)),
       mnemonic,
       derivedHDNode: HDKey.fromExtendedKey(derivedKey.privateExtendedKey),
     }
@@ -213,26 +216,43 @@ export class PushWallet {
     }
   }
 
-  public connectWalletWithAccount = async (signer: WalletClient) => {
+  public connectWalletWithAccount = async (pushSigner: Signer) => {
     if (!PushWallet.unRegisteredProfile)
       throw Error('Only Allowed for Unregistered Profile')
-    const pushSigner = await PushSigner.initialize(signer)
+
+    // 1. Encrypt Derived Priv Key with account
     const encDerivedPrivKey = await PushEncryption.encrypt(
       this.derivedHDNode.privateExtendedKey,
       pushSigner
     )
-    this.walletToEncDerivedKey[pushSigner.account] =
-      JSON.stringify(encDerivedPrivKey)
+
+    // 2. Ask for confirmation signature - Serves as a conformation for user and proof for network
+    const seed = await bip39.mnemonicToSeed(this.mnemonic as string)
+    const masterNode = HDKey.fromMasterSeed(seed)
+    const encDerivedPrivKeyHash = bytesToHex(
+      sha256(JSON.stringify(encDerivedPrivKey))
+    )
+    const signature = await pushSigner.signMessage(
+      `Connecting\n${pushSigner.account}\nTo\nPUSH_DID:${bytesToHex(
+        sha256(masterNode.publicKey)
+      )}\n\nProviding Access to Key with Identifier\n${encDerivedPrivKeyHash}`
+    )
+
+    // 3. Append details to Wallet Tx Payload
+    this.walletToEncDerivedKey[pushSigner.account] = {
+      encDerivedPrivKey: encDerivedPrivKey,
+      signature: hexToBytes(signature.replace('0x', '')),
+    }
   }
 
   public registerPushAccount = async () => {
     if (!PushWallet.unRegisteredProfile)
       throw Error('Only Allowed for Unregistered Profile')
+
     // 1. Create Init_did tx
     const seed = await bip39.mnemonicToSeed(this.mnemonic as string)
     const masterNode = HDKey.fromMasterSeed(seed)
     const txData: InitDid = {
-      did: bytesToHex(sha256(masterNode.publicKey as Uint8Array)),
       masterPubKey: bytesToHex(masterNode.publicKey as Uint8Array),
       derivedKeyIndex: this.derivedHDNode.index,
       derivedPubKey: bytesToHex(this.derivedHDNode.publicKey as Uint8Array),
@@ -240,17 +260,16 @@ export class PushWallet {
     }
     const pushTx = await PushTx.initialize(this.env)
     const initDIDTx = pushTx.createUnsigned(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      'INIT_DID' as any,
+      'INIT_DID',
       [],
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       PushTx.serializeData(txData, 'INIT_DID' as any)
     )
+
     // 2. Send Tx
-    const account = mnemonicToAccount(this.mnemonic as string)
     await pushTx.send(initDIDTx, {
-      sender: Address.toPushCAIP(account.address, this.env),
-      privKey: `0x${bytesToHex(this.derivedHDNode.privateKey as Uint8Array)}`,
+      sender: this.account,
+      privKey: `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`,
     })
     PushWallet.unRegisteredProfile = false
   }

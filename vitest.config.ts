@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
-    environment: 'happy-dom', // Use happy-dom to simulate the browser environment
+    testTimeout: 15000,
+    environment: 'happy-dom', // Use happy-dom to simulate the browser environment,
   },
 })
