@@ -1,4 +1,4 @@
-import { WalletClient } from 'viem'
+import { WalletClient, getAddress } from 'viem'
 import { Signer } from './pushSigner.types'
 /**
  * Converts a signer instance to Push compatible signer
@@ -28,7 +28,8 @@ export class PushSigner {
         })
       }
       return {
-        account: `eip155:${chainId}:${account.address}`, // viem signers are valid only for evm (eip155) chains
+        // making sure address are always in checksum format
+        account: `eip155:${chainId}:${getAddress(account.address)}`, // viem signers are valid only for evm (eip155) chains
         signMessage,
       }
     } catch (err) {
