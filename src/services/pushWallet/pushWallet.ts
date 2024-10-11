@@ -1,7 +1,7 @@
 import * as bip39 from '@scure/bip39'
 import { wordlist } from '@scure/bip39/wordlists/english'
 import { HDKey } from '@scure/bip32'
-import { bytesToHex, hexToBytes, randomBytes } from '@noble/hashes/utils'
+import { bytesToHex, randomBytes } from '@noble/hashes/utils'
 import {
   Validator as PushValidator,
   Tx as PushTx,
@@ -53,7 +53,8 @@ export class PushWallet {
     private env: ENV,
     public mnemonic: string | undefined = undefined
   ) {
-    this.appConnections = []
+    const appConnections = localStorage.getItem('appConnections')
+    this.appConnections = appConnections ? JSON.parse(appConnections) : []
   }
 
   public static signUp = async (env: ENV = ENV.STAGING) => {
@@ -74,6 +75,9 @@ export class PushWallet {
     const seed = await bip39.mnemonicToSeed(decryptedPushAccount.mnemonic)
     const masterNode = HDKey.fromMasterSeed(seed)
     const did = `PUSH_DID:${bytesToHex(sha256(masterNode.publicKey))}`
+
+    localStorage.removeItem('appConnections')
+
     const pushWalletInstance = new PushWallet(
       did,
       signer.account,
@@ -146,6 +150,10 @@ export class PushWallet {
   private static getPushAccount = async (
     account: string
   ): Promise<null | EncPushAccount> => {
+    const encPushAccount = localStorage.getItem(account)
+    if (encPushAccount) {
+      return JSON.parse(encPushAccount)
+    }
     return await this.pushValidator.call<null | EncPushAccount>(
       'push_accountInfo',
       [account]
@@ -201,7 +209,7 @@ export class PushWallet {
       ).privateExtendedKey
     } else if (signer) {
       privateExtendedKey = (await PushEncryption.decrypt(
-        JSON.parse(pushAccount.encDerivedPrivKey),
+        pushAccount.encDerivedPrivKey,
         signer
       )) as string
     } else {
@@ -271,6 +279,15 @@ export class PushWallet {
       privKey: `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`,
     })
     PushWallet.unRegisteredProfile = false
+
+    Object.keys(this.walletToEncDerivedKey).forEach((key) => {
+      const { encDerivedPrivKey } = this.walletToEncDerivedKey[key]
+
+      localStorage.setItem(
+        key,
+        JSON.stringify({ did: this.did, derivedKeyIndex: 0, encDerivedPrivKey })
+      )
+    })
   }
 
   /**
@@ -302,6 +319,12 @@ export class PushWallet {
     const appFound = this.appConnections.find((each) => each.origin === origin)
     if (!appFound) {
       this.appConnections.push({ origin, isPending: true })
+
+      // Store updated appConnections in localStorage
+      localStorage.setItem(
+        'appConnections',
+        JSON.stringify(this.appConnections)
+      )
     }
   }
 
@@ -309,6 +332,12 @@ export class PushWallet {
     const appFound = this.appConnections.find((each) => each.origin === origin)
     if (appFound) {
       appFound.isPending = false
+
+      // Store updated appConnections in localStorage
+      localStorage.setItem(
+        'appConnections',
+        JSON.stringify(this.appConnections)
+      )
     }
   }
 
@@ -316,6 +345,9 @@ export class PushWallet {
     this.appConnections = this.appConnections.filter(
       (each) => each.origin !== origin
     )
+
+    // Store updated appConnections in localStorage
+    localStorage.setItem('appConnections', JSON.stringify(this.appConnections))
   }
 
   /**

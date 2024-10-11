@@ -6,9 +6,7 @@ export const InitializedWallet: React.FC = () => {
   const navigate = useNavigate()
   const { state, dispatch } = useGlobalState()
 
-  const [activeWallet] = useState(
-    Object.keys(state.wallet.walletToEncDerivedKey)[0]
-  )
+  const [activeWallet] = useState(state.wallet.account)
 
   const [isAppConnectionsModalOpen, setIsAppConnectionsModalOpen] =
     useState(false)

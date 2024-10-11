@@ -36,7 +36,7 @@ export default function Login() {
           break
         }
         case 'wallet': {
-          const signer = await PushSigner.initialize(primaryWallet)
+          const signer = await PushSigner.initialize(primaryWallet, 'DYNAMIC')
           pushWallet = await PushWallet.loginWithWallet(
             signer,
             config.APP_ENV as ENV

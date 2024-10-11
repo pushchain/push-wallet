@@ -1,9 +1,10 @@
 import { HDKey } from '@scure/bip32'
+import { EncryptedPrivateKey } from '../pushEncryption/pushEncryption.types'
 
 export type EncPushAccount = {
   did: string
   derivedKeyIndex: number
-  encDerivedPrivKey: string
+  encDerivedPrivKey: EncryptedPrivateKey
 }
 
 export type DecPushAccount = {
