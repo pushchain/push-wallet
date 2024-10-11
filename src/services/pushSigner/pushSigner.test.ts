@@ -28,7 +28,7 @@ describe('PushSigner', () => {
 
     // Test the signMessage function
     const signedMessage = await pushSigner.signMessage('testMessage')
-    expect(typeof signedMessage).toBe('string')
+    expect(signedMessage).toBeInstanceOf(Uint8Array)
   })
 
   it('should correctly handle real WalletClient instance', async () => {

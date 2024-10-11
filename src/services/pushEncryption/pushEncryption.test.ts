@@ -127,7 +127,8 @@ describe('(PushEncryption as any)', () => {
     it('should throw an error when attempting to decrypt with an invalid signer', async () => {
       const invalidSigner: Signer = {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        signMessage: async (dataToBeSigned: string) => 'invalidSignature',
+        signMessage: async (dataToBeSigned: string) =>
+          new Uint8Array([1, 2, 3]),
         account: 'fake',
       }
       const privateKey = 'mockPrivateKey'

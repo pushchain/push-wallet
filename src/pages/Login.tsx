@@ -1,20 +1,19 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useGlobalState } from '../context/GlobalContext'
 import { useNavigate } from 'react-router-dom'
 import { PushWallet } from '../services/pushWallet/pushWallet'
 import config from '../config'
 import { ENV } from '../constants'
-import { useConnectWallet } from '@web3-onboard/react'
-import { createWalletClient, custom } from 'viem'
-import { mainnet } from 'viem/chains'
 import { MnemonicGrid } from '../components/MnemonicGrid'
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
+import { PushSigner } from '../services/pushSigner/pushSigner'
 
 export default function Login() {
   const [loginMethod, setLoginMethod] = useState<string | null>(null)
   const [mnemonicWords, setMnemonicWords] = useState<string[]>(
     Array(12).fill('')
   )
-  const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
+  const { setShowAuthFlow, primaryWallet, handleLogOut } = useDynamicContext()
 
   const { dispatch } = useGlobalState()
   const navigate = useNavigate()
@@ -37,16 +36,9 @@ export default function Login() {
           break
         }
         case 'wallet': {
-          const [account] = await wallet.provider.request({
-            method: 'eth_requestAccounts',
-          })
-          const client = createWalletClient({
-            account: account,
-            chain: mainnet,
-            transport: custom(wallet.provider),
-          })
+          const signer = await PushSigner.initialize(primaryWallet)
           pushWallet = await PushWallet.loginWithWallet(
-            client,
+            signer,
             config.APP_ENV as ENV
           )
           break
@@ -117,20 +109,20 @@ export default function Login() {
   const renderWalletConnection = () => (
     <div className="text-center space-y-6">
       <div className="flex flex-col items-center space-y-4">
-        {wallet && wallet.provider ? (
+        {primaryWallet ? (
           <button
             className="border border-blue-600 text-blue-600 px-6 py-1 rounded-md"
             onClick={() => {
-              disconnect({ label: wallet.label })
+              handleLogOut()
             }}
           >
-            Disconnect {wallet.accounts[0].address}
+            Disconnect {primaryWallet.address}
           </button>
         ) : (
           <button
-            disabled={connecting}
+            // disabled={connecting}
             className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
-            onClick={() => connect()}
+            onClick={() => setShowAuthFlow(true)}
           >
             Connect Web3 Account
           </button>
@@ -138,7 +130,7 @@ export default function Login() {
       </div>
       <button
         onClick={handleLogin}
-        disabled={!wallet || !wallet.provider}
+        disabled={!primaryWallet}
         className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center"
       >
         <svg

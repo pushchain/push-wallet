@@ -20,3 +20,16 @@ export enum WALLET_STATE {
   LOGIN,
   INITIALIZED,
 }
+
+// CAIP Namespaces
+export const chainToNamespace = {
+  EVM: 'eip155',
+  SOL: 'solana',
+}
+
+// SOLANA ChainIds
+export const networkToSolChainId = {
+  mainnet: '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
+  devnet: 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
+  testnet: '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z',
+}

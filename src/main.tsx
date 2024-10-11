@@ -2,13 +2,34 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import { Web3OnboardProvider } from '@web3-onboard/react'
-import { web3Onboard } from './connectors/web3Onboard.tsx'
+import { DynamicContextProvider } from '@dynamic-labs/sdk-react-core'
+import { AlgorandWalletConnectors } from '@dynamic-labs/algorand'
+import { BitcoinWalletConnectors } from '@dynamic-labs/bitcoin'
+import { CosmosWalletConnectors } from '@dynamic-labs/cosmos'
+import { EthereumWalletConnectors } from '@dynamic-labs/ethereum'
+import { FlowWalletConnectors } from '@dynamic-labs/flow'
+import { SolanaWalletConnectors } from '@dynamic-labs/solana'
+import { StarknetWalletConnectors } from '@dynamic-labs/starknet'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Web3OnboardProvider web3Onboard={web3Onboard}>
+    <DynamicContextProvider
+      settings={{
+        initialAuthenticationMode: 'connect-only',
+        // Find your environment id at https://app.dynamic.xyz/dashboard/developer
+        environmentId: import.meta.env.VITE_APP_ENV,
+        walletConnectors: [
+          AlgorandWalletConnectors,
+          BitcoinWalletConnectors,
+          CosmosWalletConnectors,
+          EthereumWalletConnectors,
+          FlowWalletConnectors,
+          SolanaWalletConnectors,
+          StarknetWalletConnectors,
+        ],
+      }}
+    >
       <App />
-    </Web3OnboardProvider>
+    </DynamicContextProvider>
   </React.StrictMode>
 )

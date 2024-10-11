@@ -5,10 +5,22 @@ import { useGlobalState } from '../context/GlobalContext'
 export const InitializedWallet: React.FC = () => {
   const navigate = useNavigate()
   const { state, dispatch } = useGlobalState()
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const openModal = () => setIsModalOpen(true)
-  const closeModal = () => setIsModalOpen(false)
+  const [activeWallet] = useState(
+    Object.keys(state.wallet.walletToEncDerivedKey)[0]
+  )
+
+  const [isAppConnectionsModalOpen, setIsAppConnectionsModalOpen] =
+    useState(false)
+  const [isConnectedAccountsModalOpen, setIsConnectedAccountsModalOpen] =
+    useState(false)
+
+  const openAppConnectionsModal = () => setIsAppConnectionsModalOpen(true)
+  const closeAppConnectionsModal = () => setIsAppConnectionsModalOpen(false)
+
+  const openConnectedAccountsModal = () => setIsConnectedAccountsModalOpen(true)
+  const closeConnectedAccountsModal = () =>
+    setIsConnectedAccountsModalOpen(false)
 
   const handleAccept = (origin: string) => {
     state.wallet.acceptConnectionReq(origin)
@@ -20,32 +32,26 @@ export const InitializedWallet: React.FC = () => {
     dispatch({ type: 'INITIALIZE_WALLET', payload: state.wallet })
   }
 
-  const handleRemove = (origin: string) => {
-    state.wallet.rejectConnectionReq(origin)
-    dispatch({ type: 'INITIALIZE_WALLET', payload: state.wallet })
-  }
-
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="p-8 w-full">
         <input
           type="text"
           placeholder="Push Wallet Address"
-          value={Object.keys(state.wallet.walletToEncDerivedKey)[0]}
+          value={activeWallet}
           disabled={true}
-          className="w-full px-4 py-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
         />
 
         <button
-          disabled={true}
-          onClick={() => console.log('View Connected Accounts')}
+          onClick={openConnectedAccountsModal}
           className="w-full py-3 mb-4 text-blue-600 bg-white border border-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           View Connected Accounts
         </button>
 
         <button
-          onClick={openModal}
+          onClick={openAppConnectionsModal}
           className="w-full py-3 mb-4 text-blue-600 bg-white border border-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           View App Connections
@@ -73,12 +79,12 @@ export const InitializedWallet: React.FC = () => {
         </button>
       </div>
 
-      {/* Modal */}
-      {isModalOpen && (
+      {/* App Connections Modal */}
+      {isAppConnectionsModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 z-50">
           <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg relative">
             <button
-              onClick={closeModal}
+              onClick={closeAppConnectionsModal}
               className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
             >
               &times;
@@ -109,7 +115,7 @@ export const InitializedWallet: React.FC = () => {
                         </>
                       ) : (
                         <button
-                          onClick={() => handleRemove(connection.origin)}
+                          onClick={() => handleReject(connection.origin)}
                           className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-700"
                         >
                           Remove
@@ -119,6 +125,45 @@ export const InitializedWallet: React.FC = () => {
                   </div>
                 </li>
               ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {/* Connected Accounts Modal */}
+      {isConnectedAccountsModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-6xl relative">
+            <button
+              onClick={closeConnectedAccountsModal}
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+            >
+              &times;
+            </button>
+            <h2 className="text-lg font-semibold mb-4">Connected Accounts</h2>
+            <ul>
+              {Object.keys(state.wallet.walletToEncDerivedKey).map(
+                (account) =>
+                  account !== activeWallet && (
+                    <li key={account} className="mb-4">
+                      <div className="flex items-center">
+                        {/* <div className="w-3/4 break-words"> */}
+
+                        <div className="break-words">
+                          <span className="font-medium">{account}</span>
+                        </div>
+                        {/* <div className="w-1/4 text-right">
+                          <button
+                            onClick={() => handleSwitchWallet(account)}
+                            className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+                          >
+                            Switch as Active Wallet
+                          </button>
+                        </div> */}
+                      </div>
+                    </li>
+                  )
+              )}
             </ul>
           </div>
         </div>

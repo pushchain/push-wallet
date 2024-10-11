@@ -17,7 +17,7 @@ import {
   DecPushAccount,
   AppConnection,
 } from './pushWallet.types'
-import { createWalletClient, http, WalletClient } from 'viem'
+import { createWalletClient, http } from 'viem'
 import { PushSigner } from '../pushSigner/pushSigner'
 import { Signer } from '../pushSigner/pushSigner.types'
 import { PushEncryption } from '../pushEncryption/pushEncryption'
@@ -114,11 +114,10 @@ export class PushWallet {
   }
 
   public static loginWithWallet = async (
-    walletClient: WalletClient,
+    pushSigner: Signer,
     env: ENV = ENV.STAGING
   ) => {
     this.pushValidator = await PushValidator.initalize({ env })
-    const pushSigner = await PushSigner.initialize(walletClient)
     const encPushAccount = await PushWallet.getPushAccount(pushSigner.account)
     if (encPushAccount == null) {
       throw Error('Push Account Not Found!')
@@ -241,7 +240,7 @@ export class PushWallet {
     // 3. Append details to Wallet Tx Payload
     this.walletToEncDerivedKey[pushSigner.account] = {
       encDerivedPrivKey: encDerivedPrivKey,
-      signature: hexToBytes(signature.replace('0x', '')),
+      signature,
     }
   }
 

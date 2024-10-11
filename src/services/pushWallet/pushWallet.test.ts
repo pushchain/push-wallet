@@ -8,7 +8,7 @@ import { PushSigner } from '../pushSigner/pushSigner'
 
 // Test Suite for PushWallet Class
 describe('PushWallet', () => {
-  const env = ENV.LOCAL
+  const env = ENV.DEV
   it('should successfully sign up and create a new PushWallet instance', async () => {
     const pushWallet = await PushWallet.signUp(env)
     expect(pushWallet).toBeInstanceOf(PushWallet)
@@ -46,9 +46,8 @@ describe('PushWallet', () => {
       chain: sepolia,
       transport: http(),
     })
-    await expect(
-      PushWallet.loginWithWallet(walletClient, env)
-    ).rejects.toThrow()
+    const signer = await PushSigner.initialize(walletClient)
+    await expect(PushWallet.loginWithWallet(signer, env)).rejects.toThrow()
     // await expect(PushWallet.loginWithWallet(walletClient, env)).rejects.toThrow(
     //   'Push Account Not Found!'
     // )

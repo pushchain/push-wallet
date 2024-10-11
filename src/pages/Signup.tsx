@@ -2,13 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { ENV } from '../constants'
 import { PushWallet } from '../services/pushWallet/pushWallet'
 import config from '../config'
-import { useConnectWallet } from '@web3-onboard/react'
-import { createWalletClient, custom } from 'viem'
-import { mainnet } from 'viem/chains'
 import { MnemonicGrid } from '../components/MnemonicGrid'
 import { useNavigate } from 'react-router-dom'
 import { useGlobalState } from '../context/GlobalContext'
 import { PushSigner } from '../services/pushSigner/pushSigner'
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 
 export default function Signup() {
   const [step, setStep] = useState(1)
@@ -18,7 +16,7 @@ export default function Signup() {
   const [mnemonicWords, setMnemonicWords] = useState<string[]>(
     Array(12).fill('')
   )
-  const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
+  const { setShowAuthFlow, primaryWallet, handleLogOut } = useDynamicContext()
   const [signupMethod, setSignupMethod] = useState<string | null>(null)
   const { dispatch } = useGlobalState()
   const navigate = useNavigate()
@@ -57,37 +55,33 @@ export default function Signup() {
   }
 
   const connectWalletToPushAccount = async () => {
-    const [account] = await wallet.provider.request({
-      method: 'eth_requestAccounts',
-    })
-    const client = createWalletClient({
-      account: account,
-      chain: mainnet,
-      transport: custom(wallet.provider),
-    })
-    const signer = await PushSigner.initialize(client)
+    const signer = await PushSigner.initialize(primaryWallet, 'DYNAMIC')
     await pushWallet?.connectWalletWithAccount(signer)
     setAttachedWallets(Object.keys(pushWallet.walletToEncDerivedKey))
   }
 
   const renderSignupMethods = () => (
     <div className="space-y-4 text-center">
-      <button
-        onClick={async () => {
-          setSignupMethod('mnemonic')
-          await handleMnemonicSignup()
-        }}
-        className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64 mx-10"
-      >
-        Using Mnemonic
-      </button>
-      <button
-        onClick={() => setSignupMethod('social')}
-        className="border border-blue-600 text-blue-600 px-6 py-1 rounded-lg w-64"
-        disabled={true}
-      >
-        Social Signup <br /> Coming Soon 🚀
-      </button>
+      <div>
+        <button
+          onClick={async () => {
+            setSignupMethod('mnemonic')
+            await handleMnemonicSignup()
+          }}
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64 mx-10"
+        >
+          Using Mnemonic
+        </button>
+      </div>
+      <div>
+        <button
+          onClick={() => setSignupMethod('social')}
+          className="border border-blue-600 text-blue-600 px-6 py-1 rounded-lg w-64"
+          disabled={true}
+        >
+          Social Signup <br /> Coming Soon 🚀
+        </button>
+      </div>
     </div>
   )
 
@@ -128,15 +122,15 @@ export default function Signup() {
     return (
       <div className="text-center space-y-6 mt-6">
         <div className="flex flex-col items-center space-y-4">
-          {wallet && wallet.provider ? (
+          {primaryWallet ? (
             <>
               <button
-                className="border border-blue-600 text-blue-600 px-6 py-1 rounded-md"
+                className="border border-blue-600 text-blue-600 px-6 py-3 rounded-md"
                 onClick={() => {
-                  disconnect({ label: wallet.label })
+                  handleLogOut()
                 }}
               >
-                Disconnect {wallet.accounts[0].address}
+                Disconnect <b>{primaryWallet.address}</b>
               </button>
               <button
                 className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center"
@@ -147,9 +141,9 @@ export default function Signup() {
             </>
           ) : (
             <button
-              disabled={connecting}
+              // disabled={connecting}
               className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
-              onClick={() => connect()}
+              onClick={() => setShowAuthFlow(true)}
             >
               Connect Web3 Account
             </button>
@@ -192,7 +186,7 @@ export default function Signup() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="p-8 w-full max-w-xl">
+      <div className="p-8 w-full max-w-4xl">
         {step === 1 && (
           <>
             {!signupMethod && renderSignupMethods()}
