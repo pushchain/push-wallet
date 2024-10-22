@@ -85,7 +85,7 @@ export class PushWallet {
       env,
       decryptedPushAccount.mnemonic
     )
-    await pushWalletInstance.connectWalletWithAccount(signer)
+    pushWalletInstance.connectWalletWithAccount(signer)
     return pushWalletInstance
   }
 
