@@ -12,7 +12,7 @@ import {
   EncryptedText,
 } from '@pushprotocol/node-core/src/lib/generated/txData/init_did'
 import { EncPushAccount, AppConnection } from './pushWallet.types'
-import { createWalletClient, hexToBytes, http } from 'viem'
+import { bytesToString, createWalletClient, hexToBytes, http } from 'viem'
 import { PushSigner } from '../pushSigner/pushSigner'
 import { Signer } from '../pushSigner/pushSigner.types'
 import { PushEncryption } from '../pushEncryption/pushEncryption'
@@ -314,7 +314,10 @@ export class PushWallet {
    * @param origin origin from where the sig Req is incoming
    * @returns signature
    */
-  public sign = async (data: string, origin: string): Promise<Uint8Array> => {
+  public sign = async (
+    data: string | Uint8Array,
+    origin: string
+  ): Promise<Uint8Array> => {
     const appFound = this.appConnections.find((each) => each.origin === origin)
     if (!appFound) throw Error('App not Connected')
     const account = hdKeyToAccount(this.derivedHDNode)
@@ -324,7 +327,9 @@ export class PushWallet {
       transport: http(),
     })
     const pushSigner = await PushSigner.initialize(client)
-    return await pushSigner.signMessage(data)
+    return await pushSigner.signMessage(
+      typeof data === 'string' ? data : bytesToString(data)
+    )
   }
 
   public ConnectionStatus = (
