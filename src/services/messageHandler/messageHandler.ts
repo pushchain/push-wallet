@@ -38,7 +38,7 @@ export class PostMessageHandler {
       } else {
         switch (action) {
           case ACTION.REQ_WALLET_DETAILS: {
-            const loggedInAddress = this.pushWallet.account
+            const loggedInAddress = this.pushWallet.signerAccount
             event.source?.postMessage(
               {
                 action: ACTION.WALLET_DETAILS,
