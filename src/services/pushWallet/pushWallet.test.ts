@@ -12,7 +12,7 @@ describe('PushWallet', () => {
   it('should successfully sign up and create a new PushWallet instance', async () => {
     const pushWallet = await PushWallet.signUp(env)
     expect(pushWallet).toBeInstanceOf(PushWallet)
-    expect(pushWallet.did).toBeDefined()
+    expect(pushWallet['did']).toBeDefined()
     expect(pushWallet.account).toBeDefined()
     expect(pushWallet['derivedHDNode']).toBeDefined()
     expect(pushWallet['mnemonic']).toBeDefined()
@@ -27,7 +27,7 @@ describe('PushWallet', () => {
       env
     )
     expect(pushWallet).toBeInstanceOf(PushWallet)
-    expect(pushWallet.did).toBeDefined()
+    expect(pushWallet['did']).toBeDefined()
     expect(pushWallet.account).toBeDefined()
     expect(pushWallet['derivedHDNode']).toBeDefined()
     expect(pushWallet['mnemonic']).toBeDefined()
@@ -107,7 +107,7 @@ describe('PushWallet', () => {
     const pushWallet = await PushWallet.signUp(env)
     const data = 'test data'
     const origin = 'unconnectedApp'
-    await expect(() => pushWallet.sign(data, origin)).toThrow(
+    await expect(pushWallet.sign(data, origin)).rejects.toThrow(
       'App not Connected'
     )
   })

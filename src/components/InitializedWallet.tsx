@@ -6,7 +6,7 @@ export const InitializedWallet: React.FC = () => {
   const navigate = useNavigate()
   const { state, dispatch } = useGlobalState()
 
-  const [activeWallet] = useState(state.wallet.account)
+  const [activeWallet] = useState(state.wallet.signerAccount.split(':')[2])
 
   const [isAppConnectionsModalOpen, setIsAppConnectionsModalOpen] =
     useState(false)
@@ -38,8 +38,11 @@ export const InitializedWallet: React.FC = () => {
           placeholder="Push Wallet Address"
           value={activeWallet}
           disabled={true}
-          className="w-full px-4 py-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
+          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
         />
+        <p className="text-xs text-gray-500 mb-4">
+          This is the consumer account used for signing in the Push wallet
+        </p>
 
         <button
           onClick={openConnectedAccountsModal}
@@ -141,16 +144,15 @@ export const InitializedWallet: React.FC = () => {
             <h2 className="text-lg font-semibold mb-4">Connected Accounts</h2>
             <ul>
               {Object.keys(state.wallet.walletToEncDerivedKey).map(
-                (account) =>
-                  account !== activeWallet && (
-                    <li key={account} className="mb-4">
-                      <div className="flex items-center">
-                        {/* <div className="w-3/4 break-words"> */}
+                (account) => (
+                  <li key={account} className="mb-4">
+                    <div className="flex items-center">
+                      {/* <div className="w-3/4 break-words"> */}
 
-                        <div className="break-words">
-                          <span className="font-medium">{account}</span>
-                        </div>
-                        {/* <div className="w-1/4 text-right">
+                      <div className="break-words">
+                        <span className="font-medium">{account}</span>
+                      </div>
+                      {/* <div className="w-1/4 text-right">
                           <button
                             onClick={() => handleSwitchWallet(account)}
                             className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
@@ -158,9 +160,9 @@ export const InitializedWallet: React.FC = () => {
                             Switch as Active Wallet
                           </button>
                         </div> */}
-                      </div>
-                    </li>
-                  )
+                    </div>
+                  </li>
+                )
               )}
             </ul>
           </div>

@@ -79,7 +79,7 @@ export class PostMessageHandler {
           }
           case ACTION.REQ_TO_SIGN: {
             try {
-              const signature = this.pushWallet.sign(data, event.origin)
+              const signature = await this.pushWallet.sign(data, event.origin)
               event.source?.postMessage(
                 { action: ACTION.SIGNATURE, signature },
                 event.origin as any

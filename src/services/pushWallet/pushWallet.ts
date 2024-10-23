@@ -11,34 +11,40 @@ import {
   InitDid,
   EncryptedText,
 } from '@pushprotocol/node-core/src/lib/generated/txData/init_did'
-import {
-  Key,
-  EncPushAccount,
-  DecPushAccount,
-  AppConnection,
-} from './pushWallet.types'
-import { createWalletClient, http } from 'viem'
+import { EncPushAccount, AppConnection } from './pushWallet.types'
+import { createWalletClient, hexToBytes, http } from 'viem'
 import { PushSigner } from '../pushSigner/pushSigner'
 import { Signer } from '../pushSigner/pushSigner.types'
 import { PushEncryption } from '../pushEncryption/pushEncryption'
 import { sha256 } from '@noble/hashes/sha256'
 import { ENV } from '../../constants'
-import { mnemonicToAccount } from 'viem/accounts'
+import {
+  hdKeyToAccount,
+  mnemonicToAccount,
+  privateKeyToAccount,
+} from 'viem/accounts'
 import { mainnet } from 'viem/chains'
+import { EncryptedPrivateKey } from '../pushEncryption/pushEncryption.types'
 
 export class PushWallet {
-  /*
-    Purpose (44'): Specifies BIP-44.
-    Coin Type (60'): Specifies Ethereum (60 is the coin type for Ethereum).
-    Account Index (0'): Used to manage different accounts in the wallet.
-    Change Index (0): 0 for external addresses, 1 for internal/change addresses.
-    Address Index : Keeps incrementing for generating next accounts
-  */
-  private static rootPath = "m/44'/60'/0'/0"
   private static pushValidator: PushValidator
   private static unRegisteredProfile = false
-
+  /**
+   * Address of Derived Key encoded in Push CAIP-10 format `push:network:pushconsumer...`
+   * This is referred as Push Consumer Account, as it is used to sign all messages
+   */
+  public signerAccount: string
+  /**
+   *  Array of URLs of Apps that are connected to the Push Wallet
+   */
   public appConnections: AppConnection[]
+  /**
+   * Accounts to Encrypted Derived Key Mapping
+   * push_caip_account -> { encDerivedPrivKey, signature }    // 1st Account of Push Wallet
+   * evm_caip_account -> { encDerivedPrivKey, signature }     // External ( OPTIONAL )
+   * solana_caip_account -> { encDerivedPrivKey, signature }  // External ( OPTIONAL )
+   * ... and so on
+   */
   public walletToEncDerivedKey: {
     [key: string]: {
       encDerivedPrivKey: EncryptedText
@@ -47,45 +53,67 @@ export class PushWallet {
   } = {}
 
   private constructor(
-    public did: string,
+    /**
+     * Decentralized Identifier of the Push Wallet used to map multiple accounts to the same DID
+     * Format: `PUSH_DID:SHA256hash`
+     * This should not be visible to the user as it is used for internal mapping
+     */
+    private did: string,
+    /**
+     * 1st Account of Push Wallet when created or Web3 Account used to login to Push Wallet
+     * In CAIP-10 Format
+     */
     public account: string,
     private derivedHDNode: HDKey,
-    private env: ENV,
-    public mnemonic: string | undefined = undefined
+    /**
+     * TODO: Encrypt Mnemonic
+     * Encrypted Mnemonic of the Push Wallet
+     * Encryption is done via PIN / Password / PassKey
+     * In case of login via Web3 Account, this field is undefined
+     */
+    public mnemonic: string | undefined = undefined,
+    private env: ENV
   ) {
-    const appConnections = localStorage.getItem('appConnections')
-    this.appConnections = appConnections ? JSON.parse(appConnections) : []
+    this.signerAccount = Address.toPushCAIP(
+      Address.evmToPush(
+        hdKeyToAccount(derivedHDNode).address,
+        'pushconsumer'
+      ) as `push${string}`,
+      env
+    )
+    this.appConnections = localStorage.getItem('appConnections')
+      ? JSON.parse(localStorage.getItem('appConnections'))
+      : []
   }
 
   public static signUp = async (env: ENV = ENV.STAGING) => {
+    // 1. Mark Wallet as Unregistered
     PushWallet.unRegisteredProfile = true
-    const decryptedPushAccount = await PushWallet.generatePushAccount()
-    // Encrypt Derived Keys with PushWallet's 1st Account Signer
-    const account = mnemonicToAccount(decryptedPushAccount.mnemonic)
-    const walletClient = createWalletClient({
+    // 2. Generate Push Wallet
+    const pushWallet = await PushWallet.generatePushWallet()
+    // 3. Generate 1st Push Account in CAIP-10 Format
+    const account = Address.toPushCAIP(
+      mnemonicToAccount(pushWallet.mnemonic).address,
+      env
+    )
+    // 4. Initialize Push Wallet
+    localStorage.removeItem('appConnections')
+    const pushWalletInstance = new PushWallet(
+      pushWallet.did,
       account,
+      pushWallet.derivedNode,
+      pushWallet.mnemonic,
+      env
+    )
+    // 5. Encrypt Derived Keys with PushWallet's 1st Account
+    const walletClient = createWalletClient({
+      account: mnemonicToAccount(pushWallet.mnemonic),
       chain: mainnet,
       transport: http(),
     })
     const signer = await PushSigner.initialize(walletClient)
-    signer.account = Address.toPushCAIP(
-      mnemonicToAccount(decryptedPushAccount.mnemonic).address,
-      env
-    )
-    const seed = await bip39.mnemonicToSeed(decryptedPushAccount.mnemonic)
-    const masterNode = HDKey.fromMasterSeed(seed)
-    const did = `PUSH_DID:${bytesToHex(sha256(masterNode.publicKey))}`
-
-    localStorage.removeItem('appConnections')
-
-    const pushWalletInstance = new PushWallet(
-      did,
-      signer.account,
-      decryptedPushAccount.derivedHDNode,
-      env,
-      decryptedPushAccount.mnemonic
-    )
-    pushWalletInstance.connectWalletWithAccount(signer)
+    signer.account = account // Overwrite account with Push Wallet's 1st Account in CAIP-10 Format
+    await pushWalletInstance.connectWalletWithAccount(signer)
     return pushWalletInstance
   }
 
@@ -93,28 +121,16 @@ export class PushWallet {
     mnemonic: string,
     env: ENV = ENV.STAGING
   ) => {
-    this.pushValidator = await PushValidator.initalize({ env })
-    const pushCAIPAddress = Address.toPushCAIP(
-      mnemonicToAccount(mnemonic).address,
-      env
-    )
-    const encPushAccount = await PushWallet.getPushAccount(pushCAIPAddress)
-    if (encPushAccount == null) {
-      throw Error('Push Account Not Found!')
-    } else {
-      const decryptedPushAccount = await PushWallet.decryptPushAccount(
-        encPushAccount,
-        undefined,
-        mnemonic
-      )
-      return new PushWallet(
-        decryptedPushAccount.did,
-        pushCAIPAddress,
-        decryptedPushAccount.derivedHDNode,
-        env,
-        decryptedPushAccount.mnemonic
-      )
-    }
+    // Generate 1st Push Account in CAIP-10 Format
+    const account = Address.toPushCAIP(mnemonicToAccount(mnemonic).address, env)
+    const walletClient = createWalletClient({
+      account: mnemonicToAccount(mnemonic),
+      chain: mainnet,
+      transport: http(),
+    })
+    const signer = await PushSigner.initialize(walletClient)
+    signer.account = account // Overwrite account with Push Wallet's 1st Account in CAIP-10 Format
+    return await PushWallet.loginWithWallet(signer, env)
   }
 
   public static loginWithWallet = async (
@@ -122,20 +138,20 @@ export class PushWallet {
     env: ENV = ENV.STAGING
   ) => {
     this.pushValidator = await PushValidator.initalize({ env })
-    const encPushAccount = await PushWallet.getPushAccount(pushSigner.account)
+    const encPushAccount = await PushWallet.getPushWallet(pushSigner.account)
     if (encPushAccount == null) {
       throw Error('Push Account Not Found!')
     } else {
-      const decryptedPushAccount = await PushWallet.decryptPushAccount(
-        encPushAccount,
+      const derivedNode = await PushWallet.decryptDerivedNode(
+        encPushAccount.encDerivedPrivKey,
         pushSigner
       )
       return new PushWallet(
-        decryptedPushAccount.did,
+        encPushAccount.did,
         pushSigner.account,
-        decryptedPushAccount.derivedHDNode,
-        env,
-        decryptedPushAccount.mnemonic
+        derivedNode,
+        undefined,
+        env
       )
     }
   }
@@ -144,10 +160,10 @@ export class PushWallet {
   private static loginWithSocial = async () => {}
 
   /**
-   * Get Push Account details from Push Network
+   * Get Push Wallet details from Push Network
    * @param account - account in CAIP-10 Format
    */
-  private static getPushAccount = async (
+  private static getPushWallet = async (
     account: string
   ): Promise<null | EncPushAccount> => {
     const encPushAccount = localStorage.getItem(account)
@@ -162,65 +178,57 @@ export class PushWallet {
 
   /**
    * @description Derives a hardened key from master key
-   * @param mnemonic
+   * @param masterNode
    * @param derivedKeyIndex - Useful in case of flushing keys
    * @param accountIndex - Might be useful when push wallet support multiple account
    */
-  private static generateDerivedKey = async (
-    mnemonic: string,
+  private static generateDerivedNode = async (
+    masterNode: HDKey,
     derivedKeyIndex: number = 0,
     accountIndex: number = 0
-  ): Promise<Key> => {
-    const DERIVED_KEY_PATH = `${this.rootPath}/${accountIndex}/0'/${derivedKeyIndex}'`
-    const seed = await bip39.mnemonicToSeed(mnemonic)
-    const masterNode = HDKey.fromMasterSeed(seed)
-    const derivedNode = masterNode.derive(DERIVED_KEY_PATH)
-    return {
-      privateExtendedKey: derivedNode.privateExtendedKey, // pk + chainCode
-      publicKey: bytesToHex(derivedNode.publicKey),
-      index: derivedNode.index,
-    }
+  ): Promise<HDKey> => {
+    /*
+    Purpose (44'): Specifies BIP-44.
+    Coin Type (60'): Specifies Ethereum (60 is the coin type for Ethereum).
+    Account Index (0'): Used to manage different accounts in the wallet.
+    Change Index (0): 0 for external addresses, 1 for internal/change addresses.
+    Address Index : Keeps incrementing for generating next accounts
+  */
+    const rootPath = "m/44'/60'/0'/0"
+    const DERIVED_KEY_PATH = `${rootPath}/${accountIndex}/0'/${derivedKeyIndex}'`
+    return masterNode.derive(DERIVED_KEY_PATH)
   }
 
-  private static generatePushAccount = async () => {
+  private static generatePushWallet = async () => {
     // 1. Generate Mnemonic - 128 bit ( 12 words )
     const mnemonic = bip39.generateMnemonic(wordlist)
-    // 2. Create Derived Keys
-    const derivedKey = await this.generateDerivedKey(mnemonic)
+    // 2. Generate Master Node
+    const seed = await bip39.mnemonicToSeed(mnemonic)
+    const masterNode = HDKey.fromMasterSeed(seed)
+    // 3. Generate PUSH DID
+    const did = `PUSH_DID:${bytesToHex(sha256(masterNode.publicKey))}`
+    // 4. Generate Derived Node
+    const derivedNode = await this.generateDerivedNode(masterNode)
     return {
       mnemonic,
-      derivedHDNode: HDKey.fromExtendedKey(derivedKey.privateExtendedKey),
+      masterNode,
+      did,
+      derivedNode,
     }
   }
 
   /**
-   * Decrypts a Push Account
-   * @param pushAccount Encrypted Push Account
+   * Decrypts a Derived Key using Signer
    */
-  private static decryptPushAccount = async (
-    pushAccount: EncPushAccount,
-    signer: Signer | undefined = undefined,
-    mnemonic: string | undefined = undefined
-  ): Promise<DecPushAccount> => {
-    let privateExtendedKey: string
-    if (mnemonic) {
-      privateExtendedKey = (
-        await this.generateDerivedKey(mnemonic, pushAccount.derivedKeyIndex)
-      ).privateExtendedKey
-    } else if (signer) {
-      privateExtendedKey = (await PushEncryption.decrypt(
-        pushAccount.encDerivedPrivKey,
-        signer
-      )) as string
-    } else {
-      throw Error('Unable to Decrypt Push Account without Signer or Mnemonic!')
-    }
-    const derivedHDNode = HDKey.fromExtendedKey(privateExtendedKey)
-    return {
-      did: pushAccount.did,
-      derivedHDNode,
-      mnemonic,
-    }
+  private static decryptDerivedNode = async (
+    encDerivedPrivKey: EncryptedPrivateKey,
+    signer: Signer
+  ): Promise<HDKey> => {
+    const privateExtendedKey = await PushEncryption.decrypt(
+      encDerivedPrivKey,
+      signer
+    )
+    return HDKey.fromExtendedKey(privateExtendedKey)
   }
 
   public connectWalletWithAccount = async (pushSigner: Signer) => {
@@ -274,10 +282,20 @@ export class PushWallet {
     )
 
     // 2. Send Tx
-    await pushTx.send(initDIDTx, {
-      sender: this.account,
-      privKey: `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`,
-    })
+    const account = privateKeyToAccount(
+      `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`
+    )
+
+    const signer = {
+      account: Address.toPushCAIP(account.address, this.env),
+      signMessage: async (dataToBeSigned: Uint8Array) => {
+        const signature = await account.signMessage({
+          message: { raw: dataToBeSigned },
+        })
+        return hexToBytes(signature)
+      },
+    }
+    await pushTx.send(initDIDTx, signer)
     PushWallet.unRegisteredProfile = false
 
     Object.keys(this.walletToEncDerivedKey).forEach((key) => {
@@ -296,11 +314,17 @@ export class PushWallet {
    * @param origin origin from where the sig Req is incoming
    * @returns signature
    */
-  public sign = (data: string, origin: string): Uint8Array => {
+  public sign = async (data: string, origin: string): Promise<Uint8Array> => {
     const appFound = this.appConnections.find((each) => each.origin === origin)
     if (!appFound) throw Error('App not Connected')
-    const hash = sha256(data)
-    return this.derivedHDNode.sign(hash)
+    const account = hdKeyToAccount(this.derivedHDNode)
+    const client = createWalletClient({
+      account,
+      chain: mainnet,
+      transport: http(),
+    })
+    const pushSigner = await PushSigner.initialize(client)
+    return await pushSigner.signMessage(data)
   }
 
   public ConnectionStatus = (

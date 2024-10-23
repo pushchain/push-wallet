@@ -140,7 +140,7 @@ describe('PostMessageHandler', () => {
     )
   })
 
-  it('should handle REQ_TO_SIGN action with an error if the origin is not connected', () => {
+  it('should handle REQ_TO_SIGN action with an error if the origin is not connected', async () => {
     new PostMessageHandler(pushWallet)
 
     const postMessageSpy = vi.fn()
@@ -153,6 +153,9 @@ describe('PostMessageHandler', () => {
     // Trigger the message event
     window.dispatchEvent(new MessageEvent('message', event))
 
+    // Timeout for 100ms to wait for the async operation to complete
+    await new Promise((resolve) => setTimeout(resolve, 100))
+
     // Verify the postMessage call for error
     expect(postMessageSpy).toHaveBeenCalledWith(
       {
@@ -163,7 +166,7 @@ describe('PostMessageHandler', () => {
     )
   })
 
-  it('should handle REQ_TO_SIGN action and return a signature', () => {
+  it('should handle REQ_TO_SIGN action and return a signature', async () => {
     new PostMessageHandler(pushWallet)
     const reqToConnectEvent = {
       data: { action: ACTION.REQ_TO_CONNECT, data: null },
@@ -184,11 +187,14 @@ describe('PostMessageHandler', () => {
     // Trigger the message event
     window.dispatchEvent(new MessageEvent('message', event))
 
+    // Timeout for 100ms to wait for the async operation to complete
+    await new Promise((resolve) => setTimeout(resolve, 100))
+
     // Verify the postMessage call for signature
     expect(postMessageSpy).toHaveBeenCalledWith(
       {
         action: ACTION.SIGNATURE,
-        signature: pushWallet.sign('test-data', event.origin || ''),
+        signature: await pushWallet.sign('test-data', event.origin || ''),
       },
       event.origin
     )
