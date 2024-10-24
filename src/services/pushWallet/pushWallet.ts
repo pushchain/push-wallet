@@ -244,13 +244,9 @@ export class PushWallet {
     // 2. Ask for confirmation signature - Serves as a conformation for user and proof for network
     const seed = await bip39.mnemonicToSeed(this.mnemonic as string)
     const masterNode = HDKey.fromMasterSeed(seed)
-    const encDerivedPrivKeyHash = bytesToHex(
-      sha256(JSON.stringify(encDerivedPrivKey))
-    )
+    const pushDID = `PUSH_DID:${bytesToHex(sha256(masterNode.publicKey))}`
     const signature = await pushSigner.signMessage(
-      `Connecting\n${pushSigner.account}\nTo\nPUSH_DID:${bytesToHex(
-        sha256(masterNode.publicKey)
-      )}\n\nProviding Access to Key with Identifier\n${encDerivedPrivKeyHash}`
+      `Connect Account To ${pushDID}`
     )
 
     // 3. Append details to Wallet Tx Payload
@@ -280,6 +276,9 @@ export class PushWallet {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       PushTx.serializeData(txData, 'INIT_DID' as any)
     )
+
+    console.log('InitDIDTx:', initDIDTx)
+    console.log(`0x${bytesToHex(masterNode.privateKey as Uint8Array)}`)
 
     // 2. Send Tx
     const account = privateKeyToAccount(
