@@ -18,8 +18,15 @@ export default function Signup() {
   )
   const { setShowAuthFlow, primaryWallet, handleLogOut } = useDynamicContext()
   const [signupMethod, setSignupMethod] = useState<string | null>(null)
-  const { dispatch } = useGlobalState()
+  const { state, dispatch } = useGlobalState()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (state.isAuthenticated) {
+      navigate('/profile')
+    }
+  }, [state.isAuthenticated, navigate])
+
 
   useEffect(() => {
     if (pushWallet?.mnemonic) {
@@ -60,6 +67,10 @@ export default function Signup() {
     setAttachedWallets(Object.keys(pushWallet.walletToEncDerivedKey))
   }
 
+  const handleGitHubSignup = () => {
+    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/github`
+  }
+
   const renderSignupMethods = () => (
     <div className="space-y-4 text-center">
       <div>
@@ -75,11 +86,10 @@ export default function Signup() {
       </div>
       <div>
         <button
-          onClick={() => setSignupMethod('social')}
-          className="border border-blue-600 text-blue-600 px-6 py-1 rounded-lg w-64"
-          disabled={true}
+          onClick={handleGitHubSignup}
+          className="bg-green-600 text-white px-6 py-3 rounded-lg w-64 mx-10"
         >
-          Social Signup <br /> Coming Soon 🚀
+          Signup with GitHub
         </button>
       </div>
     </div>
@@ -186,6 +196,7 @@ export default function Signup() {
 
   return (
     <div className="flex flex-col items-center justify-center">
+      <h1 className="text-3xl font-bold mb-4">Signup</h1>
       <div className="p-8 w-full max-w-4xl">
         {step === 1 && (
           <>

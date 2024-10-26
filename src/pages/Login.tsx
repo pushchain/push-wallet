@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useGlobalState } from '../context/GlobalContext'
 import { useNavigate } from 'react-router-dom'
 import { PushWallet } from '../services/pushWallet/pushWallet'
@@ -7,6 +7,7 @@ import { ENV } from '../constants'
 import { MnemonicGrid } from '../components/MnemonicGrid'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { PushSigner } from '../services/pushSigner/pushSigner'
+import api from '../services/api'
 
 export default function Login() {
   const [loginMethod, setLoginMethod] = useState<string | null>(null)
@@ -15,8 +16,14 @@ export default function Login() {
   )
   const { setShowAuthFlow, primaryWallet, handleLogOut } = useDynamicContext()
 
-  const { dispatch } = useGlobalState()
+  const { state, dispatch } = useGlobalState()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (state.isAuthenticated) {
+      navigate('/profile')
+    }
+  }, [state.isAuthenticated, navigate])
 
   const handleMnemonicChange = (index: number, value: string) => {
     const newMnemonicWords = [...mnemonicWords]
@@ -51,6 +58,10 @@ export default function Login() {
     }
   }
 
+  const handleGitHubLogin = () => {
+    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/github`
+  }
+
   const renderLoginMethods = () => (
     <div className="space-y-4 text-center">
       <button
@@ -66,11 +77,10 @@ export default function Login() {
         Using Web3 Account
       </button>
       <button
-        onClick={() => setLoginMethod('social')}
-        className="border border-blue-600 text-blue-600 px-6 py-1 rounded-lg w-64"
-        disabled={true}
+        onClick={handleGitHubLogin}
+        className="bg-green-600 text-white px-6 py-3 rounded-lg w-64"
       >
-        Social Login <br /> Coming Soon 🚀
+        Login with GitHub
       </button>
     </div>
   )
@@ -154,6 +164,7 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center">
+      <h1 className="text-3xl font-bold mb-4">Login</h1>
       <div className="p-8 w-full max-w-lg">
         {!loginMethod && renderLoginMethods()}
         {loginMethod === 'mnemonic' && renderMnemonicInput()}

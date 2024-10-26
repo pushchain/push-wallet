@@ -1,7 +1,12 @@
 import { HashRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
-import { Home, Login, Signup } from './pages'
+import { Home, Login, Signup, Profile } from './pages'
 import config from './config'
-import { GlobalProvider } from './context/GlobalContext'
+import { GlobalProvider, useGlobalState } from './context/GlobalContext'
+
+function ProtectedRoute({ children }: { children: JSX.Element }) {
+  const { state } = useGlobalState()
+  return state.isAuthenticated ? children : <Navigate to="/login" />
+}
 
 export default function App() {
   return (
@@ -16,6 +21,7 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<Signup />} />
+              <Route path="profile" element={<Profile />} />
               {/* Redirect to home if route is not found */}
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
