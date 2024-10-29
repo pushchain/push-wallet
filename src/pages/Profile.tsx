@@ -6,7 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { PushWallet } from '../services/pushWallet/pushWallet'
 import secrets from 'secrets.js-grempe';
 import { ENV } from '../constants'
-
+import { InitializedWallet } from '../components/InitializedWallet'
 export default function Profile() {
   const { state, dispatch } = useGlobalState();
   const [loading, setLoading] = useState(true);
@@ -28,34 +28,28 @@ export default function Profile() {
     try {
       const instance = await PushWallet.signUp(import.meta.env.VITE_APP_ENV as ENV);
       
-      
-      
       // Convert mnemonic to hex
       const mnemonicHex = Buffer.from(instance.mnemonic).toString('hex');
       
       // Split the mnemonic into 3 shares, requiring 2 for reconstruction
       const shares = secrets.share(mnemonicHex, 3, 2);
-      
-      // Store shares securely (this is just an example, consider more secure methods)
-      localStorage.setItem('mnemonicShare1', shares[0]);
-
+  
       // Store share1 in the backend
-      const res = await api.post(`/mnemonic-share/${userId}`, 
-        { share1: shares[0] }
+      await api.post(`/mnemonic-share/${userId}`, 
+        { share: shares[0] }
       );
 
-      console.log("res", res)
-
+      // Store share2 in user'slocalStorage
       localStorage.setItem('mnemonicShare2', shares[1]);
-      localStorage.setItem('mnemonicShare3', shares[2]);
+
+      // Store share3 to the push-chain network
+      await instance.storeMnemonicShareAsEncryptedTx(userId, shares[2], instance.mnemonic)
       
       await instance.registerPushAccount();
 
       dispatch({ type: 'INITIALIZE_WALLET', payload: instance });
       setPushWallet(instance);
       setAttachedWallets(Object.keys(instance.walletToEncDerivedKey));
-
-      dispatch({ type: 'INITIALIZE_WALLET', payload: pushWallet })
 
       console.log('Wallet created and mnemonic split into shares');
     } catch (err) {
@@ -64,22 +58,10 @@ export default function Profile() {
     }
   };
 
-  const reconstructWallet = async (userId: string) => {
+  const reconstructWallet = async (share1: string, share2: string) => {
     try {
-      // Retrieve share1 from the backend
-      const response = await api.get(`/mnemonic-share/${userId}`);
-      const share1 = response.data.share1;
-  
-      // Retrieve share2 and share3 from localStorage
-      const share2 = localStorage.getItem('mnemonicShare2');
-      const share3 = localStorage.getItem('mnemonicShare3');
-  
-      if (!share1 || !share2 || !share3) {
-        throw new Error('Unable to retrieve all mnemonic shares');
-      }
-  
       // Reconstruct the mnemonic
-      const mnemonicHex = secrets.combine([share1, share2, share3]);
+      const mnemonicHex = secrets.combine([share1, share2]);
       const mnemonic = Buffer.from(mnemonicHex, 'hex').toString();
   
       // Recreate the wallet instance
@@ -135,24 +117,46 @@ export default function Profile() {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      console.log("Received user data:", response.data);
       
       dispatch({ type: 'SET_USER', payload: response.data });
       dispatch({ type: 'SET_AUTHENTICATED', payload: true });
   
       // Check if user has a wallet, if not, create one
       if (!state.wallet) {
+        // Retrieve share1 from the backend
+        const mnemonicShareResponse = await api.get(`/mnemonic-share/${response.data.id}`);
+        const share1 = mnemonicShareResponse.data.share;
+
         // Check if we have mnemonic shares stored
         const share2 = localStorage.getItem('mnemonicShare2');
-        const share3 = localStorage.getItem('mnemonicShare3');
-  
-        if (share2 && share3) {
-          // If we have shares, reconstruct the wallet
-          await reconstructWallet(response.data.id);
+
+        if (share1 && share2) {
+          await reconstructWallet(share1, share2);
         } else {
-          // If we don't have shares, create a new wallet
-          await createWalletAndGenerateMnemonic(response.data.id);
+          // If share2 is missing, try to get share3 from blockchain
+          try {
+            const txResponse = await api.get(`/auth/passkey/transaction/${response.data.id}`);
+            
+            if (!txResponse.data) {
+              throw new Error('No transaction hash found');
+            }
+
+            const share3 = await PushWallet.retrieveMnemonicShareFromTx(
+              import.meta.env.VITE_APP_ENV as ENV,
+              response.data.id,
+              txResponse.data // Pass just the transaction hash data
+            );
+
+            if (share1 && share3) {
+              await reconstructWallet(share1, share3);
+            } else {
+              // If we can't get either share2 or share3, create new wallet
+              await createWalletAndGenerateMnemonic(response.data.id);
+            }
+          } catch (txError) {
+            console.error('Error retrieving share3:', txError);
+            await createWalletAndGenerateMnemonic(response.data.id);
+          }
         }
       }
   
@@ -207,13 +211,18 @@ export default function Profile() {
       />
       <p className="text-xl mb-2">Username: {state.user.username}</p>
       <p className="text-xl mb-4">Email: {state.user.email}</p>
-      <div className="w-full max-w-md bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <div className="w-full max-w-md bg-white shadow-md rounded px-12 py-8 mb-6">
         <h2 className="text-2xl mb-4">Your Wallet</h2>
         {/* Display wallet details or provide wallet-related actions */}
         {state.wallet ? (
-          <div>
+          <div className="break-words">
+            <p className="mb-4">
+              <strong>Account:</strong> 
+              <span className="break-all">{state.wallet.signerAccount.split(':')[2]}</span>
+            </p>
             <p>
-              <strong>DID:</strong> {state.wallet.did}
+              <strong>DID:</strong> 
+              <span className="break-all">{state.wallet.did}</span>
             </p>
             {/* Add more wallet details as needed */}
           </div>
