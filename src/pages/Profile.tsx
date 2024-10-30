@@ -129,22 +129,17 @@ export default function Profile() {
 
         // Check if we have mnemonic shares stored
         const share2 = localStorage.getItem('mnemonicShare2');
+        // const share2 = null
 
         if (share1 && share2) {
           await reconstructWallet(share1, share2);
         } else {
           // If share2 is missing, try to get share3 from blockchain
           try {
-            const txResponse = await api.get(`/auth/passkey/transaction/${response.data.id}`);
-            
-            if (!txResponse.data) {
-              throw new Error('No transaction hash found');
-            }
 
             const share3 = await PushWallet.retrieveMnemonicShareFromTx(
               import.meta.env.VITE_APP_ENV as ENV,
               response.data.id,
-              txResponse.data // Pass just the transaction hash data
             );
 
             if (share1 && share3) {

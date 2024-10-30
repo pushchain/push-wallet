@@ -309,82 +309,6 @@ export class PushWallet {
     })
   }
 
-
-  public sendMenomicShare = async (userId: string, mnemonicShare: string, mnemonic: string) => {
-    try {
-
-      // Create credential for encryption
-      const credential = await navigator.credentials.create({
-        publicKey: {
-          // Random challenge
-          challenge: new Uint8Array(32),
-          rp: {
-            name: 'Push Protocol',
-            id: window.location.hostname
-          },
-          user: {
-            // Convert userId string to Uint8Array
-            id: new TextEncoder().encode(userId),
-            name: 'push-user',
-            displayName: 'Push Protocol User'
-          },
-          pubKeyCredParams: [{
-            type: 'public-key',
-            alg: -7 // ES256
-          }],
-          authenticatorSelection: {
-            authenticatorAttachment: 'platform', 
-            residentKey: 'required',
-            userVerification: 'required'
-          }
-        }
-      });
-
-      if (!credential) {
-        throw new Error('Failed to create PassKey credential');
-      }
-
-      // Encrypt mnemonic share using the credential
-      const encoder = new TextEncoder();
-      const data = encoder.encode(mnemonicShare);
-      
-
-      // Do a Custom transaction on pushChain
-      const txInstance = await PushTx.initialize(this.env);
-      const recipients = [];
-      const tx = txInstance.createUnsigned(
-        'CUSTOM:MNEMONIC_SHARE_REGISTRATION',
-        recipients,
-        data
-      );
-
-      const seed = await bip39.mnemonicToSeed(mnemonic as string)
-      const masterNode = HDKey.fromMasterSeed(seed)
-
-      const account = privateKeyToAccount(
-        `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`
-      )
-  
-      const signer = {
-        account: Address.toPushCAIP(account.address, this.env),
-        signMessage: async (dataToBeSigned: Uint8Array) => {
-          const signature = await account.signMessage({
-            message: { raw: dataToBeSigned },
-          })
-          return hexToBytes(signature)
-        },
-      }
-
-      const res = await txInstance.send(tx, signer);
-      console.log("::::::::::::::::Response::::::::::", res);
-      return res;
-
-    } catch (error) {
-      console.error('Error in sendMenomicShare:', error);
-      throw error;
-    }
-  }
-
   public storeMnemonicShareAsEncryptedTx = async (userId: string, mnemonicShare: string, mnemonic: string) => {
     try {
 
@@ -428,17 +352,38 @@ export class PushWallet {
         },
       });
 
-      // Encrypt mnemonic share using the credential
+      // 4. Encrypt mnemonic share using the credential
+      const subtle = window.crypto.subtle;
       const encoder = new TextEncoder();
       const data = encoder.encode(mnemonicShare);
-      
+
+      // Generate encryption key from credential
+      const encryptionKey = await subtle.importKey(
+        'raw',
+        (credential as PublicKeyCredential).rawId,
+        { name: 'AES-GCM' },
+        false,
+        ['encrypt']
+      );
+
+      // Encrypt the data
+      const iv = window.crypto.getRandomValues(new Uint8Array(12)); // Generate random IV
+      const encryptedData = await subtle.encrypt(
+        {
+          name: 'AES-GCM',
+          iv
+        },
+        encryptionKey,
+        data
+      );
+
       // Do a Custom transaction on pushChain
       const txInstance = await PushTx.initialize(this.env);
       const recipients = [];
       const tx = txInstance.createUnsigned(
         'CUSTOM:MNEMONIC_SHARE_REGISTRATION',
         recipients,
-        data
+        new Uint8Array(encryptedData)
       );
 
       const seed = await bip39.mnemonicToSeed(mnemonic as string)
@@ -460,8 +405,10 @@ export class PushWallet {
 
       const res = await txInstance.send(tx, signer);
 
+      console.log("::::::::::::::::Tx Response::::::::::", res);
       await api.put(`/auth/passkey/transaction/${userId}`, {
-        transactionHash: res
+        transactionHash: res,
+        iv: PushWallet.bufferToBase64URL(iv)
       });
 
     } catch (error) {
@@ -470,63 +417,43 @@ export class PushWallet {
     }
   }
 
-  public static async retrieveMnemonicShareFromTx(env: ENV, userId: string, transactionHash: string): Promise<string> {
+  public static async retrieveMnemonicShareFromTx(env: ENV, userId: string): Promise<string> {
     try {
       
-      const txInstance = await PushTx.initialize(env);
-      const res = await txInstance.search(transactionHash);
-      const encryptedData = res.blocks[0].transactions[0].txnData;
+      const txDataResponse = await api.get(`/auth/passkey/transaction/${userId}`);
 
-      // 1. Get authentication challenge from server
+      if (!txDataResponse.data) {
+        throw new Error('No transaction hash found');
+      }
+
+      const iv = this.base64URLToBuffer(txDataResponse.data.iv);
+
+
+      const txInstance = await PushTx.initialize(env);
+      const res = await txInstance.search(txDataResponse.data.transactionHash);
+      const encryptedData = res.blocks[0]?.transactions[0]?.txnData;
+
+      // Get authentication challenge from server
       const challengeResponse = await api.get(`/auth/passkey/challenge/${userId}`);
-      const challenge = challengeResponse.data.challenge;
-  
-      // 2. Create authentication options
       const options: PublicKeyCredentialRequestOptions = {
-        challenge: this.base64URLToBuffer(challenge),
+        challenge: this.base64URLToBuffer(challengeResponse.data.challenge),
         rpId: window.location.hostname,
         timeout: 60000,
         userVerification: 'required',
         allowCredentials: [] // Server should provide the credential IDs
       };
-  
-      // 3. Request passkey authentication
+
+      // Request PassKey authentication
       const credential = await navigator.credentials.get({
         publicKey: options
       }) as PublicKeyCredential;
-      
-      // 4. Use the credential to decrypt the data
+
+      // Generate decryption key from credential
       const subtle = window.crypto.subtle;
-      const decoder = new TextDecoder();
-
-
-      // Extract the public key from the authenticator data
-      const authData = (credential.response as AuthenticatorAssertionResponse).authenticatorData;
-      const publicKey = await subtle.importKey(
-        'raw',
-        authData,
-        { name: 'ECDH', namedCurve: 'P-256' },
-        false,
-        ['deriveKey']
-      );
-
-      // Import the credential.rawId as a proper CryptoKey
-      const baseKey = await subtle.importKey(
+      const decryptionKey = await subtle.importKey(
         'raw',
         credential.rawId,
-        { name: 'ECDH', namedCurve: 'P-256' },
-        false,
-        ['deriveKey']
-      );
-
-      // Derive the decryption key using ECDH
-      const decryptionKey = await subtle.deriveKey(
-        {
-          name: 'ECDH',
-          public: publicKey
-        },
-        baseKey,
-        { name: 'AES-GCM', length: 256 },
+        { name: 'AES-GCM' },
         false,
         ['decrypt']
       );
@@ -535,16 +462,17 @@ export class PushWallet {
       const decryptedBuffer = await subtle.decrypt(
         {
           name: 'AES-GCM',
-          iv: new Uint8Array(12)
+          iv
         },
         decryptionKey,
         Uint8Array.from(encryptedData)
       );
 
       // Convert decrypted buffer to string
+      const decoder = new TextDecoder();
       const mnemonicShare = decoder.decode(decryptedBuffer);
-      
-      // 4. Verify authentication with server and get transaction data
+
+      // Verify authentication with server
       await api.post(`/auth/passkey/verify/${userId}`, {
         id: credential.id,
         rawId: this.bufferToBase64URL(credential.rawId),
@@ -557,57 +485,13 @@ export class PushWallet {
         signature: this.bufferToBase64URL(
           (credential.response as AuthenticatorAssertionResponse).signature
         ),
-        transactionHash
+        transactionHash: txDataResponse.data.transactionHash
       });
-  
+
       return mnemonicShare;
-  
     } catch (error) {
       console.error('Error retrieving mnemonic share from transaction:', error);
       throw new Error('Failed to retrieve mnemonic share from transaction');
-    }
-  }
-  
-  async getMnemonicShare(userId: string): Promise<string> {
-    try {
-      // 1. Get the challenge from your server
-      const challengeResponse = await api.get(`/auth/passkey/challenge/${userId}`);
-      const challenge = challengeResponse.data.challenge;
-  
-      // 2. Create authentication options
-      const options: PublicKeyCredentialRequestOptions = {
-        challenge: base64ToBuffer(challenge),
-        rpId: window.location.hostname,
-        timeout: 60000,
-        userVerification: 'required',
-        allowCredentials: [] // The server should provide the credential IDs
-      };
-  
-      // 3. Prompt user for passkey authentication
-      const credential = await navigator.credentials.get({
-        publicKey: options
-      }) as PublicKeyCredential;
-  
-      // 4. Get the authentication result
-      const authenticatorData = (credential.response as AuthenticatorAssertionResponse).authenticatorData;
-      const clientDataJSON = (credential.response as AuthenticatorAssertionResponse).clientDataJSON;
-      const signature = (credential.response as AuthenticatorAssertionResponse).signature;
-  
-      // 5. Send the authentication result to server to get the share
-      const response = await api.post(`/auth/passkey/verify/${userId}`, {
-        id: credential.id,
-        rawId: bufferToBase64(credential.rawId),
-        authenticatorData: bufferToBase64(authenticatorData),
-        clientDataJSON: bufferToBase64(clientDataJSON),
-        signature: bufferToBase64(signature)
-      });
-  
-      // 6. Return the decrypted share
-      return response.data.share;
-  
-    } catch (error) {
-      console.error('Error retrieving share with passkey:', error);
-      throw new Error('Failed to retrieve share with passkey');
     }
   }
   
