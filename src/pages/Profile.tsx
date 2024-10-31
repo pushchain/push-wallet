@@ -33,7 +33,7 @@ export default function Profile() {
       
       // Split the mnemonic into 3 shares, requiring 2 for reconstruction
       const shares = secrets.share(mnemonicHex, 3, 2);
-  
+      
       // Store share1 in the backend
       await api.post(`/mnemonic-share/${userId}`, 
         { share: shares[0] }
@@ -128,15 +128,13 @@ export default function Profile() {
         const share1 = mnemonicShareResponse.data.share;
 
         // Check if we have mnemonic shares stored
-        const share2 = localStorage.getItem('mnemonicShare2');
-        // const share2 = null
-
+        const share2 = localStorage.getItem('mnemonicShare3');
+        
         if (share1 && share2) {
           await reconstructWallet(share1, share2);
         } else {
           // If share2 is missing, try to get share3 from blockchain
           try {
-
             const share3 = await PushWallet.retrieveMnemonicShareFromTx(
               import.meta.env.VITE_APP_ENV as ENV,
               response.data.id,

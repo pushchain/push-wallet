@@ -357,17 +357,33 @@ export class PushWallet {
       const encoder = new TextEncoder();
       const data = encoder.encode(mnemonicShare);
 
-      // Generate encryption key from credential
-      const encryptionKey = await subtle.importKey(
+      // Generate salt and derive encryption key
+      const salt = new Uint8Array(16);
+      window.crypto.getRandomValues(salt);
+      
+      const keyMaterial = await subtle.importKey(
         'raw',
         (credential as PublicKeyCredential).rawId,
-        { name: 'AES-GCM' },
+        'PBKDF2',
+        false,
+        ['deriveBits', 'deriveKey']
+      );
+
+      const encryptionKey = await subtle.deriveKey(
+        {
+          name: 'PBKDF2',
+          salt: salt.buffer,
+          iterations: 100000,
+          hash: { name: 'SHA-256' }
+        },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
         false,
         ['encrypt']
       );
 
       // Encrypt the data
-      const iv = window.crypto.getRandomValues(new Uint8Array(12)); // Generate random IV
+      const iv = window.crypto.getRandomValues(new Uint8Array(12));
       const encryptedData = await subtle.encrypt(
         {
           name: 'AES-GCM',
@@ -377,13 +393,16 @@ export class PushWallet {
         data
       );
 
+      // Combine salt and encrypted data
+      const combinedData = new Uint8Array([...salt, ...new Uint8Array(encryptedData)]);
+
       // Do a Custom transaction on pushChain
       const txInstance = await PushTx.initialize(this.env);
       const recipients = [];
       const tx = txInstance.createUnsigned(
         'CUSTOM:MNEMONIC_SHARE_REGISTRATION',
         recipients,
-        new Uint8Array(encryptedData)
+        combinedData
       );
 
       const seed = await bip39.mnemonicToSeed(mnemonic as string)
@@ -421,17 +440,25 @@ export class PushWallet {
     try {
       
       const txDataResponse = await api.get(`/auth/passkey/transaction/${userId}`);
-
       if (!txDataResponse.data) {
         throw new Error('No transaction hash found');
       }
 
-      const iv = this.base64URLToBuffer(txDataResponse.data.iv);
-
-
+      // 2. Retrieve encrypted data from blockchain
       const txInstance = await PushTx.initialize(env);
-      const res = await txInstance.search(txDataResponse.data.transactionHash);
-      const encryptedData = res.blocks[0]?.transactions[0]?.txnData;
+      const txSearchResult = await txInstance.search(txDataResponse.data.transactionHash);
+      
+      const txData = txSearchResult.blocks[0]?.blockDataAsJson.txobjList[0]?.tx.data;
+      if (!txData) {
+        throw new Error('Transaction data not found');
+      }
+
+      // 3. Decode encrypted data from base64
+      const encryptedData = new Uint8Array(
+        atob(txData)
+          .split('')
+          .map(char => char.charCodeAt(0))
+      );
 
       // Get authentication challenge from server
       const challengeResponse = await api.get(`/auth/passkey/challenge/${userId}`);
@@ -448,27 +475,52 @@ export class PushWallet {
         publicKey: options
       }) as PublicKeyCredential;
 
-      // Generate decryption key from credential
+
+      if (!credential) {
+        throw new Error('Failed to get PassKey credential');
+      }
+
+      // 6. Extract components from encrypted data
+      const salt = encryptedData.slice(0, 16);
+      const iv = this.base64URLToBuffer(txDataResponse.data.iv);
+      const actualEncryptedData = encryptedData.slice(16, -16);
+      const authTag = encryptedData.slice(-16);
+      const dataWithTag = new Uint8Array([...actualEncryptedData, ...authTag]);
+
+      // 6. Derive decryption key
       const subtle = window.crypto.subtle;
-      const decryptionKey = await subtle.importKey(
+      const keyMaterial = await subtle.importKey(
         'raw',
         credential.rawId,
-        { name: 'AES-GCM' },
+        'PBKDF2',
+        false,
+        ['deriveBits', 'deriveKey']
+      );
+
+      const decryptionKey = await subtle.deriveKey(
+        {
+          name: 'PBKDF2',
+          salt,
+          iterations: 100000,
+          hash: { name: 'SHA-256' }
+        },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
         false,
         ['decrypt']
       );
 
-      // Decrypt the data
+      // 7. Decrypt the data
       const decryptedBuffer = await subtle.decrypt(
         {
           name: 'AES-GCM',
           iv
         },
         decryptionKey,
-        Uint8Array.from(encryptedData)
+        dataWithTag.buffer
       );
 
-      // Convert decrypted buffer to string
+      // 8. Convert decrypted buffer to string
       const decoder = new TextDecoder();
       const mnemonicShare = decoder.decode(decryptedBuffer);
 
