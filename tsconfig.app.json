@@ -23,7 +23,7 @@
     // "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "strictNullChecks": false, // Loosen null checks
-    "noImplicitAny": false, // Allow implicit 'any' types,
+    "noImplicitAny": false // Allow implicit 'any' types,
   },
-  "include": ["src", "vitest.config.ts"]
+  "include": ["src", "vitest.config.ts", "vite-env.d.ts"]
 }

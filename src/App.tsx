@@ -7,6 +7,7 @@ import {
 import { Home, Login, Signup } from "./pages";
 import config from "./config";
 import { GlobalProvider } from "./context/GlobalContext";
+import { getAppBasePath } from "./common";
 
 export default function App() {
   return (
@@ -16,7 +17,7 @@ export default function App() {
           {config.APP_NAME}
         </h1>
         <div className="flex-1 flex items-center justify-center">
-          <Router basename={"/push-wallet/"}>
+          <Router basename={getAppBasePath()}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="login" element={<Login />} />
