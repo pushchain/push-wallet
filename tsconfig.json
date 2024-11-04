@@ -8,7 +8,6 @@
       "path": "./tsconfig.node.json"
     }
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "compilerOptions": { "allowJs": true },
+  "exclude": ["node_modules"]
 }

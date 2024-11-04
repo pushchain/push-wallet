@@ -89,7 +89,7 @@ Push Keys offer a robust architecture for managing cryptographic keys in a secur
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/push-protocol/push-keys.git
+   git clone https://github.com/push-protocol/push-wallet.git
    cd push-keys
    ```
 
