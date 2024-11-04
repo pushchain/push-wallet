@@ -1,7 +1,13 @@
-import { HashRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
-import { Home, Login, Signup } from './pages'
-import config from './config'
-import { GlobalProvider } from './context/GlobalContext'
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import { Home, Login, Signup } from "./pages";
+import config from "./config";
+import { GlobalProvider } from "./context/GlobalContext";
+import { getAppBasePath } from "../basePath";
 
 export default function App() {
   return (
@@ -11,7 +17,7 @@ export default function App() {
           {config.APP_NAME}
         </h1>
         <div className="flex-1 flex items-center justify-center">
-          <Router>
+          <Router basename={getAppBasePath()}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="login" element={<Login />} />
@@ -23,5 +29,5 @@ export default function App() {
         </div>
       </div>
     </GlobalProvider>
-  )
+  );
 }
