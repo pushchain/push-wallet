@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "predeploy": "npm run build",
-    "deploy:test": "gh-pages -d dist"
+    "deploy:test": "VITE_DEV_MODE=testing yarn build && gh-pages -d dist"
   },
   "dependencies": {
     "@dynamic-labs/bitcoin": "^3.3.0",

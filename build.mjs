@@ -1,3 +1,4 @@
+// build.mjs
 import fs from "fs";
 import dotenv from "dotenv";
 const envFilePath = ".env";
@@ -6,7 +7,7 @@ const initiatePreDeploymentFlow = (deploymentType) => {
   // Load existing environment variables
   const envConfig = dotenv.parse(fs.readFileSync(envFilePath));
 
-  envConfig.VITE_DEV_MODE = deploymentType;
+  envConfig.VITE_DEV_MODE = deploymentType; // Update the deployment type
 
   console.log("VITE_DEV_MODE set to", deploymentType);
 
@@ -19,5 +20,5 @@ const initiatePreDeploymentFlow = (deploymentType) => {
   fs.writeFileSync(envFilePath, updatedEnv, { encoding: "utf8" });
 };
 
-var args = process.argv.slice(2);
+const args = process.argv.slice(2);
 await initiatePreDeploymentFlow(args[0]);
