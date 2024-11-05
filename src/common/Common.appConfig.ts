@@ -10,7 +10,7 @@ export function getAppBasePath() {
     if (process.env.VITE_DEV_MODE === "preview")
       return "/push-wallet/pr-preview/"; // add support for pr number
 
-    if (process.env.VITE_DEV_MODE === "testing") return "/push-wallt/";
+    if (process.env.VITE_DEV_MODE === "testing") return "/push-wallet/";
   }
   return "/";
 }
