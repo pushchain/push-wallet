@@ -6,7 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { PushWallet } from '../services/pushWallet/pushWallet'
 import secrets from 'secrets.js-grempe';
 import { ENV } from '../constants'
-import { InitializedWallet } from '../components/InitializedWallet'
+
 export default function Profile() {
   const { state, dispatch } = useGlobalState();
   const [loading, setLoading] = useState(true);
@@ -14,6 +14,7 @@ export default function Profile() {
 
   const [pushWallet, setPushWallet] = useState<PushWallet | null>(null)
   const [attachedWallets, setAttachedWallets] = useState<string[]>([])
+
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -117,19 +118,21 @@ export default function Profile() {
           Authorization: `Bearer ${token}`,
         },
       });
-      
+
+      const userId = response.data.id
+
       dispatch({ type: 'SET_USER', payload: response.data });
       dispatch({ type: 'SET_AUTHENTICATED', payload: true });
-  
+
       // Check if user has a wallet, if not, create one
       if (!state.wallet) {
         // Retrieve share1 from the backend
-        const mnemonicShareResponse = await api.get(`/mnemonic-share/${response.data.id}`);
+        const mnemonicShareResponse = await api.get(`/mnemonic-share/${userId}`);
         const share1 = mnemonicShareResponse.data.share;
 
         // Check if we have mnemonic shares stored
-        const share2 = localStorage.getItem('mnemonicShare3');
-        
+        const share2 = null //localStorage.getItem('mnemonicShare2');
+
         if (share1 && share2) {
           await reconstructWallet(share1, share2);
         } else {
@@ -137,18 +140,18 @@ export default function Profile() {
           try {
             const share3 = await PushWallet.retrieveMnemonicShareFromTx(
               import.meta.env.VITE_APP_ENV as ENV,
-              response.data.id,
+              userId,
             );
 
             if (share1 && share3) {
               await reconstructWallet(share1, share3);
             } else {
               // If we can't get either share2 or share3, create new wallet
-              await createWalletAndGenerateMnemonic(response.data.id);
+              await createWalletAndGenerateMnemonic(userId);
             }
           } catch (txError) {
             console.error('Error retrieving share3:', txError);
-            await createWalletAndGenerateMnemonic(response.data.id);
+            await createWalletAndGenerateMnemonic(userId);
           }
         }
       }

@@ -21,6 +21,11 @@ export default function Signup() {
   const { state, dispatch } = useGlobalState()
   const navigate = useNavigate()
 
+  // Email states
+  const [email, setEmail] = useState('')
+  const [isEmailSubmitting, setIsEmailSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
   useEffect(() => {
     if (state.isAuthenticated) {
       navigate('/profile')
@@ -34,6 +39,67 @@ export default function Signup() {
       setMnemonicWords(words)
     }
   }, [pushWallet])
+
+  const handleEmailSignup = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsEmailSubmitting(true)
+    setError('')
+    
+    try {
+      // Redirect to backend auth endpoint with email signup parameters
+      window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-email?email=${encodeURIComponent(email)}`;
+    } catch (err) {
+      setError('Failed to initiate signup')
+      setIsEmailSubmitting(false)
+    }
+  }
+
+  const renderEmailSignup = () => (
+    <div className="max-w-md mx-auto space-y-6">
+      <h2 className="text-2xl font-bold text-center mb-4">
+        Create account with Email
+      </h2>
+      
+      <form onSubmit={handleEmailSignup} className="space-y-4">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            Email address
+          </label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            placeholder="Enter your email"
+            required
+            disabled={isEmailSubmitting}
+          />
+        </div>
+
+        {error && (
+          <p className="text-red-500 text-sm text-center">{error}</p>
+        )}
+
+        <button
+          type="submit"
+          disabled={isEmailSubmitting}
+          className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+            isEmailSubmitting ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'
+          }`}
+        >
+          {isEmailSubmitting ? (
+            <div className="flex items-center">
+              <div className="animate-spin mr-2 h-4 w-4 border-b-2 border-white rounded-full" />
+              Redirecting...
+            </div>
+          ) : (
+            'Continue with Email'
+          )}
+        </button>
+      </form>
+    </div>
+  )
 
   const goToNextStep = () => setStep(step + 1)
 
@@ -84,6 +150,16 @@ export default function Signup() {
           Using Mnemonic
         </button>
       </div>
+
+      <div>
+        <button
+          onClick={() => setSignupMethod('email')}
+          className="bg-indigo-600 text-white px-6 py-3 rounded-lg w-64 mx-10"
+        >
+          Using Email
+        </button>
+      </div>
+
       <div>
         <button
           onClick={handleGitHubSignup}
@@ -202,23 +278,24 @@ export default function Signup() {
           <>
             {!signupMethod && renderSignupMethods()}
             {signupMethod === 'mnemonic' && renderMnemonicInput()}
+            {signupMethod === 'email' && renderEmailSignup()}
           </>
         )}
-        {step === 2 && (
-          <div className="space-y-2 text-center">
-            {attachedWallets.map((wallet) => {
-              return (
+        {step === 2 && signupMethod === 'mnemonic' && (
+          <>
+            <div className="space-y-2 text-center">
+              {attachedWallets.map((wallet) => (
                 <div
                   key={wallet}
                   className="inline-flex items-center bg-blue-100 text-blue-800 text-sm font-medium rounded-full px-4 py-2 border border-blue-300"
                 >
                   <span className="font-mono">{wallet}</span>
                 </div>
-              )
-            })}
-          </div>
+              ))}
+            </div>
+            {renderWalletConnection()}
+          </>
         )}
-        {step === 2 && renderWalletConnection()}
       </div>
     </div>
   )

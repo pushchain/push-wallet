@@ -15,6 +15,7 @@ export default function Login() {
     Array(12).fill('')
   )
   const { setShowAuthFlow, primaryWallet, handleLogOut } = useDynamicContext()
+  const [email, setEmail] = useState(''); 
 
   const { state, dispatch } = useGlobalState()
   const navigate = useNavigate()
@@ -62,6 +63,49 @@ export default function Login() {
     window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/github`
   }
 
+  const renderEmailLogin = () => {
+  
+    const handleEmailLogin = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (email) {
+        window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-email?email=${encodeURIComponent(email)}`;
+      }
+    };
+  
+    return (
+      <form onSubmit={handleEmailLogin} className="space-y-4">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter your email"
+          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+        <button
+          type="submit"
+          className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center"
+        >
+          <svg
+            className="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            />
+          </svg>
+          Continue with Email
+        </button>
+      </form>
+    );
+  };
+
   const renderLoginMethods = () => (
     <div className="space-y-4 text-center">
       <button
@@ -82,6 +126,12 @@ export default function Login() {
       >
         Login with GitHub
       </button>
+      <button
+        onClick={() => setLoginMethod('email')}
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
+      >
+      Login with Email
+    </button>
     </div>
   )
 
@@ -167,6 +217,7 @@ export default function Login() {
       <h1 className="text-3xl font-bold mb-4">Login</h1>
       <div className="p-8 w-full max-w-lg">
         {!loginMethod && renderLoginMethods()}
+        {loginMethod === 'email' && renderEmailLogin()}
         {loginMethod === 'mnemonic' && renderMnemonicInput()}
         {loginMethod === 'wallet' && renderWalletConnection()}
       </div>

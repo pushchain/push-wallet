@@ -8,10 +8,9 @@ interface GlobalState {
   wallet: PushWallet | null
   theme: 'light' | 'dark'
   postMessageHandler: PostMessageHandler
-  user: any // Add user to manage authentication state
+  user: any
   isAuthenticated: boolean
-  jwt: string | null;
-
+  jwt: string | null
 }
 
 // Define actions for state management
@@ -99,6 +98,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
           // Optionally, set the token in the Axios instance
           // api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
           // Or use an interceptor as previously defined
+          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
           // Fetch user profile
           const response = await api.get('/auth/user', {

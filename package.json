@@ -31,7 +31,8 @@
     "react-router-dom": "^6.26.2",
     "viem": "^2.21.21",
     "axios": "^1.7.7",
-    "secrets.js-grempe": "^2.0.0"
+    "secrets.js-grempe": "^2.0.0",
+    "@auth0/auth0-react": "^2.2.4"
   },
   "devDependencies": {
     "@types/hdkey": "^2.0.3",
