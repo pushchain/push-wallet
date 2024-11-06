@@ -131,7 +131,7 @@ export default function Profile() {
         const share1 = mnemonicShareResponse.data.share;
 
         // Check if we have mnemonic shares stored
-        const share2 = null //localStorage.getItem('mnemonicShare2');
+        const share2 = localStorage.getItem('mnemonicShare2');
 
         if (share1 && share2) {
           await reconstructWallet(share1, share2);

@@ -16,6 +16,8 @@ export default function Login() {
   )
   const { setShowAuthFlow, primaryWallet, handleLogOut } = useDynamicContext()
   const [email, setEmail] = useState(''); 
+  const [phone, setPhone] = useState('');
+  const [error, setError] = useState('');
 
   const { state, dispatch } = useGlobalState()
   const navigate = useNavigate()
@@ -59,9 +61,38 @@ export default function Login() {
     }
   }
 
-  const handleGitHubLogin = () => {
-    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/github`
-  }
+  // const handleGitHubLogin = () => {
+  //   window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/github`
+  // }
+
+  const handleSocialLogin = (provider: 'github' | 'google' | 'discord' | 'twitter') => {
+    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-social?provider=${provider}`;
+  };
+
+  const renderSocialLogins = () => (
+    <div className="space-y-3">
+      <button
+        onClick={() => handleSocialLogin('github')}
+        className="w-full flex items-center justify-center gap-2 bg-gray-800 text-white p-2 rounded">
+        Continue with Github
+      </button>
+      <button
+        onClick={() => handleSocialLogin('google')}
+        className="w-full flex items-center justify-center gap-2 bg-white text-gray-800 border border-gray-300 p-2 rounded">
+        Continue with Google
+      </button>
+      <button
+        onClick={() => handleSocialLogin('discord')}
+        className="w-full flex items-center justify-center gap-2 bg-[#5865F2] text-white p-2 rounded">
+        Continue with Discord
+      </button>
+      <button
+        onClick={() => handleSocialLogin('twitter')}
+        className="w-full flex items-center justify-center gap-2 bg-[#1DA1F2] text-white p-2 rounded">
+        Continue with Twitter
+      </button>
+    </div>
+  );
 
   const renderEmailLogin = () => {
   
@@ -106,6 +137,47 @@ export default function Login() {
     );
   };
 
+  const renderPhoneLogin = () => {
+  
+  const handlePhoneSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      
+      // Basic phone validation
+      const phoneRegex = /^\+[1-9]\d{1,14}$/;
+      if (!phoneRegex.test(phone)) {
+        setError('Please enter a valid phone number in international format (e.g., +1234567890)');
+        return;
+      }
+
+      window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-phone?phone=${encodeURIComponent(phone)}`;
+    };
+
+    return (
+      <form onSubmit={handlePhoneSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            placeholder="+1234567890"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          />
+          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+        </div>
+        <button
+          type="submit"
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Continue with Phone
+        </button>
+      </form>
+    );
+  };
+
   const renderLoginMethods = () => (
     <div className="space-y-4 text-center">
       <button
@@ -120,18 +192,26 @@ export default function Login() {
       >
         Using Web3 Account
       </button>
-      <button
+      {renderSocialLogins()}
+      {/* <button
         onClick={handleGitHubLogin}
         className="bg-green-600 text-white px-6 py-3 rounded-lg w-64"
       >
         Login with GitHub
-      </button>
+      </button> */}
       <button
         onClick={() => setLoginMethod('email')}
         className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
       >
       Login with Email
     </button>
+    <button
+        onClick={() => setLoginMethod('phone')}
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
+      >
+      Login with Phone
+    </button>
+
     </div>
   )
 
@@ -218,6 +298,8 @@ export default function Login() {
       <div className="p-8 w-full max-w-lg">
         {!loginMethod && renderLoginMethods()}
         {loginMethod === 'email' && renderEmailLogin()}
+        {loginMethod === 'phone' && renderPhoneLogin()}
+
         {loginMethod === 'mnemonic' && renderMnemonicInput()}
         {loginMethod === 'wallet' && renderWalletConnection()}
       </div>
