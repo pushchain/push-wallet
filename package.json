@@ -24,7 +24,7 @@
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.8.1",
     "@noble/hashes": "^1.0.0",
-    "@pushprotocol/node-core": "^0.0.20",
+    "@pushprotocol/node-core": "^0.0.22",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-dropdown-menu": "^2.1.2",
     "@radix-ui/react-switch": "^1.1.1",

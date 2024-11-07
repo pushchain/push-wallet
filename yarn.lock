@@ -3077,9 +3077,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pushprotocol/node-core@npm:^0.0.20":
-  version: 0.0.20
-  resolution: "@pushprotocol/node-core@npm:0.0.20"
+"@pushprotocol/node-core@npm:^0.0.22":
+  version: 0.0.22
+  resolution: "@pushprotocol/node-core@npm:0.0.22"
   dependencies:
     "@bufbuild/protobuf": "npm:^2.0.0"
     "@noble/hashes": "npm:^1.5.0"
@@ -3088,7 +3088,7 @@ __metadata:
     tslib: "npm:^2.3.0"
     uuid: "npm:^10.0.0"
     viem: "npm:^2.21.1"
-  checksum: 10/1c383ef10bd931d67153b07ee624c0855cffd0720d985b002ad7845e4857b3330395722b34f7006050b6f2d382531e648252eb2fbf89554069833b82acd67b16
+  checksum: 10/2c9a2bac138725c8c34f470a057b223b92ec79ed1784c302faa103f149153db8b51e1adb01bacd5028a4e49f19a9d6f7f98136cff56b5173bc7611effb2543e3
   languageName: node
   linkType: hard
 
@@ -12254,7 +12254,7 @@ __metadata:
     "@emotion/react": "npm:^11.13.0"
     "@emotion/styled": "npm:^11.8.1"
     "@noble/hashes": "npm:^1.0.0"
-    "@pushprotocol/node-core": "npm:^0.0.20"
+    "@pushprotocol/node-core": "npm:^0.0.22"
     "@radix-ui/react-dialog": "npm:^1.1.2"
     "@radix-ui/react-dropdown-menu": "npm:^2.1.2"
     "@radix-ui/react-switch": "npm:^1.1.1"
