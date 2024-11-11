@@ -1,7 +1,7 @@
 import { FC } from "react";
 import styled from "styled-components";
 import { NotificationProps } from "./Notification.types";
-import { Cross } from "blocks";
+import { Cross } from "../icons";
 import { toast, Toaster } from "sonner";
 import { getTextVariantStyles } from "../Blocks.utils";
 import { deviceMediaQ } from "../theme";

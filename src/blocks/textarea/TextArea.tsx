@@ -1,4 +1,4 @@
-import { Asterisk } from 'blocks/icons';
+import { Asterisk } from '../icons';
 import { textVariants } from '../text';
 import React, { forwardRef } from 'react';
 import styled, { FlattenSimpleInterpolation, css } from 'styled-components';
