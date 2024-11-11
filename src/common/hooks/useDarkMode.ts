@@ -1,3 +1,4 @@
+import { FC } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
 export const useDarkMode = () => {
@@ -15,3 +16,4 @@ export const useDarkMode = () => {
     },
   };
 };
+
