@@ -5,6 +5,8 @@ import { createWalletClient, http } from 'viem'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { sepolia } from 'viem/chains'
 import { PushSigner } from '../pushSigner/pushSigner'
+import { sha256 } from '@noble/hashes/sha256'
+import { bytesToHex } from '@noble/hashes/utils'
 
 // Test Suite for PushWallet Class
 describe('PushWallet', () => {
@@ -140,5 +142,16 @@ describe('PushWallet', () => {
     expect(sessionKey).toBeDefined()
     expect(sessionKey.privateKey).toBeDefined()
     expect(sessionKey.publicKey).toBeDefined()
+  })
+
+  it.only('should create DID from MasterPublicKey', async () => {
+    const did = `PUSH_DID:${bytesToHex(
+      sha256(
+        '02a975748d5ed9a8194d8368f98b62183cfc9e62864d850c63678c1778e457d038'
+      )
+    )}`
+    expect(did).toBe(
+      `PUSH_DID:e2d7a4abc7102c9bd4735b748695739b64e259545549c06bd1227dd68b0eeadc`
+    )
   })
 })
