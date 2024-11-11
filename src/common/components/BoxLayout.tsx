@@ -1,8 +1,6 @@
 import { FC, ReactNode } from "react";
 import { Box } from "../../blocks";
-import {css} from "styled-components";
 import React from "react";
-import { Footer } from "./Footer";
 
 type BoxLayoutProps = {
   children: ReactNode;

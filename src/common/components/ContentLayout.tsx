@@ -1,14 +1,15 @@
 import { FC, ReactNode } from "react";
 import { Box } from "../../blocks";
-import {css} from "styled-components";
+import { css } from "styled-components";
 import React from "react";
 import { Footer } from "./Footer";
 
 type ContentLayoutProps = {
   children: ReactNode;
+  footer?: ReactNode;
 };
 
-const ContentLayout: FC<ContentLayoutProps> = ({children}) => {
+const ContentLayout: FC<ContentLayoutProps> = ({ children, footer }) => {
   return (
     <Box
       alignItems="center"
@@ -19,13 +20,14 @@ const ContentLayout: FC<ContentLayoutProps> = ({children}) => {
       flexDirection="column"
       justifyContent="center"
       width="100%"
-      height='100vh'
+      height="100vh"
       css={css`
         flex: initial;
         margin: 0 0 auto 0;
       `}
-    >{children}
-    <Footer/>
+    >
+      {children}
+      {footer}
     </Box>
   );
 };

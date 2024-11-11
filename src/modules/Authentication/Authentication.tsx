@@ -1,9 +1,10 @@
 import { Box,Text } from "../../blocks";
 import { BoxLayout, ContentLayout } from "../../common";
+import { Footer } from "../../common/components/Footer";
 
-const Landing = () => {
+const Authentication = () => {
   return (
-    <ContentLayout>
+    <ContentLayout footer={<Footer/>}>
       <BoxLayout>
         <Box alignItems='center' display="flex" height="500px" width="376px" padding="spacing-md">
          <Text color="text-primary"> Welcome to Push Wallet</Text>
@@ -13,4 +14,4 @@ const Landing = () => {
   );
 };
 
-export { Landing };
+export { Authentication };

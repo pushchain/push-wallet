@@ -1,12 +1,12 @@
-import { FC, ReactNode } from "react";
+import { FC } from "react";
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import {Landing} from "../../modules/Landing";
+import {Authentication} from "../../modules/Authentication";
 
 const RouterConatiner: FC = () => {
   return (
     <Routes>
-      <Route path="/landing" element={<Landing />} />
+      <Route path="/auth" element={<Authentication />} />
     </Routes>
   );
 };
