@@ -6,6 +6,7 @@ export { default as ActivePushPoints } from './components/ActivePushPoints';
 export { default as AlphaAccessNFT } from './components/AlphaAccessNFT';
 
 export { default as Arbitrum } from './components/Arbitrum';
+export { default as Apple } from './components/Apple';
 
 export { default as Base } from './components/Base';
 
@@ -28,6 +29,7 @@ export { default as CreateChannelPoints } from './components/CreateChannelPoints
 export { default as CyberLogoRewards } from './components/CyberLogoRewards';
 
 export { default as Discord } from './components/Discord';
+export { default as DiscordSimple } from './components/DiscordSimple';
 
 export { default as EarnOnPush } from './components/EarnOnPush';
 
@@ -36,6 +38,10 @@ export { default as Ethereum } from './components/Ethereum';
 export { default as FiveSubscribedDefiChannel } from './components/FiveSubscribedDefiChannel';
 
 export { default as GatedGroupPoints } from './components/GatedGroupPoints';
+
+export { default as Google } from './components/Google';
+
+export { default as Github } from './components/Github';
 
 export { default as GradientBonusActivitySubscribers } from './components/GradientBonusActivitySubscribers';
 
@@ -102,6 +108,7 @@ export { default as SubscribePoints } from './components/SubscribePoints';
 export { default as TripleRewardsCoin } from './components/TripleRewardsCoin';
 
 export { default as Twitter } from './components/Twitter';
+export { default as TwitterSimple } from './components/TwitterSimple';
 
 export { default as RewardsActivity } from './components/RewardsActivity';
 
