@@ -8,6 +8,8 @@ import { MnemonicGrid } from '../components/MnemonicGrid'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { PushSigner } from '../services/pushSigner/pushSigner'
 import api from '../services/api'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGithub, faGoogle, faDiscord, faTwitter, faTelegram } from '@fortawesome/free-brands-svg-icons';
 
 export default function Login() {
   const [loginMethod, setLoginMethod] = useState<string | null>(null)
@@ -70,32 +72,31 @@ export default function Login() {
   };
 
   const renderSocialLogins = () => (
-    <div className="space-y-3">
+    <div className="flex space-x-3">
       <button
         onClick={() => handleSocialLogin('github')}
-        className="w-full flex items-center justify-center gap-2 bg-gray-800 text-white p-2 rounded">
-        Continue with Github
+        className="flex items-center justify-center text-gray-800 p-2">
+        <FontAwesomeIcon icon={faGithub} size="2x" />
       </button>
       <button
         onClick={() => handleSocialLogin('google')}
-        className="w-full flex items-center justify-center gap-2 bg-white text-gray-800 border border-gray-300 p-2 rounded">
-        Continue with Google
+        className="flex items-center justify-center text-gray-800 p-2">
+        <FontAwesomeIcon icon={faGoogle} size="2x" />
       </button>
       <button
         onClick={() => handleSocialLogin('discord')}
-        className="w-full flex items-center justify-center gap-2 bg-[#5865F2] text-white p-2 rounded">
-        Continue with Discord
+        className="flex items-center justify-center text-[#5865F2] p-2">
+        <FontAwesomeIcon icon={faDiscord} size="2x" />
       </button>
       <button
         onClick={() => handleSocialLogin('twitter')}
-        className="w-full flex items-center justify-center gap-2 bg-[#1DA1F2] text-white p-2 rounded">
-        Continue with Twitter
+        className="flex items-center justify-center text-[#1DA1F2] p-2">
+        <FontAwesomeIcon icon={faTwitter} size="2x" />
       </button>
     </div>
   );
 
   const renderEmailLogin = () => {
-  
     const handleEmailLogin = (e: React.FormEvent) => {
       e.preventDefault();
       if (email) {
@@ -138,8 +139,7 @@ export default function Login() {
   };
 
   const renderPhoneLogin = () => {
-  
-  const handlePhoneSubmit = (e: React.FormEvent) => {
+    const handlePhoneSubmit = (e: React.FormEvent) => {
       e.preventDefault();
       
       // Basic phone validation
@@ -150,7 +150,7 @@ export default function Login() {
       }
 
       window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-phone?phone=${encodeURIComponent(phone)}`;
-    };
+    }
 
     return (
       <form onSubmit={handlePhoneSubmit} className="space-y-4">
@@ -182,36 +182,25 @@ export default function Login() {
     <div className="space-y-4 text-center">
       <button
         onClick={() => setLoginMethod('mnemonic')}
-        className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64 mx-auto"
       >
         Using Mnemonic
       </button>
       <button
         onClick={() => setLoginMethod('wallet')}
-        className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64 mx-auto"
       >
         Using Web3 Account
       </button>
-      {renderSocialLogins()}
-      {/* <button
-        onClick={handleGitHubLogin}
-        className="bg-green-600 text-white px-6 py-3 rounded-lg w-64"
-      >
-        Login with GitHub
-      </button> */}
       <button
         onClick={() => setLoginMethod('email')}
-        className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64 mx-auto"
       >
-      Login with Email
-    </button>
-    <button
-        onClick={() => setLoginMethod('phone')}
-        className="bg-blue-600 text-white px-6 py-3 rounded-lg w-64"
-      >
-      Login with Phone
-    </button>
-
+        Login with Email
+      </button>
+      <div className="flex justify-center">
+        {renderSocialLogins()}
+      </div>
     </div>
   )
 
@@ -299,7 +288,6 @@ export default function Login() {
         {!loginMethod && renderLoginMethods()}
         {loginMethod === 'email' && renderEmailLogin()}
         {loginMethod === 'phone' && renderPhoneLogin()}
-
         {loginMethod === 'mnemonic' && renderMnemonicInput()}
         {loginMethod === 'wallet' && renderWalletConnection()}
       </div>

@@ -41,7 +41,7 @@ export default function Profile() {
       );
 
       // Store share2 in user'slocalStorage
-      localStorage.setItem('mnemonicShare2', shares[1]);
+      localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
 
       // Store share3 to the push-chain network
       await instance.storeMnemonicShareAsEncryptedTx(userId, shares[2], instance.mnemonic)
@@ -131,7 +131,7 @@ export default function Profile() {
         const share1 = mnemonicShareResponse.data.share;
 
         // Check if we have mnemonic shares stored
-        const share2 = localStorage.getItem('mnemonicShare2');
+        const share2 = localStorage.getItem(`mnemonicShare2:${userId}`);
 
         if (share1 && share2) {
           await reconstructWallet(share1, share2);
