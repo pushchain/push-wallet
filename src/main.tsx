@@ -18,12 +18,12 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         // Find your environment id at https://app.dynamic.xyz/dashboard/developer
         environmentId: import.meta.env.VITE_APP_DYNAMIC_ENV_ID,
         walletConnectors: [
-          BitcoinWalletConnectors,
-          CosmosWalletConnectors,
+          // BitcoinWalletConnectors,
+          // CosmosWalletConnectors,
           EthereumWalletConnectors,
-          FlowWalletConnectors,
+          // FlowWalletConnectors,
           SolanaWalletConnectors,
-          StarknetWalletConnectors,
+          // StarknetWalletConnectors,
         ],
       }}
     >

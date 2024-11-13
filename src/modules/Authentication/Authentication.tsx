@@ -19,6 +19,8 @@ import { WalletSelection } from "./components/WalletSelection";
 //shift illustrations to icon
 //input arrow fix
 //implement steps
+//connect the pages
+//functional connection
 const Authentication = () => {
   const [email, setEmail] = useState<string>("");
 

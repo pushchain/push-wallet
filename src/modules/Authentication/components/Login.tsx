@@ -82,7 +82,7 @@ const Login:FC<LoginProps> = ({email,setEmail}) => {
                 borderRadius="radius-sm"
                 padding="spacing-sm spacing-md"
               >
-                <social.icon width={24} height={24} />
+               {social.icon}
               </Box>
             ))}
           </Box>

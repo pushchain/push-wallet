@@ -4,6 +4,7 @@ export * from './Icons.types';
 export { default as Add } from './components/Add';
 
 export { default as AddEmoji } from './components/AddEmoji';
+export { default as Apple } from './components/Apple';
 
 export { default as ArbitrumMonotone } from './components/ArbitrumMonotone';
 
@@ -72,6 +73,7 @@ export { default as ExternalLink } from './components/ExternalLink';
 export { default as Front } from './components/Front';
 
 export { default as Gif } from './components/Gif';
+export { default as Github } from './components/Github';
 
 export { default as InfoFilled } from './components/InfoFilled';
 
@@ -169,6 +171,7 @@ export { default as Tick } from './components/Tick';
 export { default as TickCircleFilled } from './components/TickCircleFilled';
 export { default as TickDecoratedCircleFilled } from './components/TickDecoratedCircleFilled';
 export { default as Tutorial } from './components/Tutotial';
+export { default as TwitterSimple } from './components/TwitterSimple';
 
 export { default as UserFilled } from './components/UserFilled';
 

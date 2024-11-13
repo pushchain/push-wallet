@@ -6,7 +6,6 @@ export { default as ActivePushPoints } from './components/ActivePushPoints';
 export { default as AlphaAccessNFT } from './components/AlphaAccessNFT';
 
 export { default as Arbitrum } from './components/Arbitrum';
-export { default as Apple } from './components/Apple';
 
 export { default as Base } from './components/Base';
 
@@ -41,7 +40,6 @@ export { default as GatedGroupPoints } from './components/GatedGroupPoints';
 
 export { default as Google } from './components/Google';
 
-export { default as Github } from './components/Github';
 
 export { default as GradientBonusActivitySubscribers } from './components/GradientBonusActivitySubscribers';
 
@@ -103,12 +101,13 @@ export { default as StakePushYellowCoin } from './components/StakePushYellowCoin
 
 export { default as StakePushYellowMultiplier } from './components/StakePushYellowMultiplier';
 
+export { default as Solana } from './components/Solana';
+
 export { default as SubscribePoints } from './components/SubscribePoints';
 
 export { default as TripleRewardsCoin } from './components/TripleRewardsCoin';
 
 export { default as Twitter } from './components/Twitter';
-export { default as TwitterSimple } from './components/TwitterSimple';
 
 export { default as RewardsActivity } from './components/RewardsActivity';
 
