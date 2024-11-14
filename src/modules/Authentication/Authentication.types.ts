@@ -11,3 +11,6 @@ export type WalletCategoriesType = {
   label: string;
   icon: ReactNode;
 };
+
+export type WalletKeyPairType = 
+  Record<string,string>;

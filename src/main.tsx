@@ -9,6 +9,7 @@ import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { FlowWalletConnectors } from "@dynamic-labs/flow";
 import { SolanaWalletConnectors } from "@dynamic-labs/solana";
 import { StarknetWalletConnectors } from "@dynamic-labs/starknet";
+import { WalletBookContextProvider } from "@dynamic-labs/wallet-book";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

@@ -21,6 +21,7 @@ import { WalletSelection } from "./components/WalletSelection";
 //implement steps
 //connect the pages
 //functional connection
+//handle steps of back and next
 const Authentication = () => {
   const [email, setEmail] = useState<string>("");
 
