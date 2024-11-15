@@ -7,6 +7,7 @@ import { ENV } from '../constants'
 import { MnemonicGrid } from '../components/MnemonicGrid'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { PushSigner } from '../services/pushSigner/pushSigner'
+import { EncPushAccount } from '../services/pushWallet/pushWallet.types'
 
 export default function Login() {
   const [loginMethod, setLoginMethod] = useState<string | null>(null)
@@ -26,7 +27,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      let pushWallet: PushWallet
+      let pushWallet: PushWallet | null;
       switch (loginMethod) {
         case 'mnemonic': {
           pushWallet = await PushWallet.logInWithMnemonic(

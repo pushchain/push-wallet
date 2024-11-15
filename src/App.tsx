@@ -1,17 +1,9 @@
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
-import { blocksTheme, Box, getBlocksCSSVariables } from "./blocks";
+import { blocksTheme, getBlocksCSSVariables } from "./blocks";
 import { getAppBasePath, useDarkMode } from "./common";
-import { Home, Login, Signup } from "./pages";
-import config from "./config";
 import { GlobalProvider } from "./context/GlobalContext";
 import { RouterConatiner } from "./common/components/RouterConatiner";
-import { Landing } from "./modules";
 
 const GlobalStyle = createGlobalStyle`
   :root{
@@ -20,11 +12,9 @@ const GlobalStyle = createGlobalStyle`
 
     /* New blocks theme css variables*/
   
-    ${(props) =>getBlocksCSSVariables(props.theme.blocksTheme)}
+    ${(props) => getBlocksCSSVariables(props.theme.blocksTheme)}
   }
 `;
-
-
 
 const themeConfig = {
   dark: {
@@ -40,21 +30,19 @@ export default function App() {
     <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
       <GlobalStyle />
       <GlobalProvider>
-       
-            <Router basename={getAppBasePath()}>
-            <RouterConatiner/>
-              {/* <Routes> */}
-                {/* <RouterConatiner/> */}
-                {/* <Route path="/landing" element={<Landing />} />
+        <Router basename={getAppBasePath()}>
+          <RouterConatiner />
+          {/* <Routes> */}
+          {/* <RouterConatiner/> */}
+          {/* <Route path="/landing" element={<Landing />} />
 
                 <Route path="/" element={<Home />} />
                 <Route path="login" element={<Login />} />
                 <Route path="signup" element={<Signup />} /> */}
-                {/* Redirect to home if route is not found
+          {/* Redirect to home if route is not found
                 // {/* <Route path="*" element={<Navigate to="/" />} />  */}
-              {/* </Routes> */}
-            </Router>
-      
+          {/* </Routes> */}
+        </Router>
       </GlobalProvider>
     </ThemeProvider>
   );

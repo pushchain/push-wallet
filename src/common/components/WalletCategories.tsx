@@ -11,7 +11,7 @@ type WalletCategoriesProps = {
 const WalletCategories: FC<WalletCategoriesProps> = ({setSelectedWalletCategory}) => {
 
   return (
-    <Box display='flex' flexDirection='column'>
+    <Box display='flex' flexDirection='column'  gap="spacing-xxs">
       {walletCategories?.map((walletCategory) => (
         <Box
           cursor="pointer"

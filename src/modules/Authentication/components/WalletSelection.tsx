@@ -1,5 +1,5 @@
-import { FC, useState } from "react";
-import { Back, Box, Text, Button, CaretRight, Spinner } from "../../../blocks";
+import { FC, useEffect, useState } from "react";
+import { Back, Box, Text, Button } from "../../../blocks";
 import { PoweredByPush, WalletCategories } from "../../../common";
 import { solanaWallets } from "../Authentication.constants";
 import { css } from "styled-components";
@@ -13,12 +13,13 @@ import {
   getGroupedWallets,
 } from "../Authentication.utils";
 import { WalletKeyPairType, WalletState } from "../Authentication.types";
-import { shortenText } from "../../../common/Common.utils";
+import { centerMaskWalletAddress } from "../../../common/Common.utils";
 import { PushWallet } from "../../../services/pushWallet/pushWallet";
 import { PushSigner } from "../../../services/pushSigner/pushSigner";
 import { useGlobalState } from "../../../context/GlobalContext";
 import config from "../../../config";
 import { ENV } from "../../../constants";
+import { useNavigate } from "react-router-dom";
 type WalletSelectionProps = {
   setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
 };
@@ -34,7 +35,22 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const { primaryWallet } = useDynamicContext();
   const { dispatch, state } = useGlobalState();
   const { walletOptions, selectWalletOption } = useWalletOptions();
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    (async () => {
+      if (primaryWallet) {
+        let pushWallet;
+        const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
+        pushWallet = await PushWallet.loginWithWallet(
+          signer,
+          config.APP_ENV as ENV
+        );
+        dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
+        if (pushWallet) navigate("/");
+      }
+    })();
+  }, [primaryWallet]);
   const ethereumWallets: WalletKeyPairType = filterEthereumWallets(
     getGroupedWallets(walletOptions)
   );
@@ -50,29 +66,24 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     try {
       setPushWalletCreationloading(true);
       const instance = await PushWallet.signUp(config.APP_ENV as ENV);
-      console.debug(instance, "instance");
       await connectWalletToPushAccount(instance);
     } catch (err) {
       alert(err);
     }
   };
 
-  const connectWalletToPushAccount = async (pushWallet:PushWallet | null) => {
+  const connectWalletToPushAccount = async (pushWallet: PushWallet | null) => {
     const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
-    console.debug("wallet connect", signer);
     await pushWallet?.connectWalletWithAccount(signer);
-    await registerPushAccount(pushWallet)
+    await registerPushAccount(pushWallet);
   };
 
-  const registerPushAccount = async (pushWallet:PushWallet | null) => {
-    console.debug("register", pushWallet);
+  const registerPushAccount = async (pushWallet: PushWallet | null) => {
     if (pushWallet) {
       try {
-      
         await pushWallet.registerPushAccount();
-        console.debug("register wallet");
         dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
-        // navigate("/");
+        navigate("/");
       } catch (err) {
         alert(err);
       }
@@ -81,7 +92,6 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   };
   const handlePushWalletCreation = async () => {
     await handleMnemonicSignup();
-  
   };
   console.debug(
     primaryWallet,
@@ -116,7 +126,9 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
           >
             {!primaryWallet ? (
               !selectedWalletCategory ? (
-                <WalletCategories setSelectedWalletCategory={setSelectedWalletCategory}/>
+                <WalletCategories
+                  setSelectedWalletCategory={setSelectedWalletCategory}
+                />
               ) : (
                 Object.entries(walletsToShow).map(([key, name]) => (
                   <Box
@@ -175,7 +187,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
                   </Text>
 
                   <Text variant="os-regular" color="text-primary">
-                    {shortenText(primaryWallet.address, 6, 6)}
+                    {centerMaskWalletAddress(primaryWallet.address)}
                   </Text>
                 </Box>
               </Box>
