@@ -11,14 +11,15 @@ import {  PoweredByPush } from "../../../common";
 import { socials } from "../Authentication.constants";
 
 //formik for email validation ask
-//shift illustrations to icon
 //input arrow fix
 type LoginProps = {
   email: string;
-  setEmail?: React.Dispatch<React.SetStateAction<string>>
+  setEmail: React.Dispatch<React.SetStateAction<string>>
+  continueWithWallet: boolean;
+  setContinueWithWallet:React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Login:FC<LoginProps> = ({email,setEmail}) => {
+const Login:FC<LoginProps> = ({email,setEmail,continueWithWallet,setContinueWithWallet}) => {
   return (
     <Box
       alignItems="center"
@@ -89,7 +90,7 @@ const Login:FC<LoginProps> = ({email,setEmail}) => {
           <Text variant="os-regular" color="text-tertiary">
             OR
           </Text>
-          <Button variant="outline" block>
+          <Button variant="outline" block onClick={()=>setContinueWithWallet(true)}>
             Continue with a Wallet
           </Button>
         </Box>

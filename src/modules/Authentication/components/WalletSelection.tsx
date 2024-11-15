@@ -153,8 +153,8 @@ const WalletSelection: FC<WalletSelectionProps> = () => {
           </Box>
         </Box>
 
-       {!primaryWallet && <Button variant="secondary">Skip for later</Button>}
-       {primaryWallet && <Button >Create Account</Button>}
+       {/* {!primaryWallet && <Button variant="secondary">Skip for later</Button>}
+       {primaryWallet && <Button >Create Account</Button>} */}
       </Box>
       <PoweredByPush />
     </Box>

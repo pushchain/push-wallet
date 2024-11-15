@@ -23,21 +23,27 @@ import { WalletSelection } from "./components/WalletSelection";
 //handle steps of back and next
 const Authentication = () => {
   const [email, setEmail] = useState<string>("");
-  
+  const [continueWithWallet, setContinueWithWallet] = useState<boolean>(false);
+
   return (
     <ContentLayout footer={<Footer />}>
       <BoxLayout>
-      <Box
-      alignItems="center"
-      flexDirection="column"
-      display="flex"
-      width="376px"
-      padding="spacing-md"
-    >
-        {/* <Login email={email} setEmail={setEmail} /> */}
-   {/* <VerifyCode/> */}
-   <WalletSelection/>
-      </Box>
+        <Box
+          alignItems="center"
+          flexDirection="column"
+          display="flex"
+          width="376px"
+          padding="spacing-md"
+        >
+        {!email && !continueWithWallet &&  <Login
+            email={email}
+            setEmail={setEmail}
+            continueWithWallet={continueWithWallet}
+            setContinueWithWallet={setContinueWithWallet}
+          />}
+          {/* <VerifyCode/> */}
+        {continueWithWallet &&  <WalletSelection/>}
+        </Box>
       </BoxLayout>
     </ContentLayout>
   );
