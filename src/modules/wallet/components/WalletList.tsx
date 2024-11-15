@@ -55,7 +55,7 @@ const WalletList: FC<WalletListProps> = () => {
                 </Menu>
               }
             >
-              <Box>
+              <Box cursor="pointer">
                 <KebabMenuVertical size={16} color="icon-secondary" />
               </Box>
             </Dropdown>

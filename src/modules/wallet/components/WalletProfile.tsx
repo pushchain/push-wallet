@@ -48,7 +48,7 @@ const WalletProfile: FC<WalletProfileProps> = () => {
               </Menu>
             }
           >
-            <Box>
+            <Box cursor="pointer">
               <Settings size={24} color="icon-primary" />
             </Box>
           </Dropdown>
