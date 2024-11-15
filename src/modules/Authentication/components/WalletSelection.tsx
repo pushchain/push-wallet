@@ -1,13 +1,5 @@
 import { FC, useState } from "react";
-import {
-  Back,
-  Box,
-  Text,
-  Button,
-  Ethereum,
-  CaretRight,
-  Solana,
-} from "../../../blocks";
+import { Back, Box, Text, Button, CaretRight, Solana } from "../../../blocks";
 // import { Connector, useConnect } from 'wagmi'
 import { PoweredByPush } from "../../../common";
 import { solanaWallets, walletCategories } from "../Authentication.constants";

@@ -6,7 +6,11 @@ import {
   Solana,
   TwitterSimple,
 } from "../../blocks";
-import { SocialsType, WalletCategoriesType, WalletKeyPairType } from "./Authentication.types";
+import {
+  SocialsType,
+  WalletCategoriesType,
+  WalletKeyPairType,
+} from "./Authentication.types";
 
 export const walletCategories: WalletCategoriesType[] = [
   {
@@ -40,7 +44,7 @@ export const socials: SocialsType[] = [
   },
 ];
 
-export const solanaWallets:WalletKeyPairType = {
+export const solanaWallets: WalletKeyPairType = {
   backpack: "Backpack",
   bitgetwallet: "Bitget",
   brave: "Brave",
