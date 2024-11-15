@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Back, Box, Text, Button } from "../../../blocks";
+import { Back, Box, Text, Button, Spinner } from "../../../blocks";
 import { PoweredByPush, WalletCategories } from "../../../common";
 import { solanaWallets } from "../Authentication.constants";
 import { css } from "styled-components";
@@ -28,10 +28,10 @@ type WalletSelectionProps = {
 const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const [selectedWalletCategory, setSelectedWalletCategory] =
     useState<string>("");
-  // const [pushWallet, setPushWallet] = useState<PushWallet | null>(null);
   const [pushWalletCreationloading, setPushWalletCreationloading] =
     useState<boolean>(false);
-  const userWallets = useUserWallets();
+    const [profileLoading, setProfileLoading] =
+    useState<boolean>(false);
   const { primaryWallet } = useDynamicContext();
   const { dispatch, state } = useGlobalState();
   const { walletOptions, selectWalletOption } = useWalletOptions();
@@ -41,6 +41,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     (async () => {
       if (primaryWallet) {
         let pushWallet;
+        setProfileLoading(true);
         const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
         pushWallet = await PushWallet.loginWithWallet(
           signer,
@@ -48,6 +49,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         );
         dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
         if (pushWallet) navigate("/");
+        setProfileLoading(false);
       }
     })();
   }, [primaryWallet]);
@@ -116,7 +118,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
             </Text>
           </Box>
 
-          <Box
+       <Box
             flexDirection="column"
             display="flex"
             gap="spacing-xxs"
