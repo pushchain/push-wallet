@@ -1,6 +1,7 @@
 import { FC } from "react";
 import {
   Box,
+  Button,
   Copy,
   Dropdown,
   KebabMenuVertical,
@@ -54,7 +55,9 @@ const WalletList: FC<WalletListProps> = () => {
                 </Menu>
               }
             >
-              <KebabMenuVertical size={16} color="icon-secondary" />
+              <Box>
+                <KebabMenuVertical size={16} color="icon-secondary" />
+              </Box>
             </Dropdown>
           )}
         </Box>
