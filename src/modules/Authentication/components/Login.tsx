@@ -1,25 +1,26 @@
 import { FC } from "react";
 import {
+  ArrowUpRight,
   Box,
   Button,
+  Front,
   Google,
   Text,
   TextInput,
- 
 } from "../../../blocks";
-import {  PoweredByPush } from "../../../common";
+import { PoweredByPush } from "../../../common";
 import { socials } from "../Authentication.constants";
+import { WalletState } from "../Authentication.types";
 
 //formik for email validation ask
 //input arrow fix
 type LoginProps = {
   email: string;
-  setEmail: React.Dispatch<React.SetStateAction<string>>
-  continueWithWallet: boolean;
-  setContinueWithWallet:React.Dispatch<React.SetStateAction<boolean>>;
+  setEmail: React.Dispatch<React.SetStateAction<string>>;
+  setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
 };
 
-const Login:FC<LoginProps> = ({email,setEmail,continueWithWallet,setContinueWithWallet}) => {
+const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
   return (
     <Box
       alignItems="center"
@@ -54,6 +55,9 @@ const Login:FC<LoginProps> = ({email,setEmail,continueWithWallet,setContinueWith
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
+              trailingIcon={
+                <Front size={24} onClick={() => setConnectMethod("social")} />
+              }
             />
           </Box>
 
@@ -83,14 +87,18 @@ const Login:FC<LoginProps> = ({email,setEmail,continueWithWallet,setContinueWith
                 borderRadius="radius-sm"
                 padding="spacing-sm spacing-md"
               >
-               {social.icon}
+                {social.icon}
               </Box>
             ))}
           </Box>
           <Text variant="os-regular" color="text-tertiary">
             OR
           </Text>
-          <Button variant="outline" block onClick={()=>setContinueWithWallet(true)}>
+          <Button
+            variant="outline"
+            block
+            onClick={() => setConnectMethod("connectWallet")}
+          >
             Continue with a Wallet
           </Button>
         </Box>

@@ -1,25 +1,12 @@
 import {
   Apple,
   DiscordSimple,
-  Ethereum,
   Github,
-  Solana,
   TwitterSimple,
 } from "../../blocks";
-import { SocialsType, WalletCategoriesType, WalletKeyPairType } from "./Authentication.types";
+import { SocialsType, WalletKeyPairType } from "./Authentication.types";
 
-export const walletCategories: WalletCategoriesType[] = [
-  {
-    value: "ethereum",
-    label: "Link Ethereum Wallet",
-    icon: <Ethereum />,
-  },
-  {
-    value: "solana",
-    label: "Link Solana Wallet",
-    icon: <Solana />,
-  },
-];
+
 
 export const socials: SocialsType[] = [
   {
@@ -57,3 +44,4 @@ export const solanaWallets:WalletKeyPairType = {
   phantom: "Phantom",
   solflare: "Solflare",
 };
+

@@ -250,7 +250,6 @@ export class PushWallet {
       this.derivedHDNode.privateExtendedKey,
       pushSigner
     )
-
     // 2. Ask for confirmation signature - Serves as a conformation for user and proof for network
     const seed = await bip39.mnemonicToSeed(this.mnemonic as string)
     const masterNode = HDKey.fromMasterSeed(seed)
@@ -267,11 +266,14 @@ export class PushWallet {
   }
 
   public registerPushAccount = async () => {
+    console.debug(PushWallet.unRegisteredProfile)
     if (!PushWallet.unRegisteredProfile)
       throw Error('Only Allowed for Unregistered Profile')
 
     // 1. Create Init_did tx
     const seed = await bip39.mnemonicToSeed(this.mnemonic as string)
+    console.debug(seed)
+
     const masterNode = HDKey.fromMasterSeed(seed)
     const txData: InitDid = {
       masterPubKey: bytesToHex(masterNode.publicKey as Uint8Array),
@@ -279,6 +281,7 @@ export class PushWallet {
       derivedPubKey: bytesToHex(this.derivedHDNode.publicKey as Uint8Array),
       walletToEncDerivedKey: this.walletToEncDerivedKey,
     }
+    console.debug(txData)
     const pushTx = await PushTx.initialize(this.env)
     const initDIDTx = pushTx.createUnsigned(
       'INIT_DID',
@@ -304,6 +307,7 @@ export class PushWallet {
         return hexToBytes(signature)
       },
     }
+    console.debug(signer,'signer');
     await pushTx.send(initDIDTx, signer)
     PushWallet.unRegisteredProfile = false
   }

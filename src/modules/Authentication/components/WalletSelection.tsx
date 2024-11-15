@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
-import { Back, Box, Text, Button, CaretRight, Settings } from "../../../blocks";
-import { PoweredByPush } from "../../../common";
-import { solanaWallets, walletCategories } from "../Authentication.constants";
+import { Back, Box, Text, Button, CaretRight, Spinner } from "../../../blocks";
+import { PoweredByPush, WalletCategories } from "../../../common";
+import { solanaWallets } from "../Authentication.constants";
 import { css } from "styled-components";
 import {
   useDynamicContext,
@@ -12,17 +12,27 @@ import {
   filterEthereumWallets,
   getGroupedWallets,
 } from "../Authentication.utils";
-import { WalletKeyPairType } from "../Authentication.types";
+import { WalletKeyPairType, WalletState } from "../Authentication.types";
 import { shortenText } from "../../../common/Common.utils";
-type WalletSelectionProps = {};
+import { PushWallet } from "../../../services/pushWallet/pushWallet";
+import { PushSigner } from "../../../services/pushSigner/pushSigner";
+import { useGlobalState } from "../../../context/GlobalContext";
+import config from "../../../config";
+import { ENV } from "../../../constants";
+type WalletSelectionProps = {
+  setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
+};
 
 //optimise
-const WalletSelection: FC<WalletSelectionProps> = () => {
+const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const [selectedWalletCategory, setSelectedWalletCategory] =
     useState<string>("");
+  // const [pushWallet, setPushWallet] = useState<PushWallet | null>(null);
+  const [pushWalletCreationloading, setPushWalletCreationloading] =
+    useState<boolean>(false);
   const userWallets = useUserWallets();
   const { primaryWallet } = useDynamicContext();
-
+  const { dispatch, state } = useGlobalState();
   const { walletOptions, selectWalletOption } = useWalletOptions();
 
   const ethereumWallets: WalletKeyPairType = filterEthereumWallets(
@@ -33,13 +43,53 @@ const WalletSelection: FC<WalletSelectionProps> = () => {
 
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory("");
+    else setConnectMethod("authentication");
   };
 
-  const isConnected = async () => {
-    return await userWallets[0]?.isConnected();
+  const handleMnemonicSignup = async () => {
+    try {
+      setPushWalletCreationloading(true);
+      const instance = await PushWallet.signUp(config.APP_ENV as ENV);
+      console.debug(instance, "instance");
+      await connectWalletToPushAccount(instance);
+    } catch (err) {
+      alert(err);
+    }
   };
 
-  console.debug(userWallets, primaryWallet, isConnected());
+  const connectWalletToPushAccount = async (pushWallet:PushWallet | null) => {
+    const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
+    console.debug("wallet connect", signer);
+    await pushWallet?.connectWalletWithAccount(signer);
+    await registerPushAccount(pushWallet)
+  };
+
+  const registerPushAccount = async (pushWallet:PushWallet | null) => {
+    console.debug("register", pushWallet);
+    if (pushWallet) {
+      try {
+      
+        await pushWallet.registerPushAccount();
+        console.debug("register wallet");
+        dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
+        // navigate("/");
+      } catch (err) {
+        alert(err);
+      }
+      setPushWalletCreationloading(false);
+    }
+  };
+  const handlePushWalletCreation = async () => {
+    await handleMnemonicSignup();
+  
+  };
+  console.debug(
+    primaryWallet,
+    primaryWallet?.connector?.name,
+    pushWalletCreationloading,
+    state,
+    "primaryWallet"
+  );
   return (
     <Box flexDirection="column" display="flex" gap="spacing-lg" width="100%">
       <Box cursor="pointer" onClick={() => handleBack()}>
@@ -66,36 +116,7 @@ const WalletSelection: FC<WalletSelectionProps> = () => {
           >
             {!primaryWallet ? (
               !selectedWalletCategory ? (
-                walletCategories?.map((walletCategory) => (
-                  <Box
-                    cursor="pointer"
-                    css={css`
-                      :hover {
-                        border: var(--border-sm, 1px) solid
-                          var(--stroke-brand-medium);
-                      }
-                    `}
-                    display="flex"
-                    padding="spacing-xs"
-                    borderRadius="radius-xs"
-                    border="border-sm solid stroke-tertiary"
-                    backgroundColor="surface-transparent"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    key={walletCategory.value}
-                    onClick={() =>
-                      setSelectedWalletCategory(walletCategory.value)
-                    }
-                  >
-                    <Box alignItems="center" display="flex" gap="spacing-xxs">
-                      {walletCategory.icon}
-                      <Text variant="bs-semibold" color="text-primary">
-                        {walletCategory.label}
-                      </Text>
-                    </Box>
-                    <CaretRight size={24} color="icon-tertiary" />
-                  </Box>
-                ))
+                <WalletCategories setSelectedWalletCategory={setSelectedWalletCategory}/>
               ) : (
                 Object.entries(walletsToShow).map(([key, name]) => (
                   <Box
@@ -142,10 +163,19 @@ const WalletSelection: FC<WalletSelectionProps> = () => {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <Box alignItems="center" display="flex">
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  gap="spacing-xxxs"
+                  alignItems="start"
+                >
                   {/* {walletCategory.icon} */}
                   <Text variant="bs-semibold" color="text-primary">
-                    {shortenText(primaryWallet.address,6,6)}
+                    {primaryWallet?.connector?.name}
+                  </Text>
+
+                  <Text variant="os-regular" color="text-primary">
+                    {shortenText(primaryWallet.address, 6, 6)}
                   </Text>
                 </Box>
               </Box>
@@ -153,8 +183,15 @@ const WalletSelection: FC<WalletSelectionProps> = () => {
           </Box>
         </Box>
 
-       {/* {!primaryWallet && <Button variant="secondary">Skip for later</Button>}
-       {primaryWallet && <Button >Create Account</Button>} */}
+        {/* {!primaryWallet && <Button variant="secondary">Skip for later</Button>} */}
+        {primaryWallet && (
+          <Button
+            onClick={() => handlePushWalletCreation()}
+            loading={pushWalletCreationloading}
+          >
+            Create Account
+          </Button>
+        )}
       </Box>
       <PoweredByPush />
     </Box>

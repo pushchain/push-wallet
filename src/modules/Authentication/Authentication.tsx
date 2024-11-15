@@ -14,6 +14,7 @@ import { socials } from "./Authentication.constants";
 import { Login } from "./components/Login";
 import { VerifyCode } from "./components/VerifyCode";
 import { WalletSelection } from "./components/WalletSelection";
+import {WalletState } from "./Authentication.types";
 
 //formik for email validation
 //input arrow fix
@@ -23,7 +24,7 @@ import { WalletSelection } from "./components/WalletSelection";
 //handle steps of back and next
 const Authentication = () => {
   const [email, setEmail] = useState<string>("");
-  const [continueWithWallet, setContinueWithWallet] = useState<boolean>(false);
+  const [connectMethod, setConnectMethod] = useState<WalletState>('authentication');
 
   return (
     <ContentLayout footer={<Footer />}>
@@ -35,14 +36,13 @@ const Authentication = () => {
           width="376px"
           padding="spacing-md"
         >
-        {!email && !continueWithWallet &&  <Login
+        {connectMethod === 'authentication' && <Login
             email={email}
             setEmail={setEmail}
-            continueWithWallet={continueWithWallet}
-            setContinueWithWallet={setContinueWithWallet}
+            setConnectMethod={setConnectMethod}
           />}
           {/* <VerifyCode/> */}
-        {continueWithWallet &&  <WalletSelection/>}
+        {connectMethod === 'connectWallet' &&  <WalletSelection setConnectMethod={setConnectMethod}/>}
         </Box>
       </BoxLayout>
     </ContentLayout>

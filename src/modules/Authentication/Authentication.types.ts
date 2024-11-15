@@ -1,16 +1,14 @@
-import { FC, ReactNode } from "react";
-import { IllustrationProps } from "../../blocks";
+import {  ReactNode } from "react";
+
 
 export type SocialsType = {
   name: string;
   icon: ReactNode;
 };
 
-export type WalletCategoriesType = {
-  value: string;
-  label: string;
-  icon: ReactNode;
-};
 
 export type WalletKeyPairType = 
   Record<string,string>;
+
+
+  export type WalletState = 'connectWallet'| 'social'| 'authentication';
