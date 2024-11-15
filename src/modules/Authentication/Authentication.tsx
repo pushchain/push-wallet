@@ -16,7 +16,6 @@ import { VerifyCode } from "./components/VerifyCode";
 import { WalletSelection } from "./components/WalletSelection";
 
 //formik for email validation
-//shift illustrations to icon
 //input arrow fix
 //implement steps
 //connect the pages
@@ -24,7 +23,7 @@ import { WalletSelection } from "./components/WalletSelection";
 //handle steps of back and next
 const Authentication = () => {
   const [email, setEmail] = useState<string>("");
-
+  
   return (
     <ContentLayout footer={<Footer />}>
       <BoxLayout>

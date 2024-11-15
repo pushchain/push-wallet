@@ -1,33 +1,28 @@
 import { FC, useState } from "react";
-import { Back, Box, Text, Button, CaretRight, Solana } from "../../../blocks";
-// import { Connector, useConnect } from 'wagmi'
+import { Back, Box, Text, Button, CaretRight, Settings } from "../../../blocks";
 import { PoweredByPush } from "../../../common";
 import { solanaWallets, walletCategories } from "../Authentication.constants";
 import { css } from "styled-components";
 import {
   useDynamicContext,
   useUserWallets,
-  useWalletConnectorEvent,
   useWalletOptions,
 } from "@dynamic-labs/sdk-react-core";
-import { isSolanaWallet } from "@dynamic-labs/solana";
-import { WalletIcon } from "@dynamic-labs/wallet-book";
-import { GlowIcon, MetaMaskIcon, PhantomIcon } from "@dynamic-labs/iconic";
 import {
   filterEthereumWallets,
   getGroupedWallets,
 } from "../Authentication.utils";
 import { WalletKeyPairType } from "../Authentication.types";
+import { centerMaskWalletAddress } from "../../../common/Common.utils";
 type WalletSelectionProps = {};
 
-//loop through the wallet options
 //optimise
 const WalletSelection: FC<WalletSelectionProps> = () => {
   const [selectedWalletCategory, setSelectedWalletCategory] =
     useState<string>("");
-  const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const userWallets = useUserWallets();
-  console.debug(userWallets);
+  const { primaryWallet } = useDynamicContext();
+
   const { walletOptions, selectWalletOption } = useWalletOptions();
 
   const ethereumWallets: WalletKeyPairType = filterEthereumWallets(
@@ -39,20 +34,12 @@ const WalletSelection: FC<WalletSelectionProps> = () => {
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory("");
   };
-  const { primaryWallet } = useDynamicContext();
 
-  console.debug(isConnecting);
+  const isConnected = async () => {
+    return await userWallets[0]?.isConnected();
+  };
 
-  useWalletConnectorEvent(
-    primaryWallet?.connector,
-    "accountChange",
-    ({ accounts }, connector) => {
-      console.group("accountChange");
-      console.log("accounts", accounts);
-      console.log("connector that emitted", connector);
-      console.groupEnd();
-    }
-  );
+  console.debug(userWallets, primaryWallet, isConnected());
   return (
     <Box flexDirection="column" display="flex" gap="spacing-lg" width="100%">
       <Box cursor="pointer" onClick={() => handleBack()}>
@@ -77,8 +64,9 @@ const WalletSelection: FC<WalletSelectionProps> = () => {
             overflow="hidden auto"
             customScrollbar
           >
-            {!selectedWalletCategory
-              ? walletCategories?.map((walletCategory) => (
+            {!primaryWallet ? (
+              !selectedWalletCategory ? (
+                walletCategories?.map((walletCategory) => (
                   <Box
                     cursor="pointer"
                     css={css`
@@ -108,7 +96,8 @@ const WalletSelection: FC<WalletSelectionProps> = () => {
                     <CaretRight size={24} color="icon-tertiary" />
                   </Box>
                 ))
-              : Object.entries(walletsToShow).map(([key, name]) => (
+              ) : (
+                Object.entries(walletsToShow).map(([key, name]) => (
                   <Box
                     cursor="pointer"
                     css={css`
@@ -134,11 +123,38 @@ const WalletSelection: FC<WalletSelectionProps> = () => {
                       </Text>
                     </Box>
                   </Box>
-                ))}
+                ))
+              )
+            ) : (
+              <Box
+                cursor="pointer"
+                css={css`
+                  :hover {
+                    border: var(--border-sm, 1px) solid
+                      var(--stroke-brand-medium);
+                  }
+                `}
+                display="flex"
+                padding="spacing-xs"
+                borderRadius="radius-xs"
+                border="border-sm solid stroke-tertiary"
+                backgroundColor="surface-transparent"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <Box alignItems="center" display="flex">
+                  {/* {walletCategory.icon} */}
+                  <Text variant="bs-semibold" color="text-primary">
+                    {centerMaskWalletAddress(primaryWallet.address)}
+                  </Text>
+                </Box>
+              </Box>
+            )}
           </Box>
         </Box>
 
-        <Button variant="secondary">Skip for later</Button>
+        {!primaryWallet && <Button variant="secondary">Skip for later</Button>}
+        {primaryWallet && <Button>Create Account</Button>}
       </Box>
       <PoweredByPush />
     </Box>
