@@ -12,6 +12,7 @@ import {
   Logout,
   Menu,
   MenuItem,
+  Pin,
   PushLogo,
   Settings,
   Text,
@@ -42,15 +43,17 @@ const WalletProfile: FC<WalletProfileProps> = () => {
           <Dropdown
             overlay={
               <Menu>
-                <MenuItem label="Linked Accounts" />
+                <MenuItem label="Linked Accounts" icon={<Pin />} />
                 <MenuItem label="App Permissions" icon={<Cube />} />
-                <MenuItem label="Passkeys" />
+                <MenuItem label="Passkeys" icon={<Lock />} />
                 <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} />
                 <MenuItem label="Log Out" icon={<Logout />} />
               </Menu>
             }
           >
-            <Settings size={24} color="icon-primary" />
+            <Box cursor="pointer">
+              <Settings size={24} color="icon-primary" />
+            </Box>
           </Dropdown>
         </Box>
       </Box>
