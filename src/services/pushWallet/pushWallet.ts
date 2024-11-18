@@ -440,7 +440,7 @@ export class PushWallet {
     try {
       
       const txDataResponse = await api.get(`/auth/passkey/transaction/${userId}`);
-      if (!txDataResponse.data) {
+      if (!txDataResponse?.data?.transactionHash) {
         throw new Error('No transaction hash found');
       }
 
@@ -543,7 +543,7 @@ export class PushWallet {
       return mnemonicShare;
     } catch (error) {
       console.error('Error retrieving mnemonic share from transaction:', error);
-      throw new Error('Failed to retrieve mnemonic share from transaction');
+      throw error;
     }
   }
   

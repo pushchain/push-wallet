@@ -7,9 +7,8 @@ import { ENV } from '../constants'
 import { MnemonicGrid } from '../components/MnemonicGrid'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { PushSigner } from '../services/pushSigner/pushSigner'
-import api from '../services/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGithub, faGoogle, faDiscord, faTwitter, faTelegram } from '@fortawesome/free-brands-svg-icons';
+import { faGithub, faGoogle, faDiscord, faTwitter } from '@fortawesome/free-brands-svg-icons';
 
 export default function Login() {
   const [loginMethod, setLoginMethod] = useState<string | null>(null)
@@ -62,10 +61,6 @@ export default function Login() {
       alert(err)
     }
   }
-
-  // const handleGitHubLogin = () => {
-  //   window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/github`
-  // }
 
   const handleSocialLogin = (provider: 'github' | 'google' | 'discord' | 'twitter') => {
     window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-social?provider=${provider}`;

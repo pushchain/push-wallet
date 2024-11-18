@@ -11,7 +11,6 @@ export default function Profile() {
   const { state, dispatch } = useGlobalState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
   const [pushWallet, setPushWallet] = useState<PushWallet | null>(null)
   const [attachedWallets, setAttachedWallets] = useState<string[]>([])
 
@@ -27,165 +26,202 @@ export default function Profile() {
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
+      setLoading(true);
       const instance = await PushWallet.signUp(import.meta.env.VITE_APP_ENV as ENV);
       
-      // Convert mnemonic to hex
       const mnemonicHex = Buffer.from(instance.mnemonic).toString('hex');
-      
-      // Split the mnemonic into 3 shares, requiring 2 for reconstruction
       const shares = secrets.share(mnemonicHex, 3, 2);
       
-      // Store share1 in the backend
-      await api.post(`/mnemonic-share/${userId}`, 
-        { share: shares[0] }
-      );
-
-      // Store share2 in user'slocalStorage
+      await api.post(`/mnemonic-share/${userId}`, { share: shares[0] });
       localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
-
-      // Store share3 to the push-chain network
-      await instance.storeMnemonicShareAsEncryptedTx(userId, shares[2], instance.mnemonic)
-      
+      await instance.storeMnemonicShareAsEncryptedTx(userId, shares[2], instance.mnemonic);
       await instance.registerPushAccount();
 
       dispatch({ type: 'INITIALIZE_WALLET', payload: instance });
       setPushWallet(instance);
       setAttachedWallets(Object.keys(instance.walletToEncDerivedKey));
 
-      console.log('Wallet created and mnemonic split into shares');
+      console.info('Wallet created and mnemonic split into shares', { userId });
     } catch (err) {
       console.error('Error creating wallet:', err);
       setError('Failed to create wallet. Please try again.');
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
   const reconstructWallet = async (share1: string, share2: string) => {
     try {
-      // Reconstruct the mnemonic
+      setLoading(true);
       const mnemonicHex = secrets.combine([share1, share2]);
       const mnemonic = Buffer.from(mnemonicHex, 'hex').toString();
-  
-      // Recreate the wallet instance
       const instance = await PushWallet.logInWithMnemonic(mnemonic, import.meta.env.VITE_APP_ENV as ENV);
   
       dispatch({ type: 'INITIALIZE_WALLET', payload: instance });
       setPushWallet(instance);
       setAttachedWallets(Object.keys(instance.walletToEncDerivedKey));
   
-      console.log('Wallet reconstructed successfully');
+      console.info('Wallet reconstructed successfully');
     } catch (err) {
       console.error('Error reconstructing wallet:', err);
       setError('Failed to reconstruct wallet. Please try again.');
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Function to fetch JWT using state parameter
   const fetchJwtUsingState = async (stateParam: string) => {
     try {
+      setLoading(true);
       console.log("fetchJwtUsingState called with state:", stateParam);
+      
       const response = await api.get('/auth/jwt', {
         params: { state: stateParam },
       });
-      console.log("Received JWT:", response.data);
+      
       const { token } = response.data;
-      if (token) {
-        // Store the token securely
-        dispatch({ type: 'SET_JWT', payload: token });
+      if (!token) throw new Error('Token not found in response');
 
-        // Store token in sessionStorage
-        sessionStorage.setItem('jwt', token);
-        console.log("JWT stored in sessionStorage");
-
-        // Fetch user profile with the token
-        fetchUserProfile(token);
-      } else {
-        throw new Error('Token not found in response');
-      }
+      dispatch({ type: 'SET_JWT', payload: token });
+      sessionStorage.setItem('jwt', token);
+      
+      await fetchUserProfile(token);
     } catch (err) {
       console.error('Error fetching JWT:', err);
       setError('Authentication failed. Please try logging in again.');
       navigate('/login');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Function to fetch user profile
   const fetchUserProfile = async (token: string) => {
     try {
-      console.log("fetchUserProfile called with token:", token);
-
+      setLoading(true);
       const response = await api.get('/auth/user', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      const userId = response.data.id
-
+      const userId = response.data.id;
       dispatch({ type: 'SET_USER', payload: response.data });
       dispatch({ type: 'SET_AUTHENTICATED', payload: true });
 
-      // Check if user has a wallet, if not, create one
       if (!state.wallet) {
-        // Retrieve share1 from the backend
-        const mnemonicShareResponse = await api.get(`/mnemonic-share/${userId}`);
-        const share1 = mnemonicShareResponse.data.share;
-
-        // Check if we have mnemonic shares stored
-        const share2 = localStorage.getItem(`mnemonicShare2:${userId}`);
-
-        if (share1 && share2) {
-          await reconstructWallet(share1, share2);
-        } else {
-          // If share2 is missing, try to get share3 from blockchain
+        try {
+          let share1, share2, share3;
+      
+          // Try share1 + share2 combination first
           try {
-            const share3 = await PushWallet.retrieveMnemonicShareFromTx(
-              import.meta.env.VITE_APP_ENV as ENV,
-              userId,
-            );
+            const mnemonicShareResponse = await api.get(`/mnemonic-share/${userId}`);
+            share1 = mnemonicShareResponse.data.share;
+            share2 = localStorage.getItem(`mnemonicShare2:${userId}`);
 
-            if (share1 && share3) {
-              await reconstructWallet(share1, share3);
-            } else {
-              // If we can't get either share2 or share3, create new wallet
-              await createWalletAndGenerateMnemonic(userId);
+            if (share1 && share2) {
+              console.info('Reconstructing wallet with share1 and share2', { userId });
+              await reconstructWallet(share1, share2);
+              return;
             }
-          } catch (txError) {
-            console.error('Error retrieving share3:', txError);
-            await createWalletAndGenerateMnemonic(userId);
+          } catch (error) {
+            console.debug('Share1 not available', { userId, error: (error as Error).message });
           }
+          
+          // Try combinations with share3 if needed
+          if (!share1 || !share2) {
+            try {
+              share3 = await PushWallet.retrieveMnemonicShareFromTx(
+                import.meta.env.VITE_APP_ENV as ENV,
+                userId,
+              );
+              
+              if (share1 && share3) {
+                console.info('Reconstructing wallet with share1 and share3', { userId });
+                await reconstructWallet(share1, share3);
+                return;
+              }
+              
+              if (share2 && share3) {
+                console.info('Reconstructing wallet with share2 and share3', { userId });
+                await reconstructWallet(share2, share3);
+                return;
+              }
+            } catch (error) {
+              console.debug('Share3 not available', { userId, error: (error as Error).message });
+            }
+          }
+
+          const hasAnyShare = share1 || share2 || share3;
+          if (hasAnyShare) {
+            const shouldCreate = window.confirm(
+              'Unable to reconstruct your existing wallet. Would you like to create a new one? ' +
+              'Warning: This will make your old wallet inaccessible.'
+            );
+            if (!shouldCreate) {
+              setError('Wallet reconstruction failed. Please try again later.');
+              return;
+            }
+          }
+      
+          console.info('Creating new wallet', { 
+            userId,
+            availableShares: {
+              share1: !!share1,
+              share2: !!share2,
+              share3: !!share3
+            }
+          });
+          
+          await createWalletAndGenerateMnemonic(userId);
+      
+        } catch (error) {
+          console.error('Error during wallet reconstruction/creation', { 
+            userId,
+            error: (error as Error).message 
+          });
+          throw error;
         }
       }
-  
-      setLoading(false);
     } catch (err) {
       console.error('Error fetching user profile:', err);
       setError('Failed to fetch user profile. Please try again.');
+      throw err;
+    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const stateParam = extractStateFromUrl();
+    const initializeProfile = async () => {
+      try {
+        setLoading(true);
+        const stateParam = extractStateFromUrl();
 
-    if (stateParam) {
-      // Fetch JWT using the state parameter
-      fetchJwtUsingState(stateParam);
-
-      // Optionally, remove the state parameter from the URL
-      const url = new URL(window.location.href);
-      url.searchParams.delete('state');
-      window.history.replaceState({}, document.title, url.pathname);
-    } else {
-      // Attempt to retrieve token from storage
-      const storedToken = sessionStorage.getItem('jwt');
-      if (storedToken) {
-        dispatch({ type: 'SET_JWT', payload: storedToken });
-        fetchUserProfile(storedToken);
-      } else {
-        // No token found, redirect to login
-        navigate('/login');
+        if (stateParam) {
+          await fetchJwtUsingState(stateParam);
+          
+          // Clean up URL
+          const url = new URL(window.location.href);
+          url.searchParams.delete('state');
+          window.history.replaceState({}, document.title, url.pathname);
+        } else {
+          const storedToken = sessionStorage.getItem('jwt');
+          if (storedToken) {
+            dispatch({ type: 'SET_JWT', payload: storedToken });
+            await fetchUserProfile(storedToken);
+          } else {
+            navigate('/login');
+          }
+        }
+      } catch (err) {
+        console.error('Error initializing profile:', err);
+        setError('Failed to initialize profile');
+      } finally {
+        setLoading(false);
       }
-    }
+    };
+
+    initializeProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
