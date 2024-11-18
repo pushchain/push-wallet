@@ -24,7 +24,7 @@ export type WalletProfileProps = {};
 
 const WalletProfile: FC<WalletProfileProps> = () => {
   const { state } = useGlobalState();
-  const parsedWallet = state?.wallet?.signerAccount.split(':')[2];
+  const parsedWallet = state?.wallet?.signerAccount?.split(":")?.[2];
   return (
     <Box
       display="flex"
@@ -70,9 +70,7 @@ const WalletProfile: FC<WalletProfileProps> = () => {
         <Text variant="bl-semibold">Push Wallet</Text>
         <Box display="flex" gap="spacing-xxxs">
           <Text variant="bes-semibold" color="text-tertiary">
-            {centerMaskWalletAddress(
-              parsedWallet
-            )}
+            {centerMaskWalletAddress(parsedWallet)}
           </Text>
           <Copy color="icon-tertiary" />
         </Box>
