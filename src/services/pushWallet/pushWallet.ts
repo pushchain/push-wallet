@@ -11,7 +11,7 @@ import {
   InitDid,
   EncryptedText,
 } from '@pushprotocol/node-core/src/lib/generated/txData/init_did'
-import { EncPushAccount, AppConnection } from './pushWallet.types'
+import { EncPushAccount, AppConnection, AccountInfo } from './pushWallet.types'
 import { bytesToString, createWalletClient, hexToBytes, http } from 'viem'
 import { PushSigner } from '../pushSigner/pushSigner'
 import { Signer } from '../pushSigner/pushSigner.types'
@@ -140,6 +140,7 @@ export class PushWallet {
   ) => {
     this.pushValidator = await PushValidator.initalize({ env })
     const encPushAccount = await PushWallet.getPushWallet(pushSigner.account)
+    console.log(encPushAccount)
     if (encPushAccount == null) {
       throw Error('Push Account Not Found!')
     } else {
@@ -167,14 +168,23 @@ export class PushWallet {
   private static getPushWallet = async (
     account: string
   ): Promise<null | EncPushAccount> => {
-    const encPushAccount = localStorage.getItem(account)
-    if (encPushAccount) {
-      return JSON.parse(encPushAccount)
-    }
-    return await this.pushValidator.call<null | EncPushAccount>(
+    const encPushAccount = await this.pushValidator.call<null | AccountInfo>(
       'push_accountInfo',
       [account]
     )
+
+    return encPushAccount.items.length > 0
+      ? {
+          did: encPushAccount.items[0].did,
+          derivedKeyIndex: parseInt(encPushAccount.items[0].derivedkeyindex),
+          encDerivedPrivKey: {
+            ...JSON.parse(encPushAccount.items[0].encryptedderivedprivatekey),
+            preKey: JSON.parse(
+              encPushAccount.items[0].encryptedderivedprivatekey
+            ).prekey,
+          },
+        }
+      : null
   }
 
   /**
@@ -298,15 +308,6 @@ export class PushWallet {
 
     await pushTx.send(initDIDTx, signer)
     PushWallet.unRegisteredProfile = false
-
-    Object.keys(this.walletToEncDerivedKey).forEach((key) => {
-      const { encDerivedPrivKey } = this.walletToEncDerivedKey[key]
-
-      localStorage.setItem(
-        key,
-        JSON.stringify({ did: this.did, derivedKeyIndex: 0, encDerivedPrivKey })
-      )
-    })
   }
 
   public storeMnemonicShareAsEncryptedTx = async (userId: string, mnemonicShare: string, mnemonic: string) => {
