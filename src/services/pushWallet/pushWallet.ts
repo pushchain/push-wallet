@@ -1,7 +1,7 @@
 import * as bip39 from '@scure/bip39'
 import { wordlist } from '@scure/bip39/wordlists/english'
 import { HDKey } from '@scure/bip32'
-import { bytesToHex, randomBytes } from '@noble/hashes/utils'
+import { bytesToHex, utf8ToBytes, randomBytes } from '@noble/hashes/utils'
 import {
   Validator as PushValidator,
   Tx as PushTx,
@@ -25,6 +25,7 @@ import {
 } from 'viem/accounts'
 import { mainnet } from 'viem/chains'
 import { EncryptedPrivateKey } from '../pushEncryption/pushEncryption.types'
+import api from '../../services/api'; // Axios instance
 
 export class PushWallet {
   private static pushValidator: PushValidator
@@ -304,10 +305,268 @@ export class PushWallet {
         return hexToBytes(signature)
       },
     }
+
     await pushTx.send(initDIDTx, signer)
     PushWallet.unRegisteredProfile = false
   }
 
+  public storeMnemonicShareAsEncryptedTx = async (userId: string, mnemonicShare: string, mnemonic: string) => {
+    try {
+
+      // 1. Get registration options from server
+      const response = await api.post('/auth/passkey/register-credential', { userId });
+      const options = response.data;
+
+      // 2. Convert challenge and user ID to ArrayBuffer
+      if (typeof options.publicKey.challenge === 'string') {
+        options.publicKey.challenge = PushWallet.base64URLToBuffer(options.publicKey.challenge);
+      }
+
+      if (typeof options.publicKey.user.id === 'string') {
+        options.publicKey.user.id = PushWallet.base64URLToBuffer(options.publicKey.user.id);
+      }
+
+      // 3. Create credential
+      const credential = await navigator.credentials.create(options);
+
+      if (!credential) {
+        throw new Error('Failed to create PassKey credential');
+      }
+
+      // 4. Send credential to server for verification
+      await api.post('/auth/passkey/verify-registration', {
+        userId,
+        credential: {
+          id: (credential as PublicKeyCredential).id,
+          rawId: PushWallet.bufferToBase64URL((credential as PublicKeyCredential).rawId),
+          response: {
+            attestationObject: PushWallet.bufferToBase64URL(
+              ((credential as PublicKeyCredential).response as AuthenticatorAttestationResponse).attestationObject
+            ),
+            clientDataJSON: PushWallet.bufferToBase64URL(
+              ((credential as PublicKeyCredential).response as AuthenticatorAttestationResponse).clientDataJSON
+            ),
+            transports: ((credential as PublicKeyCredential).response as AuthenticatorAttestationResponse).getTransports?.() || [],
+          },
+          type: (credential as PublicKeyCredential).type,
+          clientExtensionResults: (credential as PublicKeyCredential).getClientExtensionResults(),
+        },
+      });
+
+      // 4. Encrypt mnemonic share using the credential
+      const subtle = window.crypto.subtle;
+      const encoder = new TextEncoder();
+      const data = encoder.encode(mnemonicShare);
+
+      // Generate salt and derive encryption key
+      const salt = new Uint8Array(16);
+      window.crypto.getRandomValues(salt);
+      
+      const keyMaterial = await subtle.importKey(
+        'raw',
+        (credential as PublicKeyCredential).rawId,
+        'PBKDF2',
+        false,
+        ['deriveBits', 'deriveKey']
+      );
+
+      const encryptionKey = await subtle.deriveKey(
+        {
+          name: 'PBKDF2',
+          salt: salt.buffer,
+          iterations: 100000,
+          hash: { name: 'SHA-256' }
+        },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt']
+      );
+
+      // Encrypt the data
+      const iv = window.crypto.getRandomValues(new Uint8Array(12));
+      const encryptedData = await subtle.encrypt(
+        {
+          name: 'AES-GCM',
+          iv
+        },
+        encryptionKey,
+        data
+      );
+
+      // Combine salt and encrypted data
+      const combinedData = new Uint8Array([...salt, ...new Uint8Array(encryptedData)]);
+
+      // Do a Custom transaction on pushChain
+      const txInstance = await PushTx.initialize(this.env);
+      const recipients = [];
+      const tx = txInstance.createUnsigned(
+        'CUSTOM:MNEMONIC_SHARE_REGISTRATION',
+        recipients,
+        combinedData
+      );
+
+      const seed = await bip39.mnemonicToSeed(mnemonic as string)
+      const masterNode = HDKey.fromMasterSeed(seed)
+
+      const account = privateKeyToAccount(
+        `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`
+      )
+  
+      const signer = {
+        account: Address.toPushCAIP(account.address, this.env),
+        signMessage: async (dataToBeSigned: Uint8Array) => {
+          const signature = await account.signMessage({
+            message: { raw: dataToBeSigned },
+          })
+          return hexToBytes(signature)
+        },
+      }
+
+      const res = await txInstance.send(tx, signer);
+
+      console.log("::::::::::::::::Tx Response::::::::::", res);
+      await api.put(`/auth/passkey/transaction/${userId}`, {
+        transactionHash: res,
+        iv: PushWallet.bufferToBase64URL(iv)
+      });
+
+    } catch (error) {
+      console.error('Error in sendMenomicShare:', error);
+      throw error;
+    }
+  }
+
+  public static async retrieveMnemonicShareFromTx(env: ENV, userId: string): Promise<string> {
+    try {
+      
+      const txDataResponse = await api.get(`/auth/passkey/transaction/${userId}`);
+      if (!txDataResponse?.data?.transactionHash) {
+        throw new Error('No transaction hash found');
+      }
+
+      // 2. Retrieve encrypted data from blockchain
+      const txInstance = await PushTx.initialize(env);
+      const txSearchResult = await txInstance.search(txDataResponse.data.transactionHash);
+      
+      const txData = txSearchResult.blocks[0]?.blockDataAsJson.txobjList[0]?.tx.data;
+      if (!txData) {
+        throw new Error('Transaction data not found');
+      }
+
+      // 3. Decode encrypted data from base64
+      const encryptedData = new Uint8Array(
+        atob(txData)
+          .split('')
+          .map(char => char.charCodeAt(0))
+      );
+
+      // Get authentication challenge from server
+      const challengeResponse = await api.get(`/auth/passkey/challenge/${userId}`);
+      const options: PublicKeyCredentialRequestOptions = {
+        challenge: this.base64URLToBuffer(challengeResponse.data.challenge),
+        rpId: window.location.hostname,
+        timeout: 60000,
+        userVerification: 'required',
+        allowCredentials: [] // Server should provide the credential IDs
+      };
+
+      // Request PassKey authentication
+      const credential = await navigator.credentials.get({
+        publicKey: options
+      }) as PublicKeyCredential;
+
+
+      if (!credential) {
+        throw new Error('Failed to get PassKey credential');
+      }
+
+      // 6. Extract components from encrypted data
+      const salt = encryptedData.slice(0, 16);
+      const iv = this.base64URLToBuffer(txDataResponse.data.iv);
+      const actualEncryptedData = encryptedData.slice(16, -16);
+      const authTag = encryptedData.slice(-16);
+      const dataWithTag = new Uint8Array([...actualEncryptedData, ...authTag]);
+
+      // 6. Derive decryption key
+      const subtle = window.crypto.subtle;
+      const keyMaterial = await subtle.importKey(
+        'raw',
+        credential.rawId,
+        'PBKDF2',
+        false,
+        ['deriveBits', 'deriveKey']
+      );
+
+      const decryptionKey = await subtle.deriveKey(
+        {
+          name: 'PBKDF2',
+          salt,
+          iterations: 100000,
+          hash: { name: 'SHA-256' }
+        },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['decrypt']
+      );
+
+      // 7. Decrypt the data
+      const decryptedBuffer = await subtle.decrypt(
+        {
+          name: 'AES-GCM',
+          iv
+        },
+        decryptionKey,
+        dataWithTag.buffer
+      );
+
+      // 8. Convert decrypted buffer to string
+      const decoder = new TextDecoder();
+      const mnemonicShare = decoder.decode(decryptedBuffer);
+
+      // Verify authentication with server
+      await api.post(`/auth/passkey/verify/${userId}`, {
+        id: credential.id,
+        rawId: this.bufferToBase64URL(credential.rawId),
+        authenticatorData: this.bufferToBase64URL(
+          (credential.response as AuthenticatorAssertionResponse).authenticatorData
+        ),
+        clientDataJSON: this.bufferToBase64URL(
+          (credential.response as AuthenticatorAssertionResponse).clientDataJSON
+        ),
+        signature: this.bufferToBase64URL(
+          (credential.response as AuthenticatorAssertionResponse).signature
+        ),
+        transactionHash: txDataResponse.data.transactionHash
+      });
+
+      return mnemonicShare;
+    } catch (error) {
+      console.error('Error retrieving mnemonic share from transaction:', error);
+      throw error;
+    }
+  }
+  
+  private static bufferToBase64URL(buffer: ArrayBuffer): string {
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+    return base64.replace(/\+/g, '-')
+                 .replace(/\//g, '_')
+                 .replace(/=/g, '');
+  }
+
+  private static base64URLToBuffer(base64URL: string): ArrayBuffer {
+    const base64 = base64URL.replace(/-/g, '+').replace(/_/g, '/');
+    const paddedBase64 = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
+    const binary = atob(paddedBase64);
+    const buffer = new ArrayBuffer(binary.length);
+    const view = new Uint8Array(buffer);
+    for (let i = 0; i < binary.length; i++) {
+        view[i] = binary.charCodeAt(i);
+    }
+    return buffer;
+  }
+  
   /**
    * SIGN DATA WITH DERIVED KEY
    * @param data data to be signed

@@ -11,7 +11,7 @@ import { SolanaWalletConnectors } from "@dynamic-labs/solana";
 import { StarknetWalletConnectors } from "@dynamic-labs/starknet";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+  <>
     <DynamicContextProvider
       settings={{
         initialAuthenticationMode: "connect-only",
@@ -29,5 +29,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     >
       <App />
     </DynamicContextProvider>
-  </React.StrictMode>
+  </>
 );
