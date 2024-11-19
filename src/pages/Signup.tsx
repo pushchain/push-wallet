@@ -115,7 +115,7 @@ export default function Signup() {
   }
 
   const handleSocialLogin = (provider: 'github' | 'google' | 'discord' | 'twitter') => {
-    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-social?provider=${provider}`;
+    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(window.location.origin + '/profile')}`;
   };
 
   const renderSocialLogins = () => (
