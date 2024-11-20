@@ -14,7 +14,7 @@ import { socials } from "./Authentication.constants";
 import { Login } from "./components/Login";
 import { VerifyCode } from "./components/VerifyCode";
 import { WalletSelection } from "./components/WalletSelection";
-import {WalletState } from "./Authentication.types";
+import { WalletState } from "./Authentication.types";
 
 //formik for email validation
 //input arrow fix
@@ -36,13 +36,13 @@ const Authentication = () => {
           width="376px"
           padding="spacing-md"
         >
-        {connectMethod === 'authentication' && <Login
+          {connectMethod === 'authentication' && <Login
             email={email}
             setEmail={setEmail}
             setConnectMethod={setConnectMethod}
           />}
           {/* <VerifyCode/> */}
-        {connectMethod === 'connectWallet' &&  <WalletSelection setConnectMethod={setConnectMethod}/>}
+          {connectMethod === 'connectWallet' && <WalletSelection setConnectMethod={setConnectMethod} />}
         </Box>
       </BoxLayout>
     </ContentLayout>

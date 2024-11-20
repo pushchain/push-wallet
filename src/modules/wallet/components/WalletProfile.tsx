@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import BlockiesSvg from "blockies-react-svg";
 import {
   Asterisk,
@@ -16,15 +16,34 @@ import {
   PushLogo,
   Settings,
   Text,
+  Tooltip,
 } from "../../../blocks";
 import { centerMaskWalletAddress } from "../../../common";
 import { useGlobalState } from "../../../context/GlobalContext";
+import { useNavigate } from "react-router-dom";
 
 export type WalletProfileProps = {};
 
 const WalletProfile: FC<WalletProfileProps> = () => {
   const { state } = useGlobalState();
   const parsedWallet = state?.wallet?.signerAccount?.split(":")?.[2];
+
+  const [copied, setCopied] = useState(false);
+
+  const { dispatch } = useGlobalState();
+
+  const navigate = useNavigate();
+
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // Reset the copied state after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  }
+
   return (
     <Box
       display="flex"
@@ -47,7 +66,13 @@ const WalletProfile: FC<WalletProfileProps> = () => {
                 <MenuItem label="App Permissions" icon={<Cube />} />
                 <MenuItem label="Passkeys" icon={<Lock />} />
                 <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} />
-                <MenuItem label="Log Out" icon={<Logout />} />
+                <MenuItem label="Log Out" icon={<Logout />}
+                  onClick={() => {
+                    sessionStorage.removeItem('jwt');
+                    dispatch({ type: 'RESET_AUTHENTICATED' });
+                    dispatch({ type: 'RESET_USER' });
+                    navigate('/auth');
+                  }} />
               </Menu>
             }
           >
@@ -72,7 +97,11 @@ const WalletProfile: FC<WalletProfileProps> = () => {
           <Text variant="bes-semibold" color="text-tertiary">
             {centerMaskWalletAddress(parsedWallet)}
           </Text>
-          <Copy color="icon-tertiary" />
+          <Box cursor="pointer">
+            <Tooltip title={copied ? 'Copy' : 'Copied'} trigger='click'>
+              <Copy color="icon-tertiary" onClick={() => handleCopy(parsedWallet)} />
+            </Tooltip>
+          </Box>
         </Box>
       </Box>
     </Box>

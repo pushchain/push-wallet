@@ -1,9 +1,10 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
-import { blocksTheme, getBlocksCSSVariables } from "./blocks";
-import { getAppBasePath, useDarkMode } from "./common";
-import { GlobalProvider } from "./context/GlobalContext";
 import { RouterConatiner } from "./common/components/RouterConatiner";
+import { GlobalProvider } from "./context/GlobalContext";
+import { blocksTheme, getBlocksCSSVariables } from "./blocks";
+import { getAppBasePath } from "./common";
+import { useDarkMode } from "usehooks-ts";
 
 const GlobalStyle = createGlobalStyle`
   :root{
@@ -25,6 +26,8 @@ const themeConfig = {
 };
 
 export default function App() {
+  const baseUrl = window.location.origin + '/push-keys/#'
+
   const { isDarkMode } = useDarkMode();
   return (
     <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>

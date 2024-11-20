@@ -1,19 +1,17 @@
-import { FC, useEffect, useState } from "react";
-import { Box, Spinner } from "../../blocks";
-import { BoxLayout, ContentLayout } from "../../common";
-import { WalletProfile } from "./components/WalletProfile";
-import { WalletTabs } from "./components/WalletTabs";
-import api from "../../services/api";
-import { PushWallet } from "../../services/pushWallet/pushWallet";
-import { ENV } from "../../constants";
+// src/pages/Profile.tsx
+import React, { useEffect, useState } from 'react';
+import { useGlobalState } from '../context/GlobalContext';
+import api from '../services/api'; // Axios instance
+import { useNavigate, useLocation } from 'react-router-dom';
+import { PushWallet } from '../services/pushWallet/pushWallet'
 import secrets from 'secrets.js-grempe';
-import { useGlobalState } from "../../context/GlobalContext";
-import { useLocation, useNavigate } from "react-router-dom";
+import { ENV } from '../constants'
+import { WalletProfile } from '../modules/wallet/components/WalletProfile';
+import { WalletTabs } from '../modules/wallet/components/WalletTabs';
+import { Box, Spinner } from '../blocks';
+import { BoxLayout, ContentLayout } from '../common';
 
-export type WalletProps = {};
-
-const Wallet: FC<WalletProps> = () => {
-
+export const Profile = () => {
   const { state, dispatch } = useGlobalState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -231,26 +229,80 @@ const Wallet: FC<WalletProps> = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <ContentLayout>
-      <BoxLayout>
-        {loading ? (
-          <Spinner variant='primary' size='large' />
-        ) : (
-          <Box
-            flexDirection="column"
-            display="flex"
-            width="376px"
-            padding="spacing-md"
-            gap="spacing-sm"
-          >
-            <WalletProfile />
-            <WalletTabs />
-          </Box>
-        )}
-      </BoxLayout>
-    </ContentLayout>
-  );
-};
+  if (loading) {
+    return <div className="text-center mt-20">Loading Profile...</div>;
+  }
 
-export { Wallet };
+  if (error) {
+    return <div className="text-center mt-20 text-red-500">{error}</div>;
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center p-8">
+      <h1 className="text-3xl font-bold mb-4">Profile</h1>
+      <img
+        src={state.user.avatarUrl} // Adjust based on your backend's user object
+        alt="Avatar"
+        className="w-24 h-24 rounded-full mb-4"
+      />
+      <p className="text-xl mb-2">Username: {state.user.username}</p>
+      <p className="text-xl mb-4">Email: {state.user.email}</p>
+      <div className="w-full max-w-md bg-white shadow-md rounded px-12 py-8 mb-6">
+        <h2 className="text-2xl mb-4">Your Wallet</h2>
+        {/* Display wallet details or provide wallet-related actions */}
+        {state.wallet ? (
+          <>
+            <div className="break-words">
+              <p className="mb-4">
+                <strong>Account:</strong>
+                <span className="break-all">{state.wallet.signerAccount.split(':')[2]}</span>
+              </p>
+              <p>
+                <strong>DID:</strong>
+                <span className="break-all">{state.wallet.did}</span>
+              </p>
+              {/* Add more wallet details as needed */}
+            </div>
+
+          </>
+        ) : (
+          <p>No wallet connected.</p>
+        )}
+      </div>
+      <button
+        onClick={() => {
+          // Implement logout functionality
+          sessionStorage.removeItem('jwt');
+          dispatch({ type: 'RESET_AUTHENTICATED' });
+          dispatch({ type: 'RESET_USER' });
+          navigate('/auth');
+        }}
+        className="bg-red-600 text-white px-6 py-3 rounded-lg"
+      >
+        Logout
+      </button>
+
+
+      {state.wallet && (
+        <ContentLayout>
+          <BoxLayout>
+            {loading ? (
+              <Spinner variant='primary' size='large' />
+            ) : (
+              <Box
+                flexDirection="column"
+                display="flex"
+                width="376px"
+                padding="spacing-md"
+                gap="spacing-sm"
+              >
+                <WalletProfile />
+                <WalletTabs />
+              </Box>
+            )}
+          </BoxLayout>
+        </ContentLayout>
+      )}
+    </div>
+  );
+}

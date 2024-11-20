@@ -5,12 +5,15 @@ import {
   Button,
   Front,
   Google,
+  Spinner,
   Text,
   TextInput,
 } from "../../../blocks";
 import { PoweredByPush } from "../../../common";
 import { socials } from "../Authentication.constants";
 import { WalletState } from "../Authentication.types";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 //formik for email validation ask
 //input arrow fix
@@ -21,6 +24,29 @@ type LoginProps = {
 };
 
 const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
+
+  const validationSchema = Yup.object().shape({
+    email: Yup.string().email("Invalid email address").required("Required"),
+  });
+
+  const formik = useFormik({
+    initialValues: { email },
+    validationSchema,
+    onSubmit: (values) => {
+      setEmail(values.email);
+      console.log("Values >>>", values);
+
+      if (values.email) {
+        window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
+          }/auth/authorize-email?email=${encodeURIComponent(values.email)}&redirectUri=${encodeURIComponent(window.location.origin + '/protected-wallet')}`;
+      }
+    },
+  });
+
+  const handleSocialLogin = (provider: 'github' | 'google' | 'discord' | 'twitter' | 'apple') => {
+    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(window.location.origin + '/protected-wallet')}`;
+  };
+
   return (
     <Box
       alignItems="center"
@@ -51,14 +77,18 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
           alignItems="center"
         >
           <Box width="100%">
-            <TextInput
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              trailingIcon={
-                <Front size={24} onClick={() => setConnectMethod("social")} />
-              }
-            />
+            <form onSubmit={formik.handleSubmit}>
+              <TextInput
+                value={formik.values.email}
+                onChange={formik.handleChange("email")}
+                placeholder="Enter your email"
+                error={formik.touched?.email && Boolean(formik.errors?.email)}
+                errorMessage={formik.touched?.email ? formik.errors?.email : ""}
+                trailingIcon={
+                  <Front size={24} onClick={() => setConnectMethod("social")} />
+                }
+              />
+            </form>
           </Box>
 
           <Text variant="os-regular" color="text-tertiary">
@@ -68,6 +98,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
             variant="outline"
             block
             leadingIcon={<Google width={18} height={18} />}
+            onClick={() => handleSocialLogin('google')}
           >
             Continue with Google
           </Button>
@@ -86,6 +117,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
                 border="border-sm solid stroke-tertiary"
                 borderRadius="radius-sm"
                 padding="spacing-sm spacing-md"
+                onClick={() => handleSocialLogin(social.name as "github" | "google" | "discord" | "twitter" | "apple")}
               >
                 {social.icon}
               </Box>
