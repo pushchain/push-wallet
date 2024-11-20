@@ -1,7 +1,7 @@
 import * as bip39 from '@scure/bip39'
 import { wordlist } from '@scure/bip39/wordlists/english'
 import { HDKey } from '@scure/bip32'
-import { bytesToHex, utf8ToBytes, randomBytes } from '@noble/hashes/utils'
+import { bytesToHex, randomBytes } from '@noble/hashes/utils'
 import {
   Validator as PushValidator,
   Tx as PushTx,

@@ -1,6 +1,6 @@
 import { Signer } from '../pushSigner/pushSigner.types'
 import { EncryptedPrivateKey, ENCRYPTION_TYPE } from './pushEncryption.types'
-import { bytesToHex, hexToBytes, utf8ToBytes } from '@noble/hashes/utils'
+import { bytesToHex, hexToBytes } from '@noble/hashes/utils'
 export class PushEncryption {
   // TODO: Bring V1, V2, V3 V4 schemes later ( Backward compatibility will be taken care later )
 
@@ -98,12 +98,11 @@ export class PushEncryption {
   private encryptV5 = async (
     privateKey: string
   ): Promise<EncryptedPrivateKey> => {
-    const input = bytesToHex(await crypto.getRandomValues(new Uint8Array(32)))
+    const input = bytesToHex(crypto.getRandomValues(new Uint8Array(32)))
     const enableProfileMessage = 'Enable Push Network Profile \n' + input
     const secret = await this.signer.signMessage(enableProfileMessage)
     const enc = new TextEncoder()
     const encodedPrivateKey = enc.encode(privateKey)
-    utf8ToBytes
     const encryptedPrivateKey = await this.aesGcmEncryption(
       encodedPrivateKey,
       secret

@@ -1,4 +1,4 @@
-import { DragEventHandler, FC, forwardRef, ReactNode } from "react";
+import React, { DragEventHandler, forwardRef, ReactNode } from "react";
 import styled, { FlattenSimpleInterpolation } from "styled-components";
 
 export type FileUploadProps = {
