@@ -21,13 +21,18 @@ import {
 import { centerMaskWalletAddress } from "../../../common";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
 export type WalletProfileProps = {};
 
+//name of wallet 
 const WalletProfile: FC<WalletProfileProps> = () => {
   const { state } = useGlobalState();
-  const parsedWallet = state?.wallet?.signerAccount?.split(":")?.[2];
-
+  const { primaryWallet } = useDynamicContext();
+  const parsedWallet =
+    state?.wallet?.signerAccount?.split(":")?.[2] || primaryWallet?.address;
+  const walletName = state?.wallet ? "Push Wallet" : "Guest Wallet";
+  console.debug(primaryWallet,state);
   const [copied, setCopied] = useState(false);
 
   const { dispatch } = useGlobalState();
@@ -40,9 +45,9 @@ const WalletProfile: FC<WalletProfileProps> = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000); // Reset the copied state after 2 seconds
     } catch (err) {
-      console.error('Failed to copy text: ', err);
+      console.error("Failed to copy text: ", err);
     }
-  }
+  };
 
   return (
     <Box
@@ -66,13 +71,16 @@ const WalletProfile: FC<WalletProfileProps> = () => {
                 <MenuItem label="App Permissions" icon={<Cube />} />
                 <MenuItem label="Passkeys" icon={<Lock />} />
                 <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} />
-                <MenuItem label="Log Out" icon={<Logout />}
+                <MenuItem
+                  label="Log Out"
+                  icon={<Logout />}
                   onClick={() => {
-                    sessionStorage.removeItem('jwt');
-                    dispatch({ type: 'RESET_AUTHENTICATED' });
-                    dispatch({ type: 'RESET_USER' });
-                    navigate('/auth');
-                  }} />
+                    sessionStorage.removeItem("jwt");
+                    dispatch({ type: "RESET_AUTHENTICATED" });
+                    dispatch({ type: "RESET_USER" });
+                    navigate("/auth");
+                  }}
+                />
               </Menu>
             }
           >
@@ -92,14 +100,17 @@ const WalletProfile: FC<WalletProfileProps> = () => {
         <BlockiesSvg address={parsedWallet} />
       </Box>
       <Box display="flex" flexDirection="column" alignItems="center">
-        <Text variant="bl-semibold">Push Wallet</Text>
+        <Text variant="bl-semibold">{walletName}</Text>
         <Box display="flex" gap="spacing-xxxs">
           <Text variant="bes-semibold" color="text-tertiary">
             {centerMaskWalletAddress(parsedWallet)}
           </Text>
           <Box cursor="pointer">
-            <Tooltip title={copied ? 'Copy' : 'Copied'} trigger='click'>
-              <Copy color="icon-tertiary" onClick={() => handleCopy(parsedWallet)} />
+            <Tooltip title={copied ? "Copy" : "Copied"} trigger="click">
+              <Copy
+                color="icon-tertiary"
+                onClick={() => handleCopy(parsedWallet)}
+              />
             </Tooltip>
           </Box>
         </Box>

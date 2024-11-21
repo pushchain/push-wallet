@@ -9,6 +9,8 @@ import { ENV } from "../../constants";
 import secrets from 'secrets.js-grempe';
 import { useGlobalState } from "../../context/GlobalContext";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { CreateAccount } from "./components/CreateAccount";
 
 export type WalletProps = {};
 
@@ -17,13 +19,14 @@ const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { primaryWallet } = useDynamicContext();
   const [pushWallet, setPushWallet] = useState<PushWallet | null>(null)
   const [attachedWallets, setAttachedWallets] = useState<string[]>([])
 
 
   const navigate = useNavigate();
   const location = useLocation();
-
+console.debug(state)
   // Function to extract state parameter from URL
   const extractStateFromUrl = () => {
     const params = new URLSearchParams(location.search);
@@ -197,6 +200,7 @@ const Wallet: FC<WalletProps> = () => {
     }
   };
 
+
   useEffect(() => {
     const initializeProfile = async () => {
       try {
@@ -216,7 +220,7 @@ const Wallet: FC<WalletProps> = () => {
             dispatch({ type: 'SET_JWT', payload: storedToken });
             await fetchUserProfile(storedToken);
           } else {
-            navigate('/auth');
+            // navigate('/auth');
           }
         }
       } catch (err) {
@@ -230,7 +234,7 @@ const Wallet: FC<WalletProps> = () => {
     initializeProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+console.debug(!state?.wallet && primaryWallet)
   return (
     <ContentLayout>
       <BoxLayout>
@@ -243,9 +247,11 @@ const Wallet: FC<WalletProps> = () => {
             width="376px"
             padding="spacing-md"
             gap="spacing-sm"
+            position="relative"
           >
             <WalletProfile />
             <WalletTabs />
+          {!state?.wallet && primaryWallet &&  <CreateAccount/>}
           </Box>
         )}
       </BoxLayout>

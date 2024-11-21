@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import {
   Box,
   Button,
@@ -13,15 +13,34 @@ import {
   Text,
 } from "../../../blocks";
 import { centerMaskWalletAddress } from "../../../common";
+import { PushWallet } from "../../../services/pushWallet/pushWallet";
+import { useGlobalState } from "../../../context/GlobalContext";
+import { getWalletlist } from "../Wallet.utils";
 
 export type WalletListProps = {};
 
 const WalletList: FC<WalletListProps> = () => {
+  const { state } = useGlobalState();
+  const [walletList, setWalletList] = useState(
+    getWalletlist(state?.wallet || null)
+  );
+
+  const handleWalletClick = (index) => {
+    setWalletList((prevList) =>
+      prevList.map((wallet, i) => ({
+        ...wallet,
+        isSelected: i === index, 
+      }))
+    );
+  };
+
   return (
     <Box display="flex" flexDirection="column" gap="spacing-xs">
-      {walletList.map((wallet, index) => (
+      {walletList?.map((wallet, index) => (
         <Box
+          cursor="pointer"
           key={`${index}`}
+          onClick={() => handleWalletClick(index)}
           display="flex"
           padding="spacing-xs"
           gap="spacing-xxs"
@@ -31,6 +50,7 @@ const WalletList: FC<WalletListProps> = () => {
           border={`border-sm solid stroke-${
             wallet.isSelected ? "brand-medium" : "secondary"
           }`}
+     
         >
           <Box display="flex" gap="spacing-xxs">
             {/* Add support for different icons */}
@@ -51,7 +71,7 @@ const WalletList: FC<WalletListProps> = () => {
               overlay={
                 <Menu>
                   <MenuItem label="Copy Address" icon={<Copy />} />
-                  <MenuItem label="Unlink from account" icon={<OptOut />} />
+                  {/* <MenuItem label="Unlink from account" icon={<OptOut />} /> */}
                 </Menu>
               }
             >
@@ -67,24 +87,3 @@ const WalletList: FC<WalletListProps> = () => {
 };
 
 export { WalletList };
-
-const walletList = [
-  {
-    name: "Push Account",
-    address: "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-    isSelected: false,
-    type: "push",
-  },
-  {
-    name: "MetaMask1",
-    address: "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-    isSelected: true,
-    type: "metamask",
-  },
-  {
-    name: "Metamask2",
-    address: "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-    isSelected: false,
-    type: "metamask",
-  },
-];

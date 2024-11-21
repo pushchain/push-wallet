@@ -2,17 +2,20 @@ import { FC } from "react";
 import { Box, Separator, Text } from "../../../blocks";
 import { WalletList } from "./WalletList";
 import { css } from "styled-components";
+import { WalletCategories } from "../../../common";
 
 export type MyWalletsProps = {};
 
 const MyWallets: FC<MyWalletsProps> = () => {
+  
   return (
     <Box
       display="flex"
       flexDirection="column"
       gap="spacing-sm"
       height="292px"
-      overflow="scroll"
+      overflow="hidden scroll"
+      customScrollbar
     >
       <WalletList />
       <Box display="flex" gap="spacing-sm" alignItems="center">
@@ -28,7 +31,7 @@ const MyWallets: FC<MyWalletsProps> = () => {
         </Text>
         <Separator />
       </Box>
-      {/* Here comes the wallet selection component */}
+      <WalletCategories/>
     </Box>
   );
 };
