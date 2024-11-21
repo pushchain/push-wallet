@@ -1,4 +1,5 @@
 export const getWalletlist = (pushWallet) => {
+  console.debug(pushWallet,'wallet')
     const walletList = [];
     if (pushWallet) {
       Object.keys(pushWallet?.walletToEncDerivedKey || {}).forEach((wallet) => {

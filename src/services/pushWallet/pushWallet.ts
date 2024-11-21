@@ -175,7 +175,7 @@ export class PushWallet {
       "push_accountInfo",
       [account]
     );
-
+console.debug(encPushAccount,'encPushAccount')
     return encPushAccount.items.length > 0
       ? {
           did: encPushAccount.items[0].did,

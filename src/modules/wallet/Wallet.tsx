@@ -18,6 +18,8 @@ import { PushSigner } from "../../services/pushSigner/pushSigner";
 
 export type WalletProps = {};
 
+//change wallet profile
+//activity
 const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
   const [loading, setLoading] = useState(true);
@@ -247,15 +249,18 @@ console.debug(walletList,state,'wwalletlist')
             dispatch({ type: "SET_JWT", payload: storedToken });
             await fetchUserProfile(storedToken);
           } else {
+           
             let pushWallet;
             const signer = await PushSigner.initialize(
               primaryWallet,
               "DYNAMIC"
             );
+
             pushWallet = await PushWallet.loginWithWallet(
               signer,
               config.APP_ENV as ENV
             );
+            console.debug(signer,'pushWallet')
             if (pushWallet)
               dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
             else navigate("/auth");
@@ -269,9 +274,10 @@ console.debug(walletList,state,'wwalletlist')
       }
     };
 
+
     initializeProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [primaryWallet]);
   console.debug(!state?.wallet && primaryWallet);
   return (
     <ContentLayout>
