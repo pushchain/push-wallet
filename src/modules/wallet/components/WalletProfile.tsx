@@ -18,15 +18,18 @@ import {
   Text,
   Tooltip,
 } from "../../../blocks";
-import { centerMaskWalletAddress } from "../../../common";
+import { centerMaskWalletAddress, handleCopy } from "../../../common";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { WalletListType } from "../Wallet.types";
 
-export type WalletProfileProps = {};
+export type WalletProfileProps = {
+  selectedWallet:WalletListType;
+};
 
 //name of wallet 
-const WalletProfile: FC<WalletProfileProps> = () => {
+const WalletProfile: FC<WalletProfileProps> = ({selectedWallet}) => {
   const { state } = useGlobalState();
   const { primaryWallet } = useDynamicContext();
   const parsedWallet =
@@ -39,15 +42,6 @@ const WalletProfile: FC<WalletProfileProps> = () => {
 
   const navigate = useNavigate();
 
-  const handleCopy = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // Reset the copied state after 2 seconds
-    } catch (err) {
-      console.error("Failed to copy text: ", err);
-    }
-  };
 
   return (
     <Box
@@ -109,7 +103,7 @@ const WalletProfile: FC<WalletProfileProps> = () => {
             <Tooltip title={copied ? "Copy" : "Copied"} trigger="click">
               <Copy
                 color="icon-tertiary"
-                onClick={() => handleCopy(parsedWallet)}
+                onClick={() => handleCopy(parsedWallet,setCopied)}
               />
             </Tooltip>
           </Box>

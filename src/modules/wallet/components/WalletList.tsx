@@ -12,26 +12,25 @@ import {
   PushLogo,
   Text,
 } from "../../../blocks";
-import { centerMaskWalletAddress } from "../../../common";
-import { PushWallet } from "../../../services/pushWallet/pushWallet";
+import { centerMaskWalletAddress, handleCopy } from "../../../common";
 import { useGlobalState } from "../../../context/GlobalContext";
-import { getWalletlist } from "../Wallet.utils";
+import { WalletListType } from "../Wallet.types";
 
-export type WalletListProps = {};
+export type WalletListProps = {
+  walletList: WalletListType[];
+  selectedWallet: WalletListType;
+  setSelectedWallet: React.Dispatch<React.SetStateAction<WalletListType>>;
+};
 
-const WalletList: FC<WalletListProps> = () => {
+const WalletList: FC<WalletListProps> = ({
+  walletList,
+  selectedWallet,
+  setSelectedWallet,
+}) => {
   const { state } = useGlobalState();
-  const [walletList, setWalletList] = useState(
-    getWalletlist(state?.wallet || null)
-  );
 
   const handleWalletClick = (index) => {
-    setWalletList((prevList) =>
-      prevList.map((wallet, i) => ({
-        ...wallet,
-        isSelected: i === index, 
-      }))
-    );
+    setSelectedWallet(walletList[index]);
   };
 
   return (
@@ -48,9 +47,10 @@ const WalletList: FC<WalletListProps> = () => {
           alignItems="center"
           justifyContent="space-between"
           border={`border-sm solid stroke-${
-            wallet.isSelected ? "brand-medium" : "secondary"
+            wallet?.address === selectedWallet?.address
+              ? "brand-medium"
+              : "secondary"
           }`}
-     
         >
           <Box display="flex" gap="spacing-xxs">
             {/* Add support for different icons */}
@@ -70,7 +70,11 @@ const WalletList: FC<WalletListProps> = () => {
             <Dropdown
               overlay={
                 <Menu>
-                  <MenuItem label="Copy Address" icon={<Copy />} />
+                  <MenuItem
+                    label="Copy Address"
+                    icon={<Copy />}
+                    onClick={() => handleCopy(wallet.address)}
+                  />
                   {/* <MenuItem label="Unlink from account" icon={<OptOut />} /> */}
                 </Menu>
               }

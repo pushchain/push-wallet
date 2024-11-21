@@ -8,3 +8,13 @@ export const centerMaskWalletAddress = (address: string) => {
 };
 
 
+
+export  const handleCopy = async (text: string,onCopy?:(flag:boolean)=>void) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    onCopy?.(true);
+    setTimeout(() => onCopy?.(false), 2000); // Reset the copied state after 2 seconds
+  } catch (err) {
+    console.error("Failed to copy text: ", err);
+  }
+};

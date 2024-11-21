@@ -3,10 +3,15 @@ import { Box, Separator, Text } from "../../../blocks";
 import { WalletList } from "./WalletList";
 import { css } from "styled-components";
 import { WalletCategories } from "../../../common";
+import { WalletListType } from "../Wallet.types";
 
-export type MyWalletsProps = {};
+export type MyWalletsProps = {
+  walletList:WalletListType[];
+  selectedWallet: WalletListType;
+  setSelectedWallet:React.Dispatch<React.SetStateAction<WalletListType>>
+};
 
-const MyWallets: FC<MyWalletsProps> = () => {
+const MyWallets: FC<MyWalletsProps> = ({walletList,setSelectedWallet,selectedWallet}) => {
   
   return (
     <Box
@@ -17,7 +22,7 @@ const MyWallets: FC<MyWalletsProps> = () => {
       overflow="hidden scroll"
       customScrollbar
     >
-      <WalletList />
+      <WalletList walletList={walletList} setSelectedWallet={setSelectedWallet} selectedWallet={selectedWallet}/>
       <Box display="flex" gap="spacing-sm" alignItems="center">
         <Separator />
         <Text
