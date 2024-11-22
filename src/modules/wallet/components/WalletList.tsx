@@ -15,6 +15,7 @@ import {
 import { centerMaskWalletAddress, handleCopy } from "../../../common";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { WalletListType } from "../Wallet.types";
+import BlockiesSvg from "blockies-react-svg";
 
 export type WalletListProps = {
   walletList: WalletListType[];
@@ -57,7 +58,15 @@ const WalletList: FC<WalletListProps> = ({
             {wallet.type === "push" ? (
               <PushLogo height={24} width={24} />
             ) : (
-              <Metamask height={24} width={24} />
+              <Box
+              width="24px"
+              height="24px"
+              borderRadius="radius-xl"
+              overflow="hidden"
+              alignSelf="center"
+            >
+              <BlockiesSvg address={wallet.address} />
+              </Box>
             )}
             <Box display="flex" flexDirection="column">
               <Text variant="bs-semibold">{wallet.name}</Text>

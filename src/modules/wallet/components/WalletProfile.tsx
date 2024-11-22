@@ -59,14 +59,14 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet, isLoading }) =>
       >
         <PushLogo height={48} width={48} />
         <Box display="flex" gap="spacing-xxs">
-          <HoverableSVG icon={<Lock size={24} color="icon-primary" />} />
+          {/* <HoverableSVG icon={<Lock size={24} color="icon-primary" />} /> */}
           <Dropdown
             overlay={
               <Menu>
-                <MenuItem label="Linked Accounts" icon={<Pin />} />
-                <MenuItem label="App Permissions" icon={<Cube />} />
-                <MenuItem label="Passkeys" icon={<Lock />} />
-                <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} />
+                {/* <MenuItem label="Linked Accounts" icon={<Pin />} /> */}
+                {/* <MenuItem label="App Permissions" icon={<Cube />} /> */}
+                {/* <MenuItem label="Passkeys" icon={<Lock />} /> */}
+                {/* <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} /> */}
                 <MenuItem
                   label="Log Out"
                   icon={<Logout />}
