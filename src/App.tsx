@@ -3,8 +3,7 @@ import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { RouterConatiner } from "./common/components/RouterConatiner";
 import { GlobalProvider } from "./context/GlobalContext";
 import { blocksTheme, getBlocksCSSVariables } from "./blocks";
-import { getAppBasePath } from "./common";
-import { useDarkMode } from "usehooks-ts";
+import { getAppBasePath, useDarkMode } from "./common";
 
 const GlobalStyle = createGlobalStyle`
   :root{
@@ -29,6 +28,7 @@ export default function App() {
   const baseUrl = window.location.origin + '/push-keys/#'
 
   const { isDarkMode } = useDarkMode();
+  
   return (
     <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
       <GlobalStyle />

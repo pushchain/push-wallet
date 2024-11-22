@@ -12,12 +12,23 @@ export type WalletActivityListProps = {
 const WalletActivityList: FC<WalletActivityListProps> = ({selectedWallet}) => {
   const { state } = useGlobalState();
 
-  useEffect(()=>{
-    (async()=>{
-      const data = await state?.wallet?.getTransactions(selectedWallet?.fullAddress);
-      console.debug(data,'activity')
-    })();
-  })
+  // useEffect(()=>{
+  //   (async()=>{
+  //     const data = await state?.wallet?.getTransactions(selectedWallet?.fullAddress);
+  //     console.debug(data,'activity')
+  //     const dataSource =
+  //   data?.transactions.map((dt) => ({
+  //     id: dt.txnHash,
+  //     status: dt.status,
+  //     txHash: dt.txnHash,
+  //     blockHash: dt.blockHash,
+  //     category: dt.category,
+  //     from: JSON.stringify({ from: dt.from, source: dt.source }),
+  //     recipients: dt.recipients,
+  //     ts: dt.ts,
+  //   })) || [];
+  //   })();
+  // })
   return (
     <Box display="flex" flexDirection="column" height="292px" overflow="scroll">
       {activityList.map((activity, index) => (
