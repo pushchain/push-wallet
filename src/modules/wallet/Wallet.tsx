@@ -246,7 +246,7 @@ const Wallet: FC<WalletProps> = () => {
             dispatch({ type: "SET_JWT", payload: storedToken });
             await fetchUserProfile(storedToken);
           } else {
-           
+           if(primaryWallet){
               let pushWallet;
               const signer = await PushSigner.initialize(
                 primaryWallet,
@@ -261,6 +261,9 @@ const Wallet: FC<WalletProps> = () => {
               if (pushWallet)
                 dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
               else navigate("/auth");
+            }
+            else
+            navigate("/auth");
           }
         }
       } catch (err) {
