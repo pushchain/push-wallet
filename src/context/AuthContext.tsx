@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useEffect, useState } from 'react';
 import { extractStateFromUrl, fetchJwtUsingState } from '../helpers/AuthHelper';
 import { useGlobalState } from './GlobalContext';
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 
 type AuthContextType = {
     loadingUser: 'idle' | 'success' | 'loading' | 'rejected';
@@ -11,6 +12,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
+    const { primaryWallet } = useDynamicContext();
     const [loadingUser, setLoadingUser] = useState<'idle' | 'success' | 'loading' | 'rejected'>('idle');
 
     const [sessionToken, setSessionToken] = useState<string | null>(null)
@@ -46,7 +48,11 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
                     dispatch({ type: "SET_JWT", payload: storedToken });
                     setSessionToken(storedToken)
                     setLoadingUser('success')
-                } else {
+                } else if (primaryWallet) {
+                    setLoadingUser('success')
+                }
+
+                else {
                     setLoadingUser('rejected')
                 }
 

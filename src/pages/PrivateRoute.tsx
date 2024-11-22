@@ -9,7 +9,7 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
     console.log("loding user: " + loadingUser);
 
     if (loadingUser === 'loading' || loadingUser === 'idle') return <Spinner variant='primary' size='large' />
-    else if (loadingUser === 'success' && sessionToken) return <>{children}</>
+    else if (loadingUser === 'success' || sessionToken) return <>{children}</>
     else return <Navigate to='/auth' />
 
 };

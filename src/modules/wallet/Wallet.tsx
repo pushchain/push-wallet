@@ -12,6 +12,8 @@ import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { CreateAccount } from "./components/CreateAccount";
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
+import config from "../../config";
+import { PushSigner } from "../../services/pushSigner/pushSigner";
 
 export type WalletProps = {};
 
@@ -235,8 +237,26 @@ const Wallet: FC<WalletProps> = () => {
         if (storedToken) {
           dispatch({ type: "SET_JWT", payload: storedToken });
           await fetchUserProfile(storedToken);
-        } else {
-          console.log("Could not find user")
+        } else if (primaryWallet) {
+          let pushWallet;
+          const signer = await PushSigner.initialize(
+            primaryWallet,
+            "DYNAMIC"
+          );
+
+          pushWallet = await PushWallet.loginWithWallet(
+            signer,
+            config.APP_ENV as ENV
+          );
+
+          if (pushWallet) dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
+          else {
+            console.log("Could not find user in wallet.tsx file after push wallet");
+          }
+        }
+
+        else {
+          console.log("Could not find user in wallet.tsx")
         }
 
 
