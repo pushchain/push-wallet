@@ -30,14 +30,11 @@ export type WalletProfileProps = {
   isLoading: boolean;
 };
 
-//name of wallet 
 const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet, isLoading }) => {
-  const { state } = useGlobalState();
   const { primaryWallet } = useDynamicContext();
   const parsedWallet =
-    state?.wallet?.signerAccount?.split(":")?.[2] || primaryWallet?.address;
-  const walletName = state?.wallet ? "Push Wallet" : "Guest Wallet";
-  // console.debug(primaryWallet,state);
+    selectedWallet?.address || primaryWallet?.address;
+  const walletName = selectedWallet?.name ?? "Guest Wallet";
   const [copied, setCopied] = useState(false);
 
   const { dispatch } = useGlobalState();

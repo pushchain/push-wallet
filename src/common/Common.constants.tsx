@@ -1,9 +1,11 @@
+import React from "react";
+
 import { WalletCategoriesType } from "./Common.types";
 // import {
 //   Ethereum,
 //   Solana
-// } from "../../blocks";
-import React from "react";
+// } from "../blocks";
+
 export const walletCategories: WalletCategoriesType[] = [
     {
       value: "ethereum",

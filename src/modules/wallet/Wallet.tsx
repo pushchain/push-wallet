@@ -14,9 +14,12 @@ import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
 import config from "../../config";
 import { PushSigner } from "../../services/pushSigner/pushSigner";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export type WalletProps = {};
 
+//change wallet profile
+//activity
 const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
   const [loading, setLoading] = useState(true);
@@ -24,14 +27,11 @@ const Wallet: FC<WalletProps> = () => {
   const { primaryWallet } = useDynamicContext();
   const [pushWallet, setPushWallet] = useState<PushWallet | null>(null);
   const [attachedWallets, setAttachedWallets] = useState<string[]>([]);
-  const walletList = getWalletlist(state?.wallet || null);
-  const [selectedWallet, setSelectedWallet] = useState<WalletListType>(
-    walletList[0]
-  );
-  // console.debug(walletList,state,'wwalletlist')
-  // const navigate = useNavigate();
-  // const location = useLocation();
-  // console.debug(state);
+  const [walletList, setWalletList] = useState<WalletListType[]>([]);
+  const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
+
+  const navigate = useNavigate();
+  const location = useLocation();
   // Function to extract state parameter from URL
   // const extractStateFromUrl = () => {
   //   const params = new URLSearchParams(location.search);
@@ -306,8 +306,15 @@ const Wallet: FC<WalletProps> = () => {
 
     initializeProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  console.debug(!state?.wallet && primaryWallet);
+  }, [primaryWallet]);
+
+  useEffect(() => {
+    if (state?.wallet)
+      setWalletList(getWalletlist(state?.wallet?.attachedAccounts));
+  }, [state]);
+  useEffect(() => {
+    if (walletList.length) setSelectedWallet(walletList[0]);
+  }, [walletList]);
   return (
     <ContentLayout>
       <BoxLayout>

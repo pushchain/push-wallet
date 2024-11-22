@@ -1,11 +1,23 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { css } from "styled-components";
 import { Box, ExternalLink, Text } from "../../../blocks";
 import { centerMaskWalletAddress } from "../../../common";
+import { WalletListType } from "../Wallet.types";
+import { useGlobalState } from "../../../context/GlobalContext";
 
-export type WalletActivityListProps = {};
+export type WalletActivityListProps = {
+  selectedWallet:WalletListType;
+};
 
-const WalletActivityList: FC<WalletActivityListProps> = () => {
+const WalletActivityList: FC<WalletActivityListProps> = ({selectedWallet}) => {
+  const { state } = useGlobalState();
+
+  useEffect(()=>{
+    (async()=>{
+      const data = await state?.wallet?.getTransactions(selectedWallet?.fullAddress);
+      console.debug(data,'activity')
+    })();
+  })
   return (
     <Box display="flex" flexDirection="column" height="292px" overflow="scroll">
       {activityList.map((activity, index) => (

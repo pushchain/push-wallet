@@ -23,7 +23,7 @@ const MyWallets: FC<MyWalletsProps> = ({walletList,setSelectedWallet,selectedWal
       customScrollbar
     >
       <WalletList walletList={walletList} setSelectedWallet={setSelectedWallet} selectedWallet={selectedWallet}/>
-      <Box display="flex" gap="spacing-sm" alignItems="center">
+      {/* <Box display="flex" gap="spacing-sm" alignItems="center">
         <Separator />
         <Text
           variant="c-bold"
@@ -35,8 +35,8 @@ const MyWallets: FC<MyWalletsProps> = ({walletList,setSelectedWallet,selectedWal
           Connect more accounts
         </Text>
         <Separator />
-      </Box>
-      <WalletCategories/>
+      </Box> */}
+      {/* <WalletCategories/> */}
     </Box>
   );
 };

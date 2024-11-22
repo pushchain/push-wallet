@@ -7,6 +7,7 @@ import {
   Tx as PushTx,
   Address,
 } from "@pushprotocol/node-core";
+
 import {
   InitDid,
   EncryptedText,
@@ -39,6 +40,7 @@ export class PushWallet {
    *  Array of URLs of Apps that are connected to the Push Wallet
    */
   public appConnections: AppConnection[];
+  public attachedAccounts: string[] = [];
   /**
    * Accounts to Encrypted Derived Key Mapping
    * push_caip_account -> { encDerivedPrivKey, signature }    // 1st Account of Push Wallet
@@ -104,7 +106,7 @@ export class PushWallet {
       account,
       pushWallet.derivedNode,
       pushWallet.mnemonic,
-      env
+      env,
     );
     // 5. Encrypt Derived Keys with PushWallet's 1st Account
     const walletClient = createWalletClient({
@@ -147,17 +149,21 @@ export class PushWallet {
     if (encPushAccount == null) {
       return null;
     } else {
+      
       const derivedNode = await PushWallet.decryptDerivedNode(
         encPushAccount.encDerivedPrivKey,
         pushSigner
       );
-      return new PushWallet(
+      const pushWalletInstance = new PushWallet(
         encPushAccount.did,
         pushSigner.account,
         derivedNode,
         undefined,
-        env
+        env,
       );
+      pushWalletInstance.attachedAccounts = encPushAccount.attachedaccounts;
+      return pushWalletInstance;
+
     }
   };
 
@@ -175,7 +181,6 @@ export class PushWallet {
       "push_accountInfo",
       [account]
     );
-
     return encPushAccount.items.length > 0
       ? {
           did: encPushAccount.items[0].did,
@@ -186,6 +191,7 @@ export class PushWallet {
               encPushAccount.items[0].encryptedderivedprivatekey
             ).prekey,
           },
+          attachedaccounts:encPushAccount?.items[0]?.attachedaccounts?.map((account)=>account.address)
         }
       : null;
   };
@@ -267,6 +273,7 @@ export class PushWallet {
       encDerivedPrivKey: encDerivedPrivKey,
       signature,
     };
+    this.attachedAccounts.push(pushSigner.account);
   };
 
   public registerPushAccount = async () => {
@@ -675,6 +682,18 @@ export class PushWallet {
 
     // Store updated appConnections in localStorage
     localStorage.setItem("appConnections", JSON.stringify(this.appConnections));
+  };
+
+  public getTransactions = async (userAddress: string) => {
+    const pushTx = await PushTx.initialize(this.env);
+    const userTransactions = await pushTx.get(
+      Math.floor(Date.now()),
+      "DESC",
+      30,
+      1,
+      userAddress
+    );
+    return userTransactions;
   };
 
   /**
