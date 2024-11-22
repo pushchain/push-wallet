@@ -151,17 +151,17 @@ export default function Profile() {
             }
           }
 
-          const hasAnyShare = share1 || share2 || share3;
-          if (hasAnyShare) {
-            const shouldCreate = window.confirm(
-              'Unable to reconstruct your existing wallet. Would you like to create a new one? ' +
-              'Warning: This will make your old wallet inaccessible.'
-            );
-            if (!shouldCreate) {
-              setError('Wallet reconstruction failed. Please try again later.');
-              return;
-            }
-          }
+          // const hasAnyShare = share1 || share2 || share3;
+          // if (hasAnyShare) {
+          //   const shouldCreate = window.confirm(
+          //     'Unable to reconstruct your existing wallet. Would you like to create a new one? ' +
+          //     'Warning: This will make your old wallet inaccessible.'
+          //   );
+          //   if (!shouldCreate) {
+          //     setError('Wallet reconstruction failed. Please try again later.');
+          //     return;
+          //   }
+          // }
       
           console.info('Creating new wallet', { 
             userId,

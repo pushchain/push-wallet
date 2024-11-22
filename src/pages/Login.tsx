@@ -8,7 +8,7 @@ import { MnemonicGrid } from '../components/MnemonicGrid'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { PushSigner } from '../services/pushSigner/pushSigner'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGithub, faGoogle, faDiscord, faTwitter } from '@fortawesome/free-brands-svg-icons';
+import { faGithub, faGoogle, faDiscord, faTwitter, faApple } from '@fortawesome/free-brands-svg-icons';
 
 export default function Login() {
   const [loginMethod, setLoginMethod] = useState<string | null>(null)
@@ -62,7 +62,7 @@ export default function Login() {
     }
   }
 
-  const handleSocialLogin = (provider: 'github' | 'google' | 'discord' | 'twitter') => {
+  const handleSocialLogin = (provider: 'github' | 'google' | 'discord' | 'twitter' | 'apple') => {
     window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(window.location.origin + '/profile')}`;
   };
 
@@ -87,6 +87,11 @@ export default function Login() {
         onClick={() => handleSocialLogin('twitter')}
         className="flex items-center justify-center text-[#1DA1F2] p-2">
         <FontAwesomeIcon icon={faTwitter} size="2x" />
+      </button>
+      <button
+        onClick={() => handleSocialLogin('apple')}
+        className="flex items-center justify-center text-gray-800 p-2">
+        <FontAwesomeIcon icon={faApple} size="2x" />
       </button>
     </div>
   );
