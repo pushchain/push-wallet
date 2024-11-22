@@ -20,7 +20,7 @@ const WalletTabs: FC<WalletTabsProps> = ({walletList,selectedWallet,setSelectedW
     {
       label: "Activity",
       key: "activity",
-      children: <WalletActivityList />,
+      children: <WalletActivityList selectedWallet={selectedWallet}/>,
     },
     {
       label: "My Wallets",

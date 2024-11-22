@@ -1,26 +1,29 @@
-export const getWalletlist = (pushWallet) => {
-  console.debug(pushWallet,'wallet')
+export const getWalletlist = (attachedAccounts:string[]) => {
     const walletList = [];
-    if (pushWallet) {
-      Object.keys(pushWallet?.walletToEncDerivedKey || {}).forEach((wallet) => {
+    if (attachedAccounts?.length) {
+       attachedAccounts?.forEach((account,index) => {
         let walletObj = {};
-        if (wallet.includes("push")) {
+        if (account.includes("push")) {
           walletObj = {
             name: "Push Account",
-            address: pushWallet?.signerAccount?.split(":")?.[2],
+            address: account,
+            fullAddress:account,
             isSelected: false,
             type: "push",
           };
         } else {
           walletObj = {
-            name: "Metamask",
-            address: wallet.split(":")[2],
+            name:`Account ${index+1}`,
+            address: account.split(':')[2],
+            fullAddress:account,
             isSelected: false,
+            //TODO:change the type as per backend later
             type: "metamask",
           };
         }
         walletList.push(walletObj);
       });
     }
+    walletList.reverse();
     return walletList; // Return the wallet list instead of null
   };

@@ -27,14 +27,11 @@ const Wallet: FC<WalletProps> = () => {
   const { primaryWallet } = useDynamicContext();
   const [pushWallet, setPushWallet] = useState<PushWallet | null>(null);
   const [attachedWallets, setAttachedWallets] = useState<string[]>([]);
-  const walletList = getWalletlist(state?.wallet || null);
-  const [selectedWallet, setSelectedWallet] = useState<WalletListType>(
-    walletList[0]
-  );
-console.debug(walletList,state,'wwalletlist')
+  const [walletList, setWalletList] = useState<WalletListType[]>([]);
+  const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
+
   const navigate = useNavigate();
   const location = useLocation();
-  console.debug(state);
   // Function to extract state parameter from URL
   const extractStateFromUrl = () => {
     const params = new URLSearchParams(location.search);
@@ -250,20 +247,20 @@ console.debug(walletList,state,'wwalletlist')
             await fetchUserProfile(storedToken);
           } else {
            
-            let pushWallet;
-            const signer = await PushSigner.initialize(
-              primaryWallet,
-              "DYNAMIC"
-            );
+              let pushWallet;
+              const signer = await PushSigner.initialize(
+                primaryWallet,
+                "DYNAMIC"
+              );
 
-            pushWallet = await PushWallet.loginWithWallet(
-              signer,
-              config.APP_ENV as ENV
-            );
-            console.debug(signer,'pushWallet')
-            if (pushWallet)
-              dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
-            else navigate("/auth");
+              pushWallet = await PushWallet.loginWithWallet(
+                signer,
+                config.APP_ENV as ENV
+              );
+
+              if (pushWallet)
+                dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
+              else navigate("/auth");
           }
         }
       } catch (err) {
@@ -274,11 +271,17 @@ console.debug(walletList,state,'wwalletlist')
       }
     };
 
-
     initializeProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [primaryWallet]);
-  console.debug(!state?.wallet && primaryWallet);
+
+  useEffect(() => {
+    if (state?.wallet)
+      setWalletList(getWalletlist(state?.wallet?.attachedAccounts));
+  }, [state]);
+  useEffect(() => {
+    if (walletList.length) setSelectedWallet(walletList[0]);
+  }, [walletList]);
   return (
     <ContentLayout>
       <BoxLayout>

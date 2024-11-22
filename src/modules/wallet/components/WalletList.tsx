@@ -57,7 +57,8 @@ const WalletList: FC<WalletListProps> = ({
             {wallet.type === "push" ? (
               <PushLogo height={24} width={24} />
             ) : (
-              <Metamask height={24} width={24} />
+              <></>
+              // <Metamask height={24} width={24} />
             )}
             <Box display="flex" flexDirection="column">
               <Text variant="bs-semibold">{wallet.name}</Text>
