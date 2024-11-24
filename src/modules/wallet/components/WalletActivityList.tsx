@@ -4,6 +4,7 @@ import { Box, ExternalLink, Text } from "../../../blocks";
 import { centerMaskWalletAddress } from "../../../common";
 import { WalletListType } from "../Wallet.types";
 import { useGlobalState } from "../../../context/GlobalContext";
+import { useGetUserTransactions } from "../../../queries";
 
 export type WalletActivityListProps = {
   selectedWallet:WalletListType;
@@ -11,7 +12,8 @@ export type WalletActivityListProps = {
 
 const WalletActivityList: FC<WalletActivityListProps> = ({selectedWallet}) => {
   const { state } = useGlobalState();
-
+  const {data} = useGetUserTransactions(selectedWallet?.fullAddress,1,10,'DESC',Math.floor(Date.now()));
+console.debug(data,'data');
   // useEffect(()=>{
   //   (async()=>{
   //     const data = await state?.wallet?.getTransactions(selectedWallet?.fullAddress);

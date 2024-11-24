@@ -1,8 +1,5 @@
-import {
-    Tx as PushTx,
-  } from "@pushprotocol/node-core";
-import config from "../../config";
-import { ENV } from "../../constants";
+
+import { getUserTransactionsModelCreator } from "../models";
 
 
 type GetUserTransactionsParams = {
@@ -10,16 +7,15 @@ type GetUserTransactionsParams = {
     page: number,
     limit: number,
     direction: "ASC" | "DESC",
-    startTime: number
+    startTime: number,
+    pushTx: any;
   };
-export const getUserTransactions =  ({address,page,limit,startTime,direction}):GetUserTransactionsParams => {
-    // const pushTx =  PushTx.initialize(config.APP_ENV as ENV);
+export const getUserTransactions =  ({address,page,limit,startTime,direction,pushTx}):GetUserTransactionsParams => 
     pushTx.get(
       startTime,
       direction,
       limit,
       page,
       address
-    ).then()
-    return userTransactions;
-  };
+    ).then(getUserTransactionsModelCreator)
+    
