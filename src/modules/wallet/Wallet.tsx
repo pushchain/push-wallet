@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Box, Spinner } from "../../blocks";
+import { Box } from "../../blocks";
 import { BoxLayout, ContentLayout } from "../../common";
 import { WalletProfile } from "./components/WalletProfile";
 import { WalletTabs } from "./components/WalletTabs";
@@ -8,13 +8,13 @@ import { PushWallet } from "../../services/pushWallet/pushWallet";
 import { ENV } from "../../constants";
 import secrets from "secrets.js-grempe";
 import { useGlobalState } from "../../context/GlobalContext";
-import { useLocation, useNavigate } from "react-router-dom";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { CreateAccount } from "./components/CreateAccount";
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
 import config from "../../config";
 import { PushSigner } from "../../services/pushSigner/pushSigner";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export type WalletProps = {};
 
@@ -33,10 +33,10 @@ const Wallet: FC<WalletProps> = () => {
   const navigate = useNavigate();
   const location = useLocation();
   // Function to extract state parameter from URL
-  const extractStateFromUrl = () => {
-    const params = new URLSearchParams(location.search);
-    return params.get("state");
-  };
+  // const extractStateFromUrl = () => {
+  //   const params = new URLSearchParams(location.search);
+  //   return params.get("state");
+  // };
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -95,30 +95,30 @@ const Wallet: FC<WalletProps> = () => {
     }
   };
 
-  const fetchJwtUsingState = async (stateParam: string) => {
-    try {
-      setLoading(true);
-      console.log("fetchJwtUsingState called with state:", stateParam);
+  // const fetchJwtUsingState = async (stateParam: string) => {
+  //   try {
+  //     setLoading(true);
+  //     console.log("fetchJwtUsingState called with state:", stateParam);
 
-      const response = await api.get("/auth/jwt", {
-        params: { state: stateParam },
-      });
+  //     const response = await api.get("/auth/jwt", {
+  //       params: { state: stateParam },
+  //     });
 
-      const { token } = response.data;
-      if (!token) throw new Error("Token not found in response");
+  //     const { token } = response.data;
+  //     if (!token) throw new Error("Token not found in response");
 
-      dispatch({ type: "SET_JWT", payload: token });
-      sessionStorage.setItem("jwt", token);
+  //     dispatch({ type: "SET_JWT", payload: token });
+  //     sessionStorage.setItem("jwt", token);
 
-      await fetchUserProfile(token);
-    } catch (err) {
-      console.error("Error fetching JWT:", err);
-      setError("Authentication failed. Please try logging in again.");
-      navigate("/auth");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     await fetchUserProfile(token);
+  //   } catch (err) {
+  //     console.error("Error fetching JWT:", err);
+  //     setError("Authentication failed. Please try logging in again.");
+  //     navigate("/profile");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const fetchUserProfile = async (token: string) => {
     try {
@@ -192,7 +192,7 @@ const Wallet: FC<WalletProps> = () => {
           if (hasAnyShare) {
             const shouldCreate = window.confirm(
               "Unable to reconstruct your existing wallet. Would you like to create a new one? " +
-                "Warning: This will make your old wallet inaccessible."
+              "Warning: This will make your old wallet inaccessible."
             );
             if (!shouldCreate) {
               setError("Wallet reconstruction failed. Please try again later.");
@@ -228,44 +228,74 @@ const Wallet: FC<WalletProps> = () => {
   };
 
   useEffect(() => {
+    const storedToken = sessionStorage.getItem("jwt");
+
     const initializeProfile = async () => {
       try {
         setLoading(true);
-        const stateParam = extractStateFromUrl();
 
-        if (stateParam) {
-          await fetchJwtUsingState(stateParam);
+        if (storedToken) {
+          dispatch({ type: "SET_JWT", payload: storedToken });
+          await fetchUserProfile(storedToken);
+        } else if (primaryWallet) {
+          let pushWallet;
+          const signer = await PushSigner.initialize(
+            primaryWallet,
+            "DYNAMIC"
+          );
 
-          // Clean up URL
-          const url = new URL(window.location.href);
-          url.searchParams.delete("state");
-          window.history.replaceState({}, document.title, url.pathname);
-        } else {
-          const storedToken = sessionStorage.getItem("jwt");
-          if (storedToken) {
-            dispatch({ type: "SET_JWT", payload: storedToken });
-            await fetchUserProfile(storedToken);
-          } else {
-           if(primaryWallet){
-              let pushWallet;
-              const signer = await PushSigner.initialize(
-                primaryWallet,
-                "DYNAMIC"
-              );
+          pushWallet = await PushWallet.loginWithWallet(
+            signer,
+            config.APP_ENV as ENV
+          );
 
-              pushWallet = await PushWallet.loginWithWallet(
-                signer,
-                config.APP_ENV as ENV
-              );
-
-              if (pushWallet)
-                dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
-              else navigate("/auth");
-            }
-            else
-            navigate("/auth");
+          if (pushWallet) dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
+          else {
+            console.log("Could not find user in wallet.tsx file after push wallet");
           }
         }
+
+        else {
+          console.log("Could not find user in wallet.tsx")
+        }
+
+
+
+        // const stateParam = extractStateFromUrl();
+
+        /* States for checking if the wallet exists or is being created new
+          1. Check if their is any state in the url, Yes, then fetch using Jwt state
+          2. Check if the jwt token is stored in session storage or not, if yes find user
+          3. Check if 
+        */
+
+        // if (stateParam) {
+        //   await fetchJwtUsingState(stateParam);
+
+        //   // Clean up URL
+        //   const url = new URL(window.location.href);
+        //   url.searchParams.delete("state");
+        //   window.history.replaceState({}, document.title, url.pathname);
+        // } else {
+        //   const storedToken = sessionStorage.getItem("jwt");
+        //   if (storedToken) {
+        //     dispatch({ type: "SET_JWT", payload: storedToken });
+        //     await fetchUserProfile(storedToken);
+        //   } else {
+        //     let pushWallet;
+        //     const signer = await PushSigner.initialize(
+        //       primaryWallet,
+        //       "DYNAMIC"
+        //     );
+        //     pushWallet = await PushWallet.loginWithWallet(
+        //       signer,
+        //       config.APP_ENV as ENV
+        //     );
+        //     if (pushWallet)
+        //       dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
+        //     else navigate("/auth");
+        //   }
+        // }
       } catch (err) {
         console.error("Error initializing profile:", err);
         setError("Failed to initialize profile");
@@ -288,26 +318,23 @@ const Wallet: FC<WalletProps> = () => {
   return (
     <ContentLayout>
       <BoxLayout>
-        {loading ? (
-          <Spinner variant="primary" size="large" />
-        ) : (
-          <Box
-            flexDirection="column"
-            display="flex"
-            width="376px"
-            padding="spacing-md"
-            gap="spacing-sm"
-            position="relative"
-          >
-            <WalletProfile selectedWallet={selectedWallet} />
-            <WalletTabs
-              walletList={walletList}
-              selectedWallet={selectedWallet}
-              setSelectedWallet={setSelectedWallet}
-            />
-            {!state?.wallet && primaryWallet && <CreateAccount />}
-          </Box>
-        )}
+        <Box
+          flexDirection="column"
+          display="flex"
+          width="376px"
+          padding="spacing-md"
+          gap="spacing-sm"
+          position="relative"
+        >
+          <WalletProfile selectedWallet={selectedWallet} isLoading={loading} />
+          <WalletTabs
+            walletList={walletList}
+            selectedWallet={selectedWallet}
+            setSelectedWallet={setSelectedWallet}
+            isLoading={loading}
+          />
+          {!state?.wallet && primaryWallet && <CreateAccount />}
+        </Box>
       </BoxLayout>
     </ContentLayout>
   );

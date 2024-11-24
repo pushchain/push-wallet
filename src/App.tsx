@@ -4,6 +4,7 @@ import { RouterConatiner } from "./common/components/RouterConatiner";
 import { GlobalProvider } from "./context/GlobalContext";
 import { blocksTheme, getBlocksCSSVariables } from "./blocks";
 import { getAppBasePath, useDarkMode } from "./common";
+import AuthContextProvider from "./context/AuthContext";
 
 const GlobalStyle = createGlobalStyle`
   :root{
@@ -33,19 +34,21 @@ export default function App() {
     <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
       <GlobalStyle />
       <GlobalProvider>
-        <Router basename={getAppBasePath()}>
-          <RouterConatiner />
-          {/* <Routes> */}
-          {/* <RouterConatiner/> */}
-          {/* <Route path="/landing" element={<Landing />} />
+        <AuthContextProvider>
+          <Router basename={getAppBasePath()}>
+            <RouterConatiner />
+            {/* <Routes> */}
+            {/* <RouterConatiner/> */}
+            {/* <Route path="/landing" element={<Landing />} />
 
                 <Route path="/" element={<Home />} />
                 <Route path="login" element={<Login />} />
                 <Route path="signup" element={<Signup />} /> */}
-          {/* Redirect to home if route is not found
+            {/* Redirect to home if route is not found
                 // {/* <Route path="*" element={<Navigate to="/" />} />  */}
-          {/* </Routes> */}
-        </Router>
+            {/* </Routes> */}
+          </Router>
+        </AuthContextProvider>
       </GlobalProvider>
     </ThemeProvider>
   );

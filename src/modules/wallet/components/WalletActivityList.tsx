@@ -7,13 +7,22 @@ import { useGlobalState } from "../../../context/GlobalContext";
 import { useGetUserTransactions } from "../../../queries";
 
 export type WalletActivityListProps = {
-  selectedWallet:WalletListType;
+  selectedWallet: WalletListType;
 };
 
-const WalletActivityList: FC<WalletActivityListProps> = ({selectedWallet}) => {
+const WalletActivityList: FC<WalletActivityListProps> = ({
+  selectedWallet,
+}) => {
   const { state } = useGlobalState();
-  const {data} = useGetUserTransactions(selectedWallet?.fullAddress,1,10,'DESC',Math.floor(Date.now()));
-console.debug(data,'data');
+  console.debug(selectedWallet, "selectedWallet");
+  const { data } = useGetUserTransactions(
+    selectedWallet?.fullAddress || null,
+    1,
+    10,
+    "DESC",
+    Math.floor(Date.now())
+  );
+  console.debug(data, "data");
   // useEffect(()=>{
   //   (async()=>{
   //     const data = await state?.wallet?.getTransactions(selectedWallet?.fullAddress);

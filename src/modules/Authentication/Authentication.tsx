@@ -12,12 +12,7 @@ const Authentication = () => {
   const [email, setEmail] = useState<string>("");
   const [connectMethod, setConnectMethod] =
     useState<WalletState>("authentication");
-  const { primaryWallet } = useDynamicContext();
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (primaryWallet) navigate("/");
-  }, [primaryWallet]);
   return (
     <ContentLayout footer={<Footer />}>
       <BoxLayout>

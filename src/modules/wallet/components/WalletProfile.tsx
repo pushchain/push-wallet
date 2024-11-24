@@ -15,6 +15,7 @@ import {
   Pin,
   PushLogo,
   Settings,
+  Skeleton,
   Text,
   Tooltip,
 } from "../../../blocks";
@@ -25,13 +26,14 @@ import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { WalletListType } from "../Wallet.types";
 
 export type WalletProfileProps = {
-  selectedWallet:WalletListType;
+  selectedWallet: WalletListType;
+  isLoading: boolean;
 };
 
-const WalletProfile: FC<WalletProfileProps> = ({selectedWallet}) => {
+const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet, isLoading }) => {
   const { primaryWallet } = useDynamicContext();
   const parsedWallet =
-  selectedWallet?.address || primaryWallet?.address;
+    selectedWallet?.address || primaryWallet?.address;
   const walletName = selectedWallet?.name ?? "Guest Wallet";
   const [copied, setCopied] = useState(false);
 
@@ -54,14 +56,14 @@ const WalletProfile: FC<WalletProfileProps> = ({selectedWallet}) => {
       >
         <PushLogo height={48} width={48} />
         <Box display="flex" gap="spacing-xxs">
-          <HoverableSVG icon={<Lock size={24} color="icon-primary" />} />
+          {/* <HoverableSVG icon={<Lock size={24} color="icon-primary" />} /> */}
           <Dropdown
             overlay={
               <Menu>
-                <MenuItem label="Linked Accounts" icon={<Pin />} />
-                <MenuItem label="App Permissions" icon={<Cube />} />
-                <MenuItem label="Passkeys" icon={<Lock />} />
-                <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} />
+                {/* <MenuItem label="Linked Accounts" icon={<Pin />} /> */}
+                {/* <MenuItem label="App Permissions" icon={<Cube />} /> */}
+                {/* <MenuItem label="Passkeys" icon={<Lock />} /> */}
+                {/* <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} /> */}
                 <MenuItem
                   label="Log Out"
                   icon={<Logout />}
@@ -88,22 +90,29 @@ const WalletProfile: FC<WalletProfileProps> = ({selectedWallet}) => {
         overflow="hidden"
         alignSelf="center"
       >
-        <BlockiesSvg address={parsedWallet} />
+        <Skeleton isLoading={isLoading}>
+          <BlockiesSvg address={parsedWallet} />
+        </Skeleton>
       </Box>
-      <Box display="flex" flexDirection="column" alignItems="center">
-        <Text variant="bl-semibold">{walletName}</Text>
+      <Box display="flex" flexDirection="column" alignItems="center" gap='spacing-xxxs'>
+        <Skeleton isLoading={isLoading}>
+          <Text variant="bl-semibold">{walletName}</Text>
+        </Skeleton>
         <Box display="flex" gap="spacing-xxxs">
-          <Text variant="bes-semibold" color="text-tertiary">
-            {centerMaskWalletAddress(parsedWallet)}
-          </Text>
-          <Box cursor="pointer">
+          <Skeleton isLoading={isLoading}>
+            <Text variant="bes-semibold" color="text-tertiary">
+              {centerMaskWalletAddress(parsedWallet)}
+            </Text>
+          </Skeleton>
+
+          {!isLoading && <Box cursor="pointer">
             <Tooltip title={copied ? "Copy" : "Copied"} trigger="click">
               <Copy
                 color="icon-tertiary"
-                onClick={() => handleCopy(parsedWallet,setCopied)}
+                onClick={() => handleCopy(parsedWallet, setCopied)}
               />
             </Tooltip>
-          </Box>
+          </Box>}
         </Box>
       </Box>
     </Box>

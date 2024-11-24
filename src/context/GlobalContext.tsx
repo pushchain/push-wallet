@@ -14,7 +14,7 @@ interface GlobalState {
 }
 
 // Define actions for state management
-type GlobalAction =
+export type GlobalAction =
   | { type: 'INITIALIZE_WALLET'; payload: PushWallet }
   | { type: 'RESET_WALLET' }
   | { type: 'SET_THEME'; payload: 'light' | 'dark' }
