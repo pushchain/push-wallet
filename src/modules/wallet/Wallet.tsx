@@ -14,6 +14,7 @@ import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
 import config from "../../config";
 import { PushSigner } from "../../services/pushSigner/pushSigner";
+import { AppConnections } from "../../common/components/AppConnections";
 
 export type WalletProps = {};
 
@@ -313,6 +314,7 @@ const Wallet: FC<WalletProps> = () => {
           gap="spacing-sm"
           position="relative"
         >
+          {state.wallet.appConnections.length && <AppConnections />}
           <WalletProfile selectedWallet={selectedWallet} isLoading={loading} />
           <WalletTabs
             walletList={walletList}
