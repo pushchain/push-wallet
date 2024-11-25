@@ -11,7 +11,7 @@ const RouterConatiner: FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Wallet />} />
-      <Route path="/protected-wallet" element={<PrivateRoute><Wallet /></PrivateRoute>} />
+      <Route path="/wallet" element={<PrivateRoute><Wallet /></PrivateRoute>} />
       <Route path="/auth" element={<Authentication />} />
       <Route path="/profile" element={<Profile />} />
     </Routes>
