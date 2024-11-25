@@ -24,7 +24,6 @@ type LoginProps = {
 };
 
 const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
-
   const validationSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email address").required("Required"),
   });
@@ -37,14 +36,25 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
       console.log("Values >>>", values);
 
       if (values.email) {
-        window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
-          }/auth/authorize-email?email=${encodeURIComponent(values.email)}&redirectUri=${encodeURIComponent(window.location.origin + '/protected-wallet')}`;
+        window.location.href = `${
+          import.meta.env.VITE_APP_BACKEND_URL
+        }/auth/authorize-email?email=${encodeURIComponent(
+          values.email
+        )}&redirectUri=${encodeURIComponent(
+          window.location.origin + "/protected-wallet"
+        )}`;
       }
     },
   });
 
-  const handleSocialLogin = (provider: 'github' | 'google' | 'discord' | 'twitter' | 'apple') => {
-    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(window.location.origin + '/protected-wallet')}`;
+  const handleSocialLogin = (
+    provider: "github" | "google" | "discord" | "twitter" | "apple"
+  ) => {
+    window.location.href = `${
+      import.meta.env.VITE_APP_BACKEND_URL
+    }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
+      window.location.origin + "/protected-wallet"
+    )}`;
   };
 
   return (
@@ -97,8 +107,8 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
           <Button
             variant="outline"
             block
-            leadingIcon={<Google width={18} height={18} />}
-            onClick={() => handleSocialLogin('google')}
+            leadingIcon={<Google width={24} height={24} />}
+            onClick={() => handleSocialLogin("google")}
           >
             Continue with Google
           </Button>
@@ -117,7 +127,16 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
                 border="border-sm solid stroke-tertiary"
                 borderRadius="radius-sm"
                 padding="spacing-sm spacing-md"
-                onClick={() => handleSocialLogin(social.name as "github" | "google" | "discord" | "twitter" | "apple")}
+                onClick={() =>
+                  handleSocialLogin(
+                    social.name as
+                      | "github"
+                      | "google"
+                      | "discord"
+                      | "twitter"
+                      | "apple"
+                  )
+                }
               >
                 {social.icon}
               </Box>

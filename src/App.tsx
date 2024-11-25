@@ -3,8 +3,7 @@ import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { RouterConatiner } from "./common/components/RouterConatiner";
 import { GlobalProvider } from "./context/GlobalContext";
 import { blocksTheme, getBlocksCSSVariables } from "./blocks";
-import { getAppBasePath } from "./common";
-import { useDarkMode } from "usehooks-ts";
+import { getAppBasePath, useDarkMode } from "./common";
 import AuthContextProvider from "./context/AuthContext";
 
 const GlobalStyle = createGlobalStyle`
@@ -27,7 +26,7 @@ const themeConfig = {
 };
 
 export default function App() {
-  const baseUrl = window.location.origin + '/push-keys/#'
+  const baseUrl = window.location.origin + "/push-keys/#";
 
   const { isDarkMode } = useDarkMode();
   return (
