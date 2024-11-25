@@ -14,12 +14,9 @@ import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
 import config from "../../config";
 import { PushSigner } from "../../services/pushSigner/pushSigner";
-import { useLocation, useNavigate } from "react-router-dom";
 
 export type WalletProps = {};
 
-//change wallet profile
-//activity
 const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
   const [loading, setLoading] = useState(true);
@@ -29,14 +26,6 @@ const Wallet: FC<WalletProps> = () => {
   const [attachedWallets, setAttachedWallets] = useState<string[]>([]);
   const [walletList, setWalletList] = useState<WalletListType[]>([]);
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
-
-  const navigate = useNavigate();
-  const location = useLocation();
-  // Function to extract state parameter from URL
-  // const extractStateFromUrl = () => {
-  //   const params = new URLSearchParams(location.search);
-  //   return params.get("state");
-  // };
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -192,7 +181,7 @@ const Wallet: FC<WalletProps> = () => {
           if (hasAnyShare) {
             const shouldCreate = window.confirm(
               "Unable to reconstruct your existing wallet. Would you like to create a new one? " +
-              "Warning: This will make your old wallet inaccessible."
+                "Warning: This will make your old wallet inaccessible."
             );
             if (!shouldCreate) {
               setError("Wallet reconstruction failed. Please try again later.");
@@ -239,27 +228,23 @@ const Wallet: FC<WalletProps> = () => {
           await fetchUserProfile(storedToken);
         } else if (primaryWallet) {
           let pushWallet;
-          const signer = await PushSigner.initialize(
-            primaryWallet,
-            "DYNAMIC"
-          );
+          const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
 
           pushWallet = await PushWallet.loginWithWallet(
             signer,
             config.APP_ENV as ENV
           );
 
-          if (pushWallet) dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
+          if (pushWallet)
+            dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
           else {
-            console.log("Could not find user in wallet.tsx file after push wallet");
+            console.log(
+              "Could not find user in wallet.tsx file after push wallet"
+            );
           }
+        } else {
+          console.log("Could not find user in wallet.tsx");
         }
-
-        else {
-          console.log("Could not find user in wallet.tsx")
-        }
-
-
 
         // const stateParam = extractStateFromUrl();
 
@@ -312,9 +297,11 @@ const Wallet: FC<WalletProps> = () => {
     if (state?.wallet)
       setWalletList(getWalletlist(state?.wallet?.attachedAccounts));
   }, [state]);
+
   useEffect(() => {
     if (walletList.length) setSelectedWallet(walletList[0]);
   }, [walletList]);
+
   return (
     <ContentLayout>
       <BoxLayout>

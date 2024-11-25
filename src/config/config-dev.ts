@@ -2,9 +2,9 @@ export const config = {
   /**
    * APP INFO
    */
-  APP_NAME: 'Push Devnet Wallet',
-  NODE_ENV: 'dev',
-  APP_ENV: 'dev',
+  APP_NAME: "Push Devnet Wallet",
+  NODE_ENV: "dev",
+  APP_ENV: "dev",
   /**
    * CHAIN INFO
    */
@@ -19,4 +19,4 @@ export const config = {
     111557560, // Cyber testnet
   ],
   DEFAULT_CHAIN: 11155111,
-}
+};
