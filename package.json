@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "predeploy": "npm run build",
-    "deploy:test": "VITE_DEV_MODE=testing yarn build && gh-pages -d dist"
+    "deploy:test": "VITE_DEV_MODE=testing yarn build && echo 'wallet.push.org' > ./dist/CNAME && gh-pages -d dist"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
