@@ -29,6 +29,7 @@ export default function App() {
   const baseUrl = window.location.origin + "/push-keys/#";
 
   const { isDarkMode } = useDarkMode();
+  
   return (
     <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
       <GlobalStyle />

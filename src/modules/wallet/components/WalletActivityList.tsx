@@ -4,20 +4,42 @@ import { Box, ExternalLink, Text } from "../../../blocks";
 import { centerMaskWalletAddress } from "../../../common";
 import { WalletListType } from "../Wallet.types";
 import { useGlobalState } from "../../../context/GlobalContext";
+import { useGetUserTransactions } from "../../../queries";
 
 export type WalletActivityListProps = {
-  selectedWallet:WalletListType;
+  selectedWallet: WalletListType;
 };
 
-const WalletActivityList: FC<WalletActivityListProps> = ({selectedWallet}) => {
+const WalletActivityList: FC<WalletActivityListProps> = ({
+  selectedWallet,
+}) => {
   const { state } = useGlobalState();
-
-  useEffect(()=>{
-    (async()=>{
-      const data = await state?.wallet?.getTransactions(selectedWallet?.fullAddress);
-      console.debug(data,'activity')
-    })();
-  })
+  console.debug(selectedWallet, "selectedWallet");
+  const { data } = useGetUserTransactions(
+    selectedWallet?.fullAddress || null,
+    1,
+    10,
+    "DESC",
+    Math.floor(Date.now())
+  );
+  console.debug(data, "data");
+  // useEffect(()=>{
+  //   (async()=>{
+  //     const data = await state?.wallet?.getTransactions(selectedWallet?.fullAddress);
+  //     console.debug(data,'activity')
+  //     const dataSource =
+  //   data?.transactions.map((dt) => ({
+  //     id: dt.txnHash,
+  //     status: dt.status,
+  //     txHash: dt.txnHash,
+  //     blockHash: dt.blockHash,
+  //     category: dt.category,
+  //     from: JSON.stringify({ from: dt.from, source: dt.source }),
+  //     recipients: dt.recipients,
+  //     ts: dt.ts,
+  //   })) || [];
+  //   })();
+  // })
   return (
     <Box display="flex" flexDirection="column" height="292px" overflow="scroll">
       {activityList.map((activity, index) => (
