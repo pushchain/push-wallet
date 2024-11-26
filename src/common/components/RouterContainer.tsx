@@ -8,7 +8,7 @@ import { PrivateRoute } from "../../pages/PrivateRoute";
 const RouterContainer: FC = () => {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/wallet" />} />
+      <Route path="/" element={<Wallet />} />
       <Route
         path="/wallet"
         element={
