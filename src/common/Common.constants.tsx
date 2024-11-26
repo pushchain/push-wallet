@@ -1,17 +1,8 @@
-import React from "react";
-import { FC } from "react";
-import {
-  ArbitrumMonotone,
-  BnbMonotone,
-  EthereumMonotone,
-  IconProps,
-  OptimismMonotone,
-  PolygonMonotone,
-  PushMonotone,
-  SolanaMonotone,
-} from "../blocks";
-import { WalletCategoriesType } from "./Common.types";
+import React, { FC } from "react";
 import { BackpackIcon, BinanceIcon, BitGetWalletIcon, BitPayIcon, BnbIcon, BraveIcon, Coin98Icon, CoinbaseIcon, CryptoIcon, ExodusIcon, FireblocksIcon, GlowIcon, ImTokenWallet, MagicEdenIcon, MathWalletIcon, MetaMaskIcon, NightlyIcon, OkxIcon, OneKeyIcon, PhantomIcon, RainbowIcon, SafeIcon, SolflareIcon, TrustIcon, UnisatIcon, ZeroDevIcon } from "@dynamic-labs/iconic";
+import { ArbitrumMonotone, BnbMonotone, EthereumMonotone, IconProps, OptimismMonotone, PolygonMonotone, PushMonotone, SolanaMonotone } from "../blocks";
+import { WalletCategoriesType } from "./Common.types";
+
 
 export const walletCategories: WalletCategoriesType[] = [
   {
@@ -46,35 +37,35 @@ export const CHAIN_LOGO: {
 };
 
 export const WALLETS_LOGO = {
-  coinbasesolana: <CoinbaseIcon/>,
-  backpacksol: <BackpackIcon/>,
-  solflare: <SolflareIcon/>,
-  bitgetwalletsol: <BitGetWalletIcon/>,
-  bravesol: <BraveIcon/>,
-  coin98sol: <Coin98Icon/>,
-  exodussol: <ExodusIcon/>,
-  glow: <GlowIcon/>,
-  magicedensol: <MagicEdenIcon/>,
-  mathwalletsol: <MathWalletIcon/>,
-  nightlysol: <NightlyIcon/>,
-  okxsolana: <OkxIcon/>,
-  onekeysol: <OneKeyIcon/>,
-  phantom: <PhantomIcon/>,
-  exodus:<ExodusIcon/>,
-  metamask:<MetaMaskIcon/>,
-  okxwallet: <OkxIcon/>,
-  bitgetwallet:<BitGetWalletIcon/>,
-  trust:<TrustIcon/>,
-  binance:<BnbIcon/>,
-  uniswap:<UnisatIcon/>,
-  safepal:<SafeIcon/>,
-  rainbow:<RainbowIcon/>,
+  coinbasesolana: <CoinbaseIcon />,
+  backpacksol: <BackpackIcon />,
+  solflare: <SolflareIcon />,
+  bitgetwalletsol: <BitGetWalletIcon />,
+  bravesol: <BraveIcon />,
+  coin98sol: <Coin98Icon />,
+  exodussol: <ExodusIcon />,
+  glow: <GlowIcon />,
+  magicedensol: <MagicEdenIcon />,
+  mathwalletsol: <MathWalletIcon />,
+  nightlysol: <NightlyIcon />,
+  okxsolana: <OkxIcon />,
+  onekeysol: <OneKeyIcon />,
+  phantom: <PhantomIcon />,
+  exodus: <ExodusIcon />,
+  metamask: <MetaMaskIcon />,
+  okxwallet: <OkxIcon />,
+  bitgetwallet: <BitGetWalletIcon />,
+  trust: <TrustIcon />,
+  binance: <BnbIcon />,
+  uniswap: <UnisatIcon />,
+  safepal: <SafeIcon />,
+  rainbow: <RainbowIcon />,
   // bybitwallet:<BitPayIcon/>,
   // tokenPocket:<ImTokenWallet/>,
-  zerion:<ZeroDevIcon/>,
+  zerion: <ZeroDevIcon />,
   // cryptocom:<CryptoIcon/>,
-  magiceden:<MagicEdenIcon/>,
-  backpack:<BackpackIcon/>,
+  magiceden: <MagicEdenIcon />,
+  backpack: <BackpackIcon />,
   // fireblocks:<FireblocksIcon/>,
   // onekeywallet: <OneKeyIcon/>,
 };

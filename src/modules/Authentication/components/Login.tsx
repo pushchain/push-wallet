@@ -38,13 +38,22 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
 
       if (values.email) {
         window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
-          }/auth/authorize-email?email=${encodeURIComponent(values.email)}&redirectUri=${encodeURIComponent(window.location.origin + '/wallet')}`;
+          }/auth/authorize-email?email=${encodeURIComponent(
+            values.email
+          )}&redirectUri=${encodeURIComponent(
+            window.location.origin + "/wallet"
+          )}`;
       }
     },
   });
 
-  const handleSocialLogin = (provider: 'github' | 'google' | 'discord' | 'twitter' | 'apple') => {
-    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(window.location.origin + '/wallet')}`;
+  const handleSocialLogin = (
+    provider: "github" | "google" | "discord" | "twitter" | "apple"
+  ) => {
+    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
+      }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
+        window.location.origin + "/wallet"
+      )}`;
   };
 
   return (
@@ -118,11 +127,11 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
                 onClick={() =>
                   handleSocialLogin(
                     social.name as
-                      | "github"
-                      | "google"
-                      | "discord"
-                      | "twitter"
-                      | "apple"
+                    | "github"
+                    | "google"
+                    | "discord"
+                    | "twitter"
+                    | "apple"
                   )
                 }
               />

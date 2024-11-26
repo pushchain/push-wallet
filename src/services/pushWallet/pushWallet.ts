@@ -106,7 +106,7 @@ export class PushWallet {
       account,
       pushWallet.derivedNode,
       pushWallet.mnemonic,
-      env,
+      env
     );
     // 5. Encrypt Derived Keys with PushWallet's 1st Account
     const walletClient = createWalletClient({
@@ -149,7 +149,6 @@ export class PushWallet {
     if (encPushAccount == null) {
       return null;
     } else {
-      
       const derivedNode = await PushWallet.decryptDerivedNode(
         encPushAccount.encDerivedPrivKey,
         pushSigner
@@ -159,11 +158,10 @@ export class PushWallet {
         pushSigner.account,
         derivedNode,
         undefined,
-        env,
+        env
       );
       pushWalletInstance.attachedAccounts = encPushAccount.attachedaccounts;
       return pushWalletInstance;
-
     }
   };
 
@@ -191,7 +189,9 @@ export class PushWallet {
               encPushAccount.items[0].encryptedderivedprivatekey
             ).prekey,
           },
-          attachedaccounts:encPushAccount?.items[0]?.attachedaccounts?.map((account)=>account.address)
+          attachedaccounts: encPushAccount?.items[0]?.attachedaccounts?.map(
+            (account) => account.address
+          ),
         }
       : null;
   };
@@ -684,7 +684,13 @@ export class PushWallet {
     localStorage.setItem("appConnections", JSON.stringify(this.appConnections));
   };
 
-
+  public rejectAllConnectionReqs = () => {
+    this.appConnections = this.appConnections.filter(
+      (app) => app.isPending === true
+    );
+    // Store updated appConnections in localStorage
+    localStorage.setItem("appConnections", JSON.stringify(this.appConnections));
+  };
 
   /**
    * Generates a random session key (hardened key) from derived key
