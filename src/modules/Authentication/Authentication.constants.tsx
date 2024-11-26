@@ -1,16 +1,7 @@
-import {
-  Apple,
-  DiscordSimple,
-  Github,
-  TwitterSimple,
-} from "../../blocks";
-import {
-  SocialsType,
-  WalletKeyPairType,
-} from "./Authentication.types";
+import { Apple, DiscordSimple, Github, TwitterSimple } from "../../blocks";
+import { SocialsType, WalletKeyPairType } from "./Authentication.types";
 
-
-export const socials: SocialsType[] = [
+export const socialLoginConfig: SocialsType[] = [
   {
     name: "apple",
     icon: <Apple color="icon-hero-icons" size={24} />,
@@ -23,10 +14,10 @@ export const socials: SocialsType[] = [
     name: "twitter",
     icon: <TwitterSimple color="icon-hero-icons" size={24} />,
   },
-  // {
-  //   name: "discord",
-  //   icon: <DiscordSimple width={24} height={24} />,
-  // },
+  {
+    name: "discord",
+    icon: <DiscordSimple width={24} height={24} />,
+  },
 ];
 
 export const solanaWallets: WalletKeyPairType = {
@@ -46,4 +37,3 @@ export const solanaWallets: WalletKeyPairType = {
   phantom: "Phantom",
   solflare: "Solflare",
 };
-

@@ -1,34 +1,23 @@
 import { FC } from "react";
-import {
-  ArrowUpRight,
-  Box,
-  Button,
-  Front,
-  Google,
-  Spinner,
-  Text,
-  TextInput,
-} from "../../../blocks";
+import { Box, Button, Front, Google, Text, TextInput } from "../../../blocks";
 import { PoweredByPush } from "../../../common";
-import { socials } from "../Authentication.constants";
+import { socialLoginConfig } from "../Authentication.constants";
 import { WalletState } from "../Authentication.types";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { css } from "styled-components";
 
-//formik for email validation ask
-//input arrow fix
-type LoginProps = {
+export type LoginProps = {
   email: string;
   setEmail: React.Dispatch<React.SetStateAction<string>>;
   setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
 };
 
-const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
-  const validationSchema = Yup.object().shape({
-    email: Yup.string().email("Invalid email address").required("Required"),
-  });
+const validationSchema = Yup.object().shape({
+  email: Yup.string().email("Invalid email address").required("Required"),
+});
 
+const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
   const formik = useFormik({
     initialValues: { email },
     validationSchema,
@@ -37,14 +26,25 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
       console.log("Values >>>", values);
 
       if (values.email) {
-        window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
-          }/auth/authorize-email?email=${encodeURIComponent(values.email)}&redirectUri=${encodeURIComponent(window.location.origin + '/wallet')}`;
+        window.location.href = `${
+          import.meta.env.VITE_APP_BACKEND_URL
+        }/auth/authorize-email?email=${encodeURIComponent(
+          values.email
+        )}&redirectUri=${encodeURIComponent(
+          window.location.origin + "/wallet"
+        )}`;
       }
     },
   });
 
-  const handleSocialLogin = (provider: 'github' | 'google' | 'discord' | 'twitter' | 'apple') => {
-    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(window.location.origin + '/wallet')}`;
+  const handleSocialLogin = (
+    provider: "github" | "google" | "discord" | "twitter" | "apple"
+  ) => {
+    window.location.href = `${
+      import.meta.env.VITE_APP_BACKEND_URL
+    }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
+      window.location.origin + "/wallet"
+    )}`;
   };
 
   return (
@@ -108,12 +108,13 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
             alignItems="center"
             justifyContent="center"
           >
-            {socials.map((social) => (
+            {socialLoginConfig.map((social) => (
               <Button
+                key={social.name}
                 variant="outline"
                 iconOnly={social.icon}
                 css={css`
-                  padding: var(--spacing-sm) var(--spacing-xl);
+                  width: 73px;
                 `}
                 onClick={() =>
                   handleSocialLogin(
