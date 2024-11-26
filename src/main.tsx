@@ -2,14 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
-import { BitcoinWalletConnectors } from "@dynamic-labs/bitcoin";
-import { CosmosWalletConnectors } from "@dynamic-labs/cosmos";
+import { DynamicContextProvider, SortWallets } from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
-import { FlowWalletConnectors } from "@dynamic-labs/flow";
 import { SolanaWalletConnectors } from "@dynamic-labs/solana";
-import { StarknetWalletConnectors } from "@dynamic-labs/starknet";
-import { WalletBookContextProvider } from "@dynamic-labs/wallet-book";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <>
@@ -19,12 +14,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         // Find your environment id at https://app.dynamic.xyz/dashboard/developer
         environmentId: import.meta.env.VITE_APP_DYNAMIC_ENV_ID,
         walletConnectors: [
-          // BitcoinWalletConnectors,
-          // CosmosWalletConnectors,
           EthereumWalletConnectors,
-          // FlowWalletConnectors,
           SolanaWalletConnectors,
-          // StarknetWalletConnectors,
         ],
       }}
     >

@@ -37,3 +37,5 @@ export const solanaWallets: WalletKeyPairType = {
   phantom: "Phantom",
   solflare: "Solflare",
 };
+
+export const priorityEvmWallets = ['metamask','trust','safepal','binance','uniswap','coinbase','rainbow','backpack','zerion'];
