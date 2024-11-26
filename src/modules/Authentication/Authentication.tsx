@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Box } from "../../blocks";
 import { BoxLayout, ContentLayout } from "../../common";
 import { Footer } from "../../common/components/Footer";
 import { Login } from "./components/Login";
 import { WalletSelection } from "./components/WalletSelection";
 import { WalletState } from "./Authentication.types";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import { useNavigate } from "react-router-dom";
 
 const Authentication = () => {
   const [email, setEmail] = useState<string>("");

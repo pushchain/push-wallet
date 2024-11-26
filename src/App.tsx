@@ -1,10 +1,10 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
-import { RouterConatiner } from "./common/components/RouterConatiner";
+
 import { GlobalProvider } from "./context/GlobalContext";
 import { blocksTheme, getBlocksCSSVariables } from "./blocks";
 import { getAppBasePath } from "../basePath";
-import { useDarkMode } from "common";
+import { useDarkMode, RouterContainer } from "./common";
 import AuthContextProvider from "./context/AuthContext";
 
 const GlobalStyle = createGlobalStyle`
@@ -28,13 +28,14 @@ const themeConfig = {
 
 export default function App() {
   const { isDarkMode } = useDarkMode();
+
   return (
     <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
       <GlobalStyle />
       <GlobalProvider>
         <AuthContextProvider>
           <Router basename={getAppBasePath()}>
-            <RouterConatiner />
+            <RouterContainer />
           </Router>
         </AuthContextProvider>
       </GlobalProvider>

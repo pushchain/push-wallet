@@ -30,17 +30,18 @@ export type WalletProfileProps = {
   isLoading: boolean;
 };
 
-const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet, isLoading }) => {
-  const { primaryWallet } = useDynamicContext();
-  const parsedWallet =
-    selectedWallet?.address || primaryWallet?.address;
+const WalletProfile: FC<WalletProfileProps> = ({
+  selectedWallet,
+  isLoading,
+}) => {
+  const { primaryWallet,handleLogOut } = useDynamicContext();
+  const parsedWallet = selectedWallet?.address || primaryWallet?.address;
   const walletName = selectedWallet?.name ?? "Guest Wallet";
   const [copied, setCopied] = useState(false);
 
   const { dispatch } = useGlobalState();
 
   const navigate = useNavigate();
-
 
   return (
     <Box
@@ -71,15 +72,18 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet, isLoading }) =>
                     sessionStorage.removeItem("jwt");
                     dispatch({ type: "RESET_AUTHENTICATED" });
                     dispatch({ type: "RESET_USER" });
+                    handleLogOut();
                     navigate("/auth");
                   }}
                 />
               </Menu>
             }
           >
+            {/* <Skeleton isLoading={isLoading} width="28px" height="28px"> */}
             <Box cursor="pointer">
               <Settings size={24} color="icon-primary" />
             </Box>
+            {/* </Skeleton> */}
           </Dropdown>
         </Box>
       </Box>
@@ -94,7 +98,12 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet, isLoading }) =>
           <BlockiesSvg address={parsedWallet} />
         </Skeleton>
       </Box>
-      <Box display="flex" flexDirection="column" alignItems="center" gap='spacing-xxxs'>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        gap="spacing-xxxs"
+      >
         <Skeleton isLoading={isLoading}>
           <Text variant="bl-semibold">{walletName}</Text>
         </Skeleton>
@@ -105,14 +114,16 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet, isLoading }) =>
             </Text>
           </Skeleton>
 
-          {!isLoading && <Box cursor="pointer">
-            <Tooltip title={copied ? "Copy" : "Copied"} trigger="click">
-              <Copy
-                color="icon-tertiary"
-                onClick={() => handleCopy(parsedWallet, setCopied)}
-              />
-            </Tooltip>
-          </Box>}
+          {!isLoading && (
+            <Box cursor="pointer">
+              <Tooltip title={copied ? "Copy" : "Copied"} trigger="click">
+                <Copy
+                  color="icon-tertiary"
+                  onClick={() => handleCopy(parsedWallet, setCopied)}
+                />
+              </Tooltip>
+            </Box>
+          )}
         </Box>
       </Box>
     </Box>

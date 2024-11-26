@@ -1,27 +1,33 @@
-// import React from 'react';
-// import { Box, Spinner, Text } from '../blocks';
+import { FC } from "react";
+import styled, { keyframes, css } from "styled-components";
 
-// const LoadingPage = () => {
-//     return (
-//         <Box>
-//             <Spinner variant='primary' size='extraLarge' />
-//             <Text variant='h3-semibold'>Loading Push Wallet</Text>
-//             <Text variant='bs-regular'>
-//                 Hang tight, creating a seamless web3 experience for you...
-//             </Text>
-//         </Box>
-//     );
-// };
+export type LoadingScreenProps = {
+  isLoading?: boolean;
+  title?: string;
+  subtitle?: string;
+};
 
-// export default LoadingPage;
-import React from 'react'
-import styled, { keyframes, css } from 'styled-components'
+export const LoadingPage: FC<LoadingScreenProps> = ({
+  isLoading = false,
+  title = "Loading Push Wallet",
+  subtitle = "Hang tight, creating a seamless web3 experience for you...",
+}) => {
+  if (!isLoading) return null;
 
-interface LoadingScreenProps {
-    isLoading?: boolean
-    title?: string
-    subtitle?: string
-}
+  return (
+    <LoadingContainer $isLoading={isLoading}>
+      <ContentWrapper>
+        <Content>
+          <Spinner />
+          <TextContent>
+            <Title>{title}</Title>
+            <Subtitle>{subtitle}</Subtitle>
+          </TextContent>
+        </Content>
+      </ContentWrapper>
+    </LoadingContainer>
+  );
+};
 
 const slideUp = keyframes`
   from {
@@ -30,7 +36,7 @@ const slideUp = keyframes`
   to {
     transform: translateY(0);
   }
-`
+`;
 
 const fadeIn = keyframes`
   from {
@@ -41,7 +47,7 @@ const fadeIn = keyframes`
     opacity: 1;
     transform: translateY(0);
   }
-`
+`;
 
 const spin = keyframes`
   from {
@@ -50,14 +56,14 @@ const spin = keyframes`
   to {
     transform: rotate(360deg);
   }
-`
+`;
 
 const LoadingContainer = styled.div<{ $isLoading: boolean }>`
   position: absolute; // Change from fixed to absolute
   top: 50%;
   left: 0%;
-  bottom:0%;
-  border-radius:24px;
+  bottom: 0%;
+  border-radius: 24px;
   transform: translate(-50%, -50%);
   z-index: 50;
   display: flex;
@@ -66,10 +72,12 @@ const LoadingContainer = styled.div<{ $isLoading: boolean }>`
   background-color: #09090b; // zinc-950
   transition: transform 0.5s ease-in-out;
   animation: ${slideUp} 0.5s ease-out forwards;
-  ${props => !props.$isLoading && css`
-    animation: ${slideUp} 0.5s ease-out reverse forwards;
-  `}
-`
+  ${(props) =>
+    !props.$isLoading &&
+    css`
+      animation: ${slideUp} 0.5s ease-out reverse forwards;
+    `}
+`;
 
 const ContentWrapper = styled.div`
   width: 100%;
@@ -78,7 +86,7 @@ const ContentWrapper = styled.div`
   background-color: rgba(24, 24, 27, 0.5); // zinc-900 with 50% opacity
   padding: 2rem;
   backdrop-filter: blur(4px);
-`
+`;
 
 const Content = styled.div`
   display: flex;
@@ -87,7 +95,7 @@ const Content = styled.div`
   justify-content: center;
   text-align: center;
   gap: 1.5rem;
-`
+`;
 
 const Spinner = styled.div`
   height: 2rem;
@@ -95,43 +103,20 @@ const Spinner = styled.div`
   border-radius: 50%;
   border-top: 2px solid #a855f7; // purple-500
   animation: ${spin} 1s linear infinite;
-`
+`;
 
 const TextContent = styled.div`
   animation: ${fadeIn} 0.5s ease-out 0.2s both;
-`
+`;
 
 const Title = styled.h2`
   font-size: 1.5rem;
   font-weight: 600;
   color: white;
-`
+`;
 
 const Subtitle = styled.p`
   margin-top: 0.5rem;
   font-size: 0.875rem;
   color: #a1a1aa; // zinc-400
-`
-
-export default function LoadingPage({
-    isLoading = false,
-    title = "Loading Push Wallet",
-    subtitle = "Hang tight, creating a seamless web3 experience for you...",
-}: LoadingScreenProps) {
-    if (!isLoading) return null;
-
-    return (
-        <LoadingContainer $isLoading={isLoading}>
-            <ContentWrapper>
-                <Content>
-                    <Spinner />
-                    <TextContent>
-                        <Title>{title}</Title>
-                        <Subtitle>{subtitle}</Subtitle>
-                    </TextContent>
-                </Content>
-            </ContentWrapper>
-        </LoadingContainer>
-    )
-}
-
+`;
