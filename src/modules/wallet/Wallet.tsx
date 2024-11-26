@@ -322,7 +322,7 @@ const Wallet: FC<WalletProps> = () => {
           gap="spacing-sm"
           position="relative"
         >
-          {!!state?.wallet?.appConnections.length && <AppConnections />}
+          {!!state?.wallet?.appConnections.length && <AppConnections selectedWallet={selectedWallet} appConnection={state.wallet.appConnections[0]} />}
           <WalletProfile selectedWallet={selectedWallet} isLoading={loading} />
           <WalletTabs
             walletList={walletList}

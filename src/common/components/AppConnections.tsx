@@ -3,10 +3,36 @@ import { css } from "styled-components";
 import BlockiesSvg from "blockies-react-svg";
 import { Box, Button, Cross, HoverableSVG, PushLogo, Text } from "../../blocks";
 import { centerMaskWalletAddress } from "../Common.utils";
+import { WalletListType } from "../../modules/wallet/Wallet.types";
+import { useGlobalState } from "../../context/GlobalContext";
+import { AppConnection } from "../../services/pushWallet/pushWallet.types";
 
-export type AppConnectionsProps = {};
+export type AppConnectionsProps = {
+  selectedWallet: WalletListType;
+  appConnection: AppConnection;
+};
 
-const AppConnections: FC<AppConnectionsProps> = ({}) => {
+const AppConnections: FC<AppConnectionsProps> = ({ selectedWallet, appConnection }) => {
+  const address = selectedWallet?.fullAddress;
+
+  const { state, dispatch } = useGlobalState();
+
+  const handleAccept = (origin: string) => {
+    if (state.wallet) {
+      state?.wallet?.acceptConnectionReq(origin)
+      dispatch({ type: 'INITIALIZE_WALLET', payload: state.wallet })
+    }
+
+  }
+
+  const handleReject = (origin: string) => {
+    if (state.wallet) {
+      state?.wallet?.rejectConnectionReq(origin)
+      dispatch({ type: 'INITIALIZE_WALLET', payload: state.wallet })
+    }
+
+  }
+
   return (
     <Box
       position="absolute"
@@ -59,7 +85,7 @@ const AppConnections: FC<AppConnectionsProps> = ({}) => {
             <PushLogo height={32} width={32} />
           </Box>
           <Text variant="h6-regular" textAlign="center">
-            alpha.push.org
+            {appConnection?.origin}
           </Text>
         </Box>
         <Box display="flex" flexDirection="column" gap="spacing-xxxs">
@@ -94,13 +120,12 @@ const AppConnections: FC<AppConnectionsProps> = ({}) => {
             <Box display="flex" flexDirection="column">
               <Text variant="bm-semibold">Push Wallet</Text>
               <Text variant="bes-semibold" color="text-tertiary">
-                123123...12323112
-                {/* {centerMaskWalletAddress(address)} */}
+                {centerMaskWalletAddress(address)}
               </Text>
             </Box>
           </Box>
           <Box display="flex" gap="spacing-xs">
-            <Button size="small" variant="outline">
+            <Button size="small" variant="outline" onClick={() => handleReject(appConnection?.origin)}>
               Reject
             </Button>
             <Button
@@ -109,6 +134,7 @@ const AppConnections: FC<AppConnectionsProps> = ({}) => {
               css={css`
                 width: 66%;
               `}
+              onClick={() => handleAccept(appConnection?.origin)}
             >
               Connect
             </Button>
