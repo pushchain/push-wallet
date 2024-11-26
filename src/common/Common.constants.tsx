@@ -1,28 +1,51 @@
-import React from "react";
 import { FC } from "react";
+import {
+  BackpackIcon,
+  BitGetWalletIcon,
+  BnbIcon,
+  BraveIcon,
+  Coin98Icon,
+  CoinbaseIcon,
+  ExodusIcon,
+  GlowIcon,
+  MagicEdenIcon,
+  MathWalletIcon,
+  MetaMaskIcon,
+  NightlyIcon,
+  OkxIcon,
+  OneKeyIcon,
+  PhantomIcon,
+  RainbowIcon,
+  SafeIcon,
+  SolflareIcon,
+  TrustIcon,
+  UnisatIcon,
+  ZeroDevIcon,
+} from "@dynamic-labs/iconic";
 import {
   ArbitrumMonotone,
   BnbMonotone,
+  Ethereum,
   EthereumMonotone,
   IconProps,
   OptimismMonotone,
   PolygonMonotone,
   PushMonotone,
+  Solana,
   SolanaMonotone,
 } from "../blocks";
 import { WalletCategoriesType } from "./Common.types";
-import { BackpackIcon, BinanceIcon, BitGetWalletIcon, BitPayIcon, BnbIcon, BraveIcon, Coin98Icon, CoinbaseIcon, CryptoIcon, ExodusIcon, FireblocksIcon, GlowIcon, ImTokenWallet, MagicEdenIcon, MathWalletIcon, MetaMaskIcon, NightlyIcon, OkxIcon, OneKeyIcon, PhantomIcon, RainbowIcon, SafeIcon, SolflareIcon, TrustIcon, UnisatIcon, ZeroDevIcon } from "@dynamic-labs/iconic";
 
 export const walletCategories: WalletCategoriesType[] = [
   {
     value: "ethereum",
     label: "Link Ethereum Wallet",
-    icon: undefined,
+    icon: <Ethereum width={24} height={24} />,
   },
   {
     value: "solana",
     label: "Link Solana Wallet",
-    icon: undefined,
+    icon: <Solana width={24} height={24} />,
   },
 ];
 
@@ -70,12 +93,13 @@ export const WALLETS_LOGO = {
   uniswap:<UnisatIcon/>,
   safepal:<SafeIcon/>,
   rainbow:<RainbowIcon/>,
+  bravesol: <BraveIcon />,
   // bybitwallet:<BitPayIcon/>,
   // tokenPocket:<ImTokenWallet/>,
-  zerion:<ZeroDevIcon/>,
+  zerion: <ZeroDevIcon />,
   // cryptocom:<CryptoIcon/>,
-  magiceden:<MagicEdenIcon/>,
-  backpack:<BackpackIcon/>,
+  magiceden: <MagicEdenIcon />,
+  backpack: <BackpackIcon />,
   // fireblocks:<FireblocksIcon/>,
   // onekeywallet: <OneKeyIcon/>,
 };

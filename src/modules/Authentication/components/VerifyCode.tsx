@@ -6,7 +6,7 @@ type VerifyCodeProps = {};
 
 //replace email
 //implement back
-//recheck the otp input 
+//recheck the otp input
 const VerifyCode: FC<VerifyCodeProps> = () => {
   const [code, setCode] = useState<Array<string>>(new Array(6).fill(""));
 
@@ -16,7 +16,7 @@ const VerifyCode: FC<VerifyCodeProps> = () => {
   ) => {
     const newCode = [...code];
     console.debug(e.target.value);
-    if (!newCode[index] || (newCode[index] && e.target.value ==='')) {
+    if (!newCode[index] || (newCode[index] && e.target.value === "")) {
       newCode[index] = e.target.value;
       setCode(newCode);
     }

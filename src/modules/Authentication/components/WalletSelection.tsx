@@ -109,12 +109,10 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
                     border="border-sm solid stroke-tertiary"
                     backgroundColor="surface-transparent"
                     alignItems="center"
-                    // justifyContent="space-between"
                     key={key}
                     gap="spacing-xxs"
                     onClick={() => handleWalletOption(key)}
                   >
-                    {/* <Box alignItems="center" display="flex"> */}
                     <Box
                       width="24px"
                       height="24px"
@@ -122,7 +120,9 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
                       display="flex"
                       alignItems="center"
                       justifyContent="center"
-                      css={css`flex-shrink:0`}
+                      css={css`
+                        flex-shrink: 0;
+                      `}
                     >
                       {WALLETS_LOGO[key] || (
                         <FallBackWalletIcon walletKey={key} />
@@ -131,7 +131,6 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
                     <Text variant="bs-semibold" color="text-primary">
                       {name}
                     </Text>
-                    {/* </Box> */}
                   </Box>
                 ))
               ))}

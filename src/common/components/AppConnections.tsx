@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from "react";
+import React, { FC } from "react";
 import { css } from "styled-components";
 import BlockiesSvg from "blockies-react-svg";
 import { Box, Button, Cross, HoverableSVG, PushLogo, Text } from "../../blocks";
@@ -31,6 +31,13 @@ const AppConnections: FC<AppConnectionsProps> = ({ selectedWallet, appConnection
       dispatch({ type: 'INITIALIZE_WALLET', payload: state.wallet })
     }
 
+  }
+
+  const handleRejectAllConnections = async () => {
+    if (state.wallet) {
+      state?.wallet?.rejectAllConnectionReqs();
+      dispatch({ type: 'INITIALIZE_WALLET', payload: state.wallet })
+    }
   }
 
   return (
@@ -69,7 +76,7 @@ const AppConnections: FC<AppConnectionsProps> = ({ selectedWallet, appConnection
           width="100%"
         >
           <Box alignSelf="flex-end" display="flex">
-            <HoverableSVG icon={<Cross color="icon-secondary" size={16} />} />
+            <HoverableSVG onClick={handleRejectAllConnections} icon={<Cross color="icon-secondary" size={16} />} />
           </Box>
           <Box
             display="flex"
