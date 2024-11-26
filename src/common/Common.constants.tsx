@@ -1,18 +1,5 @@
 import { FC } from "react";
 import {
-  ArbitrumMonotone,
-  BnbMonotone,
-  Ethereum,
-  EthereumMonotone,
-  IconProps,
-  OptimismMonotone,
-  PolygonMonotone,
-  PushMonotone,
-  Solana,
-  SolanaMonotone,
-} from "../blocks";
-import { WalletCategoriesType } from "./Common.types";
-import {
   BackpackIcon,
   BitGetWalletIcon,
   BnbIcon,
@@ -35,6 +22,19 @@ import {
   UnisatIcon,
   ZeroDevIcon,
 } from "@dynamic-labs/iconic";
+import {
+  ArbitrumMonotone,
+  BnbMonotone,
+  Ethereum,
+  EthereumMonotone,
+  IconProps,
+  OptimismMonotone,
+  PolygonMonotone,
+  PushMonotone,
+  Solana,
+  SolanaMonotone,
+} from "../blocks";
+import { WalletCategoriesType } from "./Common.types";
 
 export const walletCategories: WalletCategoriesType[] = [
   {
