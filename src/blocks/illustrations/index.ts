@@ -28,6 +28,7 @@ export { default as CreateChannelPoints } from './components/CreateChannelPoints
 export { default as CyberLogoRewards } from './components/CyberLogoRewards';
 
 export { default as Discord } from './components/Discord';
+export { default as DiscordSimple } from './components/DiscordSimple';
 
 export { default as EarnOnPush } from './components/EarnOnPush';
 
@@ -36,6 +37,9 @@ export { default as Ethereum } from './components/Ethereum';
 export { default as FiveSubscribedDefiChannel } from './components/FiveSubscribedDefiChannel';
 
 export { default as GatedGroupPoints } from './components/GatedGroupPoints';
+
+export { default as Google } from './components/Google';
+
 
 export { default as GradientBonusActivitySubscribers } from './components/GradientBonusActivitySubscribers';
 
@@ -96,6 +100,8 @@ export { default as StakePushPurpleCoin } from './components/StakePushPurpleCoin
 export { default as StakePushYellowCoin } from './components/StakePushYellowCoin';
 
 export { default as StakePushYellowMultiplier } from './components/StakePushYellowMultiplier';
+
+export { default as Solana } from './components/Solana';
 
 export { default as SubscribePoints } from './components/SubscribePoints';
 

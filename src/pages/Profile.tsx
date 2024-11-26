@@ -6,8 +6,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { PushWallet } from '../services/pushWallet/pushWallet'
 import secrets from 'secrets.js-grempe';
 import { ENV } from '../constants'
+import { WalletProfile } from '../modules/wallet/components/WalletProfile';
+import { WalletTabs } from '../modules/wallet/components/WalletTabs';
+import { Box, Spinner } from '../blocks';
+import { BoxLayout, ContentLayout } from '../common';
 
-export default function Profile() {
+export const Profile = () => {
   const { state, dispatch } = useGlobalState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -28,10 +32,10 @@ export default function Profile() {
     try {
       setLoading(true);
       const instance = await PushWallet.signUp(import.meta.env.VITE_APP_ENV as ENV);
-      
+
       const mnemonicHex = Buffer.from(instance.mnemonic).toString('hex');
       const shares = secrets.share(mnemonicHex, 3, 2);
-      
+
       await api.post(`/mnemonic-share/${userId}`, { share: shares[0] });
       localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
       await instance.storeMnemonicShareAsEncryptedTx(userId, shares[2], instance.mnemonic);
@@ -57,11 +61,11 @@ export default function Profile() {
       const mnemonicHex = secrets.combine([share1, share2]);
       const mnemonic = Buffer.from(mnemonicHex, 'hex').toString();
       const instance = await PushWallet.logInWithMnemonic(mnemonic, import.meta.env.VITE_APP_ENV as ENV);
-  
+
       dispatch({ type: 'INITIALIZE_WALLET', payload: instance });
       setPushWallet(instance);
       setAttachedWallets(Object.keys(instance.walletToEncDerivedKey));
-  
+
       console.info('Wallet reconstructed successfully');
     } catch (err) {
       console.error('Error reconstructing wallet:', err);
@@ -76,22 +80,22 @@ export default function Profile() {
     try {
       setLoading(true);
       console.log("fetchJwtUsingState called with state:", stateParam);
-      
+
       const response = await api.get('/auth/jwt', {
         params: { state: stateParam },
       });
-      
+
       const { token } = response.data;
       if (!token) throw new Error('Token not found in response');
 
       dispatch({ type: 'SET_JWT', payload: token });
       sessionStorage.setItem('jwt', token);
-      
+
       await fetchUserProfile(token);
     } catch (err) {
       console.error('Error fetching JWT:', err);
       setError('Authentication failed. Please try logging in again.');
-      navigate('/login');
+      navigate('/auth');
     } finally {
       setLoading(false);
     }
@@ -111,7 +115,7 @@ export default function Profile() {
       if (!state.wallet) {
         try {
           let share1, share2, share3;
-      
+
           // Try share1 + share2 combination first
           try {
             const mnemonicShareResponse = await api.get(`/mnemonic-share/${userId}`);
@@ -126,7 +130,7 @@ export default function Profile() {
           } catch (error) {
             console.debug('Share1 not available', { userId, error: (error as Error).message });
           }
-          
+
           // Try combinations with share3 if needed
           if (!share1 || !share2) {
             try {
@@ -134,13 +138,13 @@ export default function Profile() {
                 import.meta.env.VITE_APP_ENV as ENV,
                 userId,
               );
-              
+
               if (share1 && share3) {
                 console.info('Reconstructing wallet with share1 and share3', { userId });
                 await reconstructWallet(share1, share3);
                 return;
               }
-              
+
               if (share2 && share3) {
                 console.info('Reconstructing wallet with share2 and share3', { userId });
                 await reconstructWallet(share2, share3);
@@ -162,8 +166,8 @@ export default function Profile() {
               return;
             }
           }
-      
-          console.info('Creating new wallet', { 
+
+          console.info('Creating new wallet', {
             userId,
             availableShares: {
               share1: !!share1,
@@ -171,13 +175,13 @@ export default function Profile() {
               share3: !!share3
             }
           });
-          
+
           await createWalletAndGenerateMnemonic(userId);
-      
+
         } catch (error) {
-          console.error('Error during wallet reconstruction/creation', { 
+          console.error('Error during wallet reconstruction/creation', {
             userId,
-            error: (error as Error).message 
+            error: (error as Error).message
           });
           throw error;
         }
@@ -199,7 +203,7 @@ export default function Profile() {
 
         if (stateParam) {
           await fetchJwtUsingState(stateParam);
-          
+
           // Clean up URL
           const url = new URL(window.location.href);
           url.searchParams.delete('state');
@@ -210,7 +214,7 @@ export default function Profile() {
             dispatch({ type: 'SET_JWT', payload: storedToken });
             await fetchUserProfile(storedToken);
           } else {
-            navigate('/login');
+            navigate('/auth');
           }
         }
       } catch (err) {
@@ -247,17 +251,20 @@ export default function Profile() {
         <h2 className="text-2xl mb-4">Your Wallet</h2>
         {/* Display wallet details or provide wallet-related actions */}
         {state.wallet ? (
-          <div className="break-words">
-            <p className="mb-4">
-              <strong>Account:</strong> 
-              <span className="break-all">{state.wallet.signerAccount.split(':')[2]}</span>
-            </p>
-            <p>
-              <strong>DID:</strong> 
-              <span className="break-all">{state.wallet.did}</span>
-            </p>
-            {/* Add more wallet details as needed */}
-          </div>
+          <>
+            <div className="break-words">
+              <p className="mb-4">
+                <strong>Account:</strong>
+                <span className="break-all">{state.wallet.signerAccount.split(':')[2]}</span>
+              </p>
+              <p>
+                <strong>DID:</strong>
+                <span className="break-all">{state.wallet.did}</span>
+              </p>
+              {/* Add more wallet details as needed */}
+            </div>
+
+          </>
         ) : (
           <p>No wallet connected.</p>
         )}
@@ -268,12 +275,34 @@ export default function Profile() {
           sessionStorage.removeItem('jwt');
           dispatch({ type: 'RESET_AUTHENTICATED' });
           dispatch({ type: 'RESET_USER' });
-          navigate('/login');
+          navigate('/auth');
         }}
         className="bg-red-600 text-white px-6 py-3 rounded-lg"
       >
         Logout
       </button>
+
+
+      {state.wallet && (
+        <ContentLayout>
+          <BoxLayout>
+            {loading ? (
+              <Spinner variant='primary' size='large' />
+            ) : (
+              <Box
+                flexDirection="column"
+                display="flex"
+                width="376px"
+                padding="spacing-md"
+                gap="spacing-sm"
+              >
+                <WalletProfile />
+                <WalletTabs />
+              </Box>
+            )}
+          </BoxLayout>
+        </ContentLayout>
+      )}
     </div>
   );
 }

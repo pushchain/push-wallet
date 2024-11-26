@@ -7,6 +7,7 @@ import { ENV } from '../constants'
 import { MnemonicGrid } from '../components/MnemonicGrid'
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { PushSigner } from '../services/pushSigner/pushSigner'
+import { EncPushAccount } from '../services/pushWallet/pushWallet.types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub, faGoogle, faDiscord, faTwitter } from '@fortawesome/free-brands-svg-icons';
 
@@ -16,7 +17,7 @@ export default function Login() {
     Array(12).fill('')
   )
   const { setShowAuthFlow, primaryWallet, handleLogOut } = useDynamicContext()
-  const [email, setEmail] = useState(''); 
+  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
 
@@ -37,7 +38,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      let pushWallet: PushWallet
+      let pushWallet: PushWallet | null;
       switch (loginMethod) {
         case 'mnemonic': {
           pushWallet = await PushWallet.logInWithMnemonic(
@@ -98,7 +99,7 @@ export default function Login() {
         window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-email?email=${encodeURIComponent(email)}`;
       }
     };
-  
+
     return (
       <form onSubmit={handleEmailLogin} className="space-y-4">
         <input
@@ -136,7 +137,7 @@ export default function Login() {
   const renderPhoneLogin = () => {
     const handlePhoneSubmit = (e: React.FormEvent) => {
       e.preventDefault();
-      
+
       // Basic phone validation
       const phoneRegex = /^\+[1-9]\d{1,14}$/;
       if (!phoneRegex.test(phone)) {

@@ -1,7 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
-import { getAppBasePath } from "./src/common";
+//@ts-expect-error
+import { getAppBasePath } from "./basePath";
 import { resolve } from "path";
 import viteTsconfigPaths from "vite-tsconfig-paths";
 
@@ -15,7 +16,7 @@ export default defineConfig({
     }),
     react(),
     viteTsconfigPaths({
-      root: "./",
+      root: "./src",
     }),
   ],
   resolve: {
@@ -26,4 +27,8 @@ export default defineConfig({
     },
   },
   base: getAppBasePath(),
+  build: {
+    outDir: "build",
+    sourcemap: false,
+  },
 });

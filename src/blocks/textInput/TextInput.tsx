@@ -13,7 +13,7 @@ export type TextInputProps = {
   errorMessage?: string;
   label?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onClear?: () => void;
+  trailingIcon?: ReactNode;
   placeholder?: string;
   required?: boolean;
   success?: boolean;
@@ -139,7 +139,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       errorMessage,
       label,
       onChange,
-      onClear,
+      trailingIcon,
       placeholder,
       required,
       type = 'text',
@@ -194,7 +194,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               value={value}
             />
           </InputContainer>
-          {onClear && <CrossFilled onClick={() => onClear?.()} />}
+         {trailingIcon}
         </StyledTextInput>
         {description && (
           <InputText

@@ -14,22 +14,22 @@ export default function Callback() {
         try {
           // Get the access token
           const token = await getAccessTokenSilently()
-          
+
           // Store token in sessionStorage
           sessionStorage.setItem('jwt', token)
-          
+
           // Update global state
           dispatch({ type: 'SET_JWT', payload: token })
           dispatch({ type: 'SET_USER', payload: user })
           dispatch({ type: 'SET_AUTHENTICATED', payload: true })
-          
+
           // Redirect to profile
           navigate('/profile')
         } catch (error) {
           console.error('Error handling callback:', error)
           dispatch({ type: 'RESET_AUTHENTICATED' })
           dispatch({ type: 'RESET_USER' })
-          navigate('/login')
+          navigate('/auth')
         }
       }
     }

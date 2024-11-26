@@ -9,5 +9,5 @@
     "strict": true,
     "noEmit": true
   },
-  "include": ["vite.config.ts", "src/common", "vite-env.d.ts"]
+  "include": ["vite.config.ts", "vite-env.d.ts"]
 }

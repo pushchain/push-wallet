@@ -9,6 +9,7 @@ import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { FlowWalletConnectors } from "@dynamic-labs/flow";
 import { SolanaWalletConnectors } from "@dynamic-labs/solana";
 import { StarknetWalletConnectors } from "@dynamic-labs/starknet";
+import { WalletBookContextProvider } from "@dynamic-labs/wallet-book";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <>
@@ -18,12 +19,12 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         // Find your environment id at https://app.dynamic.xyz/dashboard/developer
         environmentId: import.meta.env.VITE_APP_DYNAMIC_ENV_ID,
         walletConnectors: [
-          BitcoinWalletConnectors,
-          CosmosWalletConnectors,
+          // BitcoinWalletConnectors,
+          // CosmosWalletConnectors,
           EthereumWalletConnectors,
-          FlowWalletConnectors,
+          // FlowWalletConnectors,
           SolanaWalletConnectors,
-          StarknetWalletConnectors,
+          // StarknetWalletConnectors,
         ],
       }}
     >
