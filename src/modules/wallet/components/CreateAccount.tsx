@@ -9,14 +9,18 @@ import { ENV } from "../../../constants";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { css } from "styled-components";
 
-const CreateAccount: FC = () => {
-  const [loading, setLoading] = useState(false);
+export type CreateAccountProps = {
+  isLoading: boolean;
+  setIsLoading:React.Dispatch<React.SetStateAction<boolean>>
+};
+
+const CreateAccount: FC<CreateAccountProps> = ({isLoading,setIsLoading}) => {
   const { primaryWallet } = useDynamicContext();
   const { state, dispatch } = useGlobalState();
 
   const handleMnemonicSignup = async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const instance = await PushWallet.signUp(config.APP_ENV as ENV);
       await connectWalletToPushAccount(instance);
     } catch (err) {
@@ -38,7 +42,7 @@ const CreateAccount: FC = () => {
       } catch (err) {
         alert(err);
       }
-      setLoading(false);
+      setIsLoading(false);
     }
   };
   const handlePushWalletCreation = async () => {
@@ -55,14 +59,23 @@ const CreateAccount: FC = () => {
       backgroundColor="surface-secondary"
       gap="spacing-xs"
       position="absolute"
-      css={css`bottom:24px`}
-      width='328px'
+      css={css`
+        bottom: 24px;
+      `}
+      width="328px"
     >
+  
       <Text color="text-secondary" variant="bes-semibold">
-        You are browsing using an external wallet.<br/> Create an account & link
-        wallet to unlock all features.
+        You are browsing using an external wallet.
+        <br /> Create an account & link wallet to unlock all features.
       </Text>
-      <Button size="extraSmall" block onClick={() => handlePushWalletCreation()}>Create Account</Button>
+      <Button
+        size="extraSmall"
+        block
+        onClick={() => handlePushWalletCreation()}
+      >
+        Create Account
+      </Button>
     </Box>
   );
 };

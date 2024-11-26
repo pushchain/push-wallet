@@ -16,12 +16,14 @@ import config from "../../config";
 import { PushSigner } from "../../services/pushSigner/pushSigner";
 import { AppConnections } from "../../common/components/AppConnections";
 import { useNavigate } from "react-router-dom";
+import { LoadingPage } from "../../pages/LoadingPage";
 
 export type WalletProps = {};
 
 const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
   const [loading, setLoading] = useState(true);
+  const [createAccountLoading, setCreateAccountLoading] = useState(false);
   const [error, setError] = useState("");
   const { primaryWallet } = useDynamicContext();
   const [pushWallet, setPushWallet] = useState<PushWallet | null>(null);
@@ -30,7 +32,6 @@ const Wallet: FC<WalletProps> = () => {
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
 
   const navigate = useNavigate();
-
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -189,7 +190,7 @@ const Wallet: FC<WalletProps> = () => {
           if (hasAnyShare) {
             const shouldCreate = window.confirm(
               "Unable to reconstruct your existing wallet. Would you like to create a new one? " +
-              "Warning: This will make your old wallet inaccessible."
+                "Warning: This will make your old wallet inaccessible."
             );
             if (!shouldCreate) {
               setError("Wallet reconstruction failed. Please try again later.");
@@ -218,7 +219,7 @@ const Wallet: FC<WalletProps> = () => {
     } catch (err) {
       console.error("Error fetching user profile:", err);
       setError("Failed to fetch user profile. Please try again.");
-      navigate('/auth')
+      navigate("/auth");
       throw err;
     } finally {
       setLoading(false);
@@ -323,7 +324,22 @@ const Wallet: FC<WalletProps> = () => {
           gap="spacing-sm"
           position="relative"
         >
-          {!!state?.wallet?.appConnections.length && <AppConnections selectedWallet={selectedWallet} appConnection={state.wallet.appConnections[state.wallet.appConnections.length - 1]} />}
+          {createAccountLoading && (
+            <LoadingPage
+              isLoading={createAccountLoading}
+              title={"Creating Push Wallet"}
+            />
+          )}
+          {!!state?.wallet?.appConnections.length && (
+            <AppConnections
+              selectedWallet={selectedWallet}
+              appConnection={
+                state.wallet.appConnections[
+                  state.wallet.appConnections.length - 1
+                ]
+              }
+            />
+          )}
           <WalletProfile selectedWallet={selectedWallet} isLoading={loading} />
           <WalletTabs
             walletList={walletList}
@@ -331,7 +347,12 @@ const Wallet: FC<WalletProps> = () => {
             setSelectedWallet={setSelectedWallet}
             isLoading={loading}
           />
-          {!state?.wallet && primaryWallet && <CreateAccount />}
+          {!state?.wallet && primaryWallet && (
+            <CreateAccount
+              isLoading={createAccountLoading}
+              setIsLoading={setCreateAccountLoading}
+            />
+          )}
         </Box>
       </BoxLayout>
     </ContentLayout>
