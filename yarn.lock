@@ -3178,9 +3178,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pushprotocol/node-core@npm:^0.0.28":
-  version: 0.0.28
-  resolution: "@pushprotocol/node-core@npm:0.0.28"
+"@pushprotocol/node-core@npm:0.0.29":
+  version: 0.0.29
+  resolution: "@pushprotocol/node-core@npm:0.0.29"
   dependencies:
     "@bufbuild/protobuf": "npm:^2.0.0"
     "@noble/hashes": "npm:^1.5.0"
@@ -3194,7 +3194,7 @@ __metadata:
     tweetnacl: "npm:^1.0.3"
     uuid: "npm:^10.0.0"
     viem: "npm:^2.21.1"
-  checksum: 10/5884745a24ee4fbc0a6408e8f97b65e1a38fa3897e3ae6d059b03e1984788b5db2e6d6a2fe59413d76d700d9d044d0e6da5e5075723826f32c23ba5bcbdd507f
+  checksum: 10/5fcdb7c96fa160390ece92672796a84e154f07ba918febf9bba31bab4565ca5cff37f86d1390119fa0a813aa0d73f0fa529a33c30cfd81a133cfd89a30b163f6
   languageName: node
   linkType: hard
 
@@ -12935,7 +12935,7 @@ __metadata:
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
     "@fortawesome/react-fontawesome": "npm:^0.2.2"
     "@noble/hashes": "npm:^1.0.0"
-    "@pushprotocol/node-core": "npm:^0.0.28"
+    "@pushprotocol/node-core": "npm:0.0.29"
     "@radix-ui/react-dialog": "npm:^1.1.1"
     "@radix-ui/react-dropdown-menu": "npm:^2.1.1"
     "@radix-ui/react-switch": "npm:^1.1.0"

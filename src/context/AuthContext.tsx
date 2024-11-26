@@ -25,7 +25,6 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     const storedToken = sessionStorage.getItem("jwt");
     console.log("Stored Token", storedToken);
 
-
     useEffect(() => {
         const fetchUser = async () => {
             try {
@@ -53,7 +52,7 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
                 }
 
                 else {
-                    setLoadingUser('rejected')
+                    setLoadingUser('idle')
                 }
 
             } catch (error) {
@@ -65,7 +64,7 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
         fetchUser();
 
-    }, [stateParam, storedToken])
+    }, [stateParam, storedToken, primaryWallet])
 
     return (
         <AuthContext.Provider value={{ loadingUser, sessionToken }}>

@@ -37,7 +37,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         //   config.APP_ENV as ENV
         // );
         // dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
-        navigate("/");
+        navigate("/wallet");
         // setProfileLoading(false);
       }
     })();
@@ -55,7 +55,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
 
   const handleWalletOption = (key: string) => {
     selectWalletOption(key);
-    navigate("/");
+    navigate("/wallet");
   };
 
   return (
@@ -105,7 +105,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
                     alignItems="center"
                     justifyContent="space-between"
                     key={key}
-                    onClick={()=>handleWalletOption(key)}
+                    onClick={() => handleWalletOption(key)}
                   >
                     <Box alignItems="center" display="flex">
                       {/* {walletCategory.icon} */}

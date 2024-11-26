@@ -2,11 +2,11 @@ import { FC } from 'react';
 import { IconWrapper } from '../IconWrapper';
 import { IconProps } from '../Icons.types';
 
-const EtheriumMonotone: FC<IconProps> = (allProps) => {
+const EthereumMonotone: FC<IconProps> = (allProps) => {
   const { svgProps: props, ...restProps } = allProps;
   return (
     <IconWrapper
-      componentName="EtheriumMonotone"
+      componentName="EthereumMonotone"
       icon={
         <svg
           width="inherit"
@@ -43,4 +43,4 @@ const EtheriumMonotone: FC<IconProps> = (allProps) => {
   );
 };
 
-export default EtheriumMonotone;
+export default EthereumMonotone;

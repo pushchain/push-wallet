@@ -15,6 +15,7 @@ import { WalletListType } from "./Wallet.types";
 import config from "../../config";
 import { PushSigner } from "../../services/pushSigner/pushSigner";
 import { AppConnections } from "../../common/components/AppConnections";
+import { useNavigate } from "react-router-dom";
 
 export type WalletProps = {};
 
@@ -27,6 +28,9 @@ const Wallet: FC<WalletProps> = () => {
   const [attachedWallets, setAttachedWallets] = useState<string[]>([]);
   const [walletList, setWalletList] = useState<WalletListType[]>([]);
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
+
+  const navigate = useNavigate();
+
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -54,6 +58,7 @@ const Wallet: FC<WalletProps> = () => {
       console.info("Wallet created and mnemonic split into shares", { userId });
     } catch (err) {
       console.error("Error creating wallet:", err);
+      // TODO: handle the error logic when the user asked for creating a new wallet but then api fails
       setError("Failed to create wallet. Please try again.");
       throw err;
     } finally {
@@ -78,6 +83,7 @@ const Wallet: FC<WalletProps> = () => {
       console.info("Wallet reconstructed successfully");
     } catch (err) {
       console.error("Error reconstructing wallet:", err);
+      // TODO: Here we will give user an option to either recreate or move back to auth page
       setError("Failed to reconstruct wallet. Please try again.");
       throw err;
     } finally {
@@ -179,10 +185,11 @@ const Wallet: FC<WalletProps> = () => {
           }
 
           const hasAnyShare = share1 || share2 || share3;
+          // TODO: Error case when only one share is available and user needs to decide either create a new wallet or not
           if (hasAnyShare) {
             const shouldCreate = window.confirm(
               "Unable to reconstruct your existing wallet. Would you like to create a new one? " +
-                "Warning: This will make your old wallet inaccessible."
+              "Warning: This will make your old wallet inaccessible."
             );
             if (!shouldCreate) {
               setError("Wallet reconstruction failed. Please try again later.");
@@ -211,6 +218,7 @@ const Wallet: FC<WalletProps> = () => {
     } catch (err) {
       console.error("Error fetching user profile:", err);
       setError("Failed to fetch user profile. Please try again.");
+      navigate('/auth')
       throw err;
     } finally {
       setLoading(false);
@@ -314,7 +322,7 @@ const Wallet: FC<WalletProps> = () => {
           gap="spacing-sm"
           position="relative"
         >
-          {state.wallet.appConnections.length && <AppConnections />}
+          {!!state?.wallet?.appConnections.length && <AppConnections />}
           <WalletProfile selectedWallet={selectedWallet} isLoading={loading} />
           <WalletTabs
             walletList={walletList}
