@@ -34,7 +34,7 @@ const WalletProfile: FC<WalletProfileProps> = ({
   selectedWallet,
   isLoading,
 }) => {
-  const { primaryWallet } = useDynamicContext();
+  const { primaryWallet,handleLogOut } = useDynamicContext();
   const parsedWallet = selectedWallet?.address || primaryWallet?.address;
   const walletName = selectedWallet?.name ?? "Guest Wallet";
   const [copied, setCopied] = useState(false);
@@ -72,6 +72,7 @@ const WalletProfile: FC<WalletProfileProps> = ({
                     sessionStorage.removeItem("jwt");
                     dispatch({ type: "RESET_AUTHENTICATED" });
                     dispatch({ type: "RESET_USER" });
+                    handleLogOut();
                     navigate("/auth");
                   }}
                 />

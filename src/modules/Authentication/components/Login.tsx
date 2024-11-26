@@ -14,6 +14,7 @@ import { socials } from "../Authentication.constants";
 import { WalletState } from "../Authentication.types";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { css } from "styled-components";
 
 //formik for email validation ask
 //input arrow fix
@@ -36,14 +37,25 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
       console.log("Values >>>", values);
 
       if (values.email) {
-        window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
-          }/auth/authorize-email?email=${encodeURIComponent(values.email)}&redirectUri=${encodeURIComponent(window.location.origin + '/wallet')}`;
+        window.location.href = `${
+          import.meta.env.VITE_APP_BACKEND_URL
+        }/auth/authorize-email?email=${encodeURIComponent(
+          values.email
+        )}&redirectUri=${encodeURIComponent(
+          window.location.origin + "/wallet"
+        )}`;
       }
     },
   });
 
-  const handleSocialLogin = (provider: 'github' | 'google' | 'discord' | 'twitter' | 'apple') => {
-    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL}/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(window.location.origin + '/wallet')}`;
+  const handleSocialLogin = (
+    provider: "github" | "google" | "discord" | "twitter" | "apple"
+  ) => {
+    window.location.href = `${
+      import.meta.env.VITE_APP_BACKEND_URL
+    }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
+      window.location.origin + "/wallet"
+    )}`;
   };
 
   return (
@@ -108,27 +120,23 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
             justifyContent="center"
           >
             {socials.map((social) => (
-              <Box
-                display="flex"
-                key={social.name}
-                alignItems="center"
-                justifyContent="center"
-                border="border-sm solid stroke-tertiary"
-                borderRadius="radius-sm"
-                padding="spacing-sm spacing-md"
+              <Button
+                variant="outline"
+                iconOnly={social.icon}
+                css={css`
+                  padding: var(--spacing-sm) var(--spacing-xl);
+                `}
                 onClick={() =>
                   handleSocialLogin(
                     social.name as
-                    | "github"
-                    | "google"
-                    | "discord"
-                    | "twitter"
-                    | "apple"
+                      | "github"
+                      | "google"
+                      | "discord"
+                      | "twitter"
+                      | "apple"
                   )
                 }
-              >
-                {social.icon}
-              </Box>
+              />
             ))}
           </Box>
           <Text variant="os-regular" color="text-tertiary">

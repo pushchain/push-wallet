@@ -1,29 +1,29 @@
-import React from 'react';
-import { Box, ExternalLinkIcon, InternalLink, PushMonotone, Text } from '../../../blocks';
+import { Box, DefaultChainMonotone, ExternalLinkIcon, InternalLink, PushMonotone, Skeleton, Text } from '../../../blocks';
 import { css } from 'styled-components';
 import { convertCaipToObject, formatWalletCategory, getFixedTime } from '../Wallet.utils';
 import { centerMaskWalletAddress, CHAIN_LOGO } from '../../../common';
 
-const WalletActivityListItem = ({
+
+
+const WalletActivityListItem  = ({
     transaction,
     address
 }) => {
-
     function getChainIcon(chainId) {
-        if (!chainId) {
-            //TODO: give a fallback icon here
+        if (chainId === 'devnet') {
             return <PushMonotone size={20} />;
         }
-        const IconComponent = CHAIN_LOGO[chainId];
+        const IconComponent = CHAIN_LOGO[1];
         if (IconComponent) {
             return <IconComponent size={20} color="icon-tertiary" />;
         } else {
-            // TO Bypass some test cases addresses
-            return <PushMonotone size={20} />;
+            //TODO: give a fallback icon here
+            return <DefaultChainMonotone size={20} />;
         }
     }
 
     function fetchChainFromAddress(transaction) {
+        
         let displayAddress = '';
         let additionalRecipients = 0;
         if (address === transaction.sender) {
@@ -34,10 +34,10 @@ const WalletActivityListItem = ({
         } else if (transaction.recipients.recipients.some(recipient => recipient.address === address)) {
             // Address is in recipients
             displayAddress = transaction.sender; // Show sender address
+
         }
 
         const { result } = convertCaipToObject(displayAddress);
-
         return (
             <Box display="flex" gap="spacing-xxs" alignItems='center'>
                 <Box
@@ -82,6 +82,7 @@ const WalletActivityListItem = ({
               border-bottom: var(--border-sm) solid var(--stroke-secondary);
             `}
         >
+         
             <Box display="flex" gap="spacing-xxs">
                 <Box
                     display="flex"
@@ -107,6 +108,7 @@ const WalletActivityListItem = ({
                 <Text variant="bes-regular">{formatWalletCategory(transaction.category)}</Text>
                 <Text variant="c-semibold" color='text-tertiary'>{getFixedTime(transaction.ts)}</Text>
             </Box>
+       
         </Box>
     );
 };

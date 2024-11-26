@@ -6,6 +6,7 @@ import { MyWallets } from "./MyWallets";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { WalletListType } from "../Wallet.types";
 import { LoadingPage } from "../../../pages/LoadingPage";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
 export type WalletTabsProps = {
   walletList: WalletListType[];
@@ -22,6 +23,9 @@ const WalletTabs: FC<WalletTabsProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState("activity");
   const { state } = useGlobalState();
+  const { primaryWallet } = useDynamicContext();
+
+
   console.log("LOADING----", isLoading);
   return (
     <Box height="340px">
@@ -35,7 +39,7 @@ const WalletTabs: FC<WalletTabsProps> = ({
               key: "activity",
               children: (
                 <WalletActivityList
-                  address={selectedWallet?.fullAddress || ""}
+                  address={selectedWallet?.fullAddress || primaryWallet?.address}
                 />
               ),
             },
