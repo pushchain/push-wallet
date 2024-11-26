@@ -17,6 +17,9 @@ const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email address").required("Required"),
 });
 
+const envRouteAlias =
+  import.meta.env.VITE_DEV_MODE === "testing" ? "/push-wallet" : "";
+
 const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
   const formik = useFormik({
     initialValues: { email },
@@ -31,7 +34,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
         }/auth/authorize-email?email=${encodeURIComponent(
           values.email
         )}&redirectUri=${encodeURIComponent(
-          window.location.origin + "/wallet"
+          window.location.origin + envRouteAlias + "/wallet"
         )}`;
       }
     },
@@ -43,7 +46,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
     window.location.href = `${
       import.meta.env.VITE_APP_BACKEND_URL
     }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
-      window.location.origin + "/wallet"
+      window.location.origin + envRouteAlias + "/wallet"
     )}`;
   };
 
