@@ -3,8 +3,8 @@ import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { RouterConatiner } from "./common/components/RouterConatiner";
 import { GlobalProvider } from "./context/GlobalContext";
 import { blocksTheme, getBlocksCSSVariables } from "./blocks";
-import { getAppBasePath } from "./common";
-import { useDarkMode } from "usehooks-ts";
+import { getAppBasePath } from "../basePath";
+import { useDarkMode } from "common";
 import AuthContextProvider from "./context/AuthContext";
 
 const GlobalStyle = createGlobalStyle`
@@ -27,8 +27,6 @@ const themeConfig = {
 };
 
 export default function App() {
-  const baseUrl = window.location.origin + '/push-keys/#'
-
   const { isDarkMode } = useDarkMode();
   return (
     <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
@@ -37,16 +35,6 @@ export default function App() {
         <AuthContextProvider>
           <Router basename={getAppBasePath()}>
             <RouterConatiner />
-            {/* <Routes> */}
-            {/* <RouterConatiner/> */}
-            {/* <Route path="/landing" element={<Landing />} />
-
-                <Route path="/" element={<Home />} />
-                <Route path="login" element={<Login />} />
-                <Route path="signup" element={<Signup />} /> */}
-            {/* Redirect to home if route is not found
-                // {/* <Route path="*" element={<Navigate to="/" />} />  */}
-            {/* </Routes> */}
           </Router>
         </AuthContextProvider>
       </GlobalProvider>

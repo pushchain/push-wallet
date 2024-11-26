@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "jsx": "react",
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "skipLibCheck": true,
@@ -10,5 +9,5 @@
     "strict": true,
     "noEmit": true
   },
-  "include": ["vite.config.ts", "src/common", "vite-env.d.ts"]
+  "include": ["vite.config.ts", "vite-env.d.ts"]
 }
