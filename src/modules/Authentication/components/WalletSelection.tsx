@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { Back, Box, Text } from "../../../blocks";
-import { PoweredByPush, WalletCategories } from "../../../common";
+import { PoweredByPush, WalletCategories, WALLETS_LOGO } from "../../../common";
 import { solanaWallets } from "../Authentication.constants";
 import { css } from "styled-components";
 import {
@@ -17,14 +17,12 @@ type WalletSelectionProps = {
   setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
 };
 
-//optimise
 const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const [selectedWalletCategory, setSelectedWalletCategory] =
     useState<string>("");
   const { primaryWallet } = useDynamicContext();
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
-
 
   useEffect(() => {
     (async () => {
@@ -37,7 +35,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         //   config.APP_ENV as ENV
         // );
         // dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
-        navigate("/");
+        navigate("/wallet");
         // setProfileLoading(false);
       }
     })();
@@ -55,9 +53,17 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
 
   const handleWalletOption = (key: string) => {
     selectWalletOption(key);
-    navigate("/");
+    navigate("/wallet");
   };
+  console.debug(WALLETS_LOGO["phantom"], "logos");
 
+  const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {
+    return (
+      <Text color="text-tertiary" variant="bes-bold" textAlign="center">
+        {walletKey.slice(0, 2).toUpperCase()}
+      </Text>
+    );
+  };
   return (
     <Box flexDirection="column" display="flex" gap="spacing-lg" width="100%">
       <Box cursor="pointer" onClick={() => handleBack()}>
@@ -103,16 +109,29 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
                     border="border-sm solid stroke-tertiary"
                     backgroundColor="surface-transparent"
                     alignItems="center"
-                    justifyContent="space-between"
+                    // justifyContent="space-between"
                     key={key}
-                    onClick={()=>handleWalletOption(key)}
+                    gap="spacing-xxs"
+                    onClick={() => handleWalletOption(key)}
                   >
-                    <Box alignItems="center" display="flex">
-                      {/* {walletCategory.icon} */}
-                      <Text variant="bs-semibold" color="text-primary">
-                        {name}
-                      </Text>
+                    {/* <Box alignItems="center" display="flex"> */}
+                    <Box
+                      width="24px"
+                      height="24px"
+                      overflow="hidden"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      css={css`flex-shrink:0`}
+                    >
+                      {WALLETS_LOGO[key] || (
+                        <FallBackWalletIcon walletKey={key} />
+                      )}
                     </Box>
+                    <Text variant="bs-semibold" color="text-primary">
+                      {name}
+                    </Text>
+                    {/* </Box> */}
                   </Box>
                 ))
               ))}

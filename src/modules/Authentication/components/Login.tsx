@@ -14,6 +14,7 @@ import { socials } from "../Authentication.constants";
 import { WalletState } from "../Authentication.types";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { css } from "styled-components";
 
 //formik for email validation ask
 //input arrow fix
@@ -24,7 +25,6 @@ type LoginProps = {
 };
 
 const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
-
   const validationSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email address").required("Required"),
   });
@@ -97,8 +97,8 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
           <Button
             variant="outline"
             block
-            leadingIcon={<Google width={18} height={18} />}
-            onClick={() => handleSocialLogin('google')}
+            leadingIcon={<Google width={24} height={24} />}
+            onClick={() => handleSocialLogin("google")}
           >
             Continue with Google
           </Button>
@@ -109,18 +109,23 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
             justifyContent="center"
           >
             {socials.map((social) => (
-              <Box
-                display="flex"
-                key={social.name}
-                alignItems="center"
-                justifyContent="center"
-                border="border-sm solid stroke-tertiary"
-                borderRadius="radius-sm"
-                padding="spacing-sm spacing-md"
-                onClick={() => handleSocialLogin(social.name as "github" | "google" | "discord" | "twitter" | "apple")}
-              >
-                {social.icon}
-              </Box>
+              <Button
+                variant="outline"
+                iconOnly={social.icon}
+                css={css`
+                  padding: var(--spacing-sm) var(--spacing-xl);
+                `}
+                onClick={() =>
+                  handleSocialLogin(
+                    social.name as
+                      | "github"
+                      | "google"
+                      | "discord"
+                      | "twitter"
+                      | "apple"
+                  )
+                }
+              />
             ))}
           </Box>
           <Text variant="os-regular" color="text-tertiary">
@@ -134,9 +139,10 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
             Continue with a Wallet
           </Button>
         </Box>
-        <Text variant="bes-semibold" color="text-brand-medium">
+        {/* TODO: after functional implementation */}
+        {/* <Text variant="bes-semibold" color="text-brand-medium">
           Recover using Secret Key{" "}
-        </Text>
+        </Text> */}
       </Box>
       <PoweredByPush />
     </Box>

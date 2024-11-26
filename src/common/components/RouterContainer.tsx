@@ -3,11 +3,10 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { Authentication } from "../../modules/Authentication";
 import { Wallet } from "../../modules/wallet";
-import { Profile } from '../../pages/Profile';
-import { PrivateRoute } from '../../pages/PrivateRoute';
+import { Profile } from "../../pages/Profile";
+import { PrivateRoute } from "../../pages/PrivateRoute";
 
-const RouterConatiner: FC = () => {
-
+const RouterContainer: FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Wallet />} />
@@ -18,4 +17,4 @@ const RouterConatiner: FC = () => {
   );
 };
 
-export { RouterConatiner };
+export { RouterContainer };

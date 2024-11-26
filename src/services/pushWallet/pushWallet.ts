@@ -684,17 +684,7 @@ export class PushWallet {
     localStorage.setItem("appConnections", JSON.stringify(this.appConnections));
   };
 
-  public getTransactions = async (userAddress: string) => {
-    const pushTx = await PushTx.initialize(this.env);
-    const userTransactions = await pushTx.get(
-      Math.floor(Date.now()),
-      "DESC",
-      30,
-      1,
-      userAddress
-    );
-    return userTransactions;
-  };
+
 
   /**
    * Generates a random session key (hardened key) from derived key

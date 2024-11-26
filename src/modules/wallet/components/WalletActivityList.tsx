@@ -1,148 +1,118 @@
-import { FC, useEffect } from "react";
-import { css } from "styled-components";
-import { Box, ExternalLink, Text } from "../../../blocks";
-import { centerMaskWalletAddress } from "../../../common";
-import { WalletListType } from "../Wallet.types";
-import { useGlobalState } from "../../../context/GlobalContext";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
+
+import { Box, Text, Spinner } from "../../../blocks";
+import { Tx as PushTx } from "@pushprotocol/node-core";
+import config from "../../../config";
+import { ENV } from "../../../constants";
+import { BlockType } from "@pushprotocol/node-core/src/lib/block/block.types";
+import { WalletActivityListItem } from "./WalletActivityListItem";
 
 export type WalletActivityListProps = {
-  selectedWallet:WalletListType;
+  address: string;
 };
 
-const WalletActivityList: FC<WalletActivityListProps> = ({selectedWallet}) => {
-  const { state } = useGlobalState();
+const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
+  const [activities, setActivities] = useState<BlockType["transactions"]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
 
-  useEffect(()=>{
-    (async()=>{
-      const data = await state?.wallet?.getTransactions(selectedWallet?.fullAddress);
-      console.debug(data,'activity')
-    })();
-  })
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const fetchActivities = useCallback(
+    async (pageNumber: number) => {
+      if (isLoading) return; 
+      setIsLoading(true);
+      try {
+        const pushTx = await PushTx.initialize(config.APP_ENV as ENV);
+        const response = await pushTx.get(
+          Math.floor(Date.now()),
+          "DESC",
+          20,
+          pageNumber,
+          address || null
+        );
+
+        const transactions = response.blocks
+          .map((tx) => tx.transactions)
+          .flat();
+
+          setActivities((prev) => [...prev, ...transactions]);
+
+        setHasMore(response.totalPages > pageNumber); 
+      } catch (error) {
+        console.error("Error fetching activities:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [isLoading, hasMore, address]
+  );
+
+  const handleScroll = () => {
+    if (!containerRef.current || isLoading || !hasMore) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+
+    if (scrollTop + clientHeight >= scrollHeight - 20) {
+      setPage((prevPage) => {
+        const nextPage = prevPage + 1;
+        fetchActivities(nextPage);
+        return nextPage;
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (address) {
+      setActivities([]);
+      setHasMore(true);
+      setPage(1);
+      fetchActivities(1);
+    }
+  }, [address]);
   return (
-    <Box display="flex" flexDirection="column" height="292px" overflow="scroll">
-      {activityList.map((activity, index) => (
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          padding="spacing-sm spacing-xxxs"
-          key={`${index}`}
-          css={css`
-            border-bottom: var(--border-sm) solid var(--stroke-secondary);
-          `}
-        >
-          <Box display="flex" gap="spacing-xxs">
-            <Box
-              display="flex"
-              padding="spacing-xxs"
-              alignItems="center"
-              borderRadius="radius-xs"
-              backgroundColor="surface-primary"
-              border="border-sm solid stroke-secondary"
-              width="32px"
-              height="32px"
-            >
-              <ExternalLink size={16} color="icon-primary" />
-            </Box>
-            <Box display="flex" flexDirection="column">
-              <Text variant="bm-regular">{activity.action}</Text>
-              <Box display="flex" gap="spacing-xxxs">
-                {/* Add support for chain icon as well for supported chains */}
-                <Box
-                  height="16px"
-                  width="16px"
-                  backgroundColor="surface-tertiary"
-                  borderRadius="radius-xxxs"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  {/* Get a new text variant added in design system for this. */}
-                  <Text
-                    color="text-tertiary"
-                    variant="os-bold"
-                    css={css`
-                      font-size: 8px;
-                      padding-top: 1px;
-                    `}
-                  >
-                    {activity.chain.slice(0, 2).toUpperCase()}
-                  </Text>
-                </Box>
-                <Text color="text-secondary" variant="bes-semibold">
-                  {centerMaskWalletAddress(activity.addresses[0])}
-                </Text>
-              </Box>
-            </Box>
-          </Box>
-          <Box display="flex" flexDirection="column" gap="spacing-xxxs">
-            <Text variant="bes-regular">{activity.type}</Text>
-            <Text variant="c-semibold">{activity.time}</Text>
-          </Box>
-        </Box>
+    <Box
+      display="flex"
+      flexDirection="column"
+      height="292px"
+      overflow="hidden scroll"
+      onScroll={hasMore?handleScroll:undefined}
+      ref={containerRef}
+      customScrollbar
+    >
+      {activities.map((transaction, index) => (
+        <WalletActivityListItem
+          key={`${transaction.txnHash}-${index}`}
+          transaction={transaction}
+          address={address}
+        />
       ))}
+
+      {isLoading && (
+        <Box
+          margin="spacing-xs"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Spinner variant="primary" />
+        </Box>
+      )}
+
+      {!activities.length && !isLoading && (
+        <Box
+          margin="spacing-xxxl spacing-none spacing-none spacing-none"
+          display="flex"
+          justifyContent="center"
+        >
+          <Text variant="bes-semibold" color="text-primary">
+            Your activity will appear here
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 };
 
 export { WalletActivityList };
-
-const activityList = [
-  {
-    type: "Notification",
-    time: "40 mins ago",
-    action: "Send",
-    chain: "Optimism",
-    addresses: [
-      "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-      "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-      "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-    ],
-  },
-  {
-    type: "Message",
-    time: "40 mins ago",
-    action: "Receive",
-    chain: "Polygon",
-    addresses: [
-      "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-      "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-      "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-    ],
-  },
-  {
-    type: "Notification",
-    time: "40 mins ago",
-    action: "Send",
-    chain: "Optimism",
-    addresses: [
-      "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-      "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-      "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-    ],
-  },
-  {
-    type: "Message",
-    time: "40 mins ago",
-    action: "Receive",
-    chain: "Polygon",
-    addresses: ["0x78bB82699f030195AC5B94C6c0dc9977050213c7"],
-  },
-  {
-    type: "Notification",
-    time: "40 mins ago",
-    action: "Send",
-    chain: "Optimism",
-    addresses: ["0x78bB82699f030195AC5B94C6c0dc9977050213c7"],
-  },
-  {
-    type: "Message",
-    time: "40 mins ago",
-    action: "Receive",
-    chain: "Polygon",
-    addresses: [
-      "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-      "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-      "0x78bB82699f030195AC5B94C6c0dc9977050213c7",
-    ],
-  },
-];

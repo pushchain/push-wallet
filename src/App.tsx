@@ -1,10 +1,9 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
-import { RouterConatiner } from "./common/components/RouterConatiner";
+
 import { GlobalProvider } from "./context/GlobalContext";
 import { blocksTheme, getBlocksCSSVariables } from "./blocks";
-import { getAppBasePath } from "./common";
-import { useDarkMode } from "usehooks-ts";
+import { getAppBasePath, useDarkMode, RouterContainer } from "./common";
 import AuthContextProvider from "./context/AuthContext";
 
 const GlobalStyle = createGlobalStyle`
@@ -27,16 +26,17 @@ const themeConfig = {
 };
 
 export default function App() {
-  const baseUrl = window.location.origin + '/push-keys/#'
+  const baseUrl = window.location.origin + "/push-keys/#";
 
   const { isDarkMode } = useDarkMode();
+
   return (
     <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
       <GlobalStyle />
       <GlobalProvider>
         <AuthContextProvider>
           <Router basename={getAppBasePath()}>
-            <RouterConatiner />
+            <RouterContainer />
             {/* <Routes> */}
             {/* <RouterConatiner/> */}
             {/* <Route path="/landing" element={<Landing />} />
