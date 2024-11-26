@@ -55,7 +55,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     selectWalletOption(key);
     navigate("/wallet");
   };
-  console.debug(WALLETS_LOGO["phantom"], "logos");
+  console.debug(walletOptions);
 
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {
     return (

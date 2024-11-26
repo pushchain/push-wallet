@@ -1,14 +1,5 @@
-import {
-  Apple,
-  DiscordSimple,
-  Github,
-  TwitterSimple,
-} from "../../blocks";
-import {
-  SocialsType,
-  WalletKeyPairType,
-} from "./Authentication.types";
-
+import { Apple, DiscordSimple, Github, TwitterSimple } from "../../blocks";
+import { SocialsType, WalletKeyPairType } from "./Authentication.types";
 
 export const socials: SocialsType[] = [
   {
@@ -32,18 +23,17 @@ export const socials: SocialsType[] = [
 export const solanaWallets: WalletKeyPairType = {
   backpacksol: "Backpack",
   bitgetwalletsol: "Bitget",
-  bravesol: "Brave",
+  brave: "Brave",
   coin98sol: "Coin98",
   coinbasesolana: "Coinbase",
-  exodussol: "Exodus",
+  exodus: "Exodus Wallet",
   fallbackconnector: "Fallback Connector",
   glow: "Glow",
-  magicedensol: "Magic Eden",
-  mathwalletsol: "Math Wallet",
+  magiceden: "Magic Eden",
+  mathwallet: "Math Wallet",
   nightlysol: "Nightly",
   okxsolana: "OKX Wallet",
   onekeysol: "OneKey",
   phantom: "Phantom",
   solflare: "Solflare",
 };
-
