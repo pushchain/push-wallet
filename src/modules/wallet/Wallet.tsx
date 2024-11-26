@@ -313,6 +313,10 @@ const Wallet: FC<WalletProps> = () => {
     if (walletList.length) setSelectedWallet(walletList[0]);
   }, [walletList]);
 
+  const showAppConnectionContainer = state?.wallet?.appConnections.some(
+    (cx) => cx.isPending === true
+  );
+  // console.log(showAppConnectionContainer, state?.wallet?.appConnections);
   return (
     <ContentLayout>
       <BoxLayout>
@@ -330,7 +334,8 @@ const Wallet: FC<WalletProps> = () => {
               title={"Creating Push Wallet"}
             />
           )}
-          {!!state?.wallet?.appConnections.length && (
+
+          {showAppConnectionContainer && (
             <AppConnections
               selectedWallet={selectedWallet}
               appConnection={
