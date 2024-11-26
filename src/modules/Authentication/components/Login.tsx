@@ -142,9 +142,10 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
             Continue with a Wallet
           </Button>
         </Box>
-        <Text variant="bes-semibold" color="text-brand-medium">
+        {/* TODO: after functional implementation */}
+        {/* <Text variant="bes-semibold" color="text-brand-medium">
           Recover using Secret Key{" "}
-        </Text>
+        </Text> */}
       </Box>
       <PoweredByPush />
     </Box>

@@ -252,6 +252,7 @@ const Wallet: FC<WalletProps> = () => {
             );
           }
         } else {
+          navigate("/auth");
           console.log("Could not find user in wallet.tsx");
         }
 
