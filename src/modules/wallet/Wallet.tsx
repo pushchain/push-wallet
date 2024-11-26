@@ -16,12 +16,14 @@ import config from "../../config";
 import { PushSigner } from "../../services/pushSigner/pushSigner";
 import { AppConnections } from "../../common/components/AppConnections";
 import { useNavigate } from "react-router-dom";
+import { LoadingPage } from "../../pages/LoadingPage";
 
 export type WalletProps = {};
 
 const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
   const [loading, setLoading] = useState(true);
+  const [createAccountLoading, setCreateAccountLoading] = useState(false);
   const [error, setError] = useState("");
   const { primaryWallet } = useDynamicContext();
   const [pushWallet, setPushWallet] = useState<PushWallet | null>(null);
@@ -326,6 +328,13 @@ const Wallet: FC<WalletProps> = () => {
           gap="spacing-sm"
           position="relative"
         >
+          {createAccountLoading && (
+            <LoadingPage
+              isLoading={createAccountLoading}
+              title={"Creating Push Wallet"}
+            />
+          )}
+
           {showAppConnectionContainer && (
             <AppConnections
               selectedWallet={selectedWallet}
@@ -343,7 +352,12 @@ const Wallet: FC<WalletProps> = () => {
             setSelectedWallet={setSelectedWallet}
             isLoading={loading}
           />
-          {!state?.wallet && primaryWallet && <CreateAccount />}
+          {!state?.wallet && primaryWallet && (
+            <CreateAccount
+              isLoading={createAccountLoading}
+              setIsLoading={setCreateAccountLoading}
+            />
+          )}
         </Box>
       </BoxLayout>
     </ContentLayout>

@@ -13,6 +13,7 @@ import {
 } from "../Authentication.utils";
 import { WalletKeyPairType, WalletState } from "../Authentication.types";
 import { useNavigate } from "react-router-dom";
+import { BitGetWalletIcon } from "@dynamic-labs/iconic";
 type WalletSelectionProps = {
   setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
 };
@@ -55,7 +56,6 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     selectWalletOption(key);
     navigate("/wallet");
   };
-  console.debug(WALLETS_LOGO["phantom"], "logos");
 
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {
     return (
@@ -124,6 +124,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
                         flex-shrink: 0;
                       `}
                     >
+                     
                       {WALLETS_LOGO[key] || (
                         <FallBackWalletIcon walletKey={key} />
                       )}
