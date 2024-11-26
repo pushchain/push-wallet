@@ -31,7 +31,6 @@ const Wallet: FC<WalletProps> = () => {
 
   const navigate = useNavigate();
 
-
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
       setLoading(true);
@@ -189,7 +188,7 @@ const Wallet: FC<WalletProps> = () => {
           if (hasAnyShare) {
             const shouldCreate = window.confirm(
               "Unable to reconstruct your existing wallet. Would you like to create a new one? " +
-              "Warning: This will make your old wallet inaccessible."
+                "Warning: This will make your old wallet inaccessible."
             );
             if (!shouldCreate) {
               setError("Wallet reconstruction failed. Please try again later.");
@@ -218,7 +217,7 @@ const Wallet: FC<WalletProps> = () => {
     } catch (err) {
       console.error("Error fetching user profile:", err);
       setError("Failed to fetch user profile. Please try again.");
-      navigate('/auth')
+      navigate("/auth");
       throw err;
     } finally {
       setLoading(false);
@@ -312,6 +311,10 @@ const Wallet: FC<WalletProps> = () => {
     if (walletList.length) setSelectedWallet(walletList[0]);
   }, [walletList]);
 
+  const showAppConnectionContainer = state?.wallet?.appConnections.some(
+    (cx) => cx.isPending === true
+  );
+  // console.log(showAppConnectionContainer, state?.wallet?.appConnections);
   return (
     <ContentLayout>
       <BoxLayout>
@@ -323,7 +326,16 @@ const Wallet: FC<WalletProps> = () => {
           gap="spacing-sm"
           position="relative"
         >
-          {!!state?.wallet?.appConnections.length && <AppConnections selectedWallet={selectedWallet} appConnection={state.wallet.appConnections[state.wallet.appConnections.length - 1]} />}
+          {showAppConnectionContainer && (
+            <AppConnections
+              selectedWallet={selectedWallet}
+              appConnection={
+                state.wallet.appConnections[
+                  state.wallet.appConnections.length - 1
+                ]
+              }
+            />
+          )}
           <WalletProfile selectedWallet={selectedWallet} isLoading={loading} />
           <WalletTabs
             walletList={walletList}

@@ -686,7 +686,7 @@ export class PushWallet {
 
   public rejectAllConnectionReqs = () => {
     this.appConnections = this.appConnections.filter(
-      (app) => app.isPending === true
+      (app) => app.isPending === false
     );
     // Store updated appConnections in localStorage
     localStorage.setItem("appConnections", JSON.stringify(this.appConnections));
