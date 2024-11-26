@@ -1,6 +1,6 @@
 import {
   Apple,
-  // DiscordSimple,
+  DiscordSimple,
   Github,
   TwitterSimple,
 } from "../../blocks";
@@ -23,10 +23,10 @@ export const socials: SocialsType[] = [
     name: "twitter",
     icon: <TwitterSimple color="icon-hero-icons" size={24} />,
   },
-  // {
-  //   name: "discord",
-  //   icon: <DiscordSimple width={24} height={24} />,
-  // },
+  {
+    name: "discord",
+    icon: <DiscordSimple width={24} height={24} />,
+  },
 ];
 
 export const solanaWallets: WalletKeyPairType = {
