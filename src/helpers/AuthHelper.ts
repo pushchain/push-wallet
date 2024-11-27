@@ -14,8 +14,6 @@ export const fetchJwtUsingState = async ({
   dispatch: React.Dispatch<GlobalAction>;
 }) => {
   try {
-    console.log("fetchJwtUsingState called with state:", stateParam);
-
     const response = await api.get("/auth/jwt", {
       params: { state: stateParam },
     });

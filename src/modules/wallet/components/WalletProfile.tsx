@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
 import BlockiesSvg from "blockies-react-svg";
 import {
   Asterisk,
@@ -24,6 +24,8 @@ import { useGlobalState } from "../../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { WalletListType } from "../Wallet.types";
+import { APP_ROUTES } from "../../../constants";
+import { AuthContext } from "../../../context/AuthContext";
 
 export type WalletProfileProps = {
   selectedWallet: WalletListType;
@@ -42,6 +44,8 @@ const WalletProfile: FC<WalletProfileProps> = ({
   const { dispatch } = useGlobalState();
 
   const navigate = useNavigate();
+
+  const { setLoadingUser } = useContext(AuthContext);
 
   return (
     <Box
@@ -73,7 +77,8 @@ const WalletProfile: FC<WalletProfileProps> = ({
                     dispatch({ type: "RESET_AUTHENTICATED" });
                     dispatch({ type: "RESET_USER" });
                     handleLogOut();
-                    navigate("/auth");
+                    setLoadingUser('rejected')
+                    navigate(APP_ROUTES.AUTH)
                     localStorage.clear();
                   }}
                 />

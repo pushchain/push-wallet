@@ -1,11 +1,11 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { Box } from "../../blocks";
 import { BoxLayout, ContentLayout } from "../../common";
 import { WalletProfile } from "./components/WalletProfile";
 import { WalletTabs } from "./components/WalletTabs";
 import api from "../../services/api";
 import { PushWallet } from "../../services/pushWallet/pushWallet";
-import { ENV } from "../../constants";
+import { APP_ROUTES, ENV } from "../../constants";
 import secrets from "secrets.js-grempe";
 import { useGlobalState } from "../../context/GlobalContext";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
@@ -17,6 +17,7 @@ import { PushSigner } from "../../services/pushSigner/pushSigner";
 import { AppConnections } from "../../common/components/AppConnections";
 import { useNavigate } from "react-router-dom";
 import { LoadingPage } from "../../pages/LoadingPage";
+import { AuthContext } from "../../context/AuthContext";
 
 export type WalletProps = {};
 
@@ -31,7 +32,11 @@ const Wallet: FC<WalletProps> = () => {
   const [walletList, setWalletList] = useState<WalletListType[]>([]);
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
 
+  const { setLoadingUser } = useContext(AuthContext);
+
   const navigate = useNavigate();
+
+
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -190,10 +195,12 @@ const Wallet: FC<WalletProps> = () => {
           if (hasAnyShare) {
             const shouldCreate = window.confirm(
               "Unable to reconstruct your existing wallet. Would you like to create a new one? " +
-                "Warning: This will make your old wallet inaccessible."
+              "Warning: This will make your old wallet inaccessible."
             );
             if (!shouldCreate) {
               setError("Wallet reconstruction failed. Please try again later.");
+              setLoadingUser('rejected')
+              navigate(APP_ROUTES.AUTH)
               return;
             }
           }
@@ -219,7 +226,8 @@ const Wallet: FC<WalletProps> = () => {
     } catch (err) {
       console.error("Error fetching user profile:", err);
       setError("Failed to fetch user profile. Please try again.");
-      navigate("/auth");
+      setLoadingUser('rejected')
+      navigate(APP_ROUTES.AUTH)
       throw err;
     } finally {
       setLoading(false);
@@ -253,8 +261,8 @@ const Wallet: FC<WalletProps> = () => {
             );
           }
         } else {
-          navigate("/auth");
-          console.log("Could not find user in wallet.tsx");
+          setLoadingUser('rejected')
+          navigate(APP_ROUTES.AUTH)
         }
 
         // const stateParam = extractStateFromUrl();
@@ -340,7 +348,7 @@ const Wallet: FC<WalletProps> = () => {
               selectedWallet={selectedWallet}
               appConnection={
                 state.wallet.appConnections[
-                  state.wallet.appConnections.length - 1
+                state.wallet.appConnections.length - 1
                 ]
               }
             />

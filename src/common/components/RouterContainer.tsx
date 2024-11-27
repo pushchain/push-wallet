@@ -2,23 +2,28 @@ import { FC } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Authentication } from "../../modules/Authentication";
 import { Wallet } from "../../modules/wallet";
-// import { Profile } from "../../pages/Profile";
 import { PrivateRoute } from "../../pages/PrivateRoute";
-
+import { PublicRoute } from "../../pages/PublicRoute";
+import { APP_ROUTES } from "../../constants";
 const RouterContainer: FC = () => {
   return (
     <Routes>
-      <Route path="/" element={<Wallet />} />
+      <Route path="/" element={<Navigate to={APP_ROUTES.WALLET} />} />
       <Route
-        path="/wallet"
+        path={APP_ROUTES.WALLET}
         element={
           <PrivateRoute>
             <Wallet />
           </PrivateRoute>
         }
       />
-      <Route path="/auth" element={<Authentication />} />
-      {/* <Route path="/profile" element={<Profile />} /> */}
+      <Route
+        path={APP_ROUTES.AUTH}
+        element={
+          <PublicRoute>
+            <Authentication />
+          </PublicRoute>
+        } />
     </Routes>
   );
 };

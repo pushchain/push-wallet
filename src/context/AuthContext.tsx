@@ -6,6 +6,7 @@ import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 type AuthContextType = {
   loadingUser: "idle" | "success" | "loading" | "rejected";
   sessionToken: string | null;
+  setLoadingUser: (loadingUser: "idle" | "success" | "loading" | "rejected") => void;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -23,10 +24,9 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const { dispatch } = useGlobalState();
 
   const stateParam = extractStateFromUrl();
-  console.log("State Params", stateParam);
 
   const storedToken = sessionStorage.getItem("jwt");
-  console.log("Stored Token", storedToken);
+
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -39,7 +39,6 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
             dispatch,
           });
 
-          console.log("fetchJwt", fetchJwt);
           setSessionToken(fetchJwt);
 
           const url = new URL(window.location.href);
@@ -53,7 +52,7 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         } else if (primaryWallet) {
           setLoadingUser("success");
         } else {
-          setLoadingUser("idle");
+          setLoadingUser("rejected");
         }
       } catch (error) {
         setLoadingUser("rejected");
@@ -66,7 +65,7 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   }, [stateParam, storedToken, primaryWallet]);
 
   return (
-    <AuthContext.Provider value={{ loadingUser, sessionToken }}>
+    <AuthContext.Provider value={{ loadingUser, sessionToken, setLoadingUser }}>
       {children}
     </AuthContext.Provider>
   );
