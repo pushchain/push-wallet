@@ -21,11 +21,11 @@ export const socialLoginConfig: SocialsType[] = [
 ];
 
 export const solanaWallets: WalletKeyPairType = {
-  backpacksol: "Backpack",
-  bitgetwalletsol: "Bitget",
+  backpack: "Backpack",
+  bitgetwallet: "Bitget",
   brave: "Brave",
-  coin98sol: "Coin98",
-  coinbasesolana: "Coinbase",
+  coin98: "Coin98",
+  coinbase: "Coinbase",
   exodus: "Exodus Wallet",
   fallbackconnector: "Fallback Connector",
   glow: "Glow",
@@ -33,7 +33,7 @@ export const solanaWallets: WalletKeyPairType = {
   mathwallet: "Math Wallet",
   nightlysol: "Nightly",
   okxsolana: "OKX Wallet",
-  onekeysol: "OneKey",
+  onekey: "OneKey",
   phantom: "Phantom",
   solflare: "Solflare",
 };
