@@ -5,7 +5,6 @@ import { GlobalProvider } from "./context/GlobalContext";
 import { blocksTheme, getBlocksCSSVariables } from "./blocks";
 import { getAppBasePath } from "../basePath";
 import { useDarkMode, RouterContainer } from "./common";
-import AuthContextProvider from "./context/AuthContext";
 
 const GlobalStyle = createGlobalStyle`
   :root{
@@ -33,11 +32,9 @@ export default function App() {
     <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
       <GlobalStyle />
       <GlobalProvider>
-        <AuthContextProvider>
-          <Router basename={getAppBasePath()}>
-            <RouterContainer />
-          </Router>
-        </AuthContextProvider>
+        <Router basename={getAppBasePath()}>
+          <RouterContainer />
+        </Router>
       </GlobalProvider>
     </ThemeProvider>
   );

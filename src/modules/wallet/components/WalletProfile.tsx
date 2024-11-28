@@ -1,18 +1,12 @@
-import { FC, useContext, useState } from "react";
+import { FC, useState } from "react";
 import BlockiesSvg from "blockies-react-svg";
 import {
-  Asterisk,
   Box,
   Copy,
-  Cube,
   Dropdown,
-  HoverableSVG,
-  Link,
-  Lock,
   Logout,
   Menu,
   MenuItem,
-  Pin,
   PushLogo,
   Settings,
   Skeleton,
@@ -25,7 +19,6 @@ import { useNavigate } from "react-router-dom";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { WalletListType } from "../Wallet.types";
 import { APP_ROUTES } from "../../../constants";
-import { AuthContext } from "../../../context/AuthContext";
 
 export type WalletProfileProps = {
   selectedWallet: WalletListType;
@@ -45,8 +38,6 @@ const WalletProfile: FC<WalletProfileProps> = ({
 
   const navigate = useNavigate();
 
-  const { setLoadingUser } = useContext(AuthContext);
-
   return (
     <Box
       display="flex"
@@ -62,35 +53,35 @@ const WalletProfile: FC<WalletProfileProps> = ({
         <PushLogo height={48} width={48} />
         <Box display="flex" gap="spacing-xxs">
           {/* <HoverableSVG icon={<Lock size={24} color="icon-primary" />} /> */}
-          <Dropdown
-            overlay={
-              <Menu>
-                {/* <MenuItem label="Linked Accounts" icon={<Pin />} /> */}
-                {/* <MenuItem label="App Permissions" icon={<Cube />} /> */}
-                {/* <MenuItem label="Passkeys" icon={<Lock />} /> */}
-                {/* <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} /> */}
-                <MenuItem
-                  label="Log Out"
-                  icon={<Logout />}
-                  onClick={() => {
-                    sessionStorage.removeItem("jwt");
-                    dispatch({ type: "RESET_AUTHENTICATED" });
-                    dispatch({ type: "RESET_USER" });
-                    handleLogOut();
-                    setLoadingUser('rejected')
-                    navigate(APP_ROUTES.AUTH)
-                    localStorage.clear();
-                  }}
-                />
-              </Menu>
-            }
-          >
-            {/* <Skeleton isLoading={isLoading} width="28px" height="28px"> */}
-            <Box cursor="pointer">
-              <Settings size={24} color="icon-primary" />
-            </Box>
-            {/* </Skeleton> */}
-          </Dropdown>
+          <Skeleton isLoading={isLoading} width="28px" height="28px">
+            <Dropdown
+              overlay={
+                <Menu>
+                  {/* <MenuItem label="Linked Accounts" icon={<Pin />} /> */}
+                  {/* <MenuItem label="App Permissions" icon={<Cube />} /> */}
+                  {/* <MenuItem label="Passkeys" icon={<Lock />} /> */}
+                  {/* <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} /> */}
+                  <MenuItem
+                    label="Log Out"
+                    icon={<Logout />}
+                    onClick={() => {
+                      sessionStorage.removeItem("jwt");
+                      dispatch({ type: "RESET_AUTHENTICATED" });
+                      dispatch({ type: "RESET_USER" });
+                      handleLogOut();
+
+                      navigate(APP_ROUTES.AUTH);
+                      localStorage.clear();
+                    }}
+                  />
+                </Menu>
+              }
+            >
+              <Box cursor="pointer">
+                <Settings size={24} color="icon-primary" />
+              </Box>
+            </Dropdown>
+          </Skeleton>
         </Box>
       </Box>
       <Box

@@ -3,7 +3,6 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Authentication } from "../../modules/Authentication";
 import { Wallet } from "../../modules/wallet";
 import { PrivateRoute } from "../../pages/PrivateRoute";
-import { PublicRoute } from "../../pages/PublicRoute";
 import { APP_ROUTES } from "../../constants";
 const RouterContainer: FC = () => {
   return (
@@ -17,13 +16,7 @@ const RouterContainer: FC = () => {
           </PrivateRoute>
         }
       />
-      <Route
-        path={APP_ROUTES.AUTH}
-        element={
-          <PublicRoute>
-            <Authentication />
-          </PublicRoute>
-        } />
+      <Route path={APP_ROUTES.AUTH} element={<Authentication />} />
     </Routes>
   );
 };

@@ -8,10 +8,8 @@ export const extractStateFromUrl = () => {
 
 export const fetchJwtUsingState = async ({
   stateParam,
-  dispatch,
 }: {
   stateParam: string;
-  dispatch: React.Dispatch<GlobalAction>;
 }) => {
   try {
     const response = await api.get("/auth/jwt", {
@@ -21,11 +19,7 @@ export const fetchJwtUsingState = async ({
     const { token } = response.data;
     if (!token) throw new Error("Token not found in response");
 
-    dispatch({ type: "SET_JWT", payload: token });
-    sessionStorage.setItem("jwt", token);
     return token;
-
-    //   await fetchUserProfile(token);
   } catch (err) {
     console.error("Error fetching JWT:", err);
     return null;

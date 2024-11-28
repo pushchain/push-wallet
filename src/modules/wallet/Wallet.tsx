@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Box } from "../../blocks";
 import { BoxLayout, ContentLayout } from "../../common";
 import { WalletProfile } from "./components/WalletProfile";
@@ -17,7 +17,6 @@ import { PushSigner } from "../../services/pushSigner/pushSigner";
 import { AppConnections } from "../../common/components/AppConnections";
 import { useNavigate } from "react-router-dom";
 import { LoadingPage } from "../../pages/LoadingPage";
-import { AuthContext } from "../../context/AuthContext";
 
 export type WalletProps = {};
 
@@ -27,16 +26,10 @@ const Wallet: FC<WalletProps> = () => {
   const [createAccountLoading, setCreateAccountLoading] = useState(false);
   const [error, setError] = useState("");
   const { primaryWallet } = useDynamicContext();
-  const [pushWallet, setPushWallet] = useState<PushWallet | null>(null);
-  const [attachedWallets, setAttachedWallets] = useState<string[]>([]);
-  const [walletList, setWalletList] = useState<WalletListType[]>([]);
+
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
 
-  const { setLoadingUser } = useContext(AuthContext);
-
   const navigate = useNavigate();
-
-
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -58,8 +51,6 @@ const Wallet: FC<WalletProps> = () => {
       await instance.registerPushAccount();
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
-      setPushWallet(instance);
-      setAttachedWallets(Object.keys(instance.walletToEncDerivedKey));
 
       console.info("Wallet created and mnemonic split into shares", { userId });
     } catch (err) {
@@ -83,8 +74,6 @@ const Wallet: FC<WalletProps> = () => {
       );
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
-      setPushWallet(instance);
-      setAttachedWallets(Object.keys(instance.walletToEncDerivedKey));
 
       console.info("Wallet reconstructed successfully");
     } catch (err) {
@@ -96,31 +85,6 @@ const Wallet: FC<WalletProps> = () => {
       setLoading(false);
     }
   };
-
-  // const fetchJwtUsingState = async (stateParam: string) => {
-  //   try {
-  //     setLoading(true);
-  //     console.log("fetchJwtUsingState called with state:", stateParam);
-
-  //     const response = await api.get("/auth/jwt", {
-  //       params: { state: stateParam },
-  //     });
-
-  //     const { token } = response.data;
-  //     if (!token) throw new Error("Token not found in response");
-
-  //     dispatch({ type: "SET_JWT", payload: token });
-  //     sessionStorage.setItem("jwt", token);
-
-  //     await fetchUserProfile(token);
-  //   } catch (err) {
-  //     console.error("Error fetching JWT:", err);
-  //     setError("Authentication failed. Please try logging in again.");
-  //     navigate("/profile");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const fetchUserProfile = async (token: string) => {
     try {
@@ -153,6 +117,7 @@ const Wallet: FC<WalletProps> = () => {
               return;
             }
           } catch (error) {
+            // TODO: Handle this case properly
             console.debug("Share1 not available", {
               userId,
               error: (error as Error).message,
@@ -183,6 +148,7 @@ const Wallet: FC<WalletProps> = () => {
                 return;
               }
             } catch (error) {
+              // TODO: Handle this case properly
               console.debug("Share3 not available", {
                 userId,
                 error: (error as Error).message,
@@ -195,12 +161,12 @@ const Wallet: FC<WalletProps> = () => {
           if (hasAnyShare) {
             const shouldCreate = window.confirm(
               "Unable to reconstruct your existing wallet. Would you like to create a new one? " +
-              "Warning: This will make your old wallet inaccessible."
+                "Warning: This will make your old wallet inaccessible."
             );
             if (!shouldCreate) {
               setError("Wallet reconstruction failed. Please try again later.");
-              setLoadingUser('rejected')
-              navigate(APP_ROUTES.AUTH)
+
+              navigate(APP_ROUTES.AUTH);
               return;
             }
           }
@@ -214,8 +180,10 @@ const Wallet: FC<WalletProps> = () => {
             },
           });
 
+          // If no share is present then it will directly create a new wallet
           await createWalletAndGenerateMnemonic(userId);
         } catch (error) {
+          // TODO: Handle this case properly
           console.error("Error during wallet reconstruction/creation", {
             userId,
             error: (error as Error).message,
@@ -226,8 +194,8 @@ const Wallet: FC<WalletProps> = () => {
     } catch (err) {
       console.error("Error fetching user profile:", err);
       setError("Failed to fetch user profile. Please try again.");
-      setLoadingUser('rejected')
-      navigate(APP_ROUTES.AUTH)
+
+      navigate(APP_ROUTES.AUTH);
       throw err;
     } finally {
       setLoading(false);
@@ -235,15 +203,12 @@ const Wallet: FC<WalletProps> = () => {
   };
 
   useEffect(() => {
-    const storedToken = sessionStorage.getItem("jwt");
-
     const initializeProfile = async () => {
       try {
         setLoading(true);
 
-        if (storedToken) {
-          dispatch({ type: "SET_JWT", payload: storedToken });
-          await fetchUserProfile(storedToken);
+        if (state.jwt) {
+          await fetchUserProfile(state.jwt);
         } else if (primaryWallet) {
           let pushWallet;
           const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
@@ -261,45 +226,8 @@ const Wallet: FC<WalletProps> = () => {
             );
           }
         } else {
-          setLoadingUser('rejected')
-          navigate(APP_ROUTES.AUTH)
+          navigate(APP_ROUTES.AUTH);
         }
-
-        // const stateParam = extractStateFromUrl();
-
-        /* States for checking if the wallet exists or is being created new
-          1. Check if their is any state in the url, Yes, then fetch using Jwt state
-          2. Check if the jwt token is stored in session storage or not, if yes find user
-          3. Check if 
-        */
-
-        // if (stateParam) {
-        //   await fetchJwtUsingState(stateParam);
-
-        //   // Clean up URL
-        //   const url = new URL(window.location.href);
-        //   url.searchParams.delete("state");
-        //   window.history.replaceState({}, document.title, url.pathname);
-        // } else {
-        //   const storedToken = sessionStorage.getItem("jwt");
-        //   if (storedToken) {
-        //     dispatch({ type: "SET_JWT", payload: storedToken });
-        //     await fetchUserProfile(storedToken);
-        //   } else {
-        //     let pushWallet;
-        //     const signer = await PushSigner.initialize(
-        //       primaryWallet,
-        //       "DYNAMIC"
-        //     );
-        //     pushWallet = await PushWallet.loginWithWallet(
-        //       signer,
-        //       config.APP_ENV as ENV
-        //     );
-        //     if (pushWallet)
-        //       dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
-        //     else navigate("/auth");
-        //   }
-        // }
       } catch (err) {
         console.error("Error initializing profile:", err);
         setError("Failed to initialize profile");
@@ -313,18 +241,14 @@ const Wallet: FC<WalletProps> = () => {
   }, [primaryWallet]);
 
   useEffect(() => {
-    if (state?.wallet)
-      setWalletList(getWalletlist(state?.wallet?.attachedAccounts));
-  }, [state]);
-
-  useEffect(() => {
-    if (walletList.length) setSelectedWallet(walletList[0]);
-  }, [walletList]);
+    if (state?.wallet?.attachedAccounts.length)
+      setSelectedWallet(getWalletlist(state?.wallet?.attachedAccounts)[0]);
+  }, [state?.wallet?.attachedAccounts]);
 
   const showAppConnectionContainer = state?.wallet?.appConnections.some(
     (cx) => cx.isPending === true
   );
-  // console.log(showAppConnectionContainer, state?.wallet?.appConnections);
+
   return (
     <ContentLayout>
       <BoxLayout>
@@ -348,14 +272,14 @@ const Wallet: FC<WalletProps> = () => {
               selectedWallet={selectedWallet}
               appConnection={
                 state.wallet.appConnections[
-                state.wallet.appConnections.length - 1
+                  state.wallet.appConnections.length - 1
                 ]
               }
             />
           )}
           <WalletProfile selectedWallet={selectedWallet} isLoading={loading} />
           <WalletTabs
-            walletList={walletList}
+            walletList={getWalletlist(state?.wallet?.attachedAccounts)}
             selectedWallet={selectedWallet}
             setSelectedWallet={setSelectedWallet}
             isLoading={loading}
