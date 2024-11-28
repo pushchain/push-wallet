@@ -11,16 +11,15 @@ import { extractStateFromUrl, fetchJwtUsingState } from "../helpers/AuthHelper";
 import { useDynamicContext, Wallet } from "@dynamic-labs/sdk-react-core";
 
 // Define the shape of the global state
-interface GlobalState {
+export type GlobalState = {
   wallet: PushWallet | null;
   dynamicWallet: Wallet | null;
   theme: "light" | "dark";
-  postMessageHandler: PostMessageHandler;
   user: any;
   isAuthenticated: boolean;
   jwt: string | null;
   walletLoadState: "idle" | "success" | "loading" | "rejected";
-}
+};
 
 // Define actions for state management
 export type GlobalAction =
@@ -40,7 +39,6 @@ const initialState: GlobalState = {
   wallet: null,
   dynamicWallet: null,
   theme: "light",
-  postMessageHandler: new PostMessageHandler(undefined),
   user: null,
   isAuthenticated: false,
   jwt: null,
@@ -54,7 +52,6 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
       return {
         ...state,
         wallet: action.payload,
-        postMessageHandler: new PostMessageHandler(action.payload),
       };
     case "SET_DYNAMIC_WALLET":
       return {
@@ -65,7 +62,6 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
       return {
         ...state,
         wallet: null,
-        postMessageHandler: new PostMessageHandler(undefined),
         walletLoadState: "idle",
         dynamicWallet: null,
       };
@@ -77,7 +73,6 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
       return { ...state, isAuthenticated: action.payload };
     case "SET_JWT":
       return { ...state, jwt: action.payload };
-
     case "SET_WALLET_LOAD_STATE":
       return { ...state, walletLoadState: action.payload };
     case "RESET_AUTHENTICATED":
@@ -128,6 +123,17 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   const stateParam = extractStateFromUrl();
 
   const storedToken = sessionStorage.getItem("jwt");
+
+  /* This hook handles the logic for listening to the app connection requests */
+  useEffect(() => {
+    if (state.wallet) {
+      new PostMessageHandler(state.wallet, () =>
+        dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet })
+      );
+    } else {
+      new PostMessageHandler(undefined, () => {});
+    }
+  }, [state.wallet]);
 
   useEffect(() => {
     const fetchUser = async () => {
