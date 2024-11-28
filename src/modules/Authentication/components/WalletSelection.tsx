@@ -14,6 +14,7 @@ import {
 import { WalletKeyPairType, WalletState } from "../Authentication.types";
 import { useNavigate } from "react-router-dom";
 import { BitGetWalletIcon } from "@dynamic-labs/iconic";
+import { APP_ROUTES } from "../../../constants";
 type WalletSelectionProps = {
   setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
 };
@@ -28,19 +29,11 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   useEffect(() => {
     (async () => {
       if (primaryWallet) {
-        // let pushWallet;
-        // // setProfileLoading(true);
-        // const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
-        // pushWallet = await PushWallet.loginWithWallet(
-        //   signer,
-        //   config.APP_ENV as ENV
-        // );
-        // dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
-        navigate("/wallet");
-        // setProfileLoading(false);
+        navigate(APP_ROUTES.WALLET);
       }
     })();
   }, [primaryWallet]);
+
   const ethereumWallets: WalletKeyPairType = filterEthereumWallets(
     getGroupedWallets(walletOptions)
   );
@@ -54,7 +47,6 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
 
   const handleWalletOption = (key: string) => {
     selectWalletOption(key);
-    navigate("/wallet");
   };
 
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {
@@ -124,7 +116,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
                         flex-shrink: 0;
                       `}
                     >
-                     
+
                       {WALLETS_LOGO[key] || (
                         <FallBackWalletIcon walletKey={key} />
                       )}

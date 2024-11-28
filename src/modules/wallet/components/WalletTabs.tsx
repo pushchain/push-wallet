@@ -12,26 +12,22 @@ export type WalletTabsProps = {
   walletList: WalletListType[];
   selectedWallet: WalletListType;
   setSelectedWallet: React.Dispatch<React.SetStateAction<WalletListType>>;
-  isLoading: boolean;
 };
 
 const WalletTabs: FC<WalletTabsProps> = ({
   walletList,
   selectedWallet,
   setSelectedWallet,
-  isLoading,
 }) => {
   const [activeTab, setActiveTab] = useState("activity");
   const { state } = useGlobalState();
   const { primaryWallet } = useDynamicContext();
 
 
-  console.log("LOADING----", isLoading);
+  // console.log("LOADING----", isLoading);
   return (
     <Box height="340px">
-      {isLoading ? (
-        <LoadingPage isLoading={isLoading} />
-      ) : (
+     
         <Tabs
           items={[
             {
@@ -62,7 +58,8 @@ const WalletTabs: FC<WalletTabsProps> = ({
           activeKey={activeTab}
           onChange={(activeKey) => setActiveTab(activeKey)}
         />
-      )}
+   
+
     </Box>
   );
 };
