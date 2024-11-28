@@ -14,6 +14,7 @@ const BoxLayout: FC<BoxLayoutProps> = ({children}) => {
       display="flex"
       flexDirection="column"
       borderRadius="radius-md"
+      position="relative"
       border="border-xmd solid stroke-secondary"
       justifyContent="center"
       width= "auto"

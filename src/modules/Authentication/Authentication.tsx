@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Box } from "../../blocks";
-import { BoxLayout, ContentLayout } from "../../common";
+import { BoxLayout, ContentLayout, PushWalletLoadingPopup, SkeletonWalletScreen } from "../../common";
 import { Footer } from "../../common/components/Footer";
 import { Login } from "./components/Login";
 import { WalletSelection } from "./components/WalletSelection";
 import { WalletState } from "./Authentication.types";
+import { LoadingPage } from "src/pages/LoadingPage";
 
 const Authentication = () => {
   const [email, setEmail] = useState<string>("");
@@ -21,6 +22,7 @@ const Authentication = () => {
           width="376px"
           padding="spacing-md"
         >
+          {/* <SkeletonWalletScreen loadingPopup={<PushWalletLoadingPopup/>}/> */}
           {connectMethod === "authentication" && (
             <Login
               email={email}
