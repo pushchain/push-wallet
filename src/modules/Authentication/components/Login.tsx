@@ -26,16 +26,14 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
     validationSchema,
     onSubmit: (values) => {
       setEmail(values.email);
-      console.log("Values >>>", values);
 
       if (values.email) {
-        window.location.href = `${
-          import.meta.env.VITE_APP_BACKEND_URL
-        }/auth/authorize-email?email=${encodeURIComponent(
-          values.email
-        )}&redirectUri=${encodeURIComponent(
-          window.location.origin + envRouteAlias + "/wallet"
-        )}`;
+        window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
+          }/auth/authorize-email?email=${encodeURIComponent(
+            values.email
+          )}&redirectUri=${encodeURIComponent(
+            window.location.origin + envRouteAlias + "/wallet"
+          )}`;
       }
     },
   });
@@ -43,11 +41,10 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
   const handleSocialLogin = (
     provider: "github" | "google" | "discord" | "twitter" | "apple"
   ) => {
-    window.location.href = `${
-      import.meta.env.VITE_APP_BACKEND_URL
-    }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
-      window.location.origin + envRouteAlias + "/wallet"
-    )}`;
+    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
+      }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
+        window.location.origin + envRouteAlias + "/wallet"
+      )}`;
   };
 
   return (
@@ -122,11 +119,11 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
                 onClick={() =>
                   handleSocialLogin(
                     social.name as
-                      | "github"
-                      | "google"
-                      | "discord"
-                      | "twitter"
-                      | "apple"
+                    | "github"
+                    | "google"
+                    | "discord"
+                    | "twitter"
+                    | "apple"
                   )
                 }
               />

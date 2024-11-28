@@ -2,13 +2,13 @@
  * SUPPORTED ENVIRONEMENTS
  */
 export enum ENV {
-  PROD = 'prod',
-  STAGING = 'staging',
-  DEV = 'dev',
+  PROD = "prod",
+  STAGING = "staging",
+  DEV = "dev",
   /**
    * **This is for local development only**
    */
-  LOCAL = 'local',
+  LOCAL = "local",
 }
 
 /**
@@ -23,13 +23,18 @@ export enum WALLET_STATE {
 
 // CAIP Namespaces
 export const chainToNamespace = {
-  EVM: 'eip155',
-  SOL: 'solana',
-}
+  EVM: "eip155",
+  SOL: "solana",
+};
 
 // SOLANA ChainIds
 export const networkToSolChainId = {
-  mainnet: '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
-  devnet: 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
-  testnet: '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z',
-}
+  mainnet: "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+  devnet: "EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+  testnet: "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z",
+};
+
+export const APP_ROUTES = {
+  AUTH: "/auth",
+  WALLET: "/wallet",
+};
