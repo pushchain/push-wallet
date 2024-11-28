@@ -1,26 +1,29 @@
 import { Box, PushLogo, Skeleton } from "blocks";
 import { FC, ReactNode } from "react";
-import { BoxLayout } from "src/common/components/BoxLayout";
+import { BoxLayout, ContentLayout, PopupLayout } from "common";
 import { css } from "styled-components";
 
 type SkeletonWalletScreenProps = {
   loadingPopup?: ReactNode;
 };
-const ROWS = 2;
+const ROWS = 10;
 
+//fix the highlighted border
 const SkeletonWalletScreen: FC<SkeletonWalletScreenProps> = ({
   loadingPopup,
 }) => {
   return (
+    <ContentLayout >
+      <BoxLayout>
     <Box
-      alignItems="center"
+      alignItems="start"
       flexDirection="column"
       display="flex"
-      height="498px"
+      height="508px"
       justifyContent="start"
       width="100%"
-      gap="spacing-sm"
-      margin="spacing-md spacing-none spacing-none spacing-none"
+      gap="spacing-xs"
+      margin="spacing-sm spacing-none spacing-none spacing-none"
     >
       <Box width="inherit" display="flex" alignItems="start">
         <PushLogo height={48} width={48} />
@@ -29,31 +32,39 @@ const SkeletonWalletScreen: FC<SkeletonWalletScreenProps> = ({
         alignItems="center"
         flexDirection="column"
         display="flex"
-        gap="spacing-sm"
         width="inherit"
+        gap='spacing-xxs'
       >
-        <Skeleton isLoading>
-          <Box width="50px" height="50px" borderRadius="radius-round"></Box>
-        </Skeleton>
         <Box
           alignItems="center"
           flexDirection="column"
           display="flex"
-          gap="spacing-xxxs"
+          gap="spacing-sm"
+          width="inherit"
         >
           <Skeleton isLoading>
-            <Box height="12px" width="104px"></Box>
+            <Box width="50px" height="50px" borderRadius="radius-round"></Box>
           </Skeleton>
-          <Skeleton isLoading>
-            <Box height="12px" width="104px"></Box>
-          </Skeleton>
+          <Box
+            alignItems="center"
+            flexDirection="column"
+            display="flex"
+            gap="spacing-xxxs"
+          >
+            <Skeleton isLoading>
+              <Box height="12px" width="104px"></Box>
+            </Skeleton>
+            <Skeleton isLoading>
+              <Box height="12px" width="104px"></Box>
+            </Skeleton>
+          </Box>
         </Box>
         <Box
           display="flex"
           flexDirection="column"
           width="inherit"
           alignItems="start"
-          gap="spacing-sm"
+          
           padding="spacing-sm"
           css={css`
             border-bottom: var(--border-sm) solid var(--stroke-secondary);
@@ -63,13 +74,24 @@ const SkeletonWalletScreen: FC<SkeletonWalletScreenProps> = ({
             <Box
               height="12px"
               width="104px"
+              //   padding="spacing-sm"
               css={css`
-                border-bottom: var(--border-md) solid var(--stroke-brand-medium);
+                border-bottom: 1px solid red;
               `}
+              //   css={css`
+              //     border-bottom: var(--border-md) solid var(--stroke-brand-medium);
+              //   `}
             ></Box>
           </Skeleton>
         </Box>
-        <Box display="flex" width="inherit" flexDirection="column">
+        <Box
+          display="flex"
+          width="inherit"
+          flexDirection="column"
+          overflow="hidden scroll"
+          customScrollbar
+          height="200px"
+        >
           {Array.from({ length: ROWS }).map((_, index) => (
             <Box
               key={index}
@@ -101,8 +123,11 @@ const SkeletonWalletScreen: FC<SkeletonWalletScreenProps> = ({
           ))}
         </Box>
       </Box>
-      {loadingPopup}
+      <PopupLayout>{loadingPopup}</PopupLayout>
     </Box>
+    </BoxLayout>
+    </ContentLayout >
+  
   );
 };
 

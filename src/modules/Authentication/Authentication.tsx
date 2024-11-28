@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Box } from "../../blocks";
-import { BoxLayout, ContentLayout, PushWalletLoadingPopup, SkeletonWalletScreen } from "../../common";
+import { BoxLayout, ContentLayout, PushWalletLoadingContent, SkeletonWalletScreen, WalletReconstructionErrorContent } from "../../common";
 import { Footer } from "../../common/components/Footer";
 import { Login } from "./components/Login";
 import { WalletSelection } from "./components/WalletSelection";
@@ -12,6 +12,7 @@ const Authentication = () => {
   const [connectMethod, setConnectMethod] =
     useState<WalletState>("authentication");
 
+
   return (
     <ContentLayout footer={<Footer />}>
       <BoxLayout>
@@ -22,18 +23,17 @@ const Authentication = () => {
           width="376px"
           padding="spacing-md"
         >
-          {/* <SkeletonWalletScreen loadingPopup={<PushWalletLoadingPopup/>}/> */}
-          {connectMethod === "authentication" && (
+         {connectMethod === "authentication" && (
             <Login
               email={email}
               setEmail={setEmail}
               setConnectMethod={setConnectMethod}
             />
-          )}
+          )} 
           {/* <VerifyCode/> */}
-          {connectMethod === "connectWallet" && (
+         {connectMethod === "connectWallet" && (
             <WalletSelection setConnectMethod={setConnectMethod} />
-          )}
+          )} 
         </Box>
       </BoxLayout>
     </ContentLayout>
