@@ -5,7 +5,6 @@ import { WalletActivityList } from "./WalletActivityList";
 import { MyWallets } from "./MyWallets";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { WalletListType } from "../Wallet.types";
-import { LoadingPage } from "../../../pages/LoadingPage";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
 export type WalletTabsProps = {

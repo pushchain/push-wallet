@@ -1,11 +1,10 @@
-import { useContext, useState } from "react";
+import {  useState } from "react";
 import { Box } from "../../blocks";
-import { BoxLayout, ContentLayout, PushWalletLoadingContent, SkeletonWalletScreen, WalletReconstructionErrorContent } from "../../common";
+import { BoxLayout, ContentLayout,} from "../../common";
 import { Footer } from "../../common/components/Footer";
 import { Login } from "./components/Login";
 import { WalletSelection } from "./components/WalletSelection";
 import { WalletState } from "./Authentication.types";
-import { LoadingPage } from "src/pages/LoadingPage";
 
 const Authentication = () => {
   const [email, setEmail] = useState<string>("");

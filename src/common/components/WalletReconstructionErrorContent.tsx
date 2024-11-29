@@ -1,4 +1,4 @@
-import { Box, Text, Spinner, Button, Link } from "blocks";
+import { Box, Text, Button, Link } from "blocks";
 import { FC } from "react";
 
 //what links should be there 

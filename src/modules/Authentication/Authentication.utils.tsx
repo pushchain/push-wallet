@@ -1,5 +1,4 @@
-import {  allowedEvmWallets, solanaWallets } from "./Authentication.constants";
-import { WalletKeyPairType } from "./Authentication.types";
+import {  allowedEvmWallets } from "./Authentication.constants";
 
 export const getGroupedWallets = (walletOptions) => {
   return walletOptions.reduce((options, wallet) => {

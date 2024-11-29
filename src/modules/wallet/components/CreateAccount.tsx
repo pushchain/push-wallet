@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 
 import { useGlobalState } from "../../../context/GlobalContext";
 import { Box, Button, Text } from "../../../blocks";
@@ -16,7 +16,7 @@ export type CreateAccountProps = {
 
 const CreateAccount: FC<CreateAccountProps> = ({isLoading,setIsLoading}) => {
   const { primaryWallet } = useDynamicContext();
-  const { state, dispatch } = useGlobalState();
+  const {  dispatch } = useGlobalState();
 
   const handleMnemonicSignup = async () => {
     try {

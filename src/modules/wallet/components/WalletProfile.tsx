@@ -9,14 +9,13 @@ import {
   MenuItem,
   PushLogo,
   Settings,
-  Skeleton,
   Text,
   Tooltip,
 } from "../../../blocks";
 import { centerMaskWalletAddress, handleCopy } from "../../../common";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
-import { useDynamicContext, useWalletItemActions } from "@dynamic-labs/sdk-react-core";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { WalletListType } from "../Wallet.types";
 import { APP_ROUTES } from "../../../constants";
 
@@ -102,7 +101,6 @@ const WalletProfile: FC<WalletProfileProps> = ({
               {centerMaskWalletAddress(parsedWallet)}
             </Text>
 
-          {/* {!isLoading && ( */}
             <Box cursor="pointer">
               <Tooltip title={copied ? "Copy" : "Copied"} trigger="click">
                 <Copy
@@ -111,7 +109,6 @@ const WalletProfile: FC<WalletProfileProps> = ({
                 />
               </Tooltip>
             </Box>
-          {/* )} */}
         </Box>
       </Box>
     </Box>
