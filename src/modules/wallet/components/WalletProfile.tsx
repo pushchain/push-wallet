@@ -10,6 +10,7 @@ import {
   PushLogo,
   Settings,
   Text,
+  TickCircleFilled,
   Tooltip,
 } from "../../../blocks";
 import { centerMaskWalletAddress, handleCopy } from "../../../common";
@@ -102,11 +103,21 @@ const WalletProfile: FC<WalletProfileProps> = ({
           </Text>
 
           <Box cursor="pointer">
-            <Tooltip title={copied ? "Copy" : "Copied"} trigger="click">
-              <Copy
-                color="icon-tertiary"
-                onClick={() => handleCopy(parsedWallet, setCopied)}
-              />
+            <Tooltip
+              title={copied ? "Copy" : "Copied"}
+            >
+              {copied ? (
+                <TickCircleFilled
+                  autoSize
+                  size={16}
+                  color="icon-state-success-bold"
+                />
+              ) : (
+                <Copy
+                  color="icon-tertiary"
+                  onClick={() => handleCopy(parsedWallet, setCopied)}
+                />
+              )}
             </Tooltip>
           </Box>
         </Box>
