@@ -21,7 +21,8 @@ const Authentication = () => {
           width="376px"
           padding="spacing-md"
         >
-          {connectMethod === "authentication" && (
+          {(connectMethod === "authentication" ||
+            connectMethod === "social") && (
             <Login
               email={email}
               setEmail={setEmail}

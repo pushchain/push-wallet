@@ -21,21 +21,42 @@ export const socialLoginConfig: SocialsType[] = [
 ];
 
 export const solanaWallets: WalletKeyPairType = {
+  coinbase: "Coinbase",
   backpack: "Backpack",
   bitgetwallet: "Bitget",
   brave: "Brave",
   coin98: "Coin98",
-  coinbase: "Coinbase",
   exodus: "Exodus Wallet",
   fallbackconnector: "Fallback Connector",
   glow: "Glow",
   magiceden: "Magic Eden",
   mathwallet: "Math Wallet",
   nightlysol: "Nightly",
-  okxsolana: "OKX Wallet",
+  okxwallet: "OKX Wallet",
   onekey: "OneKey",
   phantom: "Phantom",
   solflare: "Solflare",
 };
 
-export const priorityEvmWallets = ['metamask','trust','safepal','binance','uniswap','coinbase','rainbow','backpack','zerion'];
+export const allowedEvmWallets = [
+  "metamask",
+  "trust",
+  "safepal",
+  "binance",
+  "uniswap",
+  "coinbase",
+  "walletconnect",
+  "rainbow",
+  "backpack",
+  "zerion",
+  "rabby",
+  "flowwallet",
+  "sequence",
+  "unstoppable",
+  "frontier",
+  "1inch",
+  "mewwallet",
+  "obvious",
+  "enkrypt",
+  "krakenwallet",
+];

@@ -1,4 +1,4 @@
-import { Box, DefaultChainMonotone, ExternalLinkIcon, InternalLink, PushMonotone, Skeleton, Text } from '../../../blocks';
+import { Box, DefaultChainMonotone, ExternalLinkIcon, InternalLink, PushMonotone, Text } from '../../../blocks';
 import { css } from 'styled-components';
 import { convertCaipToObject, formatWalletCategory, getFixedTime } from '../Wallet.utils';
 import { centerMaskWalletAddress, CHAIN_LOGO } from '../../../common';

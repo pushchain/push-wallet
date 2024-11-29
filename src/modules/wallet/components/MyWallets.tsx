@@ -1,8 +1,6 @@
 import { FC } from "react";
-import { Box, Separator, Text } from "../../../blocks";
+import { Box } from "../../../blocks";
 import { WalletList } from "./WalletList";
-import { css } from "styled-components";
-import { WalletCategories } from "../../../common";
 import { WalletListType } from "../Wallet.types";
 
 export type MyWalletsProps = {

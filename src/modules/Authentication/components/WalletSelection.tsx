@@ -13,7 +13,6 @@ import {
 } from "../Authentication.utils";
 import { WalletKeyPairType, WalletState } from "../Authentication.types";
 import { useNavigate } from "react-router-dom";
-import { BitGetWalletIcon } from "@dynamic-labs/iconic";
 import { APP_ROUTES } from "../../../constants";
 type WalletSelectionProps = {
   setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
@@ -25,7 +24,6 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const { primaryWallet } = useDynamicContext();
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
-
   useEffect(() => {
     (async () => {
       if (primaryWallet) {

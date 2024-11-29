@@ -9,8 +9,8 @@ import {
   MenuItem,
   PushLogo,
   Settings,
-  Skeleton,
   Text,
+  TickCircleFilled,
   Tooltip,
 } from "../../../blocks";
 import { centerMaskWalletAddress, handleCopy } from "../../../common";
@@ -22,12 +22,10 @@ import { APP_ROUTES } from "../../../constants";
 
 export type WalletProfileProps = {
   selectedWallet: WalletListType;
-  isLoading: boolean;
 };
 
 const WalletProfile: FC<WalletProfileProps> = ({
   selectedWallet,
-  isLoading,
 }) => {
   const { primaryWallet, handleLogOut } = useDynamicContext();
   const parsedWallet = selectedWallet?.address || primaryWallet?.address;
@@ -53,35 +51,34 @@ const WalletProfile: FC<WalletProfileProps> = ({
         <PushLogo height={48} width={48} />
         <Box display="flex" gap="spacing-xxs">
           {/* <HoverableSVG icon={<Lock size={24} color="icon-primary" />} /> */}
-          <Skeleton isLoading={isLoading} width="28px" height="28px">
-            <Dropdown
-              overlay={
-                <Menu>
-                  {/* <MenuItem label="Linked Accounts" icon={<Pin />} /> */}
-                  {/* <MenuItem label="App Permissions" icon={<Cube />} /> */}
-                  {/* <MenuItem label="Passkeys" icon={<Lock />} /> */}
-                  {/* <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} /> */}
-                  <MenuItem
-                    label="Log Out"
-                    icon={<Logout />}
-                    onClick={() => {
-                      sessionStorage.removeItem("jwt");
-                      dispatch({ type: "RESET_AUTHENTICATED" });
-                      dispatch({ type: "RESET_USER" });
-                      handleLogOut();
+          <Dropdown
+            overlay={
+              <Menu>
+                {/* <MenuItem label="Linked Accounts" icon={<Pin />} /> */}
+                {/* <MenuItem label="App Permissions" icon={<Cube />} /> */}
+                {/* <MenuItem label="Passkeys" icon={<Lock />} /> */}
+                {/* <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} /> */}
+                <MenuItem
+                  label="Log Out"
+                  icon={<Logout />}
+                  onClick={() => {
+                    sessionStorage.removeItem("jwt");
+                    dispatch({ type: "RESET_AUTHENTICATED" });
+                    dispatch({ type: "RESET_USER" });
+                    localStorage.clear();
+                    handleLogOut();
 
-                      navigate(APP_ROUTES.AUTH);
-                      localStorage.clear();
-                    }}
-                  />
-                </Menu>
-              }
-            >
-              <Box cursor="pointer">
-                <Settings size={24} color="icon-primary" />
-              </Box>
-            </Dropdown>
-          </Skeleton>
+                    navigate(APP_ROUTES.AUTH);
+                    localStorage.clear();
+                  }}
+                />
+              </Menu>
+            }
+          >
+            <Box cursor="pointer">
+              <Settings size={24} color="icon-primary" />
+            </Box>
+          </Dropdown>
         </Box>
       </Box>
       <Box
@@ -91,9 +88,7 @@ const WalletProfile: FC<WalletProfileProps> = ({
         overflow="hidden"
         alignSelf="center"
       >
-        <Skeleton isLoading={isLoading}>
-          <BlockiesSvg address={parsedWallet} />
-        </Skeleton>
+        <BlockiesSvg address={parsedWallet} />
       </Box>
       <Box
         display="flex"
@@ -101,26 +96,30 @@ const WalletProfile: FC<WalletProfileProps> = ({
         alignItems="center"
         gap="spacing-xxxs"
       >
-        <Skeleton isLoading={isLoading}>
-          <Text variant="bl-semibold">{walletName}</Text>
-        </Skeleton>
+        <Text variant="bl-semibold">{walletName}</Text>
         <Box display="flex" gap="spacing-xxxs">
-          <Skeleton isLoading={isLoading}>
-            <Text variant="bes-semibold" color="text-tertiary">
-              {centerMaskWalletAddress(parsedWallet)}
-            </Text>
-          </Skeleton>
+          <Text variant="bes-semibold" color="text-tertiary">
+            {centerMaskWalletAddress(parsedWallet)}
+          </Text>
 
-          {!isLoading && (
-            <Box cursor="pointer">
-              <Tooltip title={copied ? "Copy" : "Copied"} trigger="click">
+          <Box cursor="pointer">
+            <Tooltip
+              title={copied ? "Copy" : "Copied"}
+            >
+              {copied ? (
+                <TickCircleFilled
+                  autoSize
+                  size={16}
+                  color="icon-state-success-bold"
+                />
+              ) : (
                 <Copy
                   color="icon-tertiary"
                   onClick={() => handleCopy(parsedWallet, setCopied)}
                 />
-              </Tooltip>
-            </Box>
-          )}
+              )}
+            </Tooltip>
+          </Box>
         </Box>
       </Box>
     </Box>

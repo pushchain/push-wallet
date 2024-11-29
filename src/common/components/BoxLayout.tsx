@@ -15,6 +15,7 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
       flexDirection="column"
       borderRadius="radius-md"
       justifyContent="center"
+      position="relative"
       width="auto"
       css={css`
         background: linear-gradient(

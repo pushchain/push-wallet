@@ -1,19 +1,15 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import {
   Box,
-  Button,
   Copy,
   Dropdown,
   KebabMenuVertical,
   Menu,
   MenuItem,
-  Metamask,
-  OptOut,
   PushLogo,
   Text,
 } from "../../../blocks";
 import { centerMaskWalletAddress, handleCopy } from "../../../common";
-import { useGlobalState } from "../../../context/GlobalContext";
 import { WalletListType } from "../Wallet.types";
 import BlockiesSvg from "blockies-react-svg";
 
@@ -28,7 +24,6 @@ const WalletList: FC<WalletListProps> = ({
   selectedWallet,
   setSelectedWallet,
 }) => {
-  const { state } = useGlobalState();
 
   const handleWalletClick = (index) => {
     setSelectedWallet(walletList[index]);

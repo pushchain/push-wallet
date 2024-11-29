@@ -1,4 +1,4 @@
-import { WalletClient, getAddress, isHex } from 'viem'
+import { WalletClient, getAddress, isAddress, isHex } from 'viem'
 import { Signer } from './pushSigner.types'
 import { Wallet } from '@dynamic-labs/sdk-react-core'
 import { chainToNamespace, networkToSolChainId } from '../../constants'
@@ -47,6 +47,12 @@ export class PushSigner {
     wallet: Wallet
   ): Promise<Signer> => {
     try {
+      // Make sure evm address are in checksum format
+      let address = wallet.address
+      if (isAddress(address, { strict: false })) {
+        address = getAddress(address)
+      }
+
       const namespace = chainToNamespace[wallet.chain]
       if (namespace === undefined) {
         throw new Error('Unsupported Namespace')
@@ -64,7 +70,7 @@ export class PushSigner {
         else return Buffer.from(signature, 'base64')
       }
       return {
-        account: `${namespace}:${chainId}:${wallet.address}`,
+        account: `${namespace}:${chainId}:${address}`,
         signMessage,
       }
     } catch (err) {

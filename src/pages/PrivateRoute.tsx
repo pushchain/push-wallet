@@ -1,8 +1,9 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { Spinner } from "../blocks";
+
 import { APP_ROUTES } from "../constants";
 import { useGlobalState } from "../context/GlobalContext";
+import { PushWalletLoadingContent, WalletSkeletonScreen } from "common";
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const {
@@ -10,7 +11,7 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
   } = useGlobalState();
 
   if (walletLoadState === "idle" || walletLoadState === "loading") {
-    return <Spinner variant="primary" size="large" />;
+    return <WalletSkeletonScreen content={<PushWalletLoadingContent />} />;
   }
 
   if (walletLoadState === "success" && jwt) {
