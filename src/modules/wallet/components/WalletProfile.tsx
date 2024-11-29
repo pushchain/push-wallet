@@ -22,12 +22,10 @@ import { APP_ROUTES } from "../../../constants";
 
 export type WalletProfileProps = {
   selectedWallet: WalletListType;
-  isLoading: boolean;
 };
 
 const WalletProfile: FC<WalletProfileProps> = ({
   selectedWallet,
-  isLoading,
 }) => {
   const { primaryWallet, handleLogOut } = useDynamicContext();
   const parsedWallet = selectedWallet?.address || primaryWallet?.address;
@@ -104,7 +102,7 @@ const WalletProfile: FC<WalletProfileProps> = ({
               {centerMaskWalletAddress(parsedWallet)}
             </Text>
 
-          {!isLoading && (
+          {/* {!isLoading && ( */}
             <Box cursor="pointer">
               <Tooltip title={copied ? "Copy" : "Copied"} trigger="click">
                 <Copy
@@ -113,7 +111,7 @@ const WalletProfile: FC<WalletProfileProps> = ({
                 />
               </Tooltip>
             </Box>
-          )}
+          {/* )} */}
         </Box>
       </Box>
     </Box>
