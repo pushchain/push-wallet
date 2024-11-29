@@ -1,4 +1,4 @@
-import { priorityEvmWallets, solanaWallets } from "./Authentication.constants";
+import {  allowedEvmWallets, solanaWallets } from "./Authentication.constants";
 import { WalletKeyPairType } from "./Authentication.types";
 
 export const getGroupedWallets = (walletOptions) => {
@@ -14,26 +14,16 @@ export const getGroupedWallets = (walletOptions) => {
   }, {});
 };
 
-export const filterEthereumWallets = (wallets: Record<string, string>) => {
+export const filterEthereumWallets = (
+  wallets: Record<string, string>
+): Record<string, string> => {
   const result = Object.fromEntries(
-    Object.entries(wallets).filter(([key]) => !(key in solanaWallets))
+    allowedEvmWallets
+      .filter((key) => key in wallets) 
+      .map((key) => [key, wallets[key]]) 
   );
-  return prioritizeWallets(result, priorityEvmWallets);
+
+  return result;
 };
 
-const prioritizeWallets = (
-  wallets: Record<string, string>,
-  priority: string[]
-) => {
-  return Object.fromEntries(
-    Object.entries(wallets).sort(([keyA], [keyB]) => {
-      const isPriorityA = priority.includes(keyA);
-      const isPriorityB = priority.includes(keyB);
 
-      if (isPriorityA && !isPriorityB) return -1;
-      if (!isPriorityA && isPriorityB) return 1;
-
-      return 0;
-    })
-  );
-};

@@ -25,7 +25,6 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const { primaryWallet } = useDynamicContext();
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
-
   useEffect(() => {
     (async () => {
       if (primaryWallet) {

@@ -16,7 +16,7 @@ import {
 import { centerMaskWalletAddress, handleCopy } from "../../../common";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { useDynamicContext, useWalletItemActions } from "@dynamic-labs/sdk-react-core";
 import { WalletListType } from "../Wallet.types";
 import { APP_ROUTES } from "../../../constants";
 
@@ -67,6 +67,7 @@ const WalletProfile: FC<WalletProfileProps> = ({
                       sessionStorage.removeItem("jwt");
                       dispatch({ type: "RESET_AUTHENTICATED" });
                       dispatch({ type: "RESET_USER" });
+                      localStorage.clear();
                       handleLogOut();
 
                       navigate(APP_ROUTES.AUTH);
