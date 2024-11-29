@@ -81,6 +81,7 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
         isAuthenticated: false,
         walletLoadState: "idle",
         dynamicWallet: null,
+        jwt: null,
       };
     case "RESET_USER":
       return {
@@ -88,6 +89,7 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
         user: null,
         walletLoadState: "idle",
         dynamicWallet: null,
+        jwt: null,
       };
     default:
       return state;
@@ -131,7 +133,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
         dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet })
       );
     } else {
-      new PostMessageHandler(undefined, () => {});
+      new PostMessageHandler(undefined, () => { });
     }
   }, [state.wallet]);
 
