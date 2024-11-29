@@ -28,12 +28,13 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
       setEmail(values.email);
 
       if (values.email) {
-        window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
-          }/auth/authorize-email?email=${encodeURIComponent(
-            values.email
-          )}&redirectUri=${encodeURIComponent(
-            window.location.origin + envRouteAlias + "/wallet"
-          )}`;
+        window.location.href = `${
+          import.meta.env.VITE_APP_BACKEND_URL
+        }/auth/authorize-email?email=${encodeURIComponent(
+          values.email
+        )}&redirectUri=${encodeURIComponent(
+          window.location.origin + envRouteAlias + "/wallet"
+        )}`;
       }
     },
   });
@@ -41,10 +42,11 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
   const handleSocialLogin = (
     provider: "github" | "google" | "discord" | "twitter" | "apple"
   ) => {
-    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
-      }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
-        window.location.origin + envRouteAlias + "/wallet"
-      )}`;
+    window.location.href = `${
+      import.meta.env.VITE_APP_BACKEND_URL
+    }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
+      window.location.origin + envRouteAlias + "/wallet"
+    )}`;
   };
 
   return (
@@ -85,7 +87,13 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
                 error={formik.touched?.email && Boolean(formik.errors?.email)}
                 errorMessage={formik.touched?.email ? formik.errors?.email : ""}
                 trailingIcon={
-                  <Front size={24} onClick={() => setConnectMethod("social")} />
+                  <Front
+                    size={24}
+                    onClick={() => {
+                      formik.handleSubmit();
+                      setConnectMethod("social");
+                    }}
+                  />
                 }
               />
             </form>
@@ -119,11 +127,11 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
                 onClick={() =>
                   handleSocialLogin(
                     social.name as
-                    | "github"
-                    | "google"
-                    | "discord"
-                    | "twitter"
-                    | "apple"
+                      | "github"
+                      | "google"
+                      | "discord"
+                      | "twitter"
+                      | "apple"
                   )
                 }
               />

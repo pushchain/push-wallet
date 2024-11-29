@@ -1,6 +1,6 @@
-import {  useState } from "react";
+import { useState } from "react";
 import { Box } from "../../blocks";
-import { BoxLayout, ContentLayout,} from "../../common";
+import { BoxLayout, ContentLayout } from "../../common";
 import { Footer } from "../../common/components/Footer";
 import { Login } from "./components/Login";
 import { WalletSelection } from "./components/WalletSelection";
@@ -10,7 +10,6 @@ const Authentication = () => {
   const [email, setEmail] = useState<string>("");
   const [connectMethod, setConnectMethod] =
     useState<WalletState>("authentication");
-
 
   return (
     <ContentLayout footer={<Footer />}>
@@ -22,17 +21,18 @@ const Authentication = () => {
           width="376px"
           padding="spacing-md"
         >
-         {connectMethod === "authentication" && (
+          {(connectMethod === "authentication" ||
+            connectMethod === "social") && (
             <Login
               email={email}
               setEmail={setEmail}
               setConnectMethod={setConnectMethod}
             />
-          )} 
+          )}
           {/* <VerifyCode/> */}
-         {connectMethod === "connectWallet" && (
+          {connectMethod === "connectWallet" && (
             <WalletSelection setConnectMethod={setConnectMethod} />
-          )} 
+          )}
         </Box>
       </BoxLayout>
     </ContentLayout>
