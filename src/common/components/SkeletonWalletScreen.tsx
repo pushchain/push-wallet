@@ -22,7 +22,7 @@ const SkeletonWalletScreen: FC<SkeletonWalletScreenProps> = ({
           height="570px"
           justifyContent="start"
           width="376px"
-          padding='spacing-md'
+          padding="spacing-md"
           gap="spacing-xs"
           margin="spacing-sm spacing-none spacing-none spacing-none"
         >
@@ -43,7 +43,7 @@ const SkeletonWalletScreen: FC<SkeletonWalletScreenProps> = ({
               gap="spacing-sm"
               width="100%"
             >
-              <Skeleton isLoading>
+              <Skeleton isLoading borderRadius="radius-round">
                 <Box
                   width="50px"
                   height="50px"
@@ -75,17 +75,7 @@ const SkeletonWalletScreen: FC<SkeletonWalletScreenProps> = ({
               `}
             >
               <Skeleton isLoading>
-                <Box
-                  height="12px"
-                  width="104px"
-                  //   padding="spacing-sm"
-                  css={css`
-                    border-bottom: 1px solid red;
-                  `}
-                  //   css={css`
-                  //     border-bottom: var(--border-md) solid var(--stroke-brand-medium);
-                  //   `}
-                ></Box>
+                <Box height="12px" width="104px"></Box>
               </Skeleton>
             </Box>
             <Box
