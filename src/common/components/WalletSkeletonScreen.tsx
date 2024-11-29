@@ -1,17 +1,14 @@
 import { Box, PushLogo, Skeleton } from "blocks";
 import { FC, ReactNode } from "react";
-import { BoxLayout, ContentLayout, PopupLayout } from "common";
-import { css } from "styled-components";
+import { BoxLayout, ContentLayout } from "common";
+import { css, keyframes } from "styled-components";
 
-type SkeletonWalletScreenProps = {
-  loadingPopup?: ReactNode;
+export type WalletSkeletonScreenProps = {
+  content?: ReactNode;
 };
 const ROWS = 10;
 
-//fix the highlighted border
-const SkeletonWalletScreen: FC<SkeletonWalletScreenProps> = ({
-  loadingPopup,
-}) => {
+const WalletSkeletonScreen: FC<WalletSkeletonScreenProps> = ({ content }) => {
   return (
     <ContentLayout>
       <BoxLayout>
@@ -118,11 +115,38 @@ const SkeletonWalletScreen: FC<SkeletonWalletScreenProps> = ({
               ))}
             </Box>
           </Box>
-          <PopupLayout>{loadingPopup}</PopupLayout>
+          <Box
+            display="flex"
+            flexDirection="column"
+            backgroundColor="surface-primary"
+            borderRadius="radius-md"
+            width="372px"
+            padding="spacing-xl spacing-lg spacing-lg spacing-lg"
+            position="absolute"
+            css={css`
+              bottom: 2px;
+              left: 3px;
+              border-top: var(--border-xmd) solid var(--stroke-secondary);
+            `}
+          >
+            {content}
+          </Box>
         </Box>
       </BoxLayout>
     </ContentLayout>
   );
 };
 
-export { SkeletonWalletScreen };
+// const slideUp = keyframes`
+//   from {
+//     transform: translateY(100%);
+//   }
+//   to {
+//     transform: translateY(0);
+//   }
+
+// transition: transform 0.5s ease-in-out;
+// animation: ${slideUp} 0.5s ease-out forwards;
+// `;
+
+export { WalletSkeletonScreen };

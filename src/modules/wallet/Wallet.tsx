@@ -1,6 +1,12 @@
 import { FC, useEffect, useState } from "react";
 import { Box } from "../../blocks";
-import { BoxLayout, ContentLayout, PushWalletLoadingContent, SkeletonWalletScreen, WalletReconstructionErrorContent } from "../../common";
+import {
+  BoxLayout,
+  ContentLayout,
+  PushWalletLoadingContent,
+  WalletSkeletonScreen,
+  WalletReconstructionErrorContent,
+} from "../../common";
 import { WalletProfile } from "./components/WalletProfile";
 import { WalletTabs } from "./components/WalletTabs";
 import api from "../../services/api";
@@ -21,11 +27,12 @@ export type WalletProps = {};
 
 const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
-  const [createAccountLoading, setCreateAccountLoading] = useState(false);
+  const [createAccountLoading, setCreateAccountLoading] = useState(true);
   const [error, setError] = useState("");
   const { primaryWallet } = useDynamicContext();
 
-  const [showCreateNewWalletModal, setShowCreateNewWalletModal] = useState(false);
+  const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
+    useState(false);
 
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
 
@@ -89,7 +96,7 @@ const Wallet: FC<WalletProps> = () => {
 
   const fetchUserProfile = async (token: string) => {
     try {
-      setCreateAccountLoading(true)
+      setCreateAccountLoading(true);
       const response = await api.get("/auth/user", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -168,12 +175,11 @@ const Wallet: FC<WalletProps> = () => {
         });
 
         setShowCreateNewWalletModal(true);
-
       }
     } catch (err) {
       console.error("Error fetching user profile:", err);
       setError("Failed to fetch user profile. Please try again.");
-      handleResetAndRedirectUser()
+      handleResetAndRedirectUser();
       throw err;
     } finally {
       setCreateAccountLoading(false);
@@ -218,17 +224,16 @@ const Wallet: FC<WalletProps> = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [primaryWallet]);
 
-
   const handleCreateNewWallet = async () => {
     try {
       await createWalletAndGenerateMnemonic(state.user.id);
     } catch (error) {
       console.log("Error in creating new Wallet", error);
-      handleResetAndRedirectUser()
+      handleResetAndRedirectUser();
     } finally {
       setShowCreateNewWalletModal(false);
     }
-  }
+  };
 
   const handleResetAndRedirectUser = () => {
     sessionStorage.removeItem("jwt");
@@ -236,7 +241,7 @@ const Wallet: FC<WalletProps> = () => {
     dispatch({ type: "RESET_USER" });
     localStorage.clear();
     navigate(APP_ROUTES.AUTH);
-  }
+  };
 
   useEffect(() => {
     if (state?.wallet?.attachedAccounts.length)
@@ -247,12 +252,20 @@ const Wallet: FC<WalletProps> = () => {
     (cx) => cx.isPending === true
   );
 
-  if (createAccountLoading) return <SkeletonWalletScreen loadingPopup={<PushWalletLoadingContent />} />
+  if (createAccountLoading)
+    return <WalletSkeletonScreen content={<PushWalletLoadingContent />} />;
 
-  if (showCreateNewWalletModal) return (
-    <SkeletonWalletScreen
-      loadingPopup={<WalletReconstructionErrorContent onSuccess={handleCreateNewWallet} onError={handleResetAndRedirectUser} />} />
-  )
+  if (showCreateNewWalletModal)
+    return (
+      <WalletSkeletonScreen
+        content={
+          <WalletReconstructionErrorContent
+            onSuccess={handleCreateNewWallet}
+            onError={handleResetAndRedirectUser}
+          />
+        }
+      />
+    );
 
   return (
     <ContentLayout>
@@ -270,7 +283,7 @@ const Wallet: FC<WalletProps> = () => {
               selectedWallet={selectedWallet}
               appConnection={
                 state.wallet.appConnections[
-                state.wallet.appConnections.length - 1
+                  state.wallet.appConnections.length - 1
                 ]
               }
             />

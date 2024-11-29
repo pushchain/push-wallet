@@ -21,11 +21,11 @@ export const socialLoginConfig: SocialsType[] = [
 ];
 
 export const solanaWallets: WalletKeyPairType = {
+  coinbase: "Coinbase",
   backpack: "Backpack",
   bitgetwallet: "Bitget",
   brave: "Brave",
   coin98: "Coin98",
-  coinbase: "Coinbase",
   exodus: "Exodus Wallet",
   fallbackconnector: "Fallback Connector",
   glow: "Glow",
