@@ -63,7 +63,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         <Box flexDirection="column" display="flex" gap="spacing-md">
           <Box flexDirection="column" display="flex" textAlign="center">
             <Text color="text-primary" variant="h4-semibold">
-              Link Account
+              Continue with Wallet
             </Text>
             <Text color="text-primary" variant="bs-regular">
               Choose what kind of wallet you would like to link with Push
@@ -114,7 +114,6 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
                         flex-shrink: 0;
                       `}
                     >
-
                       {WALLETS_LOGO[key] || (
                         <FallBackWalletIcon walletKey={key} />
                       )}
