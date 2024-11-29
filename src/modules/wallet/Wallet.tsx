@@ -164,6 +164,10 @@ const Wallet: FC<WalletProps> = () => {
         // Only single or no share is found directly ask user if they want to create a new wallet or go back
         const hasAnyShare = share1 || share2 || share3;
         console.log("Only single share is present", hasAnyShare);
+        if (hasAnyShare) {
+          setShowCreateNewWalletModal(true);
+          return;
+        }
 
         console.info("Creating new wallet", {
           userId,
@@ -174,7 +178,8 @@ const Wallet: FC<WalletProps> = () => {
           },
         });
 
-        setShowCreateNewWalletModal(true);
+        await createWalletAndGenerateMnemonic(userId);
+
       }
     } catch (err) {
       console.error("Error fetching user profile:", err);
@@ -189,9 +194,10 @@ const Wallet: FC<WalletProps> = () => {
   useEffect(() => {
     const initializeProfile = async () => {
       try {
-        setCreateAccountLoading(true);
 
         if (state.jwt) {
+          setCreateAccountLoading(true);
+
           await fetchUserProfile(state.jwt);
         } else if (primaryWallet) {
           let pushWallet;
@@ -215,6 +221,7 @@ const Wallet: FC<WalletProps> = () => {
       } catch (err) {
         console.error("Error initializing profile:", err);
         setError("Failed to initialize profile");
+        handleResetAndRedirectUser();
       } finally {
         setCreateAccountLoading(false);
       }
@@ -283,7 +290,7 @@ const Wallet: FC<WalletProps> = () => {
               selectedWallet={selectedWallet}
               appConnection={
                 state.wallet.appConnections[
-                  state.wallet.appConnections.length - 1
+                state.wallet.appConnections.length - 1
                 ]
               }
             />
