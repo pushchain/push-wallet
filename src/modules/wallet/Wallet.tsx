@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { Box } from "../../blocks";
-import { BoxLayout, ContentLayout, PushWalletLoadingContent, SkeletonWalletScreen } from "../../common";
+import { BoxLayout, ContentLayout, PushWalletLoadingContent, SkeletonWalletScreen, WalletReconstructionErrorContent } from "../../common";
 import { WalletProfile } from "./components/WalletProfile";
 import { WalletTabs } from "./components/WalletTabs";
 import api from "../../services/api";
@@ -16,20 +16,229 @@ import config from "../../config";
 import { PushSigner } from "../../services/pushSigner/pushSigner";
 import { AppConnections } from "../../common/components/AppConnections";
 import { useNavigate } from "react-router-dom";
-import { LoadingPage } from "../../pages/LoadingPage";
 
 export type WalletProps = {};
 
 const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
-  const [loading, setLoading] = useState(true);
   const [createAccountLoading, setCreateAccountLoading] = useState(false);
   const [error, setError] = useState("");
   const { primaryWallet } = useDynamicContext();
 
+  const [showCreateNewWalletModal, setShowCreateNewWalletModal] = useState(false);
+
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
 
   const navigate = useNavigate();
+
+  const createWalletAndGenerateMnemonic = async (userId: string) => {
+    try {
+      console.log("Creating Wallet loading is going to be true");
+
+      setCreateAccountLoading(true);
+      const instance = await PushWallet.signUp(
+        import.meta.env.VITE_APP_ENV as ENV
+      );
+
+      const mnemonicHex = Buffer.from(instance.mnemonic).toString("hex");
+      const shares = secrets.share(mnemonicHex, 3, 2);
+
+      await api.post(`/mnemonic-share/${userId}`, { share: shares[0] });
+      localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
+      await instance.storeMnemonicShareAsEncryptedTx(
+        userId,
+        shares[2],
+        instance.mnemonic
+      );
+      await instance.registerPushAccount();
+
+      dispatch({ type: "INITIALIZE_WALLET", payload: instance });
+
+      console.info("Wallet created and mnemonic split into shares", { userId });
+    } catch (err) {
+      console.error("Error creating wallet:", err);
+      // // When the user rejects the creation of new wallet, redirect the user back to auth with error
+      // setError("Failed to create wallet. Please try again.");
+      // navigate(APP_ROUTES.AUTH)
+      throw err;
+    } finally {
+      setCreateAccountLoading(false);
+    }
+  };
+
+  const reconstructWallet = async (share1: string, share2: string) => {
+    try {
+      setCreateAccountLoading(true);
+      const mnemonicHex = secrets.combine([share1, share2]);
+      const mnemonic = Buffer.from(mnemonicHex, "hex").toString();
+      const instance = await PushWallet.logInWithMnemonic(
+        mnemonic,
+        import.meta.env.VITE_APP_ENV as ENV
+      );
+
+      dispatch({ type: "INITIALIZE_WALLET", payload: instance });
+
+      console.info("Wallet reconstructed successfully");
+    } catch (err) {
+      console.log("Error in reconstructing wallet", err);
+      console.error("Error reconstructing wallet:", err);
+      setError("Failed to reconstruct wallet. Please try again.");
+      throw err;
+    } finally {
+      setCreateAccountLoading(false);
+    }
+  };
+
+  const fetchUserProfile = async (token: string) => {
+    try {
+      setCreateAccountLoading(true)
+      const response = await api.get("/auth/user", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const userId = response.data.id;
+      dispatch({ type: "SET_USER", payload: response.data });
+      dispatch({ type: "SET_AUTHENTICATED", payload: true });
+
+      if (!state.wallet) {
+        let share1, share2, share3;
+
+        // Try share1 + share2 combination first
+        try {
+          const mnemonicShareResponse = await api.get(
+            `/mnemonic-share/${userId}`
+          );
+          share1 = mnemonicShareResponse.data.share;
+          share2 = localStorage.getItem(`mnemonicShare2:${userId}`);
+
+          if (share1 && share2) {
+            console.info("Reconstructing wallet with share1 and share2", {
+              userId,
+            });
+            await reconstructWallet(share1, share2);
+            return;
+          }
+        } catch (error) {
+          console.debug("Share1 not available", {
+            userId,
+            error: (error as Error).message,
+          });
+        }
+
+        // Try combinations with share3 if needed
+        if (!share1 || !share2) {
+          try {
+            share3 = await PushWallet.retrieveMnemonicShareFromTx(
+              import.meta.env.VITE_APP_ENV as ENV,
+              userId
+            );
+
+            if (share1 && share3) {
+              console.info("Reconstructing wallet with share1 and share3", {
+                userId,
+              });
+              await reconstructWallet(share1, share3);
+              return;
+            }
+
+            if (share2 && share3) {
+              console.info("Reconstructing wallet with share2 and share3", {
+                userId,
+              });
+              await reconstructWallet(share2, share3);
+              return;
+            }
+          } catch (error) {
+            console.debug("Share3 not available", {
+              userId,
+              error: (error as Error).message,
+            });
+          }
+        }
+
+        // Only single or no share is found directly ask user if they want to create a new wallet or go back
+        const hasAnyShare = share1 || share2 || share3;
+        console.log("Only single share is present", hasAnyShare);
+
+        console.info("Creating new wallet", {
+          userId,
+          availableShares: {
+            share1: !!share1,
+            share2: !!share2,
+            share3: !!share3,
+          },
+        });
+
+        setShowCreateNewWalletModal(true);
+
+      }
+    } catch (err) {
+      console.error("Error fetching user profile:", err);
+      setError("Failed to fetch user profile. Please try again.");
+      handleResetAndRedirectUser()
+      throw err;
+    } finally {
+      setCreateAccountLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const initializeProfile = async () => {
+      try {
+        setCreateAccountLoading(true);
+
+        if (state.jwt) {
+          await fetchUserProfile(state.jwt);
+        } else if (primaryWallet) {
+          let pushWallet;
+          const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
+
+          pushWallet = await PushWallet.loginWithWallet(
+            signer,
+            config.APP_ENV as ENV
+          );
+
+          if (pushWallet)
+            dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
+          else {
+            console.log(
+              "Could not find user in wallet.tsx file after push wallet"
+            );
+          }
+        } else {
+          navigate(APP_ROUTES.AUTH);
+        }
+      } catch (err) {
+        console.error("Error initializing profile:", err);
+        setError("Failed to initialize profile");
+      } finally {
+        setCreateAccountLoading(false);
+      }
+    };
+
+    initializeProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [primaryWallet]);
+
+
+  const handleCreateNewWallet = async () => {
+    try {
+      await createWalletAndGenerateMnemonic(state.user.id);
+    } catch (error) {
+      console.log("Error in creating new Wallet", error);
+      handleResetAndRedirectUser()
+    } finally {
+      setShowCreateNewWalletModal(false);
+    }
+  }
+
+  const handleResetAndRedirectUser = () => {
+    sessionStorage.removeItem("jwt");
+    dispatch({ type: "RESET_AUTHENTICATED" });
+    dispatch({ type: "RESET_USER" });
+    localStorage.clear();
+    navigate(APP_ROUTES.AUTH);
+  }
 
   useEffect(() => {
     if (state?.wallet?.attachedAccounts.length)
@@ -40,9 +249,14 @@ const Wallet: FC<WalletProps> = () => {
     (cx) => cx.isPending === true
   );
 
-  return createAccountLoading ? (
-    <SkeletonWalletScreen loadingPopup={<PushWalletLoadingContent />} />
-  ) : (
+  if (createAccountLoading) return <SkeletonWalletScreen loadingPopup={<PushWalletLoadingContent />} />
+
+  if (showCreateNewWalletModal) return (
+    <SkeletonWalletScreen
+      loadingPopup={<WalletReconstructionErrorContent onSuccess={handleCreateNewWallet} onError={handleResetAndRedirectUser} />} />
+  )
+
+  return (
     <ContentLayout>
       <BoxLayout>
         <Box
@@ -58,12 +272,12 @@ const Wallet: FC<WalletProps> = () => {
               selectedWallet={selectedWallet}
               appConnection={
                 state.wallet.appConnections[
-                  state.wallet.appConnections.length - 1
+                state.wallet.appConnections.length - 1
                 ]
               }
             />
           )}
-          <WalletProfile selectedWallet={selectedWallet} isLoading={loading} />
+          <WalletProfile selectedWallet={selectedWallet} isLoading={createAccountLoading} />
           <WalletTabs
             walletList={getWalletlist(state?.wallet?.attachedAccounts)}
             selectedWallet={selectedWallet}
@@ -80,6 +294,5 @@ const Wallet: FC<WalletProps> = () => {
     </ContentLayout>
   );
 };
-
 
 export { Wallet };

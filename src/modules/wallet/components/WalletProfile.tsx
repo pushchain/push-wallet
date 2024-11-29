@@ -53,33 +53,32 @@ const WalletProfile: FC<WalletProfileProps> = ({
         <PushLogo height={48} width={48} />
         <Box display="flex" gap="spacing-xxs">
           {/* <HoverableSVG icon={<Lock size={24} color="icon-primary" />} /> */}
-            <Dropdown
-              overlay={
-                <Menu>
-                  {/* <MenuItem label="Linked Accounts" icon={<Pin />} /> */}
-                  {/* <MenuItem label="App Permissions" icon={<Cube />} /> */}
-                  {/* <MenuItem label="Passkeys" icon={<Lock />} /> */}
-                  {/* <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} /> */}
-                  <MenuItem
-                    label="Log Out"
-                    icon={<Logout />}
-                    onClick={() => {
-                      sessionStorage.removeItem("jwt");
-                      dispatch({ type: "RESET_AUTHENTICATED" });
-                      dispatch({ type: "RESET_USER" });
-                      handleLogOut();
-
-                      navigate(APP_ROUTES.AUTH);
-                      localStorage.clear();
-                    }}
-                  />
-                </Menu>
-              }
-            >
-              <Box cursor="pointer">
-                <Settings size={24} color="icon-primary" />
-              </Box>
-            </Dropdown>
+          <Dropdown
+            overlay={
+              <Menu>
+                {/* <MenuItem label="Linked Accounts" icon={<Pin />} /> */}
+                {/* <MenuItem label="App Permissions" icon={<Cube />} /> */}
+                {/* <MenuItem label="Passkeys" icon={<Lock />} /> */}
+                {/* <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} /> */}
+                <MenuItem
+                  label="Log Out"
+                  icon={<Logout />}
+                  onClick={() => {
+                    sessionStorage.removeItem("jwt");
+                    dispatch({ type: "RESET_AUTHENTICATED" });
+                    dispatch({ type: "RESET_USER" });
+                    handleLogOut();
+                    navigate(APP_ROUTES.AUTH);
+                    localStorage.clear();
+                  }}
+                />
+              </Menu>
+            }
+          >
+            <Box cursor="pointer">
+              <Settings size={24} color="icon-primary" />
+            </Box>
+          </Dropdown>
         </Box>
       </Box>
       <Box
@@ -89,7 +88,7 @@ const WalletProfile: FC<WalletProfileProps> = ({
         overflow="hidden"
         alignSelf="center"
       >
-          <BlockiesSvg address={parsedWallet} />
+        <BlockiesSvg address={parsedWallet} />
       </Box>
       <Box
         display="flex"
@@ -97,11 +96,11 @@ const WalletProfile: FC<WalletProfileProps> = ({
         alignItems="center"
         gap="spacing-xxxs"
       >
-          <Text variant="bl-semibold">{walletName}</Text>
+        <Text variant="bl-semibold">{walletName}</Text>
         <Box display="flex" gap="spacing-xxxs">
-            <Text variant="bes-semibold" color="text-tertiary">
-              {centerMaskWalletAddress(parsedWallet)}
-            </Text>
+          <Text variant="bes-semibold" color="text-tertiary">
+            {centerMaskWalletAddress(parsedWallet)}
+          </Text>
 
           {!isLoading && (
             <Box cursor="pointer">
