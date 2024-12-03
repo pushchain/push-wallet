@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Back, Box, Info, Text } from "../../../blocks";
 import {
   DrawerWrapper,
@@ -19,6 +19,7 @@ import {
 import {
   filterEthereumWallets,
   getGroupedWallets,
+  getInstalledWallets,
 } from "../Authentication.utils";
 import { WalletKeyPairType, WalletState } from "../Authentication.types";
 import { useNavigate } from "react-router-dom";
@@ -31,13 +32,13 @@ type WalletSelectionProps = {
 const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const [selectedWalletCategory, setSelectedWalletCategory] =
     useState<string>("");
-    const {authenticateUser} = useAuthenticateConnectedUser();
   const { primaryWallet } = useDynamicContext();
   const {
     state: { externalWalletAuthState },
     dispatch,
   } = useAppState();
   const { walletOptions, selectWalletOption } = useWalletOptions();
+  const {authenticateUser,isAuthenticating} = useAuthenticateConnectedUser();
   const navigate = useNavigate();
   console.debug(externalWalletAuthState, "externalWalletAuthState");
   useEffect(() => {
@@ -48,21 +49,37 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     })();
   }, [primaryWallet]);
 
-  const ethereumWallets: WalletKeyPairType = filterEthereumWallets(
-    getGroupedWallets(walletOptions)
-  );
+  const wallets = useMemo(() => {
+    const installedEthereumWallets: WalletKeyPairType = getInstalledWallets(
+      filterEthereumWallets(getGroupedWallets(walletOptions)),
+      walletOptions
+    );
+  
+    const installedSolanaWallets = getInstalledWallets(
+      solanaWallets,
+      walletOptions
+    );
+  
+    return {
+      solanaWallets: installedSolanaWallets,
+      ethereumWallets: installedEthereumWallets,
+    };
+  }, [walletOptions]);
+
   const walletsToShow =
-    selectedWalletCategory === "ethereum" ? ethereumWallets : solanaWallets;
+    selectedWalletCategory === "ethereum"
+      ? wallets.ethereumWallets
+      : wallets.solanaWallets;
 
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory("");
     else setConnectMethod("authentication");
   };
 
-  const handleWalletOption = (key: string) => {
-    // setWalletLoading(true);
-    selectWalletOption(key);
+  const handleWalletOption = async(key: string) => {
+    selectWalletOption(key)
   };
+
   console.debug(externalWalletAuthState, "autho state");
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {
     return (
@@ -81,7 +98,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         <Box flexDirection="column" display="flex" gap="spacing-md">
           <Box flexDirection="column" display="flex" textAlign="center">
             <Text color="text-primary" variant="h4-semibold">
-              Continue with Wallet
+              Link External Wallet to Connect
             </Text>
             <Text color="text-primary" variant="bs-regular">
               Choose what kind of wallet you would like to link with Push
@@ -155,18 +172,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
           />
         </DrawerWrapper>
       )}
-      {externalWalletAuthState === "rejected" && (
-        <DrawerWrapper>
-          <ErrorContent
-            icon={<Info size={32} color="icon-state-danger-subtle" />}
-            title="Could not verify"
-            subTitle="Please try connecting again"
-            onRetry={() => authenticateUser()}
-            onClose={() => dispatch({ type: "RESET_EXTERNAL_WALLET_STATE" })}
-            note="Closing this window will log you out."
-          />
-        </DrawerWrapper>
-      )}
+     
     </Box>
   );
 };

@@ -38,7 +38,7 @@ export default function App() {
     <DynamicContextProvider
       theme="dark"
       settings={{
-        initialAuthenticationMode: "connect-and-sign",
+        initialAuthenticationMode: "connect-only",
         // Find your environment id at https://app.dynamic.xyz/dashboard/developer
         environmentId: import.meta.env.VITE_APP_DYNAMIC_ENV_ID,
         walletConnectors: [EthereumWalletConnectors, SolanaWalletConnectors],

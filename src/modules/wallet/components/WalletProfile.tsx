@@ -30,9 +30,8 @@ const WalletProfile: FC<WalletProfileProps> = ({
 }) => {
   const { primaryWallet, handleLogOut } = useDynamicContext();
   const parsedWallet = selectedWallet?.address || primaryWallet?.address;
-  const walletName = selectedWallet?.name ?? "Guest Wallet";
+  const walletName = selectedWallet?.name ?? "External Wallet";
   const [copied, setCopied] = useState(false);
-
   const { dispatch } = useGlobalState();
 
   const navigate = useNavigate();

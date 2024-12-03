@@ -1,4 +1,5 @@
-import {  allowedEvmWallets } from "./Authentication.constants";
+import { WalletKeyPairType } from "src/modules/Authentication/Authentication.types";
+import { allowedEvmWallets } from "./Authentication.constants";
 
 export const getGroupedWallets = (walletOptions) => {
   return walletOptions.reduce((options, wallet) => {
@@ -14,15 +15,25 @@ export const getGroupedWallets = (walletOptions) => {
 };
 
 export const filterEthereumWallets = (
-  wallets: Record<string, string>
-): Record<string, string> => {
+  wallets: WalletKeyPairType
+): WalletKeyPairType => {
   const result = Object.fromEntries(
     allowedEvmWallets
-      .filter((key) => key in wallets) 
-      .map((key) => [key, wallets[key]]) 
+      .filter((key) => key in wallets)
+      .map((key) => [key, wallets[key]])
   );
 
   return result;
 };
 
+export const getInstalledWallets = (wallets, walletOptions):WalletKeyPairType=> {
+  const result =  Object.fromEntries(
+    Object.entries(wallets).filter(([key]) =>
+      walletOptions.some(
+        (item) => item.isInstalledOnBrowser === true && item.key === key
+      )
+    )
+  );
+  return result as WalletKeyPairType;
+}
 

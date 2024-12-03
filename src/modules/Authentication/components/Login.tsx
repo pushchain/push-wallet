@@ -110,7 +110,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
           >
             Continue with Google
           </Button>
-          <Box
+          {/* <Box
             display="flex"
             gap="spacing-xs"
             alignItems="center"
@@ -136,7 +136,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
                 }
               />
             ))}
-          </Box>
+          </Box> */}
           <Text variant="os-regular" color="text-tertiary">
             OR
           </Text>

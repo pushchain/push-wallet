@@ -125,7 +125,6 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   const stateParam = extractStateFromUrl();
 
   const storedToken = sessionStorage.getItem("jwt");
-
   /* This hook handles the logic for listening to the app connection requests */
   useEffect(() => {
     if (state.wallet) {

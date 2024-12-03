@@ -45,6 +45,7 @@ const ErrorContent: FC<ErrorContentProps> = ({
           borderRadius="radius-sm"
           width="48px"
           height="48px"
+          cursor="pointer"
         >
           {icon}
         </Box>

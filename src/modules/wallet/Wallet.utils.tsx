@@ -1,4 +1,6 @@
-export const getWalletlist = (attachedAccounts: string[]) => {
+import { PushWallet } from "src/services/pushWallet/pushWallet";
+
+export const getWalletlist = (attachedAccounts: string[],wallet: PushWallet) => {
   const walletList = [];
   if (attachedAccounts?.length) {
     attachedAccounts?.forEach((account, index) => {
@@ -6,8 +8,8 @@ export const getWalletlist = (attachedAccounts: string[]) => {
       if (account.includes("push")) {
         walletObj = {
           name: "Push Account",
-          address: account,
-          fullAddress: account,
+          address: wallet?.signerAccount,
+          fullAddress:  wallet?.signerAccount,
           isSelected: false,
           type: "push",
         };

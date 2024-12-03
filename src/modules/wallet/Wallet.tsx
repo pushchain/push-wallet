@@ -1,11 +1,13 @@
 import { FC, useEffect, useState } from "react";
-import { Box } from "../../blocks";
+import { Box, Info } from "../../blocks";
 import {
   BoxLayout,
   ContentLayout,
   PushWalletLoadingContent,
   WalletSkeletonScreen,
   WalletReconstructionErrorContent,
+  DrawerWrapper,
+  ErrorContent,
 } from "../../common";
 import { WalletProfile } from "./components/WalletProfile";
 import { WalletTabs } from "./components/WalletTabs";
@@ -23,6 +25,7 @@ import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
 import { AppConnections } from "../../common/components/AppConnections";
 import { useNavigate } from "react-router-dom";
+import { useAppState } from "../../context/AppContext";
 
 export type WalletProps = {};
 
@@ -30,10 +33,14 @@ const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
   const [createAccountLoading, setCreateAccountLoading] = useState(true);
   const [error, setError] = useState("");
-  const { primaryWallet} = useDynamicContext();
+  const {
+    state: { externalWalletAuthState },
+    dispatch: appDispatch,
+  } = useAppState();
+  const { primaryWallet } = useDynamicContext();
+  const { authenticateUser, isAuthenticating } = useAuthenticateConnectedUser();
   const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
     useState(false);
-
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
 
   const navigate = useNavigate();
@@ -198,6 +205,9 @@ const Wallet: FC<WalletProps> = () => {
 
           await fetchUserProfile(state.jwt);
         } else if (!primaryWallet) navigate(APP_ROUTES.AUTH);
+        /* We don't need to fetch push user as of now when user continues with wallet
+         This function fetches the already created push wallet */
+
         // let pushWallet;
         // const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
 
@@ -225,7 +235,7 @@ const Wallet: FC<WalletProps> = () => {
     initializeProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [primaryWallet]);
-  
+
   const handleCreateNewWallet = async () => {
     try {
       await createWalletAndGenerateMnemonic(state.user.id);
@@ -247,10 +257,18 @@ const Wallet: FC<WalletProps> = () => {
 
   useEffect(() => {
     if (state?.wallet?.attachedAccounts.length)
-      setSelectedWallet(getWalletlist(state?.wallet?.attachedAccounts)[0]);
+      setSelectedWallet(
+        getWalletlist(state?.wallet?.attachedAccounts, state.wallet)[0]
+      );
   }, [state?.wallet?.attachedAccounts]);
 
- 
+  useEffect(() => {
+    (async () => {
+      if (primaryWallet && !primaryWallet.isAuthenticated) {
+        await authenticateUser();
+      }
+    })();
+  }, [primaryWallet?.isAuthenticated]);
 
   const showAppConnectionContainer = state?.wallet?.appConnections.some(
     (cx) => cx.isPending === true
@@ -258,7 +276,6 @@ const Wallet: FC<WalletProps> = () => {
 
   if (createAccountLoading)
     return <WalletSkeletonScreen content={<PushWalletLoadingContent />} />;
-
 
   if (showCreateNewWalletModal)
     return (
@@ -295,15 +312,32 @@ const Wallet: FC<WalletProps> = () => {
           )}
           <WalletProfile selectedWallet={selectedWallet} />
           <WalletTabs
-            walletList={getWalletlist(state?.wallet?.attachedAccounts)}
+            walletList={getWalletlist(
+              state?.wallet?.attachedAccounts,
+              state.wallet
+            )}
             selectedWallet={selectedWallet}
             setSelectedWallet={setSelectedWallet}
           />
-          {!state?.wallet && primaryWallet && (
+          {/* {!state?.wallet && primaryWallet && (
             <CreateAccount
               isLoading={createAccountLoading}
               setIsLoading={setCreateAccountLoading}
             />
+          )} */}
+          {externalWalletAuthState === "rejected" && (
+            <DrawerWrapper>
+              <ErrorContent
+                icon={<Info size={32} color="icon-state-danger-subtle" />}
+                title="Could not verify"
+                subTitle="Please try connecting again"
+                onRetry={() => authenticateUser()}
+                onClose={() =>
+                  navigate(APP_ROUTES.AUTH)
+                }
+                note="Closing this window will log you out."
+              />
+            </DrawerWrapper>
           )}
         </Box>
       </BoxLayout>
