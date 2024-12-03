@@ -2,7 +2,6 @@ import { FC, useState } from "react";
 import BlockiesSvg from "blockies-react-svg";
 import {
   Box,
-  Button,
   Copy,
   Dropdown,
   Logout,

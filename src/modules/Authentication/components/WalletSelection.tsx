@@ -1,11 +1,7 @@
 import { FC, useEffect, useMemo, useState } from "react";
-import { Back, Box, Info, Text } from "../../../blocks";
+import { Back, Box,Text } from "../../../blocks";
 import {
-  DrawerWrapper,
-  ErrorContent,
-  LoadingContent,
   PoweredByPush,
-  PushWalletLoadingContent,
   WalletCategories,
   WALLETS_LOGO,
 } from "../../../common";
@@ -163,15 +159,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         </Box>
       </Box>
       <PoweredByPush />
-      {externalWalletAuthState === "loading" && (
-        <DrawerWrapper>
-          <LoadingContent
-            title="Sign to verify"
-            subTitle="Allow the site to connect and continue"
-            onClose={() => dispatch({ type: "RESET_EXTERNAL_WALLET_STATE" })}
-          />
-        </DrawerWrapper>
-      )}
+      
      
     </Box>
   );

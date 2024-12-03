@@ -8,6 +8,7 @@ import {
   WalletReconstructionErrorContent,
   DrawerWrapper,
   ErrorContent,
+  LoadingContent,
 } from "../../common";
 import { WalletProfile } from "./components/WalletProfile";
 import { WalletTabs } from "./components/WalletTabs";
@@ -20,7 +21,6 @@ import {
   useAuthenticateConnectedUser,
   useDynamicContext,
 } from "@dynamic-labs/sdk-react-core";
-import { CreateAccount } from "./components/CreateAccount";
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
 import { AppConnections } from "../../common/components/AppConnections";
@@ -204,7 +204,8 @@ const Wallet: FC<WalletProps> = () => {
           setCreateAccountLoading(true);
 
           await fetchUserProfile(state.jwt);
-        } else if (!primaryWallet) navigate(APP_ROUTES.AUTH);
+        } 
+        // else if (!primaryWallet) navigate(APP_ROUTES.AUTH);
         /* We don't need to fetch push user as of now when user continues with wallet
          This function fetches the already created push wallet */
 
@@ -325,6 +326,17 @@ const Wallet: FC<WalletProps> = () => {
               setIsLoading={setCreateAccountLoading}
             />
           )} */}
+          {externalWalletAuthState === "loading" && (
+            <DrawerWrapper>
+              <LoadingContent
+                title="Sign to verify"
+                subTitle="Allow the site to connect and continue"
+                onClose={() =>
+                  appDispatch({ type: "RESET_EXTERNAL_WALLET_STATE" })
+                }
+              />
+            </DrawerWrapper>
+          )}
           {externalWalletAuthState === "rejected" && (
             <DrawerWrapper>
               <ErrorContent
@@ -332,9 +344,19 @@ const Wallet: FC<WalletProps> = () => {
                 title="Could not verify"
                 subTitle="Please try connecting again"
                 onRetry={() => authenticateUser()}
-                onClose={() =>
-                  navigate(APP_ROUTES.AUTH)
-                }
+                onClose={() => navigate(APP_ROUTES.AUTH)}
+                note="Closing this window will log you out."
+              />
+            </DrawerWrapper>
+          )}
+          {externalWalletAuthState === "timeout" && (
+            <DrawerWrapper>
+              <ErrorContent
+                icon={<Info size={32} color="icon-state-danger-subtle" />}
+                title="Connection timed out"
+                subTitle="Please try connecting again"
+                onRetry={() => authenticateUser()}
+                onClose={() => navigate(APP_ROUTES.AUTH)}
                 note="Closing this window will log you out."
               />
             </DrawerWrapper>
