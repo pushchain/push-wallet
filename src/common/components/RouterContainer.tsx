@@ -11,7 +11,7 @@ const RouterContainer: FC = () => {
   return (
     <Routes>
       <Route path="/"
-        element={<Navigate to={persistQuery(APP_ROUTES.WALLET)} state={{ from: location }} />}
+        element={<Navigate to={persistQuery(APP_ROUTES.WALLET)} />}
       />
       <Route
         path={APP_ROUTES.WALLET}

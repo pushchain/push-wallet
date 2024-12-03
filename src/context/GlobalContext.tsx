@@ -157,6 +157,8 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
 
           url.searchParams.delete("state");
 
+          window.history.replaceState({}, document.title, url.toString());
+
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
         }
 
