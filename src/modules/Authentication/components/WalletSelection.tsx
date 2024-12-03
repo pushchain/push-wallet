@@ -1,7 +1,8 @@
 import { FC, useEffect, useState } from "react";
-import { Back, Box, Text } from "../../../blocks";
+import { Back, Box, Info, Text } from "../../../blocks";
 import {
   DrawerWrapper,
+  ErrorContent,
   LoadingContent,
   PoweredByPush,
   PushWalletLoadingContent,
@@ -11,6 +12,7 @@ import {
 import { solanaWallets } from "../Authentication.constants";
 import { css } from "styled-components";
 import {
+  useAuthenticateConnectedUser,
   useDynamicContext,
   useWalletOptions,
 } from "@dynamic-labs/sdk-react-core";
@@ -29,7 +31,7 @@ type WalletSelectionProps = {
 const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const [selectedWalletCategory, setSelectedWalletCategory] =
     useState<string>("");
-  // const [walletLoading, setWalletLoading] = useState<boolean>(false);
+    const {authenticateUser} = useAuthenticateConnectedUser();
   const { primaryWallet } = useDynamicContext();
   const {
     state: { externalWalletAuthState },
@@ -150,6 +152,18 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
             title="Sign to verify"
             subTitle="Allow the site to connect and continue"
             onClose={() => dispatch({ type: "RESET_EXTERNAL_WALLET_STATE" })}
+          />
+        </DrawerWrapper>
+      )}
+      {externalWalletAuthState === "rejected" && (
+        <DrawerWrapper>
+          <ErrorContent
+            icon={<Info size={32} color="icon-state-danger-subtle" />}
+            title="Could not verify"
+            subTitle="Please try connecting again"
+            onRetry={() => authenticateUser()}
+            onClose={() => dispatch({ type: "RESET_EXTERNAL_WALLET_STATE" })}
+            note="Closing this window will log you out."
           />
         </DrawerWrapper>
       )}

@@ -30,9 +30,7 @@ const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
   const [createAccountLoading, setCreateAccountLoading] = useState(true);
   const [error, setError] = useState("");
-  const { primaryWallet,user ,awaitingSignatureState,
-    accountSwitchState,loadingNetwork} = useDynamicContext();
-
+  const { primaryWallet} = useDynamicContext();
   const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
     useState(false);
 
@@ -252,7 +250,7 @@ const Wallet: FC<WalletProps> = () => {
       setSelectedWallet(getWalletlist(state?.wallet?.attachedAccounts)[0]);
   }, [state?.wallet?.attachedAccounts]);
 
-
+ 
 
   const showAppConnectionContainer = state?.wallet?.appConnections.some(
     (cx) => cx.isPending === true

@@ -44,10 +44,10 @@ export default function App() {
         walletConnectors: [EthereumWalletConnectors, SolanaWalletConnectors],
         events: {
           onAuthFlowCancel: () => {
-            dispatch({ type: 'RESET_EXTERNAL_WALLET_STATE' })
+            dispatch({ type: 'SET_EXTERNAL_WALLET_REJECT_STATE' })
           },
           onAuthFlowClose: () => {
-            dispatch({ type: 'RESET_EXTERNAL_WALLET_STATE' })
+            dispatch({ type: 'SET_EXTERNAL_WALLET_REJECT_STATE' })
           },
           onAuthFlowOpen: () => {
             dispatch({ type: 'SET_EXTERNAL_WALLET_LOAD_STATE' })
