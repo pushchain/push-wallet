@@ -1,1 +1,0 @@
-import{r as n,B as y}from"./index-DgF_DSAn.js";import{c as p}from"./utils-udmgcFwN.js";var r=n();const m=async t=>{const{content:o,publicKey:i,privateKey:s}=t,c=r.createPrivateKey({key:p({uncompressedPrivateKeyHex:s,compressedPublicKeyHex:i}),format:"jwk"}),e=r.createSign("SHA256");return e.write(y.from(o)),e.end(),e.sign(c,"hex")};export{m as signWithApiKey};
