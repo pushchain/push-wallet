@@ -11,8 +11,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "predeploy": "npm run build",
-    "deploy:test": "VITE_DEV_MODE=testing VITE_APP_BACKEND_URL=https://push-auth.push.org yarn build && gh-pages -d build",
-    "deploy:prod": "VITE_DEV_MODE=prod VITE_APP_BACKEND_URL=https://auth.push.org yarn build && echo 'wallet.push.org' > ./build/CNAME && gh-pages -d build -r https://github.com/push-protocol/push-wallet-prod-deployment"
+    "deploy:test": "VITE_DEV_MODE=testing VITE_APP_BACKEND_URL=https://push-auth.push.org VITE_APP_DYNAMIC_ENV_ID=82e8732d-11b8-428d-a553-7087d0c44171 yarn build && gh-pages -d build",
+    "deploy:prod": "VITE_DEV_MODE=prod VITE_APP_BACKEND_URL=https://auth.push.org VITE_APP_DYNAMIC_ENV_ID=96b13b8c-0708-4ebb-b48d-472308690021 yarn build && echo 'wallet.push.org' > ./build/CNAME && gh-pages -d build -r https://github.com/push-protocol/push-wallet-prod-deployment"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
@@ -32,7 +32,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@noble/hashes": "^1.0.0",
-    "@pushprotocol/node-core": "0.0.29",
+    "@pushprotocol/push-chain": "0.1.7",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^2.1.1",
     "@radix-ui/react-switch": "^1.1.0",

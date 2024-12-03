@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Wallet, WalletConnector } from "@dynamic-labs/sdk-react-core";
 import { PushWallet } from "../pushWallet/pushWallet";
 import { ACTION } from "./messageHandler.types";
+import { PushSigner } from "../pushSigner/pushSigner";
 
 export class PostMessageHandler {
   // Store the previous listener to remove it if needed
   private static messageListener: (event: MessageEvent) => void;
-
+  //fix the wallet type
   constructor(
+    private externalWallet:  any| undefined,
     private pushWallet: PushWallet | undefined,
     private onConnectionRequest: () => void
   ) {
@@ -26,19 +29,79 @@ export class PostMessageHandler {
         return;
       }
 
-      const { action, data } = event.data;
 
+      const { action, data } = event.data;
+      const pushSigner = this.externalWallet? await PushSigner.initialize(this.externalWallet,'DYNAMIC'):undefined;
       // In case wallet not created or keys are encrypted
-      if (this.pushWallet === undefined) {
-        event.source?.postMessage(
-          {
-            action: ACTION.ERROR,
-            error: "PushWallet Not Logged In",
-          },
-          event.origin as any
-        );
-        global.myEvent = event;
-      } else {
+      const formattedExternalWallet = pushSigner?.account;
+      if (formattedExternalWallet) {
+        console.debug('in is connected inside req to connect',event)
+        // event.source?.postMessage(
+        //   {
+        //     action: ACTION.ERROR,
+        //     error: "PushWallet Not Logged In",
+        //   },
+        //   event.origin as any
+        // );
+        // global.myEvent = event;
+        switch (action) {
+          case ACTION.REQ_WALLET_DETAILS: {
+            const loggedInAddress = formattedExternalWallet;
+            event.source?.postMessage(
+              {
+                action: ACTION.WALLET_DETAILS,
+                address: loggedInAddress,
+              },
+              event.origin as any
+            );
+            break;
+          }
+          case ACTION.IS_CONNECTED: {
+            event.source?.postMessage(
+              {
+                action: ACTION.CONNECTION_STATUS,
+                isPending: false,
+                isConnected: true,
+              },
+              event.origin as any
+            );
+            break;
+          }
+          //check if this is needed
+          // case ACTION.REQ_TO_CONNECT: {
+          //   console.debug('signature',event.data)
+          //   event.source?.postMessage(
+          //     {
+          //       action: ACTION.CONNECTION_STATUS,
+          //       isPending: false,
+          //       isConnected: true,
+          //     },
+          //     event.origin as any
+          //   );
+          //   break;
+          // }
+          case ACTION.REQ_TO_SIGN: {
+            try {
+              console.debug('signature',data)
+              const signature = await pushSigner.signMessage(data);
+              console.debug(signature,'signature')
+              event.source?.postMessage(
+                { action: ACTION.SIGNATURE, signature },
+                event.origin as any
+              );
+            } catch (err) {
+              event.source?.postMessage(
+                {
+                  action: ACTION.ERROR,
+                  error: "Origin Not Connected",
+                },
+                event.origin as any
+              );
+            }
+            break;
+          }
+        }
+      } else if (this.pushWallet){
         switch (action) {
           case ACTION.REQ_WALLET_DETAILS: {
             const loggedInAddress = this.pushWallet.signerAccount;
@@ -102,6 +165,16 @@ export class PostMessageHandler {
             break;
           }
         }
+      }
+      else{
+         event.source?.postMessage(
+          {
+            action: ACTION.ERROR,
+            error: "PushWallet Not Logged In",
+          },
+          event.origin as any
+        );
+        global.myEvent = event;
       }
     };
 

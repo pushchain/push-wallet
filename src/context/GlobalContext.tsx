@@ -32,7 +32,7 @@ export type GlobalAction =
   | { type: "SET_JWT"; payload: string }
   | { type: "SET_WALLET_LOAD_STATE"; payload: GlobalState["walletLoadState"] }
   | { type: "RESET_AUTHENTICATED" }
-  | { type: "RESET_USER" };
+  | { type: "RESET_USER" }
 
 // Initial state
 const initialState: GlobalState = {
@@ -129,13 +129,27 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   /* This hook handles the logic for listening to the app connection requests */
   useEffect(() => {
     if (state.wallet) {
-      new PostMessageHandler(state.wallet, () =>
+      new PostMessageHandler(undefined,state.wallet, () =>
         dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet })
       );
-    } else {
-      new PostMessageHandler(undefined, () => { });
+    } 
+    else{
+      new PostMessageHandler(undefined,undefined, () => { });
     }
   }, [state.wallet]);
+
+  useEffect(() => {
+    if (!state?.wallet && primaryWallet) {
+      console.debug('callign messagehandler')
+      new PostMessageHandler(primaryWallet,undefined, () =>
+        console.log('need to be removed')
+        // dispatch({ type: "INITIALIZE_WALLET", payload: primaryWallet })
+      );
+    } 
+    else{
+      new PostMessageHandler(undefined,undefined, () => { });
+    }
+  }, [primaryWallet]);
 
   useEffect(() => {
     const fetchUser = async () => {

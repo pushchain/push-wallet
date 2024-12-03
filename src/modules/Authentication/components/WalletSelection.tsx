@@ -1,6 +1,13 @@
 import { FC, useEffect, useState } from "react";
 import { Back, Box, Text } from "../../../blocks";
-import { PoweredByPush, WalletCategories, WALLETS_LOGO } from "../../../common";
+import {
+  DrawerWrapper,
+  LoadingContent,
+  PoweredByPush,
+  PushWalletLoadingContent,
+  WalletCategories,
+  WALLETS_LOGO,
+} from "../../../common";
 import { solanaWallets } from "../Authentication.constants";
 import { css } from "styled-components";
 import {
@@ -14,6 +21,7 @@ import {
 import { WalletKeyPairType, WalletState } from "../Authentication.types";
 import { useNavigate } from "react-router-dom";
 import { APP_ROUTES } from "../../../constants";
+import { useAppState } from "../../../context/AppContext";
 type WalletSelectionProps = {
   setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
 };
@@ -21,9 +29,14 @@ type WalletSelectionProps = {
 const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const [selectedWalletCategory, setSelectedWalletCategory] =
     useState<string>("");
+  // const [walletLoading, setWalletLoading] = useState<boolean>(false);
   const { primaryWallet } = useDynamicContext();
+  const {
+    state: { externalWalletAuthState },
+  } = useAppState();
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
+  console.debug(externalWalletAuthState, "externalWalletAuthState");
   useEffect(() => {
     (async () => {
       if (primaryWallet) {
@@ -44,9 +57,10 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   };
 
   const handleWalletOption = (key: string) => {
+    // setWalletLoading(true);
     selectWalletOption(key);
   };
-
+  console.debug(externalWalletAuthState, "autho state");
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {
     return (
       <Text color="text-tertiary" variant="bes-bold" textAlign="center">
@@ -54,6 +68,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
       </Text>
     );
   };
+
   return (
     <Box flexDirection="column" display="flex" gap="spacing-lg" width="100%">
       <Box cursor="pointer" onClick={() => handleBack()}>
@@ -128,6 +143,14 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         </Box>
       </Box>
       <PoweredByPush />
+      {externalWalletAuthState === "idle" && (
+        <DrawerWrapper>
+          <LoadingContent
+            title="Sign to verify"
+            subTitle="Allow the site to connect and continue"
+          />
+        </DrawerWrapper>
+      )}
     </Box>
   );
 };

@@ -2,6 +2,7 @@ import { FC, useState } from "react";
 import BlockiesSvg from "blockies-react-svg";
 import {
   Box,
+  Button,
   Copy,
   Dropdown,
   Logout,
@@ -16,7 +17,7 @@ import {
 import { centerMaskWalletAddress, handleCopy } from "../../../common";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import {  useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { WalletListType } from "../Wallet.types";
 import { APP_ROUTES } from "../../../constants";
 
@@ -35,6 +36,9 @@ const WalletProfile: FC<WalletProfileProps> = ({
   const { dispatch } = useGlobalState();
 
   const navigate = useNavigate();
+  // const signMessage = async()=>{
+  //   // const signature = await primaryWallet.signMessage('example');
+  // }
 
   return (
     <Box
@@ -90,6 +94,7 @@ const WalletProfile: FC<WalletProfileProps> = ({
       >
         <BlockiesSvg address={parsedWallet} />
       </Box>
+      {/* <Button onClick={()=>signMessage()}>sign</Button> */}
       <Box
         display="flex"
         flexDirection="column"

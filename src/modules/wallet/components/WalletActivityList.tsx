@@ -1,10 +1,10 @@
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 
 import { Box, Text, Spinner } from "../../../blocks";
-import { Tx as PushTx } from "@pushprotocol/node-core";
+import { Tx as PushTx } from "@pushprotocol/push-chain";
 import config from "../../../config";
 import { ENV } from "../../../constants";
-import { BlockType } from "@pushprotocol/node-core/src/lib/block/block.types";
+import { BlockType } from "@pushprotocol/push-chain/src/lib/block/block.types";
 import { WalletActivityListItem } from "./WalletActivityListItem";
 
 export type WalletActivityListProps = {

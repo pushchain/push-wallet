@@ -6,12 +6,12 @@ import {
   Validator as PushValidator,
   Tx as PushTx,
   Address,
-} from "@pushprotocol/node-core";
+} from "@pushprotocol/push-chain";
 
 import {
   InitDid,
   EncryptedText,
-} from "@pushprotocol/node-core/src/lib/generated/txData/init_did";
+} from "@pushprotocol/push-chain/src/lib/generated/txData/init_did";
 import { EncPushAccount, AppConnection, AccountInfo } from "./pushWallet.types";
 import { bytesToString, createWalletClient, hexToBytes, http } from "viem";
 import { PushSigner } from "../pushSigner/pushSigner";

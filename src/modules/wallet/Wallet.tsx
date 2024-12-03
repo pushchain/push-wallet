@@ -14,12 +14,13 @@ import { PushWallet } from "../../services/pushWallet/pushWallet";
 import { APP_ROUTES, ENV } from "../../constants";
 import secrets from "secrets.js-grempe";
 import { useGlobalState } from "../../context/GlobalContext";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import {
+  useAuthenticateConnectedUser,
+  useDynamicContext,
+} from "@dynamic-labs/sdk-react-core";
 import { CreateAccount } from "./components/CreateAccount";
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
-import config from "../../config";
-import { PushSigner } from "../../services/pushSigner/pushSigner";
 import { AppConnections } from "../../common/components/AppConnections";
 import { useNavigate } from "react-router-dom";
 
@@ -29,7 +30,8 @@ const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
   const [createAccountLoading, setCreateAccountLoading] = useState(true);
   const [error, setError] = useState("");
-  const { primaryWallet } = useDynamicContext();
+  const { primaryWallet,user ,awaitingSignatureState,
+    accountSwitchState,loadingNetwork} = useDynamicContext();
 
   const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
     useState(false);
@@ -179,7 +181,6 @@ const Wallet: FC<WalletProps> = () => {
         });
 
         await createWalletAndGenerateMnemonic(userId);
-
       }
     } catch (err) {
       console.error("Error fetching user profile:", err);
@@ -194,30 +195,26 @@ const Wallet: FC<WalletProps> = () => {
   useEffect(() => {
     const initializeProfile = async () => {
       try {
-
         if (state.jwt) {
           setCreateAccountLoading(true);
 
           await fetchUserProfile(state.jwt);
-        } else if (primaryWallet) {
-          let pushWallet;
-          const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
+        } else if (!primaryWallet) navigate(APP_ROUTES.AUTH);
+        // let pushWallet;
+        // const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
 
-          pushWallet = await PushWallet.loginWithWallet(
-            signer,
-            config.APP_ENV as ENV
-          );
+        // pushWallet = await PushWallet.loginWithWallet(
+        //   signer,
+        //   config.APP_ENV as ENV
+        // );
 
-          if (pushWallet)
-            dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
-          else {
-            console.log(
-              "Could not find user in wallet.tsx file after push wallet"
-            );
-          }
-        } else {
-          navigate(APP_ROUTES.AUTH);
-        }
+        // if (pushWallet)
+        //   dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
+        // else {
+        //   console.log(
+        //     "Could not find user in wallet.tsx file after push wallet"
+        //   );
+        // }
       } catch (err) {
         console.error("Error initializing profile:", err);
         setError("Failed to initialize profile");
@@ -230,7 +227,7 @@ const Wallet: FC<WalletProps> = () => {
     initializeProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [primaryWallet]);
-
+  
   const handleCreateNewWallet = async () => {
     try {
       await createWalletAndGenerateMnemonic(state.user.id);
@@ -255,12 +252,15 @@ const Wallet: FC<WalletProps> = () => {
       setSelectedWallet(getWalletlist(state?.wallet?.attachedAccounts)[0]);
   }, [state?.wallet?.attachedAccounts]);
 
+
+
   const showAppConnectionContainer = state?.wallet?.appConnections.some(
     (cx) => cx.isPending === true
   );
 
   if (createAccountLoading)
     return <WalletSkeletonScreen content={<PushWalletLoadingContent />} />;
+
 
   if (showCreateNewWalletModal)
     return (
@@ -290,7 +290,7 @@ const Wallet: FC<WalletProps> = () => {
               selectedWallet={selectedWallet}
               appConnection={
                 state.wallet.appConnections[
-                state.wallet.appConnections.length - 1
+                  state.wallet.appConnections.length - 1
                 ]
               }
             />

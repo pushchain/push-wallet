@@ -1,4 +1,4 @@
-import { BlockResponse } from '@pushprotocol/node-core/src/lib/block/block.types';
+import { BlockResponse } from '@pushprotocol/push-chain/src/lib/block/block.types';
 
 
 //add type

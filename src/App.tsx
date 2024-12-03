@@ -5,6 +5,10 @@ import { GlobalProvider } from "./context/GlobalContext";
 import { blocksTheme, getBlocksCSSVariables } from "./blocks";
 import { getAppBasePath } from "../basePath";
 import { useDarkMode, RouterContainer } from "./common";
+import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
+import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
+import { SolanaWalletConnectors } from "@dynamic-labs/solana";
+import { AppProvider, useAppState } from "./context/AppContext";
 
 const GlobalStyle = createGlobalStyle`
   :root{
@@ -27,15 +31,46 @@ const themeConfig = {
 
 export default function App() {
   const { isDarkMode } = useDarkMode();
+  const { dispatch } = useAppState();
+
 
   return (
-    <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
-      <GlobalStyle />
-      <GlobalProvider>
-        <Router basename={getAppBasePath()}>
-          <RouterContainer />
-        </Router>
-      </GlobalProvider>
-    </ThemeProvider>
+    <DynamicContextProvider
+      theme="dark"
+      settings={{
+        initialAuthenticationMode: "connect-and-sign",
+        // Find your environment id at https://app.dynamic.xyz/dashboard/developer
+        environmentId: import.meta.env.VITE_APP_DYNAMIC_ENV_ID,
+        walletConnectors: [EthereumWalletConnectors, SolanaWalletConnectors],
+        events: {
+          onAuthFlowCancel: () => {
+            dispatch({ type: 'RESET_EXTERNAL_WALLET_STATE' })
+          },
+          onAuthFlowClose: () => {
+            dispatch({ type: 'RESET_EXTERNAL_WALLET_STATE' })
+          },
+          onAuthFlowOpen: () => {
+            dispatch({ type: 'SET_EXTERNAL_WALLET_LOAD_STATE' })
+          },
+          onAuthFailure: (method, reason) => {
+            dispatch({ type: 'SET_EXTERNAL_WALLET_REJECT_STATE' })
+          },
+          onAuthInit: (args) => {
+            dispatch({ type: 'SET_EXTERNAL_WALLET_LOAD_STATE' })
+          },
+          onAuthSuccess: (args) => {
+            dispatch({ type: 'SET_EXTERNAL_WALLET_SUCCESS_STATE' })
+          },
+        },
+      }}    >
+      <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
+        <GlobalStyle />
+        <GlobalProvider>
+          <Router basename={getAppBasePath()}>
+            <RouterContainer />
+          </Router>
+        </GlobalProvider>
+      </ThemeProvider>
+    </DynamicContextProvider>
   );
 }
