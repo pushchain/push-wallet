@@ -14,6 +14,8 @@ import {
 import { WalletKeyPairType, WalletState } from "../Authentication.types";
 import { useNavigate } from "react-router-dom";
 import { APP_ROUTES } from "../../../constants";
+import { usePersistedQuery } from "../../../common/hooks/usePersistedQuery";
+
 type WalletSelectionProps = {
   setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
 };
@@ -24,10 +26,14 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const { primaryWallet } = useDynamicContext();
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
+
+  const persistNavigate = usePersistedQuery();
+
   useEffect(() => {
     (async () => {
       if (primaryWallet) {
-        navigate(APP_ROUTES.WALLET);
+        const url = persistNavigate(APP_ROUTES.WALLET)
+        navigate(url);
       }
     })();
   }, [primaryWallet]);

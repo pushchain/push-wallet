@@ -22,6 +22,7 @@ import config from "../../config";
 import { PushSigner } from "../../services/pushSigner/pushSigner";
 import { AppConnections } from "../../common/components/AppConnections";
 import { useNavigate } from "react-router-dom";
+import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
 
 export type WalletProps = {};
 
@@ -37,6 +38,7 @@ const Wallet: FC<WalletProps> = () => {
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
 
   const navigate = useNavigate();
+  const persistNavigate = usePersistedQuery();
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -62,9 +64,6 @@ const Wallet: FC<WalletProps> = () => {
       console.info("Wallet created and mnemonic split into shares", { userId });
     } catch (err) {
       console.error("Error creating wallet:", err);
-      // // When the user rejects the creation of new wallet, redirect the user back to auth with error
-      // setError("Failed to create wallet. Please try again.");
-      // navigate(APP_ROUTES.AUTH)
       throw err;
     } finally {
       setCreateAccountLoading(false);
@@ -216,7 +215,11 @@ const Wallet: FC<WalletProps> = () => {
             );
           }
         } else {
-          navigate(APP_ROUTES.AUTH);
+          // navigate(APP_ROUTES.AUTH);
+          const url = persistNavigate(APP_ROUTES.AUTH)
+          console.log("URL", url);
+
+          navigate(url);
         }
       } catch (err) {
         console.error("Error initializing profile:", err);
@@ -247,7 +250,8 @@ const Wallet: FC<WalletProps> = () => {
     dispatch({ type: "RESET_AUTHENTICATED" });
     dispatch({ type: "RESET_USER" });
     localStorage.clear();
-    navigate(APP_ROUTES.AUTH);
+    const url = persistNavigate(APP_ROUTES.AUTH)
+    navigate(url);
   };
 
   useEffect(() => {

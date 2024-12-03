@@ -123,6 +123,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   const { primaryWallet, sdkHasLoaded } = useDynamicContext();
 
   const stateParam = extractStateFromUrl();
+  console.log("State Param", stateParam);
 
   const storedToken = sessionStorage.getItem("jwt");
 
@@ -156,7 +157,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
 
           url.searchParams.delete("state");
 
-          window.history.replaceState({}, document.title, url.pathname);
+          // window.history.replaceState({}, document.title, url.toString());
 
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
         }

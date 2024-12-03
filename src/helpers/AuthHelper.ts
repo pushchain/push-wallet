@@ -1,9 +1,31 @@
-import { GlobalAction } from "../context/GlobalContext";
 import api from "../services/api";
 
 export const extractStateFromUrl = () => {
+  // URL either has ?app or ?state
   const params = new URLSearchParams(location.search);
-  return params.get("state");
+
+  // When appconnection request comes then the url has ?app
+  const appUrl = params.get("app");
+  console.log("APPP URL", appUrl);
+
+  if (appUrl) {
+    const appUrlObj = new URL(appUrl);
+    const state = appUrlObj.searchParams.get("state");
+
+    appUrlObj.searchParams.delete("state");
+
+    const modifiedAppUrl = appUrlObj.toString();
+    console.log("modifiedAppUrl", modifiedAppUrl);
+
+    history.replaceState(null, "", `?app=${modifiedAppUrl}`);
+
+    console.log("Extracted State:", state);
+    return state;
+  }
+
+  // When social login or email login comes then the url has ?state=
+  const state = params.get("state");
+  return state;
 };
 
 export const fetchJwtUsingState = async ({
