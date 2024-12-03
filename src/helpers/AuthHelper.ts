@@ -13,7 +13,7 @@ export const extractStateFromUrl = () => {
 
     appUrlObj.searchParams.delete("state");
 
-    const modifiedAppUrl = appUrlObj.toString();
+    const modifiedAppUrl = appUrlObj.toString().replace(/\/$/, "");
     window.history.replaceState({}, "", `?app=${modifiedAppUrl}`);
 
     return state;

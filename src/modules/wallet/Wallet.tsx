@@ -24,7 +24,7 @@ import {
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
 import { AppConnections } from "../../common/components/AppConnections";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
 import { useAppState } from "../../context/AppContext";
 
@@ -271,8 +271,12 @@ const Wallet: FC<WalletProps> = () => {
     })();
   }, [primaryWallet?.isAuthenticated]);
 
+  const [searchParams] = useSearchParams();
+  const app = searchParams.get("app");
+
+  // Check if the appConnections has isPending true or the appConnection origin is included in the URL
   const showAppConnectionContainer = state?.wallet?.appConnections.some(
-    (cx) => cx.isPending === true
+    (cx) => cx.isPending === true && cx.origin.includes(app)
   );
 
   if (createAccountLoading)
