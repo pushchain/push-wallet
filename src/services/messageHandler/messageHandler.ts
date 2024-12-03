@@ -22,7 +22,7 @@ export class PostMessageHandler {
     // Define the new listener and assign it to the static variable
     PostMessageHandler.messageListener = async (event: MessageEvent) => {
       // Ignore messages sent by this handler itself
-      if (event.origin === "http://localhost:5173") {
+      if (event.origin === "http://localhost:5174") {
         return;
       }
 

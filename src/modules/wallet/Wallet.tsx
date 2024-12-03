@@ -38,7 +38,7 @@ const Wallet: FC<WalletProps> = () => {
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
 
   const navigate = useNavigate();
-  const persistNavigate = usePersistedQuery();
+  const persistQuery = usePersistedQuery();
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -216,7 +216,7 @@ const Wallet: FC<WalletProps> = () => {
           }
         } else {
           // navigate(APP_ROUTES.AUTH);
-          const url = persistNavigate(APP_ROUTES.AUTH)
+          const url = persistQuery(APP_ROUTES.AUTH)
           console.log("URL", url);
 
           navigate(url);
@@ -250,7 +250,7 @@ const Wallet: FC<WalletProps> = () => {
     dispatch({ type: "RESET_AUTHENTICATED" });
     dispatch({ type: "RESET_USER" });
     localStorage.clear();
-    const url = persistNavigate(APP_ROUTES.AUTH)
+    const url = persistQuery(APP_ROUTES.AUTH)
     navigate(url);
   };
 

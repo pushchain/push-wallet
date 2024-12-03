@@ -6,12 +6,12 @@ import { PrivateRoute } from "../../pages/PrivateRoute";
 import { APP_ROUTES } from "../../constants";
 import { usePersistedQuery } from "../hooks/usePersistedQuery";
 const RouterContainer: FC = () => {
-  const persistNavigate = usePersistedQuery();
+  const persistQuery = usePersistedQuery();
 
   return (
     <Routes>
       <Route path="/"
-        element={<Navigate to={persistNavigate(APP_ROUTES.WALLET)} state={{ from: location }} />}
+        element={<Navigate to={persistQuery(APP_ROUTES.WALLET)} state={{ from: location }} />}
       />
       <Route
         path={APP_ROUTES.WALLET}

@@ -27,12 +27,12 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
 
-  const persistNavigate = usePersistedQuery();
+  const persistQuery = usePersistedQuery();
 
   useEffect(() => {
     (async () => {
       if (primaryWallet) {
-        const url = persistNavigate(APP_ROUTES.WALLET)
+        const url = persistQuery(APP_ROUTES.WALLET)
         navigate(url);
       }
     })();

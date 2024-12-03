@@ -11,7 +11,7 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
     state: { walletLoadState, jwt, dynamicWallet },
   } = useGlobalState();
 
-  const persistNavigate = usePersistedQuery();
+  const persistQuery = usePersistedQuery();
 
   if (walletLoadState === "idle" || walletLoadState === "loading") {
     return <WalletSkeletonScreen content={<PushWalletLoadingContent />} />;
@@ -25,7 +25,7 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
     return <>{children}</>;
   }
 
-  return <Navigate to={persistNavigate(APP_ROUTES.AUTH)} />;
+  return <Navigate to={persistQuery(APP_ROUTES.AUTH)} />;
 };
 
 export { PrivateRoute };

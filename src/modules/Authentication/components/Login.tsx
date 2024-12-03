@@ -25,7 +25,7 @@ const envRouteAlias =
 
 const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
 
-  const persistNavigate = usePersistedQuery();
+  const persistQuery = usePersistedQuery();
 
   const formik = useFormik({
     initialValues: { email },
@@ -39,7 +39,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
           }/auth/authorize-email?email=${encodeURIComponent(
             values.email
           )}&redirectUri=${encodeURIComponent(
-            window.location.origin + envRouteAlias + persistNavigate(APP_ROUTES.WALLET)
+            window.location.origin + envRouteAlias + persistQuery(APP_ROUTES.WALLET)
           )}`;
       }
     },
@@ -52,7 +52,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
 
     window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
       }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
-        window.location.origin + envRouteAlias + persistNavigate(APP_ROUTES.WALLET)
+        window.location.origin + envRouteAlias + persistQuery(APP_ROUTES.WALLET)
       )}`;
   };
 
