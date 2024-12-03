@@ -15,11 +15,8 @@ import { APP_ROUTES, ENV } from "../../constants";
 import secrets from "secrets.js-grempe";
 import { useGlobalState } from "../../context/GlobalContext";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import { CreateAccount } from "./components/CreateAccount";
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
-import config from "../../config";
-import { PushSigner } from "../../services/pushSigner/pushSigner";
 import { AppConnections } from "../../common/components/AppConnections";
 import { useNavigate } from "react-router-dom";
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
@@ -31,10 +28,8 @@ const Wallet: FC<WalletProps> = () => {
   const [createAccountLoading, setCreateAccountLoading] = useState(true);
   const [error, setError] = useState("");
   const { primaryWallet } = useDynamicContext();
-
   const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
     useState(false);
-
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
 
   const navigate = useNavigate();
@@ -199,28 +194,29 @@ const Wallet: FC<WalletProps> = () => {
 
           await fetchUserProfile(state.jwt);
         } else if (primaryWallet) {
-          let pushWallet;
-          const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
-
-          pushWallet = await PushWallet.loginWithWallet(
-            signer,
-            config.APP_ENV as ENV
-          );
-
-          if (pushWallet)
-            dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
-          else {
-            console.log(
-              "Could not find user in wallet.tsx file after push wallet"
-            );
-          }
-        } else {
-          // navigate(APP_ROUTES.AUTH);
           const url = persistQuery(APP_ROUTES.AUTH)
           console.log("URL", url);
 
           navigate(url);
         }
+        //   let pushWallet;
+        //   const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
+
+        //   pushWallet = await PushWallet.loginWithWallet(
+        //     signer,
+        //     config.APP_ENV as ENV
+        //   );
+
+        //   if (pushWallet)
+        //     dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
+        //   else {
+        //     console.log(
+        //       "Could not find user in wallet.tsx file after push wallet"
+        //     );
+        //   }
+        // } else {
+        //   navigate(APP_ROUTES.AUTH);
+        // }
       } catch (err) {
         console.error("Error initializing profile:", err);
         setError("Failed to initialize profile");
@@ -256,7 +252,7 @@ const Wallet: FC<WalletProps> = () => {
 
   useEffect(() => {
     if (state?.wallet?.attachedAccounts.length)
-      setSelectedWallet(getWalletlist(state?.wallet?.attachedAccounts)[0]);
+      setSelectedWallet(getWalletlist(state?.wallet?.attachedAccounts, state.wallet)[0]);
   }, [state?.wallet?.attachedAccounts]);
 
   const showAppConnectionContainer = state?.wallet?.appConnections.some(
@@ -301,16 +297,16 @@ const Wallet: FC<WalletProps> = () => {
           )}
           <WalletProfile selectedWallet={selectedWallet} />
           <WalletTabs
-            walletList={getWalletlist(state?.wallet?.attachedAccounts)}
+            walletList={getWalletlist(state?.wallet?.attachedAccounts, state.wallet)}
             selectedWallet={selectedWallet}
             setSelectedWallet={setSelectedWallet}
           />
-          {!state?.wallet && primaryWallet && (
+          {/* {!state?.wallet && primaryWallet && (
             <CreateAccount
               isLoading={createAccountLoading}
               setIsLoading={setCreateAccountLoading}
             />
-          )}
+          )} */}
         </Box>
       </BoxLayout>
     </ContentLayout>

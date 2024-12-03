@@ -10,6 +10,7 @@ import {
 import {
   filterEthereumWallets,
   getGroupedWallets,
+  getInstalledWallets,
 } from "../Authentication.utils";
 import { WalletKeyPairType, WalletState } from "../Authentication.types";
 import { useNavigate } from "react-router-dom";
@@ -38,12 +39,18 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     })();
   }, [primaryWallet]);
 
-  const ethereumWallets: WalletKeyPairType = filterEthereumWallets(
-    getGroupedWallets(walletOptions)
+  const installedEthereumWallets: WalletKeyPairType = getInstalledWallets(
+    filterEthereumWallets(getGroupedWallets(walletOptions)),
+    walletOptions
+  );
+  const installedSolanaWallets = getInstalledWallets(
+    solanaWallets,
+    walletOptions
   );
   const walletsToShow =
-    selectedWalletCategory === "ethereum" ? ethereumWallets : solanaWallets;
-
+    selectedWalletCategory === "ethereum"
+      ? installedEthereumWallets
+      : installedSolanaWallets;
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory("");
     else setConnectMethod("authentication");
@@ -69,7 +76,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         <Box flexDirection="column" display="flex" gap="spacing-md">
           <Box flexDirection="column" display="flex" textAlign="center">
             <Text color="text-primary" variant="h4-semibold">
-              Continue with Wallet
+              Link External Wallet to Connect
             </Text>
             <Text color="text-primary" variant="bs-regular">
               Choose what kind of wallet you would like to link with Push
