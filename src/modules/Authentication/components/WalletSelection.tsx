@@ -8,7 +8,6 @@ import {
 import { solanaWallets } from "../Authentication.constants";
 import { css } from "styled-components";
 import {
-  useAuthenticateConnectedUser,
   useDynamicContext,
   useWalletOptions,
 } from "@dynamic-labs/sdk-react-core";
@@ -20,7 +19,7 @@ import {
 import { WalletKeyPairType, WalletState } from "../Authentication.types";
 import { useNavigate } from "react-router-dom";
 import { APP_ROUTES } from "../../../constants";
-import { useAppState } from "../../../context/AppContext";
+
 type WalletSelectionProps = {
   setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
 };
@@ -29,14 +28,9 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const [selectedWalletCategory, setSelectedWalletCategory] =
     useState<string>("");
   const { primaryWallet } = useDynamicContext();
-  const {
-    state: { externalWalletAuthState },
-    dispatch,
-  } = useAppState();
+
   const { walletOptions, selectWalletOption } = useWalletOptions();
-  const {authenticateUser,isAuthenticating} = useAuthenticateConnectedUser();
   const navigate = useNavigate();
-  console.debug(externalWalletAuthState, "externalWalletAuthState");
   useEffect(() => {
     (async () => {
       if (primaryWallet) {
@@ -72,11 +66,10 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     else setConnectMethod("authentication");
   };
 
-  const handleWalletOption = async(key: string) => {
+  const handleWalletOption = (key: string) => {
     selectWalletOption(key)
   };
 
-  console.debug(externalWalletAuthState, "autho state");
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {
     return (
       <Text color="text-tertiary" variant="bes-bold" textAlign="center">

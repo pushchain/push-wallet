@@ -35,15 +35,6 @@ export class PostMessageHandler {
       // In case wallet not created or keys are encrypted
       const formattedExternalWallet = pushSigner?.account;
       if (formattedExternalWallet) {
-        console.debug('in is connected inside req to connect',event)
-        // event.source?.postMessage(
-        //   {
-        //     action: ACTION.ERROR,
-        //     error: "PushWallet Not Logged In",
-        //   },
-        //   event.origin as any
-        // );
-        // global.myEvent = event;
         switch (action) {
           case ACTION.REQ_WALLET_DETAILS: {
             const loggedInAddress = formattedExternalWallet;
@@ -67,24 +58,9 @@ export class PostMessageHandler {
             );
             break;
           }
-          //check if this is needed
-          // case ACTION.REQ_TO_CONNECT: {
-          //   console.debug('signature',event.data)
-          //   event.source?.postMessage(
-          //     {
-          //       action: ACTION.CONNECTION_STATUS,
-          //       isPending: false,
-          //       isConnected: true,
-          //     },
-          //     event.origin as any
-          //   );
-          //   break;
-          // }
           case ACTION.REQ_TO_SIGN: {
             try {
-              console.debug('signature',data)
               const signature = await pushSigner.signMessage(data);
-              console.debug(signature,'signature')
               event.source?.postMessage(
                 { action: ACTION.SIGNATURE, signature },
                 event.origin as any

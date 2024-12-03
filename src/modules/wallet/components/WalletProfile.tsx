@@ -34,9 +34,6 @@ const WalletProfile: FC<WalletProfileProps> = ({
   const { dispatch } = useGlobalState();
 
   const navigate = useNavigate();
-  // const signMessage = async()=>{
-  //   // const signature = await primaryWallet.signMessage('example');
-  // }
 
   return (
     <Box
@@ -92,7 +89,6 @@ const WalletProfile: FC<WalletProfileProps> = ({
       >
         <BlockiesSvg address={parsedWallet} />
       </Box>
-      {/* <Button onClick={()=>signMessage()}>sign</Button> */}
       <Box
         display="flex"
         flexDirection="column"
