@@ -3,12 +3,10 @@ import { css } from "styled-components";
 import { Box } from "../../blocks";
 
 export type DrawerWrapperProps = {
- children:ReactNode
+  children: ReactNode;
 };
 
-const DrawerWrapper: FC<DrawerWrapperProps> = ({children}) => {
-
-
+const DrawerWrapper: FC<DrawerWrapperProps> = ({ children }) => {
   return (
     <Box
       position="absolute"
@@ -24,7 +22,7 @@ const DrawerWrapper: FC<DrawerWrapperProps> = ({children}) => {
         z-index: 10;
       `}
     >
-
+      {children}
     </Box>
   );
 };

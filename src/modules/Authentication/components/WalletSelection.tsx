@@ -33,6 +33,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const { primaryWallet } = useDynamicContext();
   const {
     state: { externalWalletAuthState },
+    dispatch,
   } = useAppState();
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
@@ -143,11 +144,12 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         </Box>
       </Box>
       <PoweredByPush />
-      {externalWalletAuthState === "idle" && (
+      {externalWalletAuthState === "loading" && (
         <DrawerWrapper>
           <LoadingContent
             title="Sign to verify"
             subTitle="Allow the site to connect and continue"
+            onClose={() => dispatch({ type: "RESET_EXTERNAL_WALLET_STATE" })}
           />
         </DrawerWrapper>
       )}

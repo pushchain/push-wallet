@@ -1,37 +1,43 @@
 import React, { FC } from "react";
 import { css } from "styled-components";
-import BlockiesSvg from "blockies-react-svg";
 import {
   Box,
-  Button,
   Cross,
-  HoverableSVG,
-  PushLogo,
   Spinner,
   Text,
 } from "../../blocks";
-import { centerMaskWalletAddress } from "../Common.utils";
 
 export type LoadingContentProps = {
   title: string;
   subTitle: string;
+  onClose: () => void;
 };
 
-const LoadingContent: FC<LoadingContentProps> = ({ title, subTitle }) => {
+const LoadingContent: FC<LoadingContentProps> = ({ title, subTitle,onClose }) => {
   return (
     <Box
       display="flex"
       flexDirection="column"
-      gap="spacing-xxs"
       alignItems="center"
-      width="100%"
+      padding="spacing-xs"
+      gap="spacing-sm"
+      width="-webkit-fill-available"
+      borderRadius="radius-md"
+      backgroundColor="surface-primary"
+      css={css`
+        border-top: var(--border-xmd) solid var(--stroke-secondary);
+      `}
     >
+      <Box alignSelf="flex-end" cursor="pointer" onClick={()=>onClose()}>
+        <Cross size={16} color="icon-primary" />
+      </Box>
       <Spinner size="large" variant="primary" />
       <Box
         display="flex"
         flexDirection="column"
         textAlign="center"
         gap="spacing-xxxs"
+        margin="spacing-none spacing-none spacing-md spacing-none"
       >
         <Text variant="h3-semibold" color="text-primary">
           {title}
