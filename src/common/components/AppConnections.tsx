@@ -6,55 +6,44 @@ import { centerMaskWalletAddress } from "../Common.utils";
 import { WalletListType } from "../../modules/wallet/Wallet.types";
 import { useGlobalState } from "../../context/GlobalContext";
 import { AppConnection } from "../../services/pushWallet/pushWallet.types";
+import { DrawerWrapper } from "./DrawerWrapper";
 
 export type AppConnectionsProps = {
   selectedWallet: WalletListType;
   appConnection: AppConnection;
 };
 
-const AppConnections: FC<AppConnectionsProps> = ({ selectedWallet, appConnection }) => {
+const AppConnections: FC<AppConnectionsProps> = ({
+  selectedWallet,
+  appConnection,
+}) => {
   const address = selectedWallet?.fullAddress;
 
   const { state, dispatch } = useGlobalState();
 
   const handleAccept = (origin: string) => {
     if (state.wallet) {
-      state?.wallet?.acceptConnectionReq(origin)
-      dispatch({ type: 'INITIALIZE_WALLET', payload: state.wallet })
+      state?.wallet?.acceptConnectionReq(origin);
+      dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet });
     }
-
-  }
+  };
 
   const handleReject = (origin: string) => {
     if (state.wallet) {
-      state?.wallet?.rejectConnectionReq(origin)
-      dispatch({ type: 'INITIALIZE_WALLET', payload: state.wallet })
+      state?.wallet?.rejectConnectionReq(origin);
+      dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet });
     }
-
-  }
+  };
 
   const handleRejectAllConnections = async () => {
     if (state.wallet) {
       state?.wallet?.rejectAllConnectionReqs();
-      dispatch({ type: 'INITIALIZE_WALLET', payload: state.wallet })
+      dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet });
     }
-  }
+  };
 
   return (
-    <Box
-      position="absolute"
-      height="100%"
-      width="100%"
-      alignItems="flex-end"
-      display="flex"
-      borderRadius="radius-md"
-      css={css`
-        background: rgba(0, 0, 0, 0.5);
-        bottom: 0;
-        left: 0;
-        z-index: 10;
-      `}
-    >
+    <DrawerWrapper>
       <Box
         display="flex"
         flexDirection="column"
@@ -76,7 +65,10 @@ const AppConnections: FC<AppConnectionsProps> = ({ selectedWallet, appConnection
           width="100%"
         >
           <Box alignSelf="flex-end" display="flex">
-            <HoverableSVG onClick={handleRejectAllConnections} icon={<Cross color="icon-secondary" size={16} />} />
+            <HoverableSVG
+              onClick={handleRejectAllConnections}
+              icon={<Cross color="icon-secondary" size={16} />}
+            />
           </Box>
           <Box
             display="flex"
@@ -132,7 +124,11 @@ const AppConnections: FC<AppConnectionsProps> = ({ selectedWallet, appConnection
             </Box>
           </Box>
           <Box display="flex" gap="spacing-xs">
-            <Button size="small" variant="outline" onClick={() => handleReject(appConnection?.origin)}>
+            <Button
+              size="small"
+              variant="outline"
+              onClick={() => handleReject(appConnection?.origin)}
+            >
               Reject
             </Button>
             <Button
@@ -148,7 +144,7 @@ const AppConnections: FC<AppConnectionsProps> = ({ selectedWallet, appConnection
           </Box>
         </Box>
       </Box>
-    </Box>
+    </DrawerWrapper>
   );
 };
 

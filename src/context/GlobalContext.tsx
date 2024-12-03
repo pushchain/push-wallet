@@ -126,17 +126,25 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   console.log("State Param", stateParam);
 
   const storedToken = sessionStorage.getItem("jwt");
-
-  /* This hook handles the logic for listening to the app connection requests */
+  /* This hook handles the logic for listening to the app connection requests for push wallet */
   useEffect(() => {
     if (state.wallet) {
-      new PostMessageHandler(state.wallet, () =>
+      new PostMessageHandler(undefined, state.wallet, () =>
         dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet })
       );
     } else {
-      new PostMessageHandler(undefined, () => { });
+      new PostMessageHandler(undefined, undefined, () => {});
     }
   }, [state.wallet]);
+
+  /* This hook handles the logic for listening to the app connection requests for external wallet*/
+  useEffect(() => {
+    if (!state?.wallet && primaryWallet) {
+      new PostMessageHandler(primaryWallet, undefined, () => {});
+    } else {
+      new PostMessageHandler(undefined, undefined, () => {});
+    }
+  }, [primaryWallet]);
 
   useEffect(() => {
     const fetchUser = async () => {

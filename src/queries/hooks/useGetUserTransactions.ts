@@ -1,7 +1,7 @@
 import { userTransactions } from "../queryKeys";
 import { getUserTransactions } from "../services";
 import { useQuery } from "@tanstack/react-query";
-import { Tx as PushTx } from "@pushprotocol/node-core";
+import { Tx as PushTx } from "@pushprotocol/push-chain";
 import config from "../../config";
 import { ENV } from "../../constants";
 

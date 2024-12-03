@@ -1,6 +1,10 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Back, Box, Text } from "../../../blocks";
-import { PoweredByPush, WalletCategories, WALLETS_LOGO } from "../../../common";
+import {
+  PoweredByPush,
+  WalletCategories,
+  WALLETS_LOGO,
+} from "../../../common";
 import { solanaWallets } from "../Authentication.constants";
 import { css } from "styled-components";
 import {
@@ -25,6 +29,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const [selectedWalletCategory, setSelectedWalletCategory] =
     useState<string>("");
   const { primaryWallet } = useDynamicContext();
+
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
 
@@ -39,25 +44,35 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     })();
   }, [primaryWallet]);
 
-  const installedEthereumWallets: WalletKeyPairType = getInstalledWallets(
-    filterEthereumWallets(getGroupedWallets(walletOptions)),
-    walletOptions
-  );
-  const installedSolanaWallets = getInstalledWallets(
-    solanaWallets,
-    walletOptions
-  );
+  const wallets = useMemo(() => {
+    const installedEthereumWallets: WalletKeyPairType = getInstalledWallets(
+      filterEthereumWallets(getGroupedWallets(walletOptions)),
+      walletOptions
+    );
+
+    const installedSolanaWallets = getInstalledWallets(
+      solanaWallets,
+      walletOptions
+    );
+
+    return {
+      solanaWallets: installedSolanaWallets,
+      ethereumWallets: installedEthereumWallets,
+    };
+  }, [walletOptions]);
+
   const walletsToShow =
     selectedWalletCategory === "ethereum"
-      ? installedEthereumWallets
-      : installedSolanaWallets;
+      ? wallets.ethereumWallets
+      : wallets.solanaWallets;
+
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory("");
     else setConnectMethod("authentication");
   };
 
   const handleWalletOption = (key: string) => {
-    selectWalletOption(key);
+    selectWalletOption(key)
   };
 
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {
@@ -67,6 +82,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
       </Text>
     );
   };
+
   return (
     <Box flexDirection="column" display="flex" gap="spacing-lg" width="100%">
       <Box cursor="pointer" onClick={() => handleBack()}>
@@ -141,6 +157,8 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         </Box>
       </Box>
       <PoweredByPush />
+
+
     </Box>
   );
 };

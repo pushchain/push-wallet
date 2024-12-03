@@ -1,7 +1,7 @@
 import { Box, PushLogo, Skeleton } from "blocks";
 import { FC, ReactNode } from "react";
 import { BoxLayout, ContentLayout } from "common";
-import { css, keyframes } from "styled-components";
+import { css } from "styled-components";
 
 export type WalletSkeletonScreenProps = {
   content?: ReactNode;
