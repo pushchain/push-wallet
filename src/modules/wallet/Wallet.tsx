@@ -24,7 +24,8 @@ import {
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
 import { AppConnections } from "../../common/components/AppConnections";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
 import { useAppState } from "../../context/AppContext";
 
 export type WalletProps = {};
@@ -38,12 +39,13 @@ const Wallet: FC<WalletProps> = () => {
     dispatch: appDispatch,
   } = useAppState();
   const { primaryWallet } = useDynamicContext();
-  const { authenticateUser, isAuthenticating } = useAuthenticateConnectedUser();
+  const { authenticateUser } = useAuthenticateConnectedUser();
   const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
     useState(false);
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
 
   const navigate = useNavigate();
+  const persistQuery = usePersistedQuery();
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -69,9 +71,6 @@ const Wallet: FC<WalletProps> = () => {
       console.info("Wallet created and mnemonic split into shares", { userId });
     } catch (err) {
       console.error("Error creating wallet:", err);
-      // // When the user rejects the creation of new wallet, redirect the user back to auth with error
-      // setError("Failed to create wallet. Please try again.");
-      // navigate(APP_ROUTES.AUTH)
       throw err;
     } finally {
       setCreateAccountLoading(false);
@@ -204,7 +203,7 @@ const Wallet: FC<WalletProps> = () => {
           setCreateAccountLoading(true);
 
           await fetchUserProfile(state.jwt);
-        } 
+        }
         // else if (!primaryWallet) navigate(APP_ROUTES.AUTH);
         /* We don't need to fetch push user as of now when user continues with wallet
          This function fetches the already created push wallet */
@@ -253,7 +252,8 @@ const Wallet: FC<WalletProps> = () => {
     dispatch({ type: "RESET_AUTHENTICATED" });
     dispatch({ type: "RESET_USER" });
     localStorage.clear();
-    navigate(APP_ROUTES.AUTH);
+    const url = persistQuery(APP_ROUTES.AUTH)
+    navigate(url);
   };
 
   useEffect(() => {
@@ -320,8 +320,12 @@ const Wallet: FC<WalletProps> = () => {
   
   
 
+  const [searchParams] = useSearchParams();
+  const app = searchParams.get("app");
+
+  // Check if the appConnections has isPending true or the appConnection origin is included in the URL
   const showAppConnectionContainer = state?.wallet?.appConnections.some(
-    (cx) => cx.isPending === true
+    (cx) => cx.isPending === true && cx.origin.includes(app)
   );
 
   if (createAccountLoading)
@@ -355,7 +359,7 @@ const Wallet: FC<WalletProps> = () => {
               selectedWallet={selectedWallet}
               appConnection={
                 state.wallet.appConnections[
-                  state.wallet.appConnections.length - 1
+                state.wallet.appConnections.length - 1
                 ]
               }
             />

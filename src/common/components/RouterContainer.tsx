@@ -4,10 +4,15 @@ import { Authentication } from "../../modules/Authentication";
 import { Wallet } from "../../modules/wallet";
 import { PrivateRoute } from "../../pages/PrivateRoute";
 import { APP_ROUTES } from "../../constants";
+import { usePersistedQuery } from "../hooks/usePersistedQuery";
 const RouterContainer: FC = () => {
+  const persistQuery = usePersistedQuery();
+
   return (
     <Routes>
-      <Route path="/" element={<Navigate to={APP_ROUTES.WALLET} />} />
+      <Route path="/"
+        element={<Navigate to={persistQuery(APP_ROUTES.WALLET)} />}
+      />
       <Route
         path={APP_ROUTES.WALLET}
         element={

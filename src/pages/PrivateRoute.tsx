@@ -4,11 +4,14 @@ import { Navigate } from "react-router-dom";
 import { APP_ROUTES } from "../constants";
 import { useGlobalState } from "../context/GlobalContext";
 import { PushWalletLoadingContent, WalletSkeletonScreen } from "common";
+import { usePersistedQuery } from "../common/hooks/usePersistedQuery";
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const {
     state: { walletLoadState, jwt, dynamicWallet },
   } = useGlobalState();
+
+  const persistQuery = usePersistedQuery();
 
   if (walletLoadState === "idle" || walletLoadState === "loading") {
     return <WalletSkeletonScreen content={<PushWalletLoadingContent />} />;
@@ -22,7 +25,7 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
     return <>{children}</>;
   }
 
-  return <Navigate to={APP_ROUTES.AUTH} />;
+  return <Navigate to={persistQuery(APP_ROUTES.AUTH)} />;
 };
 
 export { PrivateRoute };
