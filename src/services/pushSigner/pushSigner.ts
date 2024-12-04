@@ -4,6 +4,7 @@ import {
   getAddress,
   isAddress,
   isHex,
+  stringToHex,
 } from "viem";
 import { Signer } from "./pushSigner.types";
 import { Wallet } from "@dynamic-labs/sdk-react-core";
@@ -69,8 +70,19 @@ export class PushSigner {
       }
 
       const signMessage = async (message: string) => {
+
+        let messageToBeSigned = typeof message === "string" ? message : bytesToString(message);
+        /**
+         * @dev - This is a temporary fix for the issue where the message is not being signed correctly
+         * Currently done for Coinbase Wallet on EVM chains
+         * This can be removed once we have a standard way of signing messages across all wallets
+         */
+        if(wallet.key === "coinbase" && wallet.chain === "EVM" && messageToBeSigned.startsWith("0x")) {
+          messageToBeSigned = stringToHex(messageToBeSigned);
+        }
+
         const signature = await wallet.signMessage(
-          typeof message === "string" ? message : bytesToString(message)
+          messageToBeSigned
         );
         // hex
         if (isHex(signature)) return hexToBytes(signature.replace("0x", ""));
