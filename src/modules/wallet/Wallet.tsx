@@ -37,7 +37,7 @@ const Wallet: FC<WalletProps> = () => {
     state: { externalWalletAuthState },
     dispatch: appDispatch,
   } = useAppState();
-  const { primaryWallet,setShowAuthFlow } = useDynamicContext();
+  const { primaryWallet } = useDynamicContext();
   const { authenticateUser, isAuthenticating } = useAuthenticateConnectedUser();
   const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
     useState(false);
@@ -268,12 +268,12 @@ const Wallet: FC<WalletProps> = () => {
 
    
     if (primaryWallet && !primaryWallet.isAuthenticated) {
+     
       await authenticateUser();
       setTimeout(()=>{
         if(externalWalletAuthState === 'loading')
         {
           console.debug('after 10 seocnds',externalWalletAuthState)
-          setShowAuthFlow(false);
           // appDispatch({ type: "SET_EXTERNAL_WALLET_TIMEOUT_STATE" });
         
         }
