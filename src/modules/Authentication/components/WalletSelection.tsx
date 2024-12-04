@@ -32,7 +32,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     useState<string>("");
   const [selectedWalletName, setSelectedWalletName] =
     useState<string>("");
-  const { primaryWallet, setShowAuthFlow } = useDynamicContext();
+  const { primaryWallet } = useDynamicContext();
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
 
@@ -79,7 +79,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const handleWalletOption = (key: string) => {
     setSelectedWalletName(walletsToShow[key]);
     selectWalletOption(key);
-    setShowAuthFlow(false);
+    // setShowAuthFlow(false);
   };
 
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {

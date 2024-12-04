@@ -69,7 +69,6 @@ export class PushSigner {
       }
 
       const signMessage = async (message: string) => {
-        console.debug(message);
         const signature = await wallet.signMessage(
           typeof message === "string" ? message : bytesToString(message)
         );
