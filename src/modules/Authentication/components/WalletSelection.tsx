@@ -1,6 +1,8 @@
 import { FC, useEffect, useMemo, useState } from "react";
-import { Back, Box,Text } from "../../../blocks";
+import { Back, Box, Text } from "../../../blocks";
 import {
+  DrawerWrapper,
+  LoadingContent,
   PoweredByPush,
   WalletCategories,
   WALLETS_LOGO,
@@ -19,6 +21,7 @@ import {
 import { WalletKeyPairType, WalletState } from "../Authentication.types";
 import { useNavigate } from "react-router-dom";
 import { APP_ROUTES } from "../../../constants";
+import { useAppState } from "../../../context/AppContext";
 
 type WalletSelectionProps = {
   setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
@@ -27,10 +30,17 @@ type WalletSelectionProps = {
 const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const [selectedWalletCategory, setSelectedWalletCategory] =
     useState<string>("");
-  const { primaryWallet } = useDynamicContext();
-
+  const [selectedWalletName, setSelectedWalletName] =
+    useState<string>("");
+  const { primaryWallet, setShowAuthFlow } = useDynamicContext();
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
+
+  const {
+    dispatch,
+    state: { externalWalletAuthState }
+  } = useAppState();
+
   useEffect(() => {
     (async () => {
       if (primaryWallet) {
@@ -44,12 +54,12 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
       filterEthereumWallets(getGroupedWallets(walletOptions)),
       walletOptions
     );
-  
+
     const installedSolanaWallets = getInstalledWallets(
       solanaWallets,
       walletOptions
     );
-  
+
     return {
       solanaWallets: installedSolanaWallets,
       ethereumWallets: installedEthereumWallets,
@@ -67,7 +77,9 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   };
 
   const handleWalletOption = (key: string) => {
-    selectWalletOption(key)
+    setSelectedWalletName(walletsToShow[key]);
+    selectWalletOption(key);
+    setShowAuthFlow(false);
   };
 
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {
@@ -152,8 +164,17 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         </Box>
       </Box>
       <PoweredByPush />
-      
-     
+      {externalWalletAuthState === "loading" && (
+        <DrawerWrapper>
+          <LoadingContent
+            title={`Connect ${selectedWalletName}`}
+            subTitle="Click connect in your wallet"
+            onClose={() =>
+              dispatch({ type: "RESET_EXTERNAL_WALLET_STATE" })
+            }
+          />
+        </DrawerWrapper>
+      )}
     </Box>
   );
 };
