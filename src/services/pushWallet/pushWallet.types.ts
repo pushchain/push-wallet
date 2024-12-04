@@ -1,43 +1,44 @@
-import { HDKey } from '@scure/bip32'
-import { EncryptedPrivateKey } from '../pushEncryption/pushEncryption.types'
+import { HDKey } from "@scure/bip32";
+import { EncryptedPrivateKey } from "../pushEncryption/pushEncryption.types";
 
 export type AccountInfo = {
-  [x: string]: any
+  [x: string]: any;
   items: {
-    did: string
-    derivedkeyindex: string
-    encryptedderivedprivatekey: string
-    attachedaccounts : string[]
-  }[]
+    did: string;
+    derivedkeyindex: string;
+    encryptedderivedprivatekey: string;
+    attachedaccounts: string[];
+  }[];
   summary: {
-    itemCount: number
-    keysWithoutQuorumCount: number
-    keysWithoutQuorum: string[]
-    quorumResult: string
-    lastTs: string
-  }
-}
+    itemCount: number;
+    keysWithoutQuorumCount: number;
+    keysWithoutQuorum: string[];
+    quorumResult: string;
+    lastTs: string;
+  };
+};
 
 export type EncPushAccount = {
-  did: string
-  derivedKeyIndex: number
-  encDerivedPrivKey: EncryptedPrivateKey
-  attachedaccounts : string[]
-}
+  did: string;
+  derivedKeyIndex: number;
+  encDerivedPrivKey: EncryptedPrivateKey;
+  attachedaccounts: string[];
+};
 
 export type DecPushAccount = {
-  did: string
-  mnemonic?: string
-  derivedHDNode: HDKey
-}
+  did: string;
+  mnemonic?: string;
+  derivedHDNode: HDKey;
+};
 
 export type Key = {
-  privateExtendedKey: string
-  publicKey: string
-  index: number
-}
+  privateExtendedKey: string;
+  publicKey: string;
+  index: number;
+};
 
 export type AppConnection = {
-  origin: string
-  isPending: boolean
-}
+  origin: string;
+  authStatus?: "loggedIn" | "notLoggedIn";
+  appConnectionStatus: "rejected" | "notReceived" | "connected" | "pending";
+};

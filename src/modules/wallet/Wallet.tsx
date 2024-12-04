@@ -276,7 +276,7 @@ const Wallet: FC<WalletProps> = () => {
 
   // Check if the appConnections has isPending true or the appConnection origin is included in the URL
   const showAppConnectionContainer = state?.wallet?.appConnections.some(
-    (cx) => cx.isPending === true && cx.origin.includes(app)
+    (cx) => cx.appConnectionStatus === 'pending'
   );
 
   if (createAccountLoading)

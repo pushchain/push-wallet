@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Wallet, WalletConnector } from "@dynamic-labs/sdk-react-core";
 import { PushWallet } from "../pushWallet/pushWallet";
 import { ACTION } from "./messageHandler.types";
 import { PushSigner } from "../pushSigner/pushSigner";
@@ -9,7 +8,7 @@ export class PostMessageHandler {
   private static messageListener: (event: MessageEvent) => void;
   //fix the wallet type
   constructor(
-    private externalWallet:  any| undefined,
+    private externalWallet: any | undefined,
     private pushWallet: PushWallet | undefined,
     private onConnectionRequest: () => void
   ) {
@@ -29,9 +28,14 @@ export class PostMessageHandler {
         return;
       }
 
+      console.log("event", event);
 
       const { action, data } = event.data;
-      const pushSigner = this.externalWallet? await PushSigner.initialize(this.externalWallet,'DYNAMIC'):undefined;
+
+      console.log("action", action);
+      const pushSigner = this.externalWallet
+        ? await PushSigner.initialize(this.externalWallet, "DYNAMIC")
+        : undefined;
       // In case wallet not created or keys are encrypted
       const formattedExternalWallet = pushSigner?.account;
       if (formattedExternalWallet) {
@@ -77,7 +81,7 @@ export class PostMessageHandler {
             break;
           }
         }
-      } else if (this.pushWallet){
+      } else if (this?.pushWallet) {
         switch (action) {
           case ACTION.REQ_WALLET_DETAILS: {
             const loggedInAddress = this.pushWallet.signerAccount;
@@ -91,14 +95,14 @@ export class PostMessageHandler {
             break;
           }
           case ACTION.IS_CONNECTED: {
-            const connectionStatus = this.pushWallet.ConnectionStatus(
+            const connectionStatus = this.pushWallet.checkAppConnectionStatus(
               event.origin
             );
+
             event.source?.postMessage(
               {
                 action: ACTION.CONNECTION_STATUS,
-                isPending: connectionStatus.isPending,
-                isConnected: connectionStatus.isConnected,
+                ...connectionStatus,
               },
               event.origin as any
             );
@@ -109,14 +113,14 @@ export class PostMessageHandler {
               event.origin,
               this.onConnectionRequest
             );
-            const connectionStatus = this.pushWallet.ConnectionStatus(
+            const connectionStatus = this.pushWallet.checkAppConnectionStatus(
               event.origin
             );
+
             event.source?.postMessage(
               {
                 action: ACTION.CONNECTION_STATUS,
-                isPending: connectionStatus.isPending,
-                isConnected: connectionStatus.isConnected,
+                ...connectionStatus,
               },
               event.origin as any
             );
@@ -141,12 +145,12 @@ export class PostMessageHandler {
             break;
           }
         }
-      }
-      else{
-         event.source?.postMessage(
+      } else {
+        event.source?.postMessage(
           {
             action: ACTION.ERROR,
             error: "PushWallet Not Logged In",
+            authStatus: "notLoggedIn",
           },
           event.origin as any
         );

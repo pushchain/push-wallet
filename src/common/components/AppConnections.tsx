@@ -19,7 +19,7 @@ const AppConnections: FC<AppConnectionsProps> = ({
   const { state, dispatch } = useGlobalState();
 
   // Setting isAppConnected as appConnection.isPending to decide either to display the success drawer or connection request
-  const [isAppConnected, setIsAppConnected] = useState(!appConnection.isPending);
+  const [isAppConnected, setIsAppConnected] = useState(appConnection.appConnectionStatus !== 'pending');
 
   const handleAccept = (origin: string) => {
     if (state.wallet) {

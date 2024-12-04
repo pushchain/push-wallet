@@ -635,27 +635,20 @@ export class PushWallet {
     );
   };
 
-  public ConnectionStatus = (
-    origin: string
-  ): { isConnected: boolean; isPending: boolean } => {
-    const appFound = this.appConnections.find((each) => each.origin === origin);
-    if (!appFound) {
-      return { isConnected: false, isPending: false };
-    } else {
-      return {
-        isConnected: !appFound.isPending,
-        isPending: appFound.isPending,
-      };
-    }
-  };
-
   public requestToConnect = (
     origin: string,
     onConnectionRequest: () => void
   ) => {
-    const appFound = this.appConnections.find((each) => each.origin === origin);
+    const appFound = this.appConnections.find(
+      (each) =>
+        each.origin === origin && each.appConnectionStatus !== "rejected"
+    );
+
     if (!appFound) {
-      this.appConnections.push({ origin, isPending: true });
+      this.appConnections.push({
+        origin,
+        appConnectionStatus: "pending",
+      });
       onConnectionRequest();
       // Store updated appConnections in localStorage
       localStorage.setItem(
@@ -665,10 +658,39 @@ export class PushWallet {
     }
   };
 
+  public checkAppConnectionStatus = (
+    origin: string
+  ): {
+    authStatus: AppConnection["authStatus"];
+    appConnectionStatus: AppConnection["appConnectionStatus"];
+  } => {
+    console.log("appConnections reuqest >>>", this.appConnections);
+
+    const appFound = this.appConnections.find(
+      (each) =>
+        each.origin === origin && each.appConnectionStatus !== "rejected"
+    );
+
+    if (!appFound) {
+      return { authStatus: "loggedIn", appConnectionStatus: "notReceived" };
+    }
+    return {
+      authStatus: "loggedIn",
+      appConnectionStatus: appFound.appConnectionStatus,
+    };
+  };
+
   public acceptConnectionReq = (origin: string) => {
     const appFound = this.appConnections.find((each) => each.origin === origin);
     if (appFound) {
-      appFound.isPending = false;
+      this.appConnections = this.appConnections.map((each) =>
+        each.origin === appFound.origin
+          ? {
+              ...appFound,
+              appConnectionStatus: "connected",
+            }
+          : each
+      );
 
       // Store updated appConnections in localStorage
       localStorage.setItem(
@@ -679,17 +701,31 @@ export class PushWallet {
   };
 
   public rejectConnectionReq = (origin: string) => {
-    this.appConnections = this.appConnections.filter(
-      (each) => each.origin !== origin
-    );
+    const appFound = this.appConnections.find((each) => each.origin === origin);
 
-    // Store updated appConnections in localStorage
-    localStorage.setItem("appConnections", JSON.stringify(this.appConnections));
+    if (appFound) {
+      this.appConnections = this.appConnections.map((each) =>
+        each.origin === appFound.origin
+          ? {
+              ...appFound,
+              appConnectionStatus: "rejected",
+            }
+          : each
+      );
+
+      // Store updated appConnections in localStorage
+      localStorage.setItem(
+        "appConnections",
+        JSON.stringify(this.appConnections)
+      );
+    }
   };
 
   public rejectAllConnectionReqs = () => {
-    this.appConnections = this.appConnections.filter(
-      (app) => app.isPending === false
+    this.appConnections = this.appConnections.map((app) =>
+      app.appConnectionStatus === "pending"
+        ? { ...app, appConnectionStatus: "rejected" }
+        : app
     );
     // Store updated appConnections in localStorage
     localStorage.setItem("appConnections", JSON.stringify(this.appConnections));
