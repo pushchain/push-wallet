@@ -19,6 +19,7 @@ export type GlobalState = {
   isAuthenticated: boolean;
   jwt: string | null;
   walletLoadState: "idle" | "success" | "loading" | "rejected";
+  messageSignState: "idle" | "loading";
 };
 
 // Define actions for state management
@@ -32,7 +33,9 @@ export type GlobalAction =
   | { type: "SET_JWT"; payload: string }
   | { type: "SET_WALLET_LOAD_STATE"; payload: GlobalState["walletLoadState"] }
   | { type: "RESET_AUTHENTICATED" }
-  | { type: "RESET_USER" };
+  | { type: "RESET_USER" }
+  | { type: "SET_MESSAGE_SIGN_LOAD_STATE" }
+  | { type: "RESET_MESSAGE_SIGN" };
 
 // Initial state
 const initialState: GlobalState = {
@@ -43,6 +46,7 @@ const initialState: GlobalState = {
   isAuthenticated: false,
   jwt: null,
   walletLoadState: "idle",
+  messageSignState: 'idle'
 };
 
 // Reducer function to manage state transitions
@@ -80,6 +84,7 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
         ...state,
         isAuthenticated: false,
         walletLoadState: "idle",
+        wallet:null,
         dynamicWallet: null,
         jwt: null,
       };
@@ -89,7 +94,18 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
         user: null,
         walletLoadState: "idle",
         dynamicWallet: null,
+        wallet:null,
         jwt: null,
+      };
+    case "RESET_MESSAGE_SIGN":
+      return {
+        ...state,
+        messageSignState: "idle",
+      };
+    case "SET_MESSAGE_SIGN_LOAD_STATE":
+      return {
+        ...state,
+        messageSignState: "loading",
       };
     default:
       return state;
@@ -129,19 +145,19 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     if (state.wallet) {
       new PostMessageHandler(undefined, state.wallet, () =>
-        dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet })
+        dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet }),dispatch
       );
     } else {
-      new PostMessageHandler(undefined, undefined, () => { });
+      new PostMessageHandler(undefined, undefined, () => { },dispatch);
     }
   }, [state.wallet]);
 
   /* This hook handles the logic for listening to the app connection requests for external wallet*/
   useEffect(() => {
     if (!state?.wallet && primaryWallet) {
-      new PostMessageHandler(primaryWallet, undefined, () => { });
+      new PostMessageHandler(primaryWallet, undefined, () => { },dispatch);
     } else {
-      new PostMessageHandler(undefined, undefined, () => { });
+      new PostMessageHandler(undefined, undefined, () => { },dispatch);
     }
   }, [primaryWallet]);
 

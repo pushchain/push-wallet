@@ -1,11 +1,13 @@
 import { FC, useEffect, useState } from "react";
-import { Box, Info } from "../../blocks";
+import { Box } from "../../blocks";
 import {
   BoxLayout,
   ContentLayout,
   PushWalletLoadingContent,
   WalletSkeletonScreen,
   WalletReconstructionErrorContent,
+  DrawerWrapper,
+  LoadingContent,
 } from "../../common";
 import { WalletProfile } from "./components/WalletProfile";
 import { WalletTabs } from "./components/WalletTabs";
@@ -14,9 +16,7 @@ import { PushWallet } from "../../services/pushWallet/pushWallet";
 import { APP_ROUTES, ENV } from "../../constants";
 import secrets from "secrets.js-grempe";
 import { useGlobalState } from "../../context/GlobalContext";
-import {
-  useDynamicContext,
-} from "@dynamic-labs/sdk-react-core";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
 import { AppConnections } from "../../common/components/AppConnections";
@@ -30,13 +30,15 @@ const Wallet: FC<WalletProps> = () => {
   const [createAccountLoading, setCreateAccountLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const { primaryWallet,sdkHasLoaded } = useDynamicContext();
+  const { primaryWallet, user } = useDynamicContext();
   const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
     useState(false);
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
 
   const navigate = useNavigate();
   const persistQuery = usePersistedQuery();
+  const [searchParams] = useSearchParams();
+  const app = searchParams.get("app");
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -195,7 +197,10 @@ const Wallet: FC<WalletProps> = () => {
 
           await fetchUserProfile(state.jwt);
         }
-        // else if (!primaryWallet) navigate(APP_ROUTES.AUTH);
+        // else if (!primaryWallet) {
+        //   navigate(APP_ROUTES.AUTH);
+        // }
+
         /* We don't need to fetch push user as of now when user continues with wallet
          This function fetches the already created push wallet */
 
@@ -243,7 +248,7 @@ const Wallet: FC<WalletProps> = () => {
     dispatch({ type: "RESET_AUTHENTICATED" });
     dispatch({ type: "RESET_USER" });
     localStorage.clear();
-    const url = persistQuery(APP_ROUTES.AUTH)
+    const url = persistQuery(APP_ROUTES.AUTH);
     navigate(url);
   };
 
@@ -254,23 +259,6 @@ const Wallet: FC<WalletProps> = () => {
       );
   }, [state?.wallet?.attachedAccounts]);
 
-  // useEffect(() => {
-  //   (async () => {
-  // console.debug(primaryWallet,'primaryWallet')
-  //     if (primaryWallet && !primaryWallet.isAuthenticated) {
-       
-  //       await authenticateUser();
-       
-  //     }
-     
-  //   })();
-  // }, [primaryWallet?.isAuthenticated]);
-  
-  
-  
-
-  const [searchParams] = useSearchParams();
-  const app = searchParams.get("app");
 
   // Check if the appConnections has isPending true or the appConnection origin is included in the URL
   const showAppConnectionContainer = state?.wallet?.appConnections.some(
@@ -308,7 +296,7 @@ const Wallet: FC<WalletProps> = () => {
               selectedWallet={selectedWallet}
               appConnection={
                 state.wallet.appConnections[
-                state.wallet.appConnections.length - 1
+                  state.wallet.appConnections.length - 1
                 ]
               }
             />
@@ -328,8 +316,22 @@ const Wallet: FC<WalletProps> = () => {
               setIsLoading={setCreateAccountLoading}
             />
           )} */}
-          
-         
+          {state.messageSignState === "loading" && (
+            <DrawerWrapper>
+              <LoadingContent
+                title={
+                  primaryWallet
+                    ? "Confirm Transaction"
+                    : "Processing Transaction"
+                }
+                subTitle={
+                  primaryWallet
+                    ? "Please confirm the transaction in your wallet to continue"
+                    : "Your transaction is being verified"
+                }
+              />
+            </DrawerWrapper>
+          )}
         </Box>
       </BoxLayout>
     </ContentLayout>

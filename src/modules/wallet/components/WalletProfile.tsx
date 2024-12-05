@@ -65,8 +65,8 @@ const WalletProfile: FC<WalletProfileProps> = ({
                     dispatch({ type: "RESET_AUTHENTICATED" });
                     dispatch({ type: "RESET_USER" });
                     localStorage.clear();
+                    primaryWallet?.connector?.endSession();
                     handleLogOut();
-
                     navigate(APP_ROUTES.AUTH);
                     localStorage.clear();
                   }}
