@@ -129,6 +129,8 @@ export class PostMessageHandler {
           }
           case ACTION.REQ_TO_SIGN: {
             try {
+              console.log("Requesting to sign...");
+
               this.dispatch({ type: "SET_MESSAGE_SIGN_LOAD_STATE" });
               const signature = await this.pushWallet.sign(data, event.origin);
               event.source?.postMessage(
@@ -144,7 +146,9 @@ export class PostMessageHandler {
                 event.origin as any
               );
             } finally {
-              this.dispatch({ type: "RESET_MESSAGE_SIGN" });
+              setTimeout(() => {
+                this.dispatch({ type: "RESET_MESSAGE_SIGN" });
+              }, 2000);
             }
             break;
           }
