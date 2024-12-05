@@ -5,6 +5,8 @@ import { AppConnection } from "../../services/pushWallet/pushWallet.types";
 import { DrawerWrapper } from "./DrawerWrapper";
 import { ConnectionSuccess } from "./ConnectionSuccess";
 import { AppConnectionStatus } from "./AppConnectionStatus";
+import { ErrorContent } from "./ErrorContent";
+import { Info } from "blocks";
 
 export type AppConnectionsProps = {
   selectedWallet: WalletListType;
@@ -18,22 +20,19 @@ const AppConnections: FC<AppConnectionsProps> = ({
 
   const { state, dispatch } = useGlobalState();
 
-  // Setting isAppConnected as appConnection.isPending to decide either to display the success drawer or connection request
-  const [isAppConnected, setIsAppConnected] = useState(appConnection.appConnectionStatus !== 'pending');
+  const [appConnectionStatus, setAppConnectionStatus] = useState<"rejected" | "notReceived" | "connected" | "pending">(appConnection.appConnectionStatus)
 
   const handleAccept = (origin: string) => {
     if (state.wallet) {
       state?.wallet?.acceptConnectionReq(origin);
-      setIsAppConnected(true)
+      setAppConnectionStatus('connected')
     }
   };
 
   const handleReject = (origin: string) => {
     if (state.wallet) {
       state?.wallet?.rejectConnectionReq(origin);
-      dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet });
-      // remov the app from the URL
-      removeAppStateFromURL()
+      setAppConnectionStatus('rejected')
     }
   };
 
@@ -46,7 +45,7 @@ const AppConnections: FC<AppConnectionsProps> = ({
     }
   };
 
-  const handleCloseSuccessConnection = async () => {
+  const handleCloseWhenSuccess = async () => {
     if (state.wallet) {
       // remove the URL and close the drawer by removing the app from the URL
       removeAppStateFromURL();
@@ -61,13 +60,44 @@ const AppConnections: FC<AppConnectionsProps> = ({
     window.history.replaceState({}, document.title, url.toString());
   }
 
+  const handleCloseWhenReject = () => {
+    if (state.wallet) {
+      dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet });
+      removeAppStateFromURL()
+    }
+  }
+
+  const handleCloseTabWhenReject = () => {
+
+    if (window.opener) {
+      window.opener.postMessage("closeAndFocusParent", "http://localhost:5174");
+    }
+
+    window.close();
+  }
+
   return (
     <DrawerWrapper>
-      {isAppConnected ? (
+
+      {appConnectionStatus === 'connected' && (
         <ConnectionSuccess
-          onClose={handleCloseSuccessConnection}
+          onClose={handleCloseWhenSuccess}
         />
-      ) : (
+      )}
+
+      {appConnectionStatus === 'rejected' && (
+        <ErrorContent
+          icon={<Info size={32} color="icon-state-danger-subtle" />}
+          title="Could not verify"
+          subTitle="Please go back to the app and retry"
+          retryText="Close"
+          onClose={() => handleCloseWhenReject()}
+          onRetry={() => handleCloseTabWhenReject()}
+          note="Closing this window will log you out."
+        />
+      )}
+
+      {(appConnectionStatus === 'notReceived' || appConnectionStatus === 'pending') && (
         <AppConnectionStatus
           selectedWallet={selectedWallet}
           appConnection={appConnection}
@@ -76,6 +106,7 @@ const AppConnections: FC<AppConnectionsProps> = ({
           onRejectAll={handleRejectAllConnections}
         />
       )}
+
     </DrawerWrapper>
   );
 };

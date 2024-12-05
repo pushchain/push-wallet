@@ -1,6 +1,8 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import { Back, Box, Text } from "../../../blocks";
 import {
+  DrawerWrapper,
+  LoadingContent,
   PoweredByPush,
   WalletCategories,
   WALLETS_LOGO,
@@ -19,6 +21,7 @@ import {
 import { WalletKeyPairType, WalletState } from "../Authentication.types";
 import { useNavigate } from "react-router-dom";
 import { APP_ROUTES } from "../../../constants";
+import { useAppState } from "../../../context/AppContext";
 import { usePersistedQuery } from "../../../common/hooks/usePersistedQuery";
 
 type WalletSelectionProps = {
@@ -28,11 +31,16 @@ type WalletSelectionProps = {
 const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const [selectedWalletCategory, setSelectedWalletCategory] =
     useState<string>("");
+  const [selectedWalletName, setSelectedWalletName] =
+    useState<string>("");
   const { primaryWallet } = useDynamicContext();
-
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
 
+  const {
+    dispatch,
+    state: { externalWalletAuthState }
+  } = useAppState();
   const persistQuery = usePersistedQuery();
 
   useEffect(() => {
@@ -72,7 +80,9 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   };
 
   const handleWalletOption = (key: string) => {
-    selectWalletOption(key)
+    setSelectedWalletName(walletsToShow[key]);
+    selectWalletOption(key);
+    // setShowAuthFlow(false);
   };
 
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {
@@ -157,8 +167,17 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         </Box>
       </Box>
       <PoweredByPush />
-
-
+      {externalWalletAuthState === "loading" && (
+        <DrawerWrapper>
+          <LoadingContent
+            title={`Connect ${selectedWalletName}`}
+            subTitle="Click connect in your wallet"
+            onClose={() =>
+              dispatch({ type: "RESET_EXTERNAL_WALLET_STATE" })
+            }
+          />
+        </DrawerWrapper>
+      )}
     </Box>
   );
 };

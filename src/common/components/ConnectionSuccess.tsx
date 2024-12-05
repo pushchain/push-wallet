@@ -1,11 +1,10 @@
-import { Box, Button, Cross, Text, Tick } from "blocks";
+import { Box, Cross, Text, Tick } from "blocks";
 import React from "react";
 import { css } from "styled-components";
 
 const ConnectionSuccess = ({
     onClose
 }) => {
-    const onRetry = () => { };
     return (
         <Box
             display="flex"
@@ -48,11 +47,6 @@ const ConnectionSuccess = ({
                 <Text variant="bs-regular" color="text-secondary">
                     You can now return to the app to continue
                 </Text>
-            </Box>
-            <Box display="flex" width="100%" padding="spacing-none spacing-md">
-                <Button block variant="outline" onClick={() => onRetry()}>
-                    Return to the app
-                </Button>
             </Box>
             <Text variant="bs-regular" color="text-tertiary">
                 Closing this window will log you out.

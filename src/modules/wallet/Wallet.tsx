@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Box, Info } from "../../blocks";
 import {
   BoxLayout,
@@ -65,6 +65,8 @@ const Wallet: FC<WalletProps> = () => {
         instance.mnemonic
       );
       await instance.registerPushAccount();
+
+      console.log("Instance of the push wallet", instance);
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
 
@@ -265,11 +267,59 @@ const Wallet: FC<WalletProps> = () => {
 
   useEffect(() => {
     (async () => {
+
+
       if (primaryWallet && !primaryWallet.isAuthenticated) {
+
         await authenticateUser();
+        setTimeout(() => {
+          if (externalWalletAuthState === 'loading') {
+            console.debug('after 10 seocnds', externalWalletAuthState)
+            // appDispatch({ type: "SET_EXTERNAL_WALLET_TIMEOUT_STATE" });
+
+          }
+
+        }, 5000)
+
+        // const startTime = Date.now();
+        console.debug("Started timeout logic");
+
+        // // Define the monitoring logic
+        // const authenticateAndMonitor = async () => {
+
+        //   const checkAuthInterval = setInterval(() => {
+        //     const timePassed = Date.now() - startTime;
+
+        //     console.debug("Time passed:", timePassed);
+
+        //     if (externalWalletAuthState === "loading" && timePassed >= 10000) {
+        //       console.debug("10 seconds passed; dispatching timeout state");
+        //       appDispatch({ type: "SET_EXTERNAL_WALLET_TIMEOUT_STATE" });
+        //       clearInterval(checkAuthInterval);
+        //     }
+
+        //     if (externalWalletAuthState === "success") {
+        //       console.debug("Authentication succeeded; stopping interval");
+        //       clearInterval(checkAuthInterval);
+        //     }
+        //   }, 500); // Check every 500ms
+        //   await authenticateUser(); // Trigger authentication
+
+        //   return () => clearInterval(checkAuthInterval); // Cleanup the interval
+        // };
+
+        // const cleanupPromise = authenticateAndMonitor();
+
+        // return () => {
+        //   cleanupPromise.then(cleanupFn => {
+        //     if (typeof cleanupFn === "function") cleanupFn();
+        //   });
+        // };
       }
     })();
-  }, [primaryWallet?.isAuthenticated]);
+  }, [primaryWallet?.isAuthenticated]); // Minimal dependencies
+
+
 
   const [searchParams] = useSearchParams();
   const app = searchParams.get("app");
@@ -336,7 +386,7 @@ const Wallet: FC<WalletProps> = () => {
                 title="Sign to verify"
                 subTitle="Allow the site to connect and continue"
                 onClose={() =>
-                  appDispatch({ type: "RESET_EXTERNAL_WALLET_STATE" })
+                  appDispatch({ type: "SET_EXTERNAL_WALLET_REJECT_STATE" })
                 }
               />
             </DrawerWrapper>

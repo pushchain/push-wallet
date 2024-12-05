@@ -128,6 +128,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   /* This hook handles the logic for listening to the app connection requests for push wallet */
   useEffect(() => {
     if (state.wallet) {
+      console.log("Global State lsitener iniaited");
       new PostMessageHandler(undefined, state.wallet, () =>
         dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet })
       );
@@ -149,6 +150,8 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
     const fetchUser = async () => {
       try {
         dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "loading" });
+
+        console.log("State Param", stateParam);
 
         // This condition is valid for social login and email for redirection during login
         if (stateParam) {

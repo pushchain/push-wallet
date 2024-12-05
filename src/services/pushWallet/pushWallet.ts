@@ -666,17 +666,26 @@ export class PushWallet {
   } => {
     console.log("appConnections reuqest >>>", this.appConnections);
 
-    const appFound = this.appConnections.find(
+    const newAppRequest = this.appConnections.find(
       (each) =>
         each.origin === origin && each.appConnectionStatus !== "rejected"
     );
 
-    if (!appFound) {
-      return { authStatus: "loggedIn", appConnectionStatus: "notReceived" };
+    const previousAppRequest = this.appConnections.find(
+      (each) => each.origin === origin
+    );
+
+    if (!newAppRequest) {
+      return {
+        authStatus: "loggedIn",
+        appConnectionStatus: previousAppRequest
+          ? previousAppRequest.appConnectionStatus
+          : "notReceived",
+      };
     }
     return {
       authStatus: "loggedIn",
-      appConnectionStatus: appFound.appConnectionStatus,
+      appConnectionStatus: newAppRequest.appConnectionStatus,
     };
   };
 

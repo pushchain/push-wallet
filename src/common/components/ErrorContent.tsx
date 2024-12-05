@@ -5,8 +5,9 @@ import { Box, Button, Cross, Info, Text } from "../../blocks";
 export type ErrorContentProps = {
   title: string;
   subTitle: string;
+  retryText?: string;
   onClose: () => void;
-  onRetry: () => void;
+  onRetry?: () => void;
   note?: string;
   icon?: ReactNode;
 };
@@ -14,6 +15,7 @@ export type ErrorContentProps = {
 const ErrorContent: FC<ErrorContentProps> = ({
   title,
   subTitle,
+  retryText = 'Retry',
   onClose,
   onRetry,
   note,
@@ -65,9 +67,9 @@ const ErrorContent: FC<ErrorContentProps> = ({
         </Text>
       </Box>
       <Box display='flex' width="100%" padding="spacing-none spacing-md">
-        <Button block onClick={() => onRetry()}>
-          Retry
-        </Button>
+        {onRetry && <Button block onClick={() => onRetry()}>
+          {retryText}
+        </Button>}
       </Box>
       {note && (
         <Text variant="bs-regular" color="text-tertiary">

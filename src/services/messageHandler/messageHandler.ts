@@ -24,7 +24,8 @@ export class PostMessageHandler {
     // Define the new listener and assign it to the static variable
     PostMessageHandler.messageListener = async (event: MessageEvent) => {
       // Ignore messages sent by this handler itself
-      if (event.origin === "http://localhost:5173") {
+      const origin = window.location.origin;
+      if (event.origin === origin) {
         return;
       }
 
@@ -32,7 +33,6 @@ export class PostMessageHandler {
 
       const { action, data } = event.data;
 
-      console.log("action", action);
       const pushSigner = this.externalWallet
         ? await PushSigner.initialize(this.externalWallet, "DYNAMIC")
         : undefined;
@@ -55,8 +55,8 @@ export class PostMessageHandler {
             event.source?.postMessage(
               {
                 action: ACTION.CONNECTION_STATUS,
-                isPending: false,
-                isConnected: true,
+                appConnectionStatus: "connected",
+                authStatus: "loggedIn",
               },
               event.origin as any
             );
@@ -81,7 +81,7 @@ export class PostMessageHandler {
             break;
           }
         }
-      } else if (this?.pushWallet) {
+      } else if (this.pushWallet) {
         switch (action) {
           case ACTION.REQ_WALLET_DETAILS: {
             const loggedInAddress = this.pushWallet.signerAccount;
