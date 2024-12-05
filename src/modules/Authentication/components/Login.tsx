@@ -1,11 +1,9 @@
 import { FC } from "react";
 import { Box, Button, Front, Google, Text, TextInput } from "../../../blocks";
 import { PoweredByPush } from "../../../common";
-import { socialLoginConfig } from "../Authentication.constants";
 import { WalletState } from "../Authentication.types";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { css } from "styled-components";
 import { APP_ROUTES } from "../../../constants";
 import { usePersistedQuery } from "../../../common/hooks/usePersistedQuery";
 
@@ -24,9 +22,7 @@ const envRouteAlias =
 
 
 const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
-
   const persistQuery = usePersistedQuery();
-
   const formik = useFormik({
     initialValues: { email },
     validationSchema,

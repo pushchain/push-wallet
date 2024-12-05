@@ -1,7 +1,8 @@
 import { FC, useEffect, useMemo, useState } from "react";
-import { Back, Box, Text } from "../../../blocks";
+import { Back, Box, Info, Text } from "../../../blocks";
 import {
   DrawerWrapper,
+  ErrorContent,
   LoadingContent,
   PoweredByPush,
   WalletCategories,
@@ -31,22 +32,20 @@ type WalletSelectionProps = {
 const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const [selectedWalletCategory, setSelectedWalletCategory] =
     useState<string>("");
-  const [selectedWalletName, setSelectedWalletName] =
-    useState<string>("");
   const { primaryWallet } = useDynamicContext();
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
 
   const {
     dispatch,
-    state: { externalWalletAuthState }
+    state: { externalWalletAuthState },
   } = useAppState();
   const persistQuery = usePersistedQuery();
 
   useEffect(() => {
     (async () => {
       if (primaryWallet) {
-        const url = persistQuery(APP_ROUTES.WALLET)
+        const url = persistQuery(APP_ROUTES.WALLET);
         navigate(url);
       }
     })();
@@ -80,9 +79,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   };
 
   const handleWalletOption = (key: string) => {
-    setSelectedWalletName(walletsToShow[key]);
     selectWalletOption(key);
-    // setShowAuthFlow(false);
   };
 
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {
@@ -167,17 +164,38 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         </Box>
       </Box>
       <PoweredByPush />
-      {externalWalletAuthState === "loading" && (
+      {/* {externalWalletAuthState === "loading" && (
         <DrawerWrapper>
           <LoadingContent
             title={`Connect ${selectedWalletName}`}
             subTitle="Click connect in your wallet"
+            onClose={() => dispatch({ type: "RESET_EXTERNAL_WALLET_STATE" })}
+          />
+        </DrawerWrapper>
+      )} */}
+      {externalWalletAuthState === "loading" && (
+        <DrawerWrapper>
+          <LoadingContent
+            title="Sign to verify"
+            subTitle="Allow the site to connect and continue"
             onClose={() =>
-              dispatch({ type: "RESET_EXTERNAL_WALLET_STATE" })
+              dispatch({ type: "SET_EXTERNAL_WALLET_REJECT_STATE" })
             }
           />
         </DrawerWrapper>
       )}
+       {externalWalletAuthState === "rejected" && (
+            <DrawerWrapper>
+              <ErrorContent
+                icon={<Info size={32} color="icon-state-danger-subtle" />}
+                title="Could not verify"
+                subTitle="Please try connecting again"
+                onClose={() =>
+                  dispatch({ type: "RESET_EXTERNAL_WALLET_STATE" })
+                }
+              />
+            </DrawerWrapper>
+          )}
     </Box>
   );
 };

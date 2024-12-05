@@ -1,19 +1,18 @@
 import React, { FC } from "react";
 import { css } from "styled-components";
-import {
-  Box,
-  Cross,
-  Spinner,
-  Text,
-} from "../../blocks";
+import { Box, Cross, Spinner, Text } from "../../blocks";
 
 export type LoadingContentProps = {
   title: string;
   subTitle: string;
-  onClose: () => void;
+  onClose?: () => void;
 };
 
-const LoadingContent: FC<LoadingContentProps> = ({ title, subTitle,onClose }) => {
+const LoadingContent: FC<LoadingContentProps> = ({
+  title,
+  subTitle,
+  onClose,
+}) => {
   return (
     <Box
       display="flex"
@@ -28,9 +27,11 @@ const LoadingContent: FC<LoadingContentProps> = ({ title, subTitle,onClose }) =>
         border-top: var(--border-xmd) solid var(--stroke-secondary);
       `}
     >
-      <Box alignSelf="flex-end" cursor="pointer" onClick={()=>onClose()}>
-        <Cross size={16} color="icon-primary" />
-      </Box>
+      
+        <Box alignSelf="flex-end" cursor="pointer" onClick={() => onClose()}>
+       {onClose &&   <Cross size={16} color="icon-primary" />}
+        </Box>
+  
       <Spinner size="large" variant="primary" />
       <Box
         display="flex"

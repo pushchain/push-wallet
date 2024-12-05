@@ -2,15 +2,16 @@
 import { PushWallet } from "../pushWallet/pushWallet";
 import { ACTION } from "./messageHandler.types";
 import { PushSigner } from "../pushSigner/pushSigner";
+import { GlobalAction } from "../../context/GlobalContext";
 
 export class PostMessageHandler {
   // Store the previous listener to remove it if needed
   private static messageListener: (event: MessageEvent) => void;
-  //fix the wallet type
   constructor(
     private externalWallet: any | undefined,
     private pushWallet: PushWallet | undefined,
-    private onConnectionRequest: () => void
+    private onConnectionRequest: () => void,
+    private dispatch: React.Dispatch<GlobalAction>
   ) {
     this.initializeListener();
   }
@@ -29,10 +30,7 @@ export class PostMessageHandler {
         return;
       }
 
-      console.log("event", event);
-
       const { action, data } = event.data;
-
       const pushSigner = this.externalWallet
         ? await PushSigner.initialize(this.externalWallet, "DYNAMIC")
         : undefined;
@@ -64,6 +62,7 @@ export class PostMessageHandler {
           }
           case ACTION.REQ_TO_SIGN: {
             try {
+              this.dispatch({ type: "SET_MESSAGE_SIGN_LOAD_STATE" });
               const signature = await pushSigner.signMessage(data);
               event.source?.postMessage(
                 { action: ACTION.SIGNATURE, signature },
@@ -73,10 +72,12 @@ export class PostMessageHandler {
               event.source?.postMessage(
                 {
                   action: ACTION.ERROR,
-                  error: "Origin Not Connected",
+                  error: err?.message,
                 },
                 event.origin as any
               );
+            } finally {
+              this.dispatch({ type: "RESET_MESSAGE_SIGN" });
             }
             break;
           }
@@ -128,6 +129,7 @@ export class PostMessageHandler {
           }
           case ACTION.REQ_TO_SIGN: {
             try {
+              this.dispatch({ type: "SET_MESSAGE_SIGN_LOAD_STATE" });
               const signature = await this.pushWallet.sign(data, event.origin);
               event.source?.postMessage(
                 { action: ACTION.SIGNATURE, signature },
@@ -137,10 +139,12 @@ export class PostMessageHandler {
               event.source?.postMessage(
                 {
                   action: ACTION.ERROR,
-                  error: "Origin Not Connected",
+                  error: err?.message,
                 },
                 event.origin as any
               );
+            } finally {
+              this.dispatch({ type: "RESET_MESSAGE_SIGN" });
             }
             break;
           }

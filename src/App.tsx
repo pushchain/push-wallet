@@ -34,7 +34,6 @@ export default function App() {
   const { isDarkMode } = useDarkMode();
   const {
     dispatch,
-    state: { externalWalletAuthState },
   } = useAppState();
 
 
@@ -42,8 +41,7 @@ export default function App() {
     <DynamicContextProvider
       theme="dark"
       settings={{
-        initialAuthenticationMode: "connect-only",
-        // cssOverrides: ".dynamic-shadow-dom-content { display: none; }",
+        initialAuthenticationMode: "connect-and-sign",
         // Find your environment id at https://app.dynamic.xyz/dashboard/developer
         environmentId: import.meta.env.VITE_APP_DYNAMIC_ENV_ID,
         walletConnectors: [EthereumWalletConnectors, SolanaWalletConnectors],
