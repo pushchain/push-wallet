@@ -60,6 +60,7 @@ export class PostMessageHandler {
           }
           case ACTION.REQ_TO_SIGN: {
             try {
+              //toast to show send transaction is going on 
               const signature = await pushSigner.signMessage(data);
               event.source?.postMessage(
                 { action: ACTION.SIGNATURE, signature },

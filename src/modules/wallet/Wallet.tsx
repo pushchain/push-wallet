@@ -6,9 +6,6 @@ import {
   PushWalletLoadingContent,
   WalletSkeletonScreen,
   WalletReconstructionErrorContent,
-  DrawerWrapper,
-  ErrorContent,
-  LoadingContent,
 } from "../../common";
 import { WalletProfile } from "./components/WalletProfile";
 import { WalletTabs } from "./components/WalletTabs";
@@ -18,7 +15,6 @@ import { APP_ROUTES, ENV } from "../../constants";
 import secrets from "secrets.js-grempe";
 import { useGlobalState } from "../../context/GlobalContext";
 import {
-  useAuthenticateConnectedUser,
   useDynamicContext,
 } from "@dynamic-labs/sdk-react-core";
 import { getWalletlist } from "./Wallet.utils";
@@ -26,7 +22,6 @@ import { WalletListType } from "./Wallet.types";
 import { AppConnections } from "../../common/components/AppConnections";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
-import { useAppState } from "../../context/AppContext";
 
 export type WalletProps = {};
 
@@ -34,12 +29,8 @@ const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
   const [createAccountLoading, setCreateAccountLoading] = useState(true);
   const [error, setError] = useState("");
-  const {
-    state: { externalWalletAuthState },
-    dispatch: appDispatch,
-  } = useAppState();
-  const { primaryWallet } = useDynamicContext();
-  const { authenticateUser } = useAuthenticateConnectedUser();
+
+  const { primaryWallet,sdkHasLoaded } = useDynamicContext();
   const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
     useState(false);
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
@@ -263,60 +254,18 @@ const Wallet: FC<WalletProps> = () => {
       );
   }, [state?.wallet?.attachedAccounts]);
 
-  useEffect(() => {
-    (async()=>{
-
-   
-    if (primaryWallet && !primaryWallet.isAuthenticated) {
-     
-      await authenticateUser();
-      setTimeout(()=>{
-        if(externalWalletAuthState === 'loading')
-        {
-          console.debug('after 10 seocnds',externalWalletAuthState)
-          // appDispatch({ type: "SET_EXTERNAL_WALLET_TIMEOUT_STATE" });
-        
-        }
+  // useEffect(() => {
+  //   (async () => {
+  // console.debug(primaryWallet,'primaryWallet')
+  //     if (primaryWallet && !primaryWallet.isAuthenticated) {
        
-      },5000)
+  //       await authenticateUser();
+       
+  //     }
      
-      // const startTime = Date.now();
-      console.debug("Started timeout logic");
+  //   })();
+  // }, [primaryWallet?.isAuthenticated]);
   
-      // // Define the monitoring logic
-      // const authenticateAndMonitor = async () => {
-  
-      //   const checkAuthInterval = setInterval(() => {
-      //     const timePassed = Date.now() - startTime;
-  
-      //     console.debug("Time passed:", timePassed);
-  
-      //     if (externalWalletAuthState === "loading" && timePassed >= 10000) {
-      //       console.debug("10 seconds passed; dispatching timeout state");
-      //       appDispatch({ type: "SET_EXTERNAL_WALLET_TIMEOUT_STATE" });
-      //       clearInterval(checkAuthInterval);
-      //     }
-  
-      //     if (externalWalletAuthState === "success") {
-      //       console.debug("Authentication succeeded; stopping interval");
-      //       clearInterval(checkAuthInterval);
-      //     }
-      //   }, 500); // Check every 500ms
-      //   await authenticateUser(); // Trigger authentication
-
-      //   return () => clearInterval(checkAuthInterval); // Cleanup the interval
-      // };
-  
-      // const cleanupPromise = authenticateAndMonitor();
-  
-      // return () => {
-      //   cleanupPromise.then(cleanupFn => {
-      //     if (typeof cleanupFn === "function") cleanupFn();
-      //   });
-      // };
-    }
-  })();
-  }, [primaryWallet?.isAuthenticated]); // Minimal dependencies
   
   
 
@@ -379,41 +328,8 @@ const Wallet: FC<WalletProps> = () => {
               setIsLoading={setCreateAccountLoading}
             />
           )} */}
-          {externalWalletAuthState === "loading" && (
-            <DrawerWrapper>
-              <LoadingContent
-                title="Sign to verify"
-                subTitle="Allow the site to connect and continue"
-                onClose={() =>
-                  appDispatch({ type: "SET_EXTERNAL_WALLET_REJECT_STATE" })
-                }
-              />
-            </DrawerWrapper>
-          )}
-          {externalWalletAuthState === "rejected" && (
-            <DrawerWrapper>
-              <ErrorContent
-                icon={<Info size={32} color="icon-state-danger-subtle" />}
-                title="Could not verify"
-                subTitle="Please try connecting again"
-                onRetry={() => authenticateUser()}
-                onClose={() => navigate(APP_ROUTES.AUTH)}
-                note="Closing this window will log you out."
-              />
-            </DrawerWrapper>
-          )}
-          {externalWalletAuthState === "timeout" && (
-            <DrawerWrapper>
-              <ErrorContent
-                icon={<Info size={32} color="icon-state-danger-subtle" />}
-                title="Connection timed out"
-                subTitle="Please try connecting again"
-                onRetry={() => authenticateUser()}
-                onClose={() => navigate(APP_ROUTES.AUTH)}
-                note="Closing this window will log you out."
-              />
-            </DrawerWrapper>
-          )}
+          
+         
         </Box>
       </BoxLayout>
     </ContentLayout>

@@ -1,4 +1,4 @@
-import { Box, PushLogo, Skeleton } from "blocks";
+import { Box, Button, PushLogo, Skeleton } from "blocks";
 import { FC, ReactNode } from "react";
 import { BoxLayout, ContentLayout } from "common";
 import { css } from "styled-components";

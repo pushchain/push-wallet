@@ -42,7 +42,7 @@ export default function App() {
     <DynamicContextProvider
       theme="dark"
       settings={{
-        initialAuthenticationMode: "connect-only",
+        initialAuthenticationMode: "connect-and-sign",
         // cssOverrides: ".dynamic-shadow-dom-content { display: none; }",
         // Find your environment id at https://app.dynamic.xyz/dashboard/developer
         environmentId: import.meta.env.VITE_APP_DYNAMIC_ENV_ID,

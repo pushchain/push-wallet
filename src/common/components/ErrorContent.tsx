@@ -6,7 +6,7 @@ export type ErrorContentProps = {
   title: string;
   subTitle: string;
   onClose: () => void;
-  onRetry: () => void;
+  onRetry?: () => void;
   note?: string;
   icon?: ReactNode;
 };
@@ -24,7 +24,7 @@ const ErrorContent: FC<ErrorContentProps> = ({
       display="flex"
       flexDirection="column"
       alignItems="center"
-      padding="spacing-xs"
+      padding="spacing-xs spacing-xs spacing-md spacing-xs"
       gap="spacing-sm"
       width="-webkit-fill-available"
       borderRadius="radius-md"
@@ -64,11 +64,11 @@ const ErrorContent: FC<ErrorContentProps> = ({
           {subTitle}
         </Text>
       </Box>
-      <Box display='flex' width="100%" padding="spacing-none spacing-md">
+     {onRetry && <Box display='flex' width="100%" padding="spacing-none spacing-md">
         <Button block onClick={() => onRetry()}>
           Retry
         </Button>
-      </Box>
+      </Box>}
       {note && (
         <Text variant="bs-regular" color="text-tertiary">
           {note}
