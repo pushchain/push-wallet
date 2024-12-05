@@ -8,7 +8,6 @@ import { GlobalAction } from "../../context/GlobalContext";
 export class PostMessageHandler {
   // Store the previous listener to remove it if needed
   private static messageListener: (event: MessageEvent) => void;
-  //fix the wallet type
   constructor(
     private externalWallet: any | undefined,
     private pushWallet: PushWallet | undefined,
