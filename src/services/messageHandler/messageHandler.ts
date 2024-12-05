@@ -9,7 +9,7 @@ export class PostMessageHandler {
   private static messageListener: (event: MessageEvent) => void;
   //fix the wallet type
   constructor(
-    private externalWallet:  any| undefined,
+    private externalWallet: any | undefined,
     private pushWallet: PushWallet | undefined,
     private onConnectionRequest: () => void
   ) {
@@ -25,13 +25,16 @@ export class PostMessageHandler {
     // Define the new listener and assign it to the static variable
     PostMessageHandler.messageListener = async (event: MessageEvent) => {
       // Ignore messages sent by this handler itself
-      if (event.origin === "http://localhost:5174") {
+      const origin = window.location.origin;
+      if (event.origin === origin) {
         return;
       }
 
-
       const { action, data } = event.data;
-      const pushSigner = this.externalWallet? await PushSigner.initialize(this.externalWallet,'DYNAMIC'):undefined;
+
+      const pushSigner = this.externalWallet
+        ? await PushSigner.initialize(this.externalWallet, "DYNAMIC")
+        : undefined;
       // In case wallet not created or keys are encrypted
       const formattedExternalWallet = pushSigner?.account;
       if (formattedExternalWallet) {
@@ -78,7 +81,7 @@ export class PostMessageHandler {
             break;
           }
         }
-      } else if (this.pushWallet){
+      } else if (this.pushWallet) {
         switch (action) {
           case ACTION.REQ_WALLET_DETAILS: {
             const loggedInAddress = this.pushWallet.signerAccount;
@@ -142,9 +145,8 @@ export class PostMessageHandler {
             break;
           }
         }
-      }
-      else{
-         event.source?.postMessage(
+      } else {
+        event.source?.postMessage(
           {
             action: ACTION.ERROR,
             error: "PushWallet Not Logged In",
