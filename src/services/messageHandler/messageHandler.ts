@@ -72,7 +72,6 @@ export class PostMessageHandler {
               this.dispatch({ type: "RESET_MESSAGE_SIGN" });
             } catch (err) {
               this.dispatch({ type: "SET_MESSAGE_SIGN_REJECT_STATE" });
-              setTimeout(()=>{
                 event.source?.postMessage(
                   {
                     action: ACTION.ERROR,
@@ -80,7 +79,6 @@ export class PostMessageHandler {
                   },
                   event.origin as any
                 );
-              },1000)
              
             }
             break;
@@ -144,7 +142,6 @@ export class PostMessageHandler {
               }, 2000);
             } catch (err) {
               this.dispatch({ type: "SET_MESSAGE_SIGN_REJECT_STATE" });
-              setTimeout(()=>{
                 event.source?.postMessage(
                   {
                     action: ACTION.ERROR,
@@ -152,7 +149,6 @@ export class PostMessageHandler {
                   },
                   event.origin as any
                 );
-              },1000)
             } 
             break;
           }

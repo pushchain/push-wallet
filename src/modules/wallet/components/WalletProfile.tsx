@@ -15,8 +15,8 @@ import {
 } from "../../../blocks";
 import { centerMaskWalletAddress, handleCopy } from "../../../common";
 import { useGlobalState } from "../../../context/GlobalContext";
-import { useNavigate } from "react-router-dom";
-import {  useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { WalletListType } from "../Wallet.types";
 import { APP_ROUTES } from "../../../constants";
 
@@ -24,16 +24,35 @@ export type WalletProfileProps = {
   selectedWallet: WalletListType;
 };
 
-const WalletProfile: FC<WalletProfileProps> = ({
-  selectedWallet,
-}) => {
-  const { primaryWallet, handleLogOut } = useDynamicContext();
+const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
+  const { primaryWallet, handleLogOut: dynamicLogOut } = useDynamicContext();
   const parsedWallet = selectedWallet?.address || primaryWallet?.address;
   const walletName = selectedWallet?.name ?? "External Wallet";
   const [copied, setCopied] = useState(false);
   const { dispatch } = useGlobalState();
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const handleLogOut = () => {
+    sessionStorage.removeItem("jwt");
+    dispatch({ type: "RESET_AUTHENTICATED" });
+    dispatch({ type: "RESET_USER" });
+    localStorage.clear();
+    primaryWallet?.connector?.endSession();
+    dynamicLogOut();
+    navigate(APP_ROUTES.AUTH);
+    localStorage.clear();
+
+    const appParam = searchParams.get("app");
+
+    if (appParam) {
+      if (window.opener) {
+        // Send a message to the parent app using the target origin (parent's URL)
+        window.opener.postMessage("walletLoggedOut", appParam);
+      }
+    }
+  };
 
   return (
     <Box
@@ -60,16 +79,7 @@ const WalletProfile: FC<WalletProfileProps> = ({
                 <MenuItem
                   label="Log Out"
                   icon={<Logout />}
-                  onClick={() => {
-                    sessionStorage.removeItem("jwt");
-                    dispatch({ type: "RESET_AUTHENTICATED" });
-                    dispatch({ type: "RESET_USER" });
-                    localStorage.clear();
-                    primaryWallet?.connector?.endSession();
-                    handleLogOut();
-                    navigate(APP_ROUTES.AUTH);
-                    localStorage.clear();
-                  }}
+                  onClick={handleLogOut}
                 />
               </Menu>
             }
@@ -102,9 +112,7 @@ const WalletProfile: FC<WalletProfileProps> = ({
           </Text>
 
           <Box cursor="pointer">
-            <Tooltip
-              title={copied ? "Copy" : "Copied"}
-            >
+            <Tooltip title={copied ? "Copy" : "Copied"}>
               {copied ? (
                 <TickCircleFilled
                   autoSize

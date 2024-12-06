@@ -362,7 +362,6 @@ const Wallet: FC<WalletProps> = () => {
             <DrawerWrapper>
               <ConnectionSuccess
                 onClose={() => {
-                  removeAppStateFromURL();
                   setConnectionSuccess(false);
                 }}
               />
