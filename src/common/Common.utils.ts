@@ -7,9 +7,10 @@ export const centerMaskWalletAddress = (address: string) => {
   return "";
 };
 
-
-
-export  const handleCopy = async (text: string,onCopy?:(flag:boolean)=>void) => {
+export const handleCopy = async (
+  text: string,
+  onCopy?: (flag: boolean) => void
+) => {
   try {
     await navigator.clipboard.writeText(text);
     onCopy?.(true);
@@ -17,4 +18,10 @@ export  const handleCopy = async (text: string,onCopy?:(flag:boolean)=>void) => 
   } catch (err) {
     console.error("Failed to copy text: ", err);
   }
+};
+
+export const removeAppStateFromURL = () => {
+  const url = new URL(window.location.href);
+  url.searchParams.delete("app");
+  window.history.replaceState({}, document.title, url.toString());
 };

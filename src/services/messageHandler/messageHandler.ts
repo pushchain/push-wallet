@@ -50,6 +50,7 @@ export class PostMessageHandler {
             break;
           }
           case ACTION.IS_CONNECTED: {
+            this.dispatch({type:"SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS",payload:'connected'})
             event.source?.postMessage(
               {
                 action: ACTION.CONNECTION_STATUS,
@@ -68,16 +69,19 @@ export class PostMessageHandler {
                 { action: ACTION.SIGNATURE, signature },
                 event.origin as any
               );
-            } catch (err) {
-              event.source?.postMessage(
-                {
-                  action: ACTION.ERROR,
-                  error: err?.message,
-                },
-                event.origin as any
-              );
-            } finally {
               this.dispatch({ type: "RESET_MESSAGE_SIGN" });
+            } catch (err) {
+              this.dispatch({ type: "SET_MESSAGE_SIGN_REJECT_STATE" });
+              setTimeout(()=>{
+                event.source?.postMessage(
+                  {
+                    action: ACTION.ERROR,
+                    error: err?.message,
+                  },
+                  event.origin as any
+                );
+              },1000)
+             
             }
             break;
           }
@@ -99,7 +103,6 @@ export class PostMessageHandler {
             const connectionStatus = this.pushWallet.checkAppConnectionStatus(
               event.origin
             );
-
             event.source?.postMessage(
               {
                 action: ACTION.CONNECTION_STATUS,
@@ -129,7 +132,6 @@ export class PostMessageHandler {
           }
           case ACTION.REQ_TO_SIGN: {
             try {
-              console.log("Requesting to sign...");
 
               this.dispatch({ type: "SET_MESSAGE_SIGN_LOAD_STATE" });
               const signature = await this.pushWallet.sign(data, event.origin);
@@ -137,19 +139,21 @@ export class PostMessageHandler {
                 { action: ACTION.SIGNATURE, signature },
                 event.origin as any
               );
-            } catch (err) {
-              event.source?.postMessage(
-                {
-                  action: ACTION.ERROR,
-                  error: err?.message,
-                },
-                event.origin as any
-              );
-            } finally {
               setTimeout(() => {
                 this.dispatch({ type: "RESET_MESSAGE_SIGN" });
               }, 2000);
-            }
+            } catch (err) {
+              this.dispatch({ type: "SET_MESSAGE_SIGN_REJECT_STATE" });
+              setTimeout(()=>{
+                event.source?.postMessage(
+                  {
+                    action: ACTION.ERROR,
+                    error: err?.message,
+                  },
+                  event.origin as any
+                );
+              },1000)
+            } 
             break;
           }
         }

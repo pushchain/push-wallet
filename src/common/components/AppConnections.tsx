@@ -7,6 +7,7 @@ import { ConnectionSuccess } from "./ConnectionSuccess";
 import { AppConnectionStatus } from "./AppConnectionStatus";
 import { ErrorContent } from "./ErrorContent";
 import { Info } from "blocks";
+import { removeAppStateFromURL } from "../../common/Common.utils";
 
 export type AppConnectionsProps = {
   selectedWallet: WalletListType;
@@ -54,11 +55,7 @@ const AppConnections: FC<AppConnectionsProps> = ({
     }
   }
 
-  const removeAppStateFromURL = () => {
-    const url = new URL(window.location.href);
-    url.searchParams.delete('app');
-    window.history.replaceState({}, document.title, url.toString());
-  }
+ 
 
   const handleCloseWhenReject = () => {
     if (state.wallet) {

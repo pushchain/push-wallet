@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Box } from "../../blocks";
+import { Box, Info } from "../../blocks";
 import {
   BoxLayout,
   ContentLayout,
@@ -8,6 +8,8 @@ import {
   WalletReconstructionErrorContent,
   DrawerWrapper,
   LoadingContent,
+  ErrorContent,
+  removeAppStateFromURL,
 } from "../../common";
 import { WalletProfile } from "./components/WalletProfile";
 import { WalletTabs } from "./components/WalletTabs";
@@ -33,9 +35,10 @@ const Wallet: FC<WalletProps> = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const externalOrigin = params.get("app");
+  const { primaryWallet } = useDynamicContext();
   const [showConnectionSuccess, setConnectionSuccess] =
     useState<boolean>(false);
-  const { primaryWallet } = useDynamicContext();
+
   const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
     useState(false);
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
@@ -265,13 +268,18 @@ const Wallet: FC<WalletProps> = () => {
   }, [state?.wallet?.attachedAccounts]);
 
   useEffect(() => {
-    if (externalOrigin && primaryWallet) setConnectionSuccess(true);
-  }, [primaryWallet, externalOrigin]);
+    if (
+      externalOrigin &&
+      primaryWallet &&
+      state.externalWalletAppConnectionStatus === "connected"
+    )
+      setConnectionSuccess(true);
+  }, [externalOrigin, state?.externalWalletAppConnectionStatus, primaryWallet]);
+
   // Check if the appConnections has isPending true or the appConnection origin is included in the URL
   const showAppConnectionContainer = state?.wallet?.appConnections.some(
     (cx) => cx.appConnectionStatus === "pending"
   );
-
   if (createAccountLoading)
     return <WalletSkeletonScreen content={<PushWalletLoadingContent />} />;
 
@@ -339,9 +347,25 @@ const Wallet: FC<WalletProps> = () => {
               />
             </DrawerWrapper>
           )}
+
+          {state.messageSignState === "rejected" && (
+            <DrawerWrapper>
+              <ErrorContent
+                icon={<Info size={32} color="icon-state-danger-subtle" />}
+                title="Could not verify"
+                subTitle="Please try again"
+                onClose={() => dispatch({ type: "RESET_MESSAGE_SIGN" })}
+              />
+            </DrawerWrapper>
+          )}
           {showConnectionSuccess && (
             <DrawerWrapper>
-              <ConnectionSuccess onClose={() => setConnectionSuccess(false)} />
+              <ConnectionSuccess
+                onClose={() => {
+                  removeAppStateFromURL();
+                  setConnectionSuccess(false);
+                }}
+              />
             </DrawerWrapper>
           )}
         </Box>

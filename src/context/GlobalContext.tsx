@@ -19,7 +19,8 @@ export type GlobalState = {
   isAuthenticated: boolean;
   jwt: string | null;
   walletLoadState: "idle" | "success" | "loading" | "rejected";
-  messageSignState: "idle" | "loading";
+  messageSignState: "idle" | "loading" | "rejected";
+  externalWalletAppConnectionStatus: "notReceived" | "connected";
 };
 
 // Define actions for state management
@@ -35,6 +36,8 @@ export type GlobalAction =
   | { type: "RESET_AUTHENTICATED" }
   | { type: "RESET_USER" }
   | { type: "SET_MESSAGE_SIGN_LOAD_STATE" }
+  | { type: "SET_MESSAGE_SIGN_REJECT_STATE" }
+  | { type: "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS";payload: GlobalState["externalWalletAppConnectionStatus"] }
   | { type: "RESET_MESSAGE_SIGN" };
 
 // Initial state
@@ -46,7 +49,8 @@ const initialState: GlobalState = {
   isAuthenticated: false,
   jwt: null,
   walletLoadState: "idle",
-  messageSignState: 'idle'
+  messageSignState: 'idle',
+  externalWalletAppConnectionStatus: "notReceived"
 };
 
 // Reducer function to manage state transitions
@@ -107,6 +111,13 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
         ...state,
         messageSignState: "loading",
       };
+    case "SET_MESSAGE_SIGN_REJECT_STATE":
+      return {
+        ...state,
+        messageSignState: "rejected",
+      };
+    case "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS":
+      return { ...state, externalWalletAppConnectionStatus: action.payload };
     default:
       return state;
   }
