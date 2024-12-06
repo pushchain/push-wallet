@@ -9,7 +9,6 @@ import { PushWallet } from "../services/pushWallet/pushWallet";
 import { PostMessageHandler } from "../services/messageHandler/messageHandler";
 import { extractStateFromUrl, fetchJwtUsingState } from "../helpers/AuthHelper";
 import { useDynamicContext, Wallet } from "@dynamic-labs/sdk-react-core";
-import { useWalletEvents } from "../common";
 
 // Define the shape of the global state
 export type GlobalState = {
@@ -22,9 +21,6 @@ export type GlobalState = {
   walletLoadState: "idle" | "success" | "loading" | "rejected";
   messageSignState: "idle" | "loading" | "rejected";
   externalWalletAppConnectionStatus: "notReceived" | "connected";
-  handleAppConnectionSuccess: (origin: string) => void;
-  handleAppConnectionRejected: () => void;
-  handleRejectAllAppConnections: () => void;
 };
 
 // Define actions for state management
@@ -158,36 +154,29 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
 
   const stateParam = extractStateFromUrl();
 
-  // const {
-  //   handleUserLoggedIn,
-  //   handleAppConnectionSuccess,
-  //   handleAppConnectionRejected,
-  //   handleRejectAllAppConnections,
-  // } = useWalletEvents(state.wallet, dispatch);
-
   const storedToken = sessionStorage.getItem("jwt");
   /* This hook handles the logic for listening to the app connection requests for push wallet */
-  // useEffect(() => {
-  //   if (state.wallet) {
-  //     console.log("Push wallet found ", state.wallet);
-  //     handleUserLoggedIn();
-  //     // new PostMessageHandler(undefined, state.wallet, () =>
-  //     //   dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet }),dispatch
-  //     // );
-  //   }
-  //   // else {
-  //   //   new PostMessageHandler(undefined, undefined, () => {}, dispatch);
-  //   // }
-  // }, [state.wallet]);
+  useEffect(() => {
+    if (state.wallet) {
+      new PostMessageHandler(
+        undefined,
+        state.wallet,
+        () => dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet }),
+        dispatch
+      );
+    } else {
+      new PostMessageHandler(undefined, undefined, () => {}, dispatch);
+    }
+  }, [state.wallet]);
 
   /* This hook handles the logic for listening to the app connection requests for external wallet*/
-  // useEffect(() => {
-  //   if (!state?.wallet && primaryWallet) {
-  //     new PostMessageHandler(primaryWallet, undefined, () => {}, dispatch);
-  //   } else {
-  //     new PostMessageHandler(undefined, undefined, () => {}, dispatch);
-  //   }
-  // }, [primaryWallet]);
+  useEffect(() => {
+    if (!state?.wallet && primaryWallet) {
+      new PostMessageHandler(primaryWallet, undefined, () => {}, dispatch);
+    } else {
+      new PostMessageHandler(undefined, undefined, () => {}, dispatch);
+    }
+  }, [primaryWallet]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -244,12 +233,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   return (
     <GlobalContext.Provider
       value={{
-        state: {
-          ...state,
-          // handleAppConnectionSuccess,
-          // handleAppConnectionRejected,
-          // handleRejectAllAppConnections,
-        },
+        state,
         dispatch,
       }}
     >
