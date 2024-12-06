@@ -6,10 +6,6 @@ import { GlobalState, useGlobalState } from "../../context/GlobalContext";
 
 const useWalletEvents = () => {
   const { dispatch, state } = useGlobalState();
-  const walletRef = useRef(state.wallet);
-  useEffect(() => {
-    walletRef.current = state.wallet;
-  }, [state.wallet]);
 
   // Function to send messages to the main tab
   const sendMessageToMainTab = (message) => {
@@ -33,9 +29,7 @@ const useWalletEvents = () => {
      * 2.Reject: WALLET_TO_APP_ACTION.APP_CONNECTION_Reject
      */
 
-    console.log("Push wallet >>>>", walletRef.current);
-
-    walletRef?.current.requestToConnect(origin);
+    state.wallet.requestToConnect(origin);
 
     const appConnections = localStorage.getItem("appConnections")
       ? JSON.parse(localStorage.getItem("appConnections"))
@@ -43,7 +37,7 @@ const useWalletEvents = () => {
     dispatch({
       type: "INITIALIZE_WALLET",
       payload: {
-        ...walletRef.current,
+        ...state.wallet,
         appConnections: appConnections,
       } as GlobalState["wallet"],
     });
@@ -92,13 +86,13 @@ const useWalletEvents = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Wallet Ref", walletRef.current);
+    console.log("Wallet Ref", state.wallet);
 
-    if (walletRef.current) {
-      console.log("Push wallet found ", walletRef.current);
+    if (state.wallet) {
+      console.log("Push wallet found ", state.wallet);
       handleUserLoggedIn();
     }
-  }, [walletRef.current]);
+  }, [state.wallet]);
 
   const handleAppConnectionSuccess = (origin: string) => {
     console.log("Sending app Conenction success request");
@@ -108,7 +102,7 @@ const useWalletEvents = () => {
       data: "Connection successful",
     });
 
-    walletRef?.current.acceptConnectionReq(origin);
+    state.wallet.acceptConnectionReq(origin);
   };
   const handleAppConnectionRejected = () => {
     console.log("Sending app Conenction rejected request");
@@ -117,7 +111,7 @@ const useWalletEvents = () => {
       data: "App Connection Rejected",
     });
 
-    walletRef?.current.rejectConnectionReq(origin);
+    state.wallet.rejectConnectionReq(origin);
   };
 
   const handleRejectAllAppConnections = () => {
@@ -126,7 +120,7 @@ const useWalletEvents = () => {
       data: "App Connection Rejected",
     });
 
-    walletRef?.current.rejectAllConnectionReqs();
+    state.wallet.rejectAllConnectionReqs();
   };
 
   const handleUserLoggedIn = () => {

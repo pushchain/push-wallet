@@ -87,7 +87,7 @@ export default function App() {
         <GlobalProvider>
           <Router basename={getAppBasePath()}>
             <RouterContainer />
-            {/* <WalletConnections /> */}
+            <WalletConnections />
           </Router>
         </GlobalProvider>
       </ThemeProvider>

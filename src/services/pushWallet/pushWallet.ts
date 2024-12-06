@@ -144,6 +144,7 @@ export class PushWallet {
     env: ENV = ENV.STAGING
   ) => {
     this.pushValidator = await PushValidator.initalize({ env });
+    console.log("WALLET ENV", env, this.pushValidator);
     const encPushAccount = await PushWallet.getPushWallet(pushSigner.account);
     console.log(encPushAccount);
     if (encPushAccount == null) {
