@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 
@@ -8,7 +9,7 @@ import { useDarkMode, RouterContainer } from "./common";
 import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { SolanaWalletConnectors } from "@dynamic-labs/solana";
-import {  useAppState } from "./context/AppContext";
+import { useAppState } from "./context/AppContext";
 
 const GlobalStyle = createGlobalStyle`
   :root{
@@ -17,7 +18,10 @@ const GlobalStyle = createGlobalStyle`
 
     /* New blocks theme css variables*/
   
-    ${(props) => getBlocksCSSVariables(props.theme.blocksTheme)}
+    ${(props) => {
+      // @ts-expect-error
+      return getBlocksCSSVariables(props.theme.blocksTheme);
+    }}
   }
 `;
 
@@ -29,13 +33,23 @@ const themeConfig = {
   light: { blocksTheme: blocksTheme.light, scheme: "light" },
 };
 
-
 export default function App() {
   const { isDarkMode } = useDarkMode();
-  const {
-    dispatch,
-  } = useAppState();
+  const { dispatch } = useAppState();
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const appParam = urlParams.get("app");
+    if (appParam) {
+      // Send a message to the parent when the child tab is closed
+      window.onbeforeunload = () => {
+        if (window.opener) {
+          // Send a message to the parent app using the target origin (parent's URL)
+          window.opener.postMessage("walletClosed", appParam);
+        }
+      };
+    }
+  }, []);
 
   return (
     <DynamicContextProvider
