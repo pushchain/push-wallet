@@ -19,9 +19,3 @@ export const handleCopy = async (
     console.error("Failed to copy text: ", err);
   }
 };
-
-export const removeAppStateFromURL = () => {
-  const url = new URL(window.location.href);
-  url.searchParams.delete("app");
-  window.history.replaceState({}, document.title, url.toString());
-};

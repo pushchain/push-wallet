@@ -9,7 +9,6 @@ import {
   DrawerWrapper,
   LoadingContent,
   ErrorContent,
-  removeAppStateFromURL,
 } from "../../common";
 import { WalletProfile } from "./components/WalletProfile";
 import { WalletTabs } from "./components/WalletTabs";
