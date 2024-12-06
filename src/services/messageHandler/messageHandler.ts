@@ -17,6 +17,8 @@ export class PostMessageHandler {
   }
 
   private initializeListener(): void {
+    console.log("Listener called");
+
     // Remove the previous event listener if it exists
     if (PostMessageHandler.messageListener) {
       window.removeEventListener("message", PostMessageHandler.messageListener);
@@ -24,11 +26,14 @@ export class PostMessageHandler {
 
     // Define the new listener and assign it to the static variable
     PostMessageHandler.messageListener = async (event: MessageEvent) => {
+      console.log("Listener called 2");
       // Ignore messages sent by this handler itself
       const origin = window.location.origin;
       if (event.origin === origin) {
         return;
       }
+
+      console.log("Listener called 3", event);
 
       const { action, data } = event.data;
       const pushSigner = this.externalWallet
@@ -50,7 +55,10 @@ export class PostMessageHandler {
             break;
           }
           case ACTION.IS_CONNECTED: {
-            this.dispatch({type:"SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS",payload:'connected'})
+            this.dispatch({
+              type: "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS",
+              payload: "connected",
+            });
             event.source?.postMessage(
               {
                 action: ACTION.CONNECTION_STATUS,
@@ -72,14 +80,13 @@ export class PostMessageHandler {
               this.dispatch({ type: "RESET_MESSAGE_SIGN" });
             } catch (err) {
               this.dispatch({ type: "SET_MESSAGE_SIGN_REJECT_STATE" });
-                event.source?.postMessage(
-                  {
-                    action: ACTION.ERROR,
-                    error: err?.message,
-                  },
-                  event.origin as any
-                );
-             
+              event.source?.postMessage(
+                {
+                  action: ACTION.ERROR,
+                  error: err?.message,
+                },
+                event.origin as any
+              );
             }
             break;
           }
@@ -128,9 +135,26 @@ export class PostMessageHandler {
             );
             break;
           }
+          case ACTION.AUTH_STATUS: {
+            try {
+              console.log("This.push Wallet", this.pushWallet);
+              event.source?.postMessage(
+                { action: ACTION.AUTH_STATUS, data: "connected" },
+                event.origin as any
+              );
+            } catch (error) {
+              event.source?.postMessage(
+                {
+                  action: ACTION.ERROR,
+                  error: error?.message,
+                },
+                event.origin as any
+              );
+            }
+            break;
+          }
           case ACTION.REQ_TO_SIGN: {
             try {
-
               this.dispatch({ type: "SET_MESSAGE_SIGN_LOAD_STATE" });
               const signature = await this.pushWallet.sign(data, event.origin);
               event.source?.postMessage(
@@ -142,14 +166,14 @@ export class PostMessageHandler {
               }, 2000);
             } catch (err) {
               this.dispatch({ type: "SET_MESSAGE_SIGN_REJECT_STATE" });
-                event.source?.postMessage(
-                  {
-                    action: ACTION.ERROR,
-                    error: err?.message,
-                  },
-                  event.origin as any
-                );
-            } 
+              event.source?.postMessage(
+                {
+                  action: ACTION.ERROR,
+                  error: err?.message,
+                },
+                event.origin as any
+              );
+            }
             break;
           }
         }

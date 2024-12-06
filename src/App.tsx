@@ -10,6 +10,7 @@ import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { SolanaWalletConnectors } from "@dynamic-labs/solana";
 import { useAppState } from "./context/AppContext";
+import { WalletConnections } from "./common/components/WalletConnections";
 
 const GlobalStyle = createGlobalStyle`
   :root{
@@ -37,19 +38,19 @@ export default function App() {
   const { isDarkMode } = useDarkMode();
   const { dispatch } = useAppState();
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const appParam = urlParams.get("app");
-    if (appParam) {
-      // Send a message to the parent when the child tab is closed
-      window.onbeforeunload = () => {
-        if (window.opener) {
-          // Send a message to the parent app using the target origin (parent's URL)
-          window.opener.postMessage("walletClosed", appParam);
-        }
-      };
-    }
-  }, []);
+  // useEffect(() => {
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   const appParam = urlParams.get("app");
+  //   if (appParam) {
+  //     // Send a message to the parent when the child tab is closed
+  //     window.onbeforeunload = () => {
+  //       if (window.opener) {
+  //         // Send a message to the parent app using the target origin (parent's URL)
+  //         window.opener.postMessage("walletClosed", appParam);
+  //       }
+  //     };
+  //   }
+  // }, []);
 
   return (
     <DynamicContextProvider
@@ -86,6 +87,7 @@ export default function App() {
         <GlobalProvider>
           <Router basename={getAppBasePath()}>
             <RouterContainer />
+            <WalletConnections />
           </Router>
         </GlobalProvider>
       </ThemeProvider>

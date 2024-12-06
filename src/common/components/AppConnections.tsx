@@ -7,6 +7,7 @@ import { DrawerWrapper } from "./DrawerWrapper";
 import { ConnectionSuccess } from "./ConnectionSuccess";
 import { AppConnectionStatus } from "./AppConnectionStatus";
 import { ErrorContent } from "./ErrorContent";
+import { useWalletEvents } from "../hooks";
 
 export type AppConnectionsProps = {
   selectedWallet: WalletListType;
@@ -24,24 +25,30 @@ const AppConnections: FC<AppConnectionsProps> = ({
   >(appConnection.appConnectionStatus);
 
   const handleAccept = (origin: string) => {
-    if (state.wallet) {
-      state?.wallet?.acceptConnectionReq(origin);
-      setAppConnectionStatus("connected");
-    }
+    state.handleAppConnectionSuccess(origin);
+    setAppConnectionStatus("connected");
+
+    // if (state.wallet) {
+    //   state?.wallet?.acceptConnectionReq(origin);
+    // }
   };
 
-  const handleReject = (origin: string) => {
-    if (state.wallet) {
-      state?.wallet?.rejectConnectionReq(origin);
-      setAppConnectionStatus("rejected");
-    }
+  const handleReject = () => {
+    state.handleAppConnectionRejected();
+    setAppConnectionStatus("rejected");
+
+    // if (state.wallet) {
+    //   state?.wallet?.rejectConnectionReq(origin);
+    // }
   };
 
   const handleRejectAllConnections = async () => {
-    if (state.wallet) {
-      state?.wallet?.rejectAllConnectionReqs();
-      dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet });
-    }
+    state.handleRejectAllAppConnections();
+
+    // if (state.wallet) {
+    //   state?.wallet?.rejectAllConnectionReqs();
+    //   dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet });
+    // }
   };
 
   const handleCloseWhenSuccess = async () => {

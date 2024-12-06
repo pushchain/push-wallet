@@ -19,6 +19,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { WalletListType } from "../Wallet.types";
 import { APP_ROUTES } from "../../../constants";
+// import { ACTION } from "src/services/messageHandler/messageHandler.types";
+import { ACTION } from "../../../services/messageHandler/messageHandler.types";
 
 export type WalletProfileProps = {
   selectedWallet: WalletListType;
@@ -32,7 +34,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
   const { dispatch } = useGlobalState();
 
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  // const [searchParams] = useSearchParams();
 
   const handleLogOut = () => {
     sessionStorage.removeItem("jwt");
@@ -44,14 +46,14 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
     navigate(APP_ROUTES.AUTH);
     localStorage.clear();
 
-    const appParam = searchParams.get("app");
+    // const appParam = searchParams.get("app");
 
-    if (appParam) {
-      if (window.opener) {
-        // Send a message to the parent app using the target origin (parent's URL)
-        window.opener.postMessage("walletLoggedOut", appParam);
-      }
-    }
+    // if (appParam) {
+    //   if (window.opener) {
+    //     // Send a message to the parent app using the target origin (parent's URL)
+    //     window.opener.postMessage("walletLoggedOut", appParam);
+    //   }
+    // }
   };
 
   return (
@@ -79,7 +81,23 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
                 <MenuItem
                   label="Log Out"
                   icon={<Logout />}
-                  onClick={handleLogOut}
+                  onClick={() => {
+                    // window.postMessage(
+                    //   { action: ACTION.AUTH_STATUS, data: "loggedout" },
+                    //   "http://localhost:5174"
+                    // );
+
+                    handleLogOut();
+
+                    // sessionStorage.removeItem("jwt");
+                    // dispatch({ type: "RESET_AUTHENTICATED" });
+                    // dispatch({ type: "RESET_USER" });
+                    // localStorage.clear();
+                    // primaryWallet?.connector?.endSession();
+                    // handleLogOut();
+                    // navigate(APP_ROUTES.AUTH);
+                    // localStorage.clear();
+                  }}
                 />
               </Menu>
             }

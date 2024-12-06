@@ -1,19 +1,11 @@
-import { ReactNode } from "react";
-
-export type WalletCategoriesType = {
-  value: string;
-  label: string;
-  icon: ReactNode;
-};
-
 export enum WALLET_TO_APP_ACTION {
+  AUTH_STATUS = "authStatus",
   IS_LOGGED_IN = "isLoggedIn",
 
   APP_CONNECTION_REJECTED = "appConnectionRejected",
   APP_CONNECTION_SUCCESS = "appConnectionSuccess",
 
   IS_LOGGED_OUT = "loggedOut",
-  TAB_CLOSED = "tabClosed",
 }
 
 export enum APP_TO_WALLET_ACTION {

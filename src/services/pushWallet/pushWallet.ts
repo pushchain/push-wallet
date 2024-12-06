@@ -635,10 +635,7 @@ export class PushWallet {
     );
   };
 
-  public requestToConnect = (
-    origin: string,
-    onConnectionRequest: () => void
-  ) => {
+  public requestToConnect = (origin: string) => {
     const appFound = this.appConnections.find(
       (each) =>
         each.origin === origin && each.appConnectionStatus !== "rejected"
@@ -649,7 +646,7 @@ export class PushWallet {
         origin,
         appConnectionStatus: "pending",
       });
-      onConnectionRequest();
+
       // Store updated appConnections in localStorage
       localStorage.setItem(
         "appConnections",
