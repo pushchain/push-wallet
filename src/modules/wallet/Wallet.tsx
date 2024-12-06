@@ -20,8 +20,9 @@ import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
 import { AppConnections } from "../../common/components/AppConnections";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
+import { ConnectionSuccess } from "../../common/components/ConnectionSuccess";
 
 export type WalletProps = {};
 
@@ -29,7 +30,11 @@ const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
   const [createAccountLoading, setCreateAccountLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const externalOrigin = params.get("app");
+  const [showConnectionSuccess, setConnectionSuccess] =
+    useState<boolean>(false);
   const { primaryWallet } = useDynamicContext();
   const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
     useState(false);
@@ -259,10 +264,12 @@ const Wallet: FC<WalletProps> = () => {
       );
   }, [state?.wallet?.attachedAccounts]);
 
-
+  useEffect(() => {
+    if (externalOrigin && primaryWallet) setConnectionSuccess(true);
+  }, [primaryWallet, externalOrigin]);
   // Check if the appConnections has isPending true or the appConnection origin is included in the URL
   const showAppConnectionContainer = state?.wallet?.appConnections.some(
-    (cx) => cx.appConnectionStatus === 'pending'
+    (cx) => cx.appConnectionStatus === "pending"
   );
 
   if (createAccountLoading)
@@ -296,7 +303,7 @@ const Wallet: FC<WalletProps> = () => {
               selectedWallet={selectedWallet}
               appConnection={
                 state.wallet.appConnections[
-                state.wallet.appConnections.length - 1
+                  state.wallet.appConnections.length - 1
                 ]
               }
             />
@@ -330,6 +337,11 @@ const Wallet: FC<WalletProps> = () => {
                     : "Your transaction is being verified"
                 }
               />
+            </DrawerWrapper>
+          )}
+          {showConnectionSuccess && (
+            <DrawerWrapper>
+              <ConnectionSuccess onClose={() => setConnectionSuccess(false)} />
             </DrawerWrapper>
           )}
         </Box>
