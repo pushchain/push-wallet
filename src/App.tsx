@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 
@@ -10,7 +9,7 @@ import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { SolanaWalletConnectors } from "@dynamic-labs/solana";
 import { useAppState } from "./context/AppContext";
-import { WalletConnections } from "./common/components/WalletConnections";
+import { EventEmitterProvider } from "./context/EventEmitterContext";
 
 const GlobalStyle = createGlobalStyle`
   :root{
@@ -85,10 +84,11 @@ export default function App() {
       <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
         <GlobalStyle />
         <GlobalProvider>
-          <Router basename={getAppBasePath()}>
-            <RouterContainer />
-            <WalletConnections />
-          </Router>
+          <EventEmitterProvider>
+            <Router basename={getAppBasePath()}>
+              <RouterContainer />
+            </Router>
+          </EventEmitterProvider>
         </GlobalProvider>
       </ThemeProvider>
     </DynamicContextProvider>

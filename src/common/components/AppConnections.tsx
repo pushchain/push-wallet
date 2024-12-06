@@ -7,7 +7,7 @@ import { DrawerWrapper } from "./DrawerWrapper";
 import { ConnectionSuccess } from "./ConnectionSuccess";
 import { AppConnectionStatus } from "./AppConnectionStatus";
 import { ErrorContent } from "./ErrorContent";
-import { useWalletEvents } from "../hooks";
+import { useEventEmitterContext } from "../../context/EventEmitterContext";
 
 export type AppConnectionsProps = {
   selectedWallet: WalletListType;
@@ -20,12 +20,18 @@ const AppConnections: FC<AppConnectionsProps> = ({
 }) => {
   const { state, dispatch } = useGlobalState();
 
+  const {
+    handleAppConnectionRejected,
+    handleAppConnectionSuccess,
+    handleRejectAllAppConnections,
+  } = useEventEmitterContext();
+
   const [appConnectionStatus, setAppConnectionStatus] = useState<
     AppConnection["appConnectionStatus"]
   >(appConnection.appConnectionStatus);
 
   const handleAccept = (origin: string) => {
-    state.handleAppConnectionSuccess(origin);
+    handleAppConnectionSuccess(origin);
     setAppConnectionStatus("connected");
 
     // if (state.wallet) {
@@ -33,8 +39,8 @@ const AppConnections: FC<AppConnectionsProps> = ({
     // }
   };
 
-  const handleReject = () => {
-    state.handleAppConnectionRejected();
+  const handleReject = (origin: string) => {
+    handleAppConnectionRejected(origin);
     setAppConnectionStatus("rejected");
 
     // if (state.wallet) {
@@ -43,7 +49,7 @@ const AppConnections: FC<AppConnectionsProps> = ({
   };
 
   const handleRejectAllConnections = async () => {
-    state.handleRejectAllAppConnections();
+    handleRejectAllAppConnections();
 
     // if (state.wallet) {
     //   state?.wallet?.rejectAllConnectionReqs();

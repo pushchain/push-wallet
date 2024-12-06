@@ -86,7 +86,7 @@ const Wallet: FC<WalletProps> = () => {
         mnemonic,
         import.meta.env.VITE_APP_ENV as ENV
       );
-      console.log("INSTANCE", instance);
+
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
 
       console.info("Wallet reconstructed successfully");
