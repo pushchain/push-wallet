@@ -15,7 +15,7 @@ export type ErrorContentProps = {
 const ErrorContent: FC<ErrorContentProps> = ({
   title,
   subTitle,
-  retryText = 'Retry',
+  retryText = "Retry",
   onClose,
   onRetry,
   note,
@@ -35,7 +35,7 @@ const ErrorContent: FC<ErrorContentProps> = ({
         border-top: var(--border-xmd) solid var(--stroke-secondary);
       `}
     >
-      <Box alignSelf="flex-end" cursor="pointer" onClick={() => onClose()}>
+      <Box alignSelf="flex-end" cursor="pointer" onClick={onClose}>
         <Cross size={16} color="icon-primary" />
       </Box>
       {icon && (
@@ -66,10 +66,12 @@ const ErrorContent: FC<ErrorContentProps> = ({
           {subTitle}
         </Text>
       </Box>
-      <Box display='flex' width="100%" padding="spacing-none spacing-md">
-        {onRetry && <Button block onClick={() => onRetry()}>
-          {retryText}
-        </Button>}
+      <Box display="flex" width="100%" padding="spacing-none spacing-md">
+        {onRetry && (
+          <Button block onClick={onRetry}>
+            {retryText}
+          </Button>
+        )}
       </Box>
       {note && (
         <Text variant="bs-regular" color="text-tertiary">

@@ -622,6 +622,7 @@ export class PushWallet {
     data: string | Uint8Array,
     origin: string
   ): Promise<Uint8Array> => {
+    // TODO: This needs to be fixed
     const appFound = this.appConnections.find((each) => each.origin === origin);
     if (!appFound) throw Error("App not Connected");
     const account = hdKeyToAccount(this.derivedHDNode);

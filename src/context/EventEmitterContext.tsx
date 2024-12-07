@@ -4,13 +4,18 @@ import React, {
   useContext,
   useEffect,
   useRef,
+  useState,
 } from "react";
 
-import { GlobalState, useGlobalState } from "./GlobalContext";
+import { useGlobalState } from "./GlobalContext";
 import {
+  acceptPushWalletConnectionRequest,
   APP_TO_WALLET_ACTION,
+  rejectAllPushWalletConnectionRequests,
+  rejectPushWalletConnectionRequest,
   WALLET_TO_APP_ACTION,
-} from "../common/Common.types";
+} from "../common";
+import { requestToConnectPushWallet } from "../common";
 
 // Define the shape of the app state
 export type EventEmitterState = {
@@ -45,16 +50,18 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const { dispatch, state } = useGlobalState();
 
+  const [isLoggedEmitterCalled, setLoginEmitterStatus] = useState(false);
+
   const walletRef = useRef(state.wallet);
 
+  walletRef.current = state.wallet;
+
   useEffect(() => {
-    walletRef.current = state.wallet;
-    if (state.wallet) {
+    if (walletRef.current && !isLoggedEmitterCalled) {
+      setLoginEmitterStatus(true);
       handleUserLoggedIn();
     }
-  }, [state.wallet]);
-
-  const walletData = walletRef.current;
+  }, [walletRef.current]);
 
   // Event listener for messages
   useEffect(() => {
@@ -90,47 +97,59 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       }
     }
   };
+  console.log("in emitter context", walletRef.current, state.wallet);
 
   const handleNewConnectionRequest = (origin: string) => {
-    walletData?.requestToConnect(origin);
+    console.log("in emitter context function", walletRef.current);
 
-    const appConnections = localStorage.getItem("appConnections")
-      ? JSON.parse(localStorage.getItem("appConnections")!)
-      : [];
-
-    const payload = {
-      ...walletData,
-      appConnections: [...walletData?.appConnections, ...appConnections],
-    } as GlobalState["wallet"];
+    const appConnections = requestToConnectPushWallet(origin);
 
     dispatch({
-      type: "INITIALIZE_WALLET",
-      payload,
+      type: "SET_APP_CONNECTIONS",
+      payload: appConnections,
     });
   };
 
   const handleAppConnectionSuccess = (origin: string) => {
+    const appConnections = acceptPushWalletConnectionRequest(origin);
+
+    dispatch({
+      type: "SET_APP_CONNECTIONS",
+      payload: appConnections,
+    });
+
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.APP_CONNECTION_SUCCESS,
       data: "Connection successful",
     });
-    walletData?.acceptConnectionReq(origin);
   };
 
   const handleAppConnectionRejected = (origin: string) => {
+    const appConnections = rejectPushWalletConnectionRequest(origin);
+
+    dispatch({
+      type: "SET_APP_CONNECTIONS",
+      payload: appConnections,
+    });
+
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.APP_CONNECTION_REJECTED,
       data: "App Connection Rejected",
     });
-    walletData?.rejectConnectionReq(origin);
   };
 
   const handleRejectAllAppConnections = () => {
+    const appConnections = rejectAllPushWalletConnectionRequests();
+
+    dispatch({
+      type: "SET_APP_CONNECTIONS",
+      payload: appConnections,
+    });
+
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.APP_CONNECTION_REJECTED,
       data: "App Connection Rejected",
     });
-    walletData?.rejectAllConnectionReqs();
   };
 
   const handleUserLoggedIn = () => {

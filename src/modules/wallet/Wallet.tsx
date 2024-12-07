@@ -20,7 +20,7 @@ import { useGlobalState } from "../../context/GlobalContext";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
-import { AppConnections } from "../../common/components/AppConnections";
+import { PushWalletAppConnection } from "../../common";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
 import { ConnectionSuccess } from "../../common/components/ConnectionSuccess";
@@ -275,10 +275,6 @@ const Wallet: FC<WalletProps> = () => {
       setConnectionSuccess(true);
   }, [externalOrigin, state?.externalWalletAppConnectionStatus, primaryWallet]);
 
-  // Check if the appConnections has isPending true or the appConnection origin is included in the URL
-  const showAppConnectionContainer = state?.wallet?.appConnections.some(
-    (cx) => cx.appConnectionStatus === "pending"
-  );
   if (createAccountLoading)
     return <WalletSkeletonScreen content={<PushWalletLoadingContent />} />;
 
@@ -305,16 +301,7 @@ const Wallet: FC<WalletProps> = () => {
           gap="spacing-sm"
           position="relative"
         >
-          {showAppConnectionContainer && (
-            <AppConnections
-              selectedWallet={selectedWallet}
-              appConnection={
-                state.wallet.appConnections[
-                  state.wallet.appConnections.length - 1
-                ]
-              }
-            />
-          )}
+          <PushWalletAppConnection selectedWallet={selectedWallet} />
           <WalletProfile selectedWallet={selectedWallet} />
           <WalletTabs
             walletList={getWalletlist(

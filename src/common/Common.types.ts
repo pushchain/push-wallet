@@ -20,3 +20,8 @@ export enum APP_TO_WALLET_ACTION {
   NEW_CONNECTION_REQUEST = "newConnectionRequest",
   SIGN_MESSAGE = "signMessage",
 }
+
+export type PushWalletAppConnectionData = {
+  origin: string;
+  appConnectionStatus: "connected" | "pending";
+};

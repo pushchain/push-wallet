@@ -6,9 +6,9 @@ import {
   useEffect,
 } from "react";
 import { PushWallet } from "../services/pushWallet/pushWallet";
-import { PostMessageHandler } from "../services/messageHandler/messageHandler";
 import { extractStateFromUrl, fetchJwtUsingState } from "../helpers/AuthHelper";
 import { useDynamicContext, Wallet } from "@dynamic-labs/sdk-react-core";
+import { PushWalletAppConnectionData } from "../common";
 
 // Define the shape of the global state
 export type GlobalState = {
@@ -26,6 +26,7 @@ export type GlobalState = {
 // Define actions for state management
 export type GlobalAction =
   | { type: "INITIALIZE_WALLET"; payload: PushWallet }
+  | { type: "SET_APP_CONNECTIONS"; payload: PushWalletAppConnectionData[] }
   | { type: "SET_DYNAMIC_WALLET"; payload: Wallet }
   | { type: "RESET_WALLET" }
   | { type: "SET_THEME"; payload: "light" | "dark" }
@@ -63,6 +64,14 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
       return {
         ...state,
         wallet: action.payload,
+      };
+    case "SET_APP_CONNECTIONS":
+      return {
+        ...state,
+        wallet: {
+          ...state.wallet,
+          appConnections: [...action.payload],
+        } as GlobalState["wallet"],
       };
     case "SET_DYNAMIC_WALLET":
       return {

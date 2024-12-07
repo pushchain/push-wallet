@@ -7,5 +7,6 @@ export * from "./WalletSkeletonScreen";
 export * from "./PushWalletLoadingContent";
 export * from "./WalletReconstructionErrorContent";
 export * from "./DrawerWrapper";
-export * from './LoadingContent';
-export * from './ErrorContent';
+export * from "./LoadingContent";
+export * from "./ErrorContent";
+export * from "./PushWalletAppConnection";
