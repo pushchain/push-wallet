@@ -73,7 +73,8 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
           handleNewConnectionRequest(event.origin);
           break;
         case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
-          console.log("Signing Message on wallet tab");
+          console.log("Signing Message on wallet tab", event);
+          handleSignAndSendMessage(event.data.data, event.origin);
           break;
         default:
           console.warn("Unknown message type:", event.data.type);
@@ -98,6 +99,20 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
   console.log("in emitter context", walletRef.current, state.wallet);
+
+  const handleSignAndSendMessage = async (message: string, origin: string) => {
+    console.log("Signing message", state.wallet, message, origin);
+
+    console.log("in signing message function", walletRef.current);
+
+    const signature = await walletRef.current.sign(message, origin);
+    console.log("Signature signed", signature);
+
+    sendMessageToMainTab({
+      type: WALLET_TO_APP_ACTION.SIGNATURE,
+      data: signature,
+    });
+  };
 
   const handleNewConnectionRequest = (origin: string) => {
     console.log("in emitter context function", walletRef.current);
