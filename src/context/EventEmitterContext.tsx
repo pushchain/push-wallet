@@ -79,6 +79,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
           state.dynamicWallet,
           "DYNAMIC"
         );
+
         setLoginEmitterStatus(true);
         handleUserLoggedIn();
       })();
@@ -98,8 +99,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
     const messageHandler = (event: MessageEvent) => {
       if (event.origin !== getAppParamValue()) return;
-
-      console.log("EMIITER APPLIED");
 
       switch (event.data.type) {
         case APP_TO_WALLET_ACTION.NEW_CONNECTION_REQUEST:
@@ -131,11 +130,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       }
     }
   };
-  console.log("in emitter context", walletRef.current, state.wallet);
-
   const handleNewConnectionRequest = (origin: string) => {
-    console.log("in emitter context function", walletRef.current);
-
     const appConnections = requestToConnectPushWallet(origin);
 
     // Checking if appConnection is already connected or not, if connected so emit success message
@@ -202,12 +197,10 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   const handleSignAndSendMessage = async (message: string, origin: string) => {
     console.log("Signing message", message, origin);
 
-    console.log("in signing message function", walletRef.current);
-
     try {
       dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "loading" });
       const signature = externalWalletRef?.current
-        ? await externalWalletRef.current.signMessage(message)
+        ? await externalWalletRef?.current?.signMessage(message)
         : await walletRef.current.sign(message, origin, getAllAppConnections());
 
       console.log("Signature signed", signature);
@@ -217,7 +210,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         data: { signature },
       });
 
-      if (externalWalletRef.current.account) {
+      if (externalWalletRef?.current?.account) {
         dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" });
       } else {
         setTimeout(
@@ -227,7 +220,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       }
     } catch (error) {
       // pass the error to other tab as well
-
+      console.log(error);
       dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "rejected" });
     }
   };
@@ -256,6 +249,8 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       },
     });
     setLoginEmitterStatus(false);
+    walletRef.current = null;
+    externalWalletRef.current = null;
   };
 
   const handlePushWalletTabClosedEvent = () => {
