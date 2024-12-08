@@ -13,7 +13,11 @@ import {
   TickCircleFilled,
   Tooltip,
 } from "../../../blocks";
-import { centerMaskWalletAddress, handleCopy } from "../../../common";
+import {
+  centerMaskWalletAddress,
+  handleCopy,
+  usePersistedQuery,
+} from "../../../common";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
@@ -36,6 +40,8 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
 
   const navigate = useNavigate();
 
+  const persistQuery = usePersistedQuery();
+
   const handleLogOut = () => {
     dispatch({ type: "RESET_WALLET" });
 
@@ -45,7 +51,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
     sessionStorage.removeItem("jwt");
     localStorage.clear();
 
-    navigate(APP_ROUTES.AUTH);
+    navigate(persistQuery(APP_ROUTES.AUTH));
 
     handleLogOutEvent();
   };
