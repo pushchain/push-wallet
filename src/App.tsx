@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 
@@ -10,6 +9,7 @@ import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { SolanaWalletConnectors } from "@dynamic-labs/solana";
 import { useAppState } from "./context/AppContext";
+import { EventEmitterProvider } from "./context/EventEmitterContext";
 
 const GlobalStyle = createGlobalStyle`
   :root{
@@ -37,20 +37,6 @@ export default function App() {
   const { isDarkMode } = useDarkMode();
   const { dispatch } = useAppState();
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const appParam = urlParams.get("app");
-    if (appParam) {
-      // Send a message to the parent when the child tab is closed
-      window.onbeforeunload = () => {
-        if (window.opener) {
-          // Send a message to the parent app using the target origin (parent's URL)
-          window.opener.postMessage("walletClosed", appParam);
-        }
-      };
-    }
-  }, []);
-
   return (
     <DynamicContextProvider
       theme="dark"
@@ -61,22 +47,40 @@ export default function App() {
         walletConnectors: [EthereumWalletConnectors, SolanaWalletConnectors],
         events: {
           onAuthFlowCancel: () => {
-            dispatch({ type: "SET_EXTERNAL_WALLET_REJECT_STATE" });
+            dispatch({
+              type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+              payload: "rejected",
+            });
           },
           onAuthFlowClose: () => {
-            dispatch({ type: "SET_EXTERNAL_WALLET_REJECT_STATE" });
+            dispatch({
+              type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+              payload: "rejected",
+            });
           },
           onAuthFlowOpen: () => {
-            dispatch({ type: "SET_EXTERNAL_WALLET_LOAD_STATE" });
+            dispatch({
+              type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+              payload: "loading",
+            });
           },
           onAuthFailure: (method, reason) => {
-            dispatch({ type: "SET_EXTERNAL_WALLET_REJECT_STATE" });
+            dispatch({
+              type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+              payload: "rejected",
+            });
           },
           onAuthInit: (args) => {
-            dispatch({ type: "SET_EXTERNAL_WALLET_LOAD_STATE" });
+            dispatch({
+              type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+              payload: "loading",
+            });
           },
           onAuthSuccess: (args) => {
-            dispatch({ type: "SET_EXTERNAL_WALLET_SUCCESS_STATE" });
+            dispatch({
+              type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+              payload: "success",
+            });
           },
         },
       }}
@@ -84,9 +88,11 @@ export default function App() {
       <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
         <GlobalStyle />
         <GlobalProvider>
-          <Router basename={getAppBasePath()}>
-            <RouterContainer />
-          </Router>
+          <EventEmitterProvider>
+            <Router basename={getAppBasePath()}>
+              <RouterContainer />
+            </Router>
+          </EventEmitterProvider>
         </GlobalProvider>
       </ThemeProvider>
     </DynamicContextProvider>

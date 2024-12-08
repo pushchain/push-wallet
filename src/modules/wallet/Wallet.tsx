@@ -20,7 +20,7 @@ import { useGlobalState } from "../../context/GlobalContext";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
-import { AppConnections } from "../../common/components/AppConnections";
+import { PushWalletAppConnection } from "../../common";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
 import { ConnectionSuccess } from "../../common/components/ConnectionSuccess";
@@ -40,6 +40,8 @@ const Wallet: FC<WalletProps> = () => {
 
   const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
     useState(false);
+
+  // TODO: This needs to go to a top level context
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
 
   const navigate = useNavigate();
@@ -252,8 +254,7 @@ const Wallet: FC<WalletProps> = () => {
 
   const handleResetAndRedirectUser = () => {
     sessionStorage.removeItem("jwt");
-    dispatch({ type: "RESET_AUTHENTICATED" });
-    dispatch({ type: "RESET_USER" });
+    dispatch({ type: "RESET_WALLET" });
     localStorage.clear();
     const url = persistQuery(APP_ROUTES.AUTH);
     navigate(url);
@@ -275,10 +276,6 @@ const Wallet: FC<WalletProps> = () => {
       setConnectionSuccess(true);
   }, [externalOrigin, state?.externalWalletAppConnectionStatus, primaryWallet]);
 
-  // Check if the appConnections has isPending true or the appConnection origin is included in the URL
-  const showAppConnectionContainer = state?.wallet?.appConnections.some(
-    (cx) => cx.appConnectionStatus === "pending"
-  );
   if (createAccountLoading)
     return <WalletSkeletonScreen content={<PushWalletLoadingContent />} />;
 
@@ -305,16 +302,7 @@ const Wallet: FC<WalletProps> = () => {
           gap="spacing-sm"
           position="relative"
         >
-          {showAppConnectionContainer && (
-            <AppConnections
-              selectedWallet={selectedWallet}
-              appConnection={
-                state.wallet.appConnections[
-                  state.wallet.appConnections.length - 1
-                ]
-              }
-            />
-          )}
+          <PushWalletAppConnection selectedWallet={selectedWallet} />
           <WalletProfile selectedWallet={selectedWallet} />
           <WalletTabs
             walletList={getWalletlist(
@@ -353,7 +341,9 @@ const Wallet: FC<WalletProps> = () => {
                 icon={<Info size={32} color="icon-state-danger-subtle" />}
                 title="Could not verify"
                 subTitle="Please try again"
-                onClose={() => dispatch({ type: "RESET_MESSAGE_SIGN" })}
+                onClose={() =>
+                  dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" })
+                }
               />
             </DrawerWrapper>
           )}

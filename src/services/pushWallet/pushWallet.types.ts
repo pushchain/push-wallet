@@ -36,9 +36,3 @@ export type Key = {
   publicKey: string;
   index: number;
 };
-
-export type AppConnection = {
-  origin: string;
-  authStatus?: "loggedIn" | "notLoggedIn";
-  appConnectionStatus: "rejected" | "notReceived" | "connected" | "pending";
-};

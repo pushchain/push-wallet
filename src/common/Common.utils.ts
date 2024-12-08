@@ -1,3 +1,5 @@
+import { PushWalletAppConnectionData } from "./Common.types";
+
 export const centerMaskWalletAddress = (address: string) => {
   if (address) {
     const start = address.substring(0, 7);
@@ -19,3 +21,100 @@ export const handleCopy = async (
     console.error("Failed to copy text: ", err);
   }
 };
+
+export const getAppParamValue = () => {
+  const searchParams = new URLSearchParams(window.location.search);
+
+  return searchParams.get("app");
+};
+
+export const getAllAppConnections = (): PushWalletAppConnectionData[] =>
+  localStorage.getItem("appConnections")
+    ? JSON.parse(localStorage.getItem("appConnections"))
+    : [];
+
+export const requestToConnectPushWallet = (
+  origin: string
+): PushWalletAppConnectionData[] => {
+  const previousAppConnections = getAllAppConnections();
+
+  const appFound = previousAppConnections.find(
+    (each) => each.origin === origin
+  );
+
+  if (!appFound) {
+    const updatedAppConnections = [
+      ...previousAppConnections,
+      {
+        origin,
+        appConnectionStatus: "pending",
+      },
+    ];
+
+    // Store updated appConnections in localStorage
+    localStorage.setItem(
+      "appConnections",
+      JSON.stringify(updatedAppConnections)
+    );
+  }
+
+  return getAllAppConnections();
+};
+
+export const acceptPushWalletConnectionRequest = (
+  origin: string
+): PushWalletAppConnectionData[] => {
+  const previousAppConnections = getAllAppConnections();
+  const appFound = previousAppConnections.find(
+    (each) => each.origin === origin
+  );
+  if (appFound) {
+    const updatedAppConnections = previousAppConnections.map((each) =>
+      each.origin === appFound.origin
+        ? {
+            ...appFound,
+            appConnectionStatus: "connected",
+          }
+        : each
+    );
+
+    // Store updated appConnections in localStorage
+    localStorage.setItem(
+      "appConnections",
+      JSON.stringify(updatedAppConnections)
+    );
+  }
+
+  return getAllAppConnections();
+};
+
+export const rejectPushWalletConnectionRequest = (
+  origin: string
+): PushWalletAppConnectionData[] => {
+  const previousAppConnections = getAllAppConnections();
+  const updatedAppConnections = previousAppConnections.filter(
+    (each) => each.origin !== origin
+  );
+
+  // Store updated appConnections in localStorage
+  localStorage.setItem("appConnections", JSON.stringify(updatedAppConnections));
+
+  return getAllAppConnections();
+};
+
+export const rejectAllPushWalletConnectionRequests =
+  (): PushWalletAppConnectionData[] => {
+    const previousAppConnections = getAllAppConnections();
+
+    const updatedAppConnections = previousAppConnections.filter(
+      (each) => each.appConnectionStatus !== "pending"
+    );
+
+    // Store updated appConnections in localStorage
+    localStorage.setItem(
+      "appConnections",
+      JSON.stringify(updatedAppConnections)
+    );
+
+    return getAllAppConnections();
+  };

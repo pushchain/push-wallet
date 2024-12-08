@@ -6,13 +6,14 @@ import {
   useEffect,
 } from "react";
 import { PushWallet } from "../services/pushWallet/pushWallet";
-import { PostMessageHandler } from "../services/messageHandler/messageHandler";
 import { extractStateFromUrl, fetchJwtUsingState } from "../helpers/AuthHelper";
 import { useDynamicContext, Wallet } from "@dynamic-labs/sdk-react-core";
+import { getAllAppConnections, PushWalletAppConnectionData } from "../common";
 
 // Define the shape of the global state
 export type GlobalState = {
   wallet: PushWallet | null;
+  appConnections: PushWalletAppConnectionData[];
   dynamicWallet: Wallet | null;
   theme: "light" | "dark";
   user: any;
@@ -20,12 +21,13 @@ export type GlobalState = {
   jwt: string | null;
   walletLoadState: "idle" | "success" | "loading" | "rejected";
   messageSignState: "idle" | "loading" | "rejected";
-  externalWalletAppConnectionStatus: "notReceived" | "connected";
+  externalWalletAppConnectionStatus: "pending" | "connected";
 };
 
 // Define actions for state management
 export type GlobalAction =
   | { type: "INITIALIZE_WALLET"; payload: PushWallet }
+  | { type: "SET_APP_CONNECTIONS"; payload: PushWalletAppConnectionData[] }
   | { type: "SET_DYNAMIC_WALLET"; payload: Wallet }
   | { type: "RESET_WALLET" }
   | { type: "SET_THEME"; payload: "light" | "dark" }
@@ -33,24 +35,24 @@ export type GlobalAction =
   | { type: "SET_AUTHENTICATED"; payload: boolean }
   | { type: "SET_JWT"; payload: string }
   | { type: "SET_WALLET_LOAD_STATE"; payload: GlobalState["walletLoadState"] }
-  | { type: "RESET_AUTHENTICATED" }
-  | { type: "RESET_USER" }
-  | { type: "SET_MESSAGE_SIGN_LOAD_STATE" }
-  | { type: "SET_MESSAGE_SIGN_REJECT_STATE" }
-  | { type: "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS";payload: GlobalState["externalWalletAppConnectionStatus"] }
-  | { type: "RESET_MESSAGE_SIGN" };
+  | { type: "SET_MESSAGE_SIGN_STATE"; payload: GlobalState["messageSignState"] }
+  | {
+      type: "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS";
+      payload: GlobalState["externalWalletAppConnectionStatus"];
+    };
 
 // Initial state
 const initialState: GlobalState = {
   wallet: null,
+  appConnections: getAllAppConnections(),
   dynamicWallet: null,
   theme: "light",
   user: null,
   isAuthenticated: false,
   jwt: null,
   walletLoadState: "idle",
-  messageSignState: 'idle',
-  externalWalletAppConnectionStatus: "notReceived"
+  messageSignState: "idle",
+  externalWalletAppConnectionStatus: "pending",
 };
 
 // Reducer function to manage state transitions
@@ -61,17 +63,21 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
         ...state,
         wallet: action.payload,
       };
+    case "SET_APP_CONNECTIONS":
+      return {
+        ...state,
+        appConnections: action.payload,
+      };
     case "SET_DYNAMIC_WALLET":
       return {
         ...state,
         dynamicWallet: action.payload,
       };
+    // Reset your all the state variable while logging out
     case "RESET_WALLET":
       return {
         ...state,
-        wallet: null,
-        walletLoadState: "idle",
-        dynamicWallet: null,
+        ...initialState,
       };
     case "SET_THEME":
       return { ...state, theme: action.payload };
@@ -83,38 +89,10 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
       return { ...state, jwt: action.payload };
     case "SET_WALLET_LOAD_STATE":
       return { ...state, walletLoadState: action.payload };
-    case "RESET_AUTHENTICATED":
+    case "SET_MESSAGE_SIGN_STATE":
       return {
         ...state,
-        isAuthenticated: false,
-        walletLoadState: "idle",
-        wallet:null,
-        dynamicWallet: null,
-        jwt: null,
-      };
-    case "RESET_USER":
-      return {
-        ...state,
-        user: null,
-        walletLoadState: "idle",
-        dynamicWallet: null,
-        wallet:null,
-        jwt: null,
-      };
-    case "RESET_MESSAGE_SIGN":
-      return {
-        ...state,
-        messageSignState: "idle",
-      };
-    case "SET_MESSAGE_SIGN_LOAD_STATE":
-      return {
-        ...state,
-        messageSignState: "loading",
-      };
-    case "SET_MESSAGE_SIGN_REJECT_STATE":
-      return {
-        ...state,
-        messageSignState: "rejected",
+        messageSignState: action.payload,
       };
     case "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS":
       return { ...state, externalWalletAppConnectionStatus: action.payload };
@@ -153,23 +131,27 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
 
   const storedToken = sessionStorage.getItem("jwt");
   /* This hook handles the logic for listening to the app connection requests for push wallet */
-  useEffect(() => {
-    if (state.wallet) {
-      console.log("Global State lsitener iniaited");
-      new PostMessageHandler(undefined, state.wallet, () =>
-        dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet }),dispatch
-      );
-    } else {
-      new PostMessageHandler(undefined, undefined, () => { },dispatch);
-    }
-  }, [state.wallet]);
+  // useEffect(() => {
+  //   if (state.wallet) {
+  //     new PostMessageHandler(
+  //       undefined,
+  //       state.wallet,
+  //       () => dispatch({ type: "INITIALIZE_WALLET", payload: state.wallet }),
+  //       dispatch
+  //     );
+  //   } else {
+  //     new PostMessageHandler(undefined, undefined, () => {}, dispatch);
+  //   }
+  // }, [state.wallet]);
 
   /* This hook handles the logic for listening to the app connection requests for external wallet*/
   useEffect(() => {
     if (!state?.wallet && primaryWallet) {
-      new PostMessageHandler(primaryWallet, undefined, () => { },dispatch);
-    } else {
-      new PostMessageHandler(undefined, undefined, () => { },dispatch);
+      //   new PostMessageHandler(primaryWallet, undefined, () => {}, dispatch);
+      // } else {
+      //   new PostMessageHandler(undefined, undefined, () => {}, dispatch);
+      console.log("Primary Wallet", primaryWallet);
+      console.log("State Wallet", state.wallet);
     }
   }, [primaryWallet]);
 
@@ -226,7 +208,12 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   }, [stateParam, storedToken, primaryWallet, sdkHasLoaded]);
 
   return (
-    <GlobalContext.Provider value={{ state, dispatch }}>
+    <GlobalContext.Provider
+      value={{
+        state,
+        dispatch,
+      }}
+    >
       {children}
     </GlobalContext.Provider>
   );
