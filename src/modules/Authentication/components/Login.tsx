@@ -1,11 +1,11 @@
 import { FC } from "react";
 import { Box, Button, Front, Google, Text, TextInput } from "../../../blocks";
 import { PoweredByPush } from "../../../common";
-import { socialLoginConfig } from "../Authentication.constants";
 import { WalletState } from "../Authentication.types";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { css } from "styled-components";
+import { APP_ROUTES } from "../../../constants";
+import { usePersistedQuery } from "../../../common/hooks/usePersistedQuery";
 
 export type LoginProps = {
   email: string;
@@ -20,7 +20,9 @@ const validationSchema = Yup.object().shape({
 const envRouteAlias =
   import.meta.env.VITE_DEV_MODE === "testing" ? "/push-wallet" : "";
 
+
 const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
+  const persistQuery = usePersistedQuery();
   const formik = useFormik({
     initialValues: { email },
     validationSchema,
@@ -28,25 +30,26 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
       setEmail(values.email);
 
       if (values.email) {
-        window.location.href = `${
-          import.meta.env.VITE_APP_BACKEND_URL
-        }/auth/authorize-email?email=${encodeURIComponent(
-          values.email
-        )}&redirectUri=${encodeURIComponent(
-          window.location.origin + envRouteAlias + "/wallet"
-        )}`;
+
+        window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
+          }/auth/authorize-email?email=${encodeURIComponent(
+            values.email
+          )}&redirectUri=${encodeURIComponent(
+            window.location.origin + envRouteAlias + persistQuery(APP_ROUTES.WALLET)
+          )}`;
       }
     },
   });
 
+
   const handleSocialLogin = (
     provider: "github" | "google" | "discord" | "twitter" | "apple"
   ) => {
-    window.location.href = `${
-      import.meta.env.VITE_APP_BACKEND_URL
-    }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
-      window.location.origin + envRouteAlias + "/wallet"
-    )}`;
+
+    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
+      }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
+        window.location.origin + envRouteAlias + persistQuery(APP_ROUTES.WALLET)
+      )}`;
   };
 
   return (
@@ -127,11 +130,11 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
                 onClick={() =>
                   handleSocialLogin(
                     social.name as
-                      | "github"
-                      | "google"
-                      | "discord"
-                      | "twitter"
-                      | "apple"
+                    | "github"
+                    | "google"
+                    | "discord"
+                    | "twitter"
+                    | "apple"
                   )
                 }
               />

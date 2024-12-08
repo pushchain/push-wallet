@@ -19,21 +19,33 @@ import { useNavigate } from "react-router-dom";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { WalletListType } from "../Wallet.types";
 import { APP_ROUTES } from "../../../constants";
+import { useEventEmitterContext } from "../../../context/EventEmitterContext";
 
 export type WalletProfileProps = {
   selectedWallet: WalletListType;
 };
 
-const WalletProfile: FC<WalletProfileProps> = ({
-  selectedWallet,
-}) => {
-  const { primaryWallet, handleLogOut } = useDynamicContext();
+const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
+  const { primaryWallet, handleLogOut: dynamicLogOut } = useDynamicContext();
   const parsedWallet = selectedWallet?.address || primaryWallet?.address;
   const walletName = selectedWallet?.name ?? "External Wallet";
   const [copied, setCopied] = useState(false);
   const { dispatch } = useGlobalState();
 
+  const { handleLogOutEvent } = useEventEmitterContext();
+
   const navigate = useNavigate();
+
+  const handleLogOut = () => {
+    sessionStorage.removeItem("jwt");
+    dispatch({ type: "RESET_WALLET" });
+    localStorage.clear();
+    primaryWallet?.connector?.endSession();
+    dynamicLogOut();
+    handleLogOutEvent();
+    localStorage.clear();
+    navigate(APP_ROUTES.AUTH);
+  };
 
   return (
     <Box
@@ -61,14 +73,7 @@ const WalletProfile: FC<WalletProfileProps> = ({
                   label="Log Out"
                   icon={<Logout />}
                   onClick={() => {
-                    sessionStorage.removeItem("jwt");
-                    dispatch({ type: "RESET_AUTHENTICATED" });
-                    dispatch({ type: "RESET_USER" });
-                    localStorage.clear();
                     handleLogOut();
-
-                    navigate(APP_ROUTES.AUTH);
-                    localStorage.clear();
                   }}
                 />
               </Menu>
@@ -102,9 +107,7 @@ const WalletProfile: FC<WalletProfileProps> = ({
           </Text>
 
           <Box cursor="pointer">
-            <Tooltip
-              title={copied ? "Copy" : "Copied"}
-            >
+            <Tooltip title={copied ? "Copy" : "Copied"}>
               {copied ? (
                 <TickCircleFilled
                   autoSize

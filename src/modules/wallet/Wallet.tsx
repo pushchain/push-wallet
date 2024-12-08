@@ -1,11 +1,14 @@
 import { FC, useEffect, useState } from "react";
-import { Box } from "../../blocks";
+import { Box, Info } from "../../blocks";
 import {
   BoxLayout,
   ContentLayout,
   PushWalletLoadingContent,
   WalletSkeletonScreen,
   WalletReconstructionErrorContent,
+  DrawerWrapper,
+  LoadingContent,
+  ErrorContent,
 } from "../../common";
 import { WalletProfile } from "./components/WalletProfile";
 import { WalletTabs } from "./components/WalletTabs";
@@ -15,13 +18,12 @@ import { APP_ROUTES, ENV } from "../../constants";
 import secrets from "secrets.js-grempe";
 import { useGlobalState } from "../../context/GlobalContext";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import { CreateAccount } from "./components/CreateAccount";
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
-import config from "../../config";
-import { PushSigner } from "../../services/pushSigner/pushSigner";
-import { AppConnections } from "../../common/components/AppConnections";
-import { useNavigate } from "react-router-dom";
+import { PushWalletAppConnection } from "../../common";
+import { useLocation, useNavigate } from "react-router-dom";
+import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
+import { ConnectionSuccess } from "../../common/components/ConnectionSuccess";
 
 export type WalletProps = {};
 
@@ -29,12 +31,21 @@ const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
   const [createAccountLoading, setCreateAccountLoading] = useState(true);
   const [error, setError] = useState("");
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const externalOrigin = params.get("app");
   const { primaryWallet } = useDynamicContext();
+  const [showConnectionSuccess, setConnectionSuccess] =
+    useState<boolean>(false);
+
   const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
     useState(false);
+
+  // TODO: This needs to go to a top level context
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
 
   const navigate = useNavigate();
+  const persistQuery = usePersistedQuery();
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -55,14 +66,13 @@ const Wallet: FC<WalletProps> = () => {
       );
       await instance.registerPushAccount();
 
+      console.log("Instance of the push wallet", instance);
+
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
 
       console.info("Wallet created and mnemonic split into shares", { userId });
     } catch (err) {
       console.error("Error creating wallet:", err);
-      // // When the user rejects the creation of new wallet, redirect the user back to auth with error
-      // setError("Failed to create wallet. Please try again.");
-      // navigate(APP_ROUTES.AUTH)
       throw err;
     } finally {
       setCreateAccountLoading(false);
@@ -177,7 +187,6 @@ const Wallet: FC<WalletProps> = () => {
         });
 
         await createWalletAndGenerateMnemonic(userId);
-
       }
     } catch (err) {
       console.error("Error fetching user profile:", err);
@@ -192,30 +201,32 @@ const Wallet: FC<WalletProps> = () => {
   useEffect(() => {
     const initializeProfile = async () => {
       try {
-
         if (state.jwt) {
           setCreateAccountLoading(true);
 
           await fetchUserProfile(state.jwt);
-        } else if (primaryWallet) 
-          navigate(APP_ROUTES.AUTH);
-        //   let pushWallet;
-        //   const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
-
-        //   pushWallet = await PushWallet.loginWithWallet(
-        //     signer,
-        //     config.APP_ENV as ENV
-        //   );
-
-        //   if (pushWallet)
-        //     dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
-        //   else {
-        //     console.log(
-        //       "Could not find user in wallet.tsx file after push wallet"
-        //     );
-        //   }
-        // } else {
+        }
+        // else if (!primaryWallet) {
         //   navigate(APP_ROUTES.AUTH);
+        // }
+
+        /* We don't need to fetch push user as of now when user continues with wallet
+         This function fetches the already created push wallet */
+
+        // let pushWallet;
+        // const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
+
+        // pushWallet = await PushWallet.loginWithWallet(
+        //   signer,
+        //   config.APP_ENV as ENV
+        // );
+
+        // if (pushWallet)
+        //   dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
+        // else {
+        //   console.log(
+        //     "Could not find user in wallet.tsx file after push wallet"
+        //   );
         // }
       } catch (err) {
         console.error("Error initializing profile:", err);
@@ -243,20 +254,27 @@ const Wallet: FC<WalletProps> = () => {
 
   const handleResetAndRedirectUser = () => {
     sessionStorage.removeItem("jwt");
-    dispatch({ type: "RESET_AUTHENTICATED" });
-    dispatch({ type: "RESET_USER" });
+    dispatch({ type: "RESET_WALLET" });
     localStorage.clear();
-    navigate(APP_ROUTES.AUTH);
+    const url = persistQuery(APP_ROUTES.AUTH);
+    navigate(url);
   };
 
   useEffect(() => {
     if (state?.wallet?.attachedAccounts.length)
-      setSelectedWallet(getWalletlist(state?.wallet?.attachedAccounts,state.wallet)[0]);
+      setSelectedWallet(
+        getWalletlist(state?.wallet?.attachedAccounts, state.wallet)[0]
+      );
   }, [state?.wallet?.attachedAccounts]);
 
-  const showAppConnectionContainer = state?.wallet?.appConnections.some(
-    (cx) => cx.isPending === true
-  );
+  useEffect(() => {
+    if (
+      externalOrigin &&
+      primaryWallet &&
+      state.externalWalletAppConnectionStatus === "connected"
+    )
+      setConnectionSuccess(true);
+  }, [externalOrigin, state?.externalWalletAppConnectionStatus, primaryWallet]);
 
   if (createAccountLoading)
     return <WalletSkeletonScreen content={<PushWalletLoadingContent />} />;
@@ -284,19 +302,13 @@ const Wallet: FC<WalletProps> = () => {
           gap="spacing-sm"
           position="relative"
         >
-          {showAppConnectionContainer && (
-            <AppConnections
-              selectedWallet={selectedWallet}
-              appConnection={
-                state.wallet.appConnections[
-                state.wallet.appConnections.length - 1
-                ]
-              }
-            />
-          )}
+          <PushWalletAppConnection selectedWallet={selectedWallet} />
           <WalletProfile selectedWallet={selectedWallet} />
           <WalletTabs
-            walletList={getWalletlist(state?.wallet?.attachedAccounts,state.wallet)}
+            walletList={getWalletlist(
+              state?.wallet?.attachedAccounts,
+              state.wallet
+            )}
             selectedWallet={selectedWallet}
             setSelectedWallet={setSelectedWallet}
           />
@@ -306,6 +318,44 @@ const Wallet: FC<WalletProps> = () => {
               setIsLoading={setCreateAccountLoading}
             />
           )} */}
+          {state.messageSignState === "loading" && (
+            <DrawerWrapper>
+              <LoadingContent
+                title={
+                  primaryWallet
+                    ? "Confirm Transaction"
+                    : "Processing Transaction"
+                }
+                subTitle={
+                  primaryWallet
+                    ? "Please confirm the transaction in your wallet to continue"
+                    : "Your transaction is being verified"
+                }
+              />
+            </DrawerWrapper>
+          )}
+
+          {state.messageSignState === "rejected" && (
+            <DrawerWrapper>
+              <ErrorContent
+                icon={<Info size={32} color="icon-state-danger-subtle" />}
+                title="Could not verify"
+                subTitle="Please try again"
+                onClose={() =>
+                  dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" })
+                }
+              />
+            </DrawerWrapper>
+          )}
+          {showConnectionSuccess && (
+            <DrawerWrapper>
+              <ConnectionSuccess
+                onClose={() => {
+                  setConnectionSuccess(false);
+                }}
+              />
+            </DrawerWrapper>
+          )}
         </Box>
       </BoxLayout>
     </ContentLayout>

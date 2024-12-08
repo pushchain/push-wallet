@@ -1,6 +1,13 @@
-import { FC, useEffect, useState } from "react";
-import { Back, Box, Text } from "../../../blocks";
-import { PoweredByPush, WalletCategories, WALLETS_LOGO } from "../../../common";
+import { FC, useEffect, useMemo, useState } from "react";
+import { Back, Box, Info, Text } from "../../../blocks";
+import {
+  DrawerWrapper,
+  ErrorContent,
+  LoadingContent,
+  PoweredByPush,
+  WalletCategories,
+  WALLETS_LOGO,
+} from "../../../common";
 import { solanaWallets } from "../Authentication.constants";
 import { css } from "styled-components";
 import {
@@ -15,6 +22,9 @@ import {
 import { WalletKeyPairType, WalletState } from "../Authentication.types";
 import { useNavigate } from "react-router-dom";
 import { APP_ROUTES } from "../../../constants";
+import { useAppState } from "../../../context/AppContext";
+import { usePersistedQuery } from "../../../common/hooks/usePersistedQuery";
+
 type WalletSelectionProps = {
   setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
 };
@@ -25,26 +35,44 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const { primaryWallet } = useDynamicContext();
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
+
+  const {
+    dispatch,
+    state: { externalWalletAuthState },
+  } = useAppState();
+  const persistQuery = usePersistedQuery();
+
   useEffect(() => {
     (async () => {
       if (primaryWallet) {
-        navigate(APP_ROUTES.WALLET);
+        const url = persistQuery(APP_ROUTES.WALLET);
+        navigate(url);
       }
     })();
   }, [primaryWallet]);
 
-  const installedEthereumWallets: WalletKeyPairType = getInstalledWallets(
-    filterEthereumWallets(getGroupedWallets(walletOptions)),
-    walletOptions
-  );
-  const installedSolanaWallets = getInstalledWallets(
-    solanaWallets,
-    walletOptions
-  );
+  const wallets = useMemo(() => {
+    const installedEthereumWallets: WalletKeyPairType = getInstalledWallets(
+      filterEthereumWallets(getGroupedWallets(walletOptions)),
+      walletOptions
+    );
+
+    const installedSolanaWallets = getInstalledWallets(
+      solanaWallets,
+      walletOptions
+    );
+
+    return {
+      solanaWallets: installedSolanaWallets,
+      ethereumWallets: installedEthereumWallets,
+    };
+  }, [walletOptions]);
+
   const walletsToShow =
     selectedWalletCategory === "ethereum"
-      ? installedEthereumWallets
-      : installedSolanaWallets;
+      ? wallets.ethereumWallets
+      : wallets.solanaWallets;
+
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory("");
     else setConnectMethod("authentication");
@@ -61,6 +89,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
       </Text>
     );
   };
+
   return (
     <Box flexDirection="column" display="flex" gap="spacing-lg" width="100%">
       <Box cursor="pointer" onClick={() => handleBack()}>
@@ -135,6 +164,44 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         </Box>
       </Box>
       <PoweredByPush />
+      {/* {externalWalletAuthState === "loading" && (
+        <DrawerWrapper>
+          <LoadingContent
+            title={`Connect ${selectedWalletName}`}
+            subTitle="Click connect in your wallet"
+            onClose={() => dispatch({ type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE", payload:"idle" })}
+          />
+        </DrawerWrapper>
+      )} */}
+      {externalWalletAuthState === "loading" && (
+        <DrawerWrapper>
+          <LoadingContent
+            title="Sign to verify"
+            subTitle="Allow the site to connect and continue"
+            onClose={() =>
+              dispatch({
+                type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+                payload: "rejected",
+              })
+            }
+          />
+        </DrawerWrapper>
+      )}
+      {externalWalletAuthState === "rejected" && (
+        <DrawerWrapper>
+          <ErrorContent
+            icon={<Info size={32} color="icon-state-danger-subtle" />}
+            title="Could not verify"
+            subTitle="Please try connecting again"
+            onClose={() =>
+              dispatch({
+                type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+                payload: "idle",
+              })
+            }
+          />
+        </DrawerWrapper>
+      )}
     </Box>
   );
 };
