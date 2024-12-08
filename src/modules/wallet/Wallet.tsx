@@ -9,6 +9,7 @@ import {
   DrawerWrapper,
   LoadingContent,
   ErrorContent,
+  getAppParamValue,
 } from "../../common";
 import { WalletProfile } from "./components/WalletProfile";
 import { WalletTabs } from "./components/WalletTabs";
@@ -347,7 +348,7 @@ const Wallet: FC<WalletProps> = () => {
               />
             </DrawerWrapper>
           )}
-          {showConnectionSuccess && (
+          {showConnectionSuccess && getAppParamValue() && (
             <DrawerWrapper>
               <ConnectionSuccess
                 onClose={() => {

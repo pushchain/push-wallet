@@ -8,6 +8,7 @@ import { AppConnectionStatus } from "./AppConnectionStatus";
 import { ErrorContent } from "./ErrorContent";
 import { useEventEmitterContext } from "../../context/EventEmitterContext";
 import { PushWalletAppConnectionData } from "../Common.types";
+import { getAppParamValue } from "../Common.utils";
 
 export type PushWalletAppConnectionProps = {
   selectedWallet: WalletListType;
@@ -79,7 +80,8 @@ const PushWalletAppConnection: FC<PushWalletAppConnectionProps> = ({
 
   if (
     appConnectionStatus === "connected" &&
-    latestAppConnectionRequest?.appConnectionStatus === "connected"
+    latestAppConnectionRequest?.appConnectionStatus === "connected" &&
+    getAppParamValue()
   )
     return (
       <DrawerWrapper>
