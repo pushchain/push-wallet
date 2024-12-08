@@ -9,7 +9,11 @@ import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { SolanaWalletConnectors } from "@dynamic-labs/solana";
 import { useAppState } from "./context/AppContext";
-import { EventEmitterProvider } from "./context/EventEmitterContext";
+import {
+  EventEmitterProvider,
+  useEventEmitterContext,
+} from "./context/EventEmitterContext";
+import { useEffect } from "react";
 
 const GlobalStyle = createGlobalStyle`
   :root{
@@ -37,19 +41,23 @@ export default function App() {
   const { isDarkMode } = useDarkMode();
   const { dispatch } = useAppState();
 
-  // useEffect(() => {
-  //   const urlParams = new URLSearchParams(window.location.search);
-  //   const appParam = urlParams.get("app");
-  //   if (appParam) {
-  //     // Send a message to the parent when the child tab is closed
-  //     window.onbeforeunload = () => {
-  //       if (window.opener) {
-  //         // Send a message to the parent app using the target origin (parent's URL)
-  //         window.opener.postMessage("walletClosed", appParam);
-  //       }
-  //     };
-  //   }
-  // }, []);
+  const { handlePushWalletTabClosedEvent } = useEventEmitterContext();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const appParam = urlParams.get("app");
+    if (appParam) {
+      // Send a message to the parent when the child tab is closed
+      window.onbeforeunload = () => {
+        if (window.opener) {
+          console.log("Closing the tab", window.opener);
+          // // Send a message to the parent app using the target origin (parent's URL)
+          // window.opener.postMessage("walletClosed", appParam);
+          handlePushWalletTabClosedEvent();
+        }
+      };
+    }
+  }, []);
 
   return (
     <DynamicContextProvider

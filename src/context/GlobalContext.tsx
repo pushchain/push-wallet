@@ -177,12 +177,14 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   //   }
   // }, [state.wallet]);
 
-  // /* This hook handles the logic for listening to the app connection requests for external wallet*/
+  /* This hook handles the logic for listening to the app connection requests for external wallet*/
   // useEffect(() => {
   //   if (!state?.wallet && primaryWallet) {
-  //     new PostMessageHandler(primaryWallet, undefined, () => {}, dispatch);
-  //   } else {
-  //     new PostMessageHandler(undefined, undefined, () => {}, dispatch);
+  //     //   new PostMessageHandler(primaryWallet, undefined, () => {}, dispatch);
+  //     // } else {
+  //     //   new PostMessageHandler(undefined, undefined, () => {}, dispatch);
+  //     console.log("Primary Wallet", primaryWallet);
+  //     console.log("State Wallet", state.wallet);
   //   }
   // }, [primaryWallet]);
 

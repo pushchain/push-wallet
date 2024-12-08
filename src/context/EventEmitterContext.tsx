@@ -18,6 +18,7 @@ import {
   WALLET_TO_APP_ACTION,
 } from "../common";
 import { requestToConnectPushWallet } from "../common";
+import { PushSigner } from "../services/pushSigner/pushSigner";
 
 // Define the shape of the app state
 export type EventEmitterState = {
@@ -26,6 +27,7 @@ export type EventEmitterState = {
   handleAppConnectionSuccess: (origin: string) => void;
   handleAppConnectionRejected: (origin: string) => void;
   handleRejectAllAppConnections: () => void;
+  handlePushWalletTabClosedEvent: () => void;
 };
 
 // Create context
@@ -35,6 +37,7 @@ const WalletContext = createContext<EventEmitterState>({
   handleAppConnectionSuccess: () => {},
   handleAppConnectionRejected: () => {},
   handleRejectAllAppConnections: () => {},
+  handlePushWalletTabClosedEvent: () => {},
 });
 
 // Custom hook to use the WalletContext
@@ -54,8 +57,8 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   const [isLoggedEmitterCalled, setLoginEmitterStatus] = useState(false);
 
+  // For social login
   const walletRef = useRef(state.wallet);
-
   walletRef.current = state.wallet;
 
   useEffect(() => {
@@ -74,6 +77,8 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
       switch (event.data.type) {
         case APP_TO_WALLET_ACTION.NEW_CONNECTION_REQUEST:
+          // Check if push wallet or dynamic wallet
+          // If dynamic wallet then no need to show the App Connections Page, just show the
           handleNewConnectionRequest(event.origin);
           break;
         case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
@@ -108,6 +113,13 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     console.log("in emitter context function", walletRef.current);
 
     const appConnections = requestToConnectPushWallet(origin);
+
+    // Checking if appConnection is already connected or not, if connected so emit success message
+    const appFound = appConnections.find((each) => each.origin === origin);
+    if (appFound.appConnectionStatus === "connected") {
+      handleAppConnectionSuccess(origin);
+      return;
+    }
 
     dispatch({
       type: "SET_APP_CONNECTIONS",
@@ -200,6 +212,17 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     });
   };
 
+  const handlePushWalletTabClosedEvent = () => {
+    console.log("Sending Message to the parent tab that wallet is closed");
+
+    sendMessageToMainTab({
+      type: WALLET_TO_APP_ACTION.TAB_CLOSED,
+      data: {
+        account: null,
+      },
+    });
+  };
+
   return (
     <WalletContext.Provider
       value={{
@@ -208,6 +231,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         handleAppConnectionSuccess,
         handleAppConnectionRejected,
         handleRejectAllAppConnections,
+        handlePushWalletTabClosedEvent,
       }}
     >
       {children}
