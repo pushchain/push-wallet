@@ -40,6 +40,8 @@ const Wallet: FC<WalletProps> = () => {
 
   const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
     useState(false);
+
+  // TODO: This needs to go to a top level context
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
 
   const navigate = useNavigate();
@@ -252,8 +254,7 @@ const Wallet: FC<WalletProps> = () => {
 
   const handleResetAndRedirectUser = () => {
     sessionStorage.removeItem("jwt");
-    dispatch({ type: "RESET_AUTHENTICATED" });
-    dispatch({ type: "RESET_USER" });
+    dispatch({ type: "RESET_WALLET" });
     localStorage.clear();
     const url = persistQuery(APP_ROUTES.AUTH);
     navigate(url);
@@ -340,7 +341,9 @@ const Wallet: FC<WalletProps> = () => {
                 icon={<Info size={32} color="icon-state-danger-subtle" />}
                 title="Could not verify"
                 subTitle="Please try again"
-                onClose={() => dispatch({ type: "RESET_MESSAGE_SIGN" })}
+                onClose={() =>
+                  dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" })
+                }
               />
             </DrawerWrapper>
           )}

@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-
 import { useGlobalState } from "./GlobalContext";
 import {
   acceptPushWalletConnectionRequest,
@@ -19,6 +18,7 @@ import {
 } from "../common";
 import { requestToConnectPushWallet } from "../common";
 import { PushSigner } from "../services/pushSigner/pushSigner";
+import { Signer } from "src/services/pushSigner/pushSigner.types";
 
 // Define the shape of the app state
 export type EventEmitterState = {
@@ -27,7 +27,6 @@ export type EventEmitterState = {
   handleAppConnectionSuccess: (origin: string) => void;
   handleAppConnectionRejected: (origin: string) => void;
   handleRejectAllAppConnections: () => void;
-  handlePushWalletTabClosedEvent: () => void;
 };
 
 // Create context
@@ -37,7 +36,6 @@ const WalletContext = createContext<EventEmitterState>({
   handleAppConnectionSuccess: () => {},
   handleAppConnectionRejected: () => {},
   handleRejectAllAppConnections: () => {},
-  handlePushWalletTabClosedEvent: () => {},
 });
 
 // Custom hook to use the WalletContext
@@ -57,8 +55,11 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   const [isLoggedEmitterCalled, setLoginEmitterStatus] = useState(false);
 
-  // For social login
+  // TODO: Right now we check the logged in wallet type. But we need to support the functionality of selected wallet type of the app.
+
+  // For social login and email
   const walletRef = useRef(state.wallet);
+
   walletRef.current = state.wallet;
 
   useEffect(() => {
@@ -68,8 +69,33 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [walletRef.current]);
 
+  // for external wallets
+  const externalWalletRef = useRef<Signer | null>(null);
+
+  useEffect(() => {
+    if (state.dynamicWallet && !isLoggedEmitterCalled) {
+      (async () => {
+        externalWalletRef.current = await PushSigner.initialize(
+          state.dynamicWallet,
+          "DYNAMIC"
+        );
+        setLoginEmitterStatus(true);
+        handleUserLoggedIn();
+      })();
+    }
+  }, [state.dynamicWallet]);
+
   // Event listener for messages
   useEffect(() => {
+    if (getAppParamValue()) {
+      // Send a message to the parent when the child tab is closed
+      window.onbeforeunload = () => {
+        if (window.opener) {
+          handlePushWalletTabClosedEvent();
+        }
+      };
+    }
+
     const messageHandler = (event: MessageEvent) => {
       if (event.origin !== getAppParamValue()) return;
 
@@ -77,8 +103,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
       switch (event.data.type) {
         case APP_TO_WALLET_ACTION.NEW_CONNECTION_REQUEST:
-          // Check if push wallet or dynamic wallet
-          // If dynamic wallet then no need to show the App Connections Page, just show the
           handleNewConnectionRequest(event.origin);
           break;
         case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
@@ -180,27 +204,48 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
     console.log("in signing message function", walletRef.current);
 
-    const signature = await walletRef.current.sign(
-      message,
-      origin,
-      getAllAppConnections()
-    );
+    try {
+      dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "loading" });
+      const signature = externalWalletRef?.current
+        ? await externalWalletRef.current.signMessage(message)
+        : await walletRef.current.sign(message, origin, getAllAppConnections());
 
-    console.log("Signature signed", signature);
+      console.log("Signature signed", signature);
 
-    sendMessageToMainTab({
-      type: WALLET_TO_APP_ACTION.SIGNATURE,
-      data: { signature },
-    });
+      sendMessageToMainTab({
+        type: WALLET_TO_APP_ACTION.SIGNATURE,
+        data: { signature },
+      });
+
+      if (externalWalletRef.current.account) {
+        dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" });
+      } else {
+        setTimeout(
+          () => dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" }),
+          2000
+        );
+      }
+    } catch (error) {
+      // pass the error to other tab as well
+
+      dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "rejected" });
+    }
   };
 
   const handleUserLoggedIn = () => {
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.IS_LOGGED_IN,
       data: {
-        account: null,
+        account: externalWalletRef?.current?.account ?? null,
       },
     });
+
+    if (externalWalletRef?.current?.account) {
+      dispatch({
+        type: "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS",
+        payload: "connected",
+      });
+    }
   };
 
   const handleLogOutEvent = () => {
@@ -210,17 +255,17 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         account: null,
       },
     });
+    setLoginEmitterStatus(false);
   };
 
   const handlePushWalletTabClosedEvent = () => {
-    console.log("Sending Message to the parent tab that wallet is closed");
-
-    sendMessageToMainTab({
-      type: WALLET_TO_APP_ACTION.TAB_CLOSED,
-      data: {
-        account: null,
-      },
-    });
+    // TODO: do it afterwards
+    // sendMessageToMainTab({
+    //   type: WALLET_TO_APP_ACTION.TAB_CLOSED,
+    //   data: {
+    //     account: null,
+    //   },
+    // });
   };
 
   return (
@@ -231,7 +276,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         handleAppConnectionSuccess,
         handleAppConnectionRejected,
         handleRejectAllAppConnections,
-        handlePushWalletTabClosedEvent,
       }}
     >
       {children}

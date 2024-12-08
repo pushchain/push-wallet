@@ -169,7 +169,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
           <LoadingContent
             title={`Connect ${selectedWalletName}`}
             subTitle="Click connect in your wallet"
-            onClose={() => dispatch({ type: "RESET_EXTERNAL_WALLET_STATE" })}
+            onClose={() => dispatch({ type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE", payload:"idle" })}
           />
         </DrawerWrapper>
       )} */}
@@ -179,23 +179,29 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
             title="Sign to verify"
             subTitle="Allow the site to connect and continue"
             onClose={() =>
-              dispatch({ type: "SET_EXTERNAL_WALLET_REJECT_STATE" })
+              dispatch({
+                type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+                payload: "rejected",
+              })
             }
           />
         </DrawerWrapper>
       )}
-       {externalWalletAuthState === "rejected" && (
-            <DrawerWrapper>
-              <ErrorContent
-                icon={<Info size={32} color="icon-state-danger-subtle" />}
-                title="Could not verify"
-                subTitle="Please try connecting again"
-                onClose={() =>
-                  dispatch({ type: "RESET_EXTERNAL_WALLET_STATE" })
-                }
-              />
-            </DrawerWrapper>
-          )}
+      {externalWalletAuthState === "rejected" && (
+        <DrawerWrapper>
+          <ErrorContent
+            icon={<Info size={32} color="icon-state-danger-subtle" />}
+            title="Could not verify"
+            subTitle="Please try connecting again"
+            onClose={() =>
+              dispatch({
+                type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+                payload: "idle",
+              })
+            }
+          />
+        </DrawerWrapper>
+      )}
     </Box>
   );
 };

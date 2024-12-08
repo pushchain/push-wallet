@@ -11,12 +11,10 @@ export type AppState = {
 };
 
 // Define actions for state management
-export type AppAction =
-  | { type: "RESET_EXTERNAL_WALLET_STATE" }
-  | { type: "SET_EXTERNAL_WALLET_LOAD_STATE" }
-  | { type: "SET_EXTERNAL_WALLET_SUCCESS_STATE" }
-  | { type: "SET_EXTERNAL_WALLET_REJECT_STATE" }
-  | { type: "SET_EXTERNAL_WALLET_TIMEOUT_STATE" };
+export type AppAction = {
+  type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE";
+  payload: AppState["externalWalletAuthState"];
+};
 
 // Initial state
 const initialState: AppState = {
@@ -26,30 +24,10 @@ const initialState: AppState = {
 // Reducer function to manage state transitions
 function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
-    case "SET_EXTERNAL_WALLET_LOAD_STATE":
+    case "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE":
       return {
         ...state,
-        externalWalletAuthState: "loading",
-      };
-    case "SET_EXTERNAL_WALLET_REJECT_STATE":
-      return {
-        ...state,
-        externalWalletAuthState: "rejected",
-      };
-    case "SET_EXTERNAL_WALLET_SUCCESS_STATE":
-      return {
-        ...state,
-        externalWalletAuthState: "success",
-      };
-    case "SET_EXTERNAL_WALLET_TIMEOUT_STATE":
-      return {
-        ...state,
-        externalWalletAuthState: "timeout",
-      };
-    case "RESET_EXTERNAL_WALLET_STATE":
-      return {
-        ...state,
-        externalWalletAuthState: "idle",
+        externalWalletAuthState: action.payload,
       };
     default:
       return state;

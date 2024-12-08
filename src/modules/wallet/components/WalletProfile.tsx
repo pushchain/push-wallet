@@ -38,8 +38,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
 
   const handleLogOut = () => {
     sessionStorage.removeItem("jwt");
-    dispatch({ type: "RESET_AUTHENTICATED" });
-    dispatch({ type: "RESET_USER" });
+    dispatch({ type: "RESET_WALLET" });
     localStorage.clear();
     primaryWallet?.connector?.endSession();
     dynamicLogOut();
@@ -74,21 +73,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
                   label="Log Out"
                   icon={<Logout />}
                   onClick={() => {
-                    // window.postMessage(
-                    //   { action: ACTION.AUTH_STATUS, data: "loggedout" },
-                    //   "http://localhost:5174"
-                    // );
-
                     handleLogOut();
-
-                    // sessionStorage.removeItem("jwt");
-                    // dispatch({ type: "RESET_AUTHENTICATED" });
-                    // dispatch({ type: "RESET_USER" });
-                    // localStorage.clear();
-                    // primaryWallet?.connector?.endSession();
-                    // handleLogOut();
-                    // navigate(APP_ROUTES.AUTH);
-                    // localStorage.clear();
                   }}
                 />
               </Menu>
