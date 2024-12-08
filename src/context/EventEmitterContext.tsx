@@ -251,6 +251,10 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     setLoginEmitterStatus(false);
     walletRef.current = null;
     externalWalletRef.current = null;
+
+    // TODO: Fix this afterwards
+
+    getAppParamValue() && window.close();
   };
 
   const handlePushWalletTabClosedEvent = () => {
