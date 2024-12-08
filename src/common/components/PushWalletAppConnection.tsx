@@ -53,12 +53,12 @@ const PushWalletAppConnection: FC<PushWalletAppConnectionProps> = ({
     window.close();
   };
 
-  const hasPendingRequest = state?.wallet?.appConnections.some(
+  const hasPendingRequest = state?.appConnections.some(
     (cx) => cx.appConnectionStatus === "pending"
   );
 
   const latestAppConnectionRequest =
-    state.wallet.appConnections[state.wallet.appConnections.length - 1];
+    state?.appConnections[state?.appConnections.length - 1];
 
   if (
     hasPendingRequest &&

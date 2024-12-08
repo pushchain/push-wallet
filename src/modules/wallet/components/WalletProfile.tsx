@@ -15,12 +15,11 @@ import {
 } from "../../../blocks";
 import { centerMaskWalletAddress, handleCopy } from "../../../common";
 import { useGlobalState } from "../../../context/GlobalContext";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { WalletListType } from "../Wallet.types";
 import { APP_ROUTES } from "../../../constants";
-// import { ACTION } from "src/services/messageHandler/messageHandler.types";
-import { ACTION } from "../../../services/messageHandler/messageHandler.types";
+import { useEventEmitterContext } from "../../../context/EventEmitterContext";
 
 export type WalletProfileProps = {
   selectedWallet: WalletListType;
@@ -33,8 +32,9 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
   const [copied, setCopied] = useState(false);
   const { dispatch } = useGlobalState();
 
+  const { handleLogOutEvent } = useEventEmitterContext();
+
   const navigate = useNavigate();
-  // const [searchParams] = useSearchParams();
 
   const handleLogOut = () => {
     sessionStorage.removeItem("jwt");
@@ -43,17 +43,9 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
     localStorage.clear();
     primaryWallet?.connector?.endSession();
     dynamicLogOut();
-    navigate(APP_ROUTES.AUTH);
+    handleLogOutEvent();
     localStorage.clear();
-
-    // const appParam = searchParams.get("app");
-
-    // if (appParam) {
-    //   if (window.opener) {
-    //     // Send a message to the parent app using the target origin (parent's URL)
-    //     window.opener.postMessage("walletLoggedOut", appParam);
-    //   }
-    // }
+    navigate(APP_ROUTES.AUTH);
   };
 
   return (

@@ -11,6 +11,8 @@ import { useGlobalState } from "./GlobalContext";
 import {
   acceptPushWalletConnectionRequest,
   APP_TO_WALLET_ACTION,
+  getAllAppConnections,
+  getAppParamValue,
   rejectAllPushWalletConnectionRequests,
   rejectPushWalletConnectionRequest,
   WALLET_TO_APP_ACTION,
@@ -66,14 +68,17 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   // Event listener for messages
   useEffect(() => {
     const messageHandler = (event: MessageEvent) => {
-      if (event.origin !== "http://localhost:5174") return;
+      if (event.origin !== getAppParamValue()) return;
+
       console.log("EMIITER APPLIED");
+
       switch (event.data.type) {
         case APP_TO_WALLET_ACTION.NEW_CONNECTION_REQUEST:
           handleNewConnectionRequest(event.origin);
           break;
         case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
           console.log("Signing Message on wallet tab");
+          handleSignAndSendMessage(event.data.data, event.origin);
           break;
         default:
           console.warn("Unknown message type:", event.data.type);
@@ -88,10 +93,10 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   // Function to send messages to the main tab
-  const sendMessageToMainTab = (message: any) => {
+  const sendMessageToMainTab = (data: any) => {
     if (window.opener) {
       try {
-        window.opener.postMessage(message, "http://localhost:5174");
+        window.opener.postMessage(data, getAppParamValue());
       } catch (error) {
         console.error("Error sending message to main tab:", error);
       }
@@ -120,7 +125,9 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.APP_CONNECTION_SUCCESS,
-      data: "Connection successful",
+      data: {
+        account: walletRef.current.signerAccount,
+      },
     });
   };
 
@@ -134,7 +141,9 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.APP_CONNECTION_REJECTED,
-      data: "App Connection Rejected",
+      data: {
+        account: null,
+      },
     });
   };
 
@@ -148,21 +157,46 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.APP_CONNECTION_REJECTED,
-      data: "App Connection Rejected",
+      data: {
+        account: null,
+      },
+    });
+  };
+
+  const handleSignAndSendMessage = async (message: string, origin: string) => {
+    console.log("Signing message", message, origin);
+
+    console.log("in signing message function", walletRef.current);
+
+    const signature = await walletRef.current.sign(
+      message,
+      origin,
+      getAllAppConnections()
+    );
+
+    console.log("Signature signed", signature);
+
+    sendMessageToMainTab({
+      type: WALLET_TO_APP_ACTION.SIGNATURE,
+      data: { signature },
     });
   };
 
   const handleUserLoggedIn = () => {
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.IS_LOGGED_IN,
-      data: "user_logged_in wallet_address",
+      data: {
+        account: null,
+      },
     });
   };
 
   const handleLogOutEvent = () => {
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.IS_LOGGED_OUT,
-      data: "user_logged_out",
+      data: {
+        account: null,
+      },
     });
   };
 

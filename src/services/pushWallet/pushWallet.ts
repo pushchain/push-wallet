@@ -12,7 +12,7 @@ import {
   InitDid,
   EncryptedText,
 } from "@pushprotocol/push-chain/src/lib/generated/txData/init_did";
-import { EncPushAccount, AppConnection, AccountInfo } from "./pushWallet.types";
+import { EncPushAccount, AccountInfo } from "./pushWallet.types";
 import { bytesToString, createWalletClient, hexToBytes, http } from "viem";
 import { PushSigner } from "../pushSigner/pushSigner";
 import { Signer } from "../pushSigner/pushSigner.types";
@@ -27,6 +27,7 @@ import {
 import { mainnet } from "viem/chains";
 import { EncryptedPrivateKey } from "../pushEncryption/pushEncryption.types";
 import api from "../../services/api"; // Axios instance
+import { PushWalletAppConnectionData } from "../../common";
 
 export class PushWallet {
   private static pushValidator: PushValidator;
@@ -36,10 +37,7 @@ export class PushWallet {
    * This is referred as Push Consumer Account, as it is used to sign all messages
    */
   public signerAccount: string;
-  /**
-   *  Array of URLs of Apps that are connected to the Push Wallet
-   */
-  public appConnections: AppConnection[];
+
   public attachedAccounts: string[] = [];
   /**
    * Accounts to Encrypted Derived Key Mapping
@@ -84,9 +82,6 @@ export class PushWallet {
       ) as `push${string}`,
       env
     );
-    this.appConnections = localStorage.getItem("appConnections")
-      ? JSON.parse(localStorage.getItem("appConnections"))
-      : [];
   }
 
   public static signUp = async (env: ENV = ENV.STAGING) => {
@@ -620,10 +615,10 @@ export class PushWallet {
    */
   public sign = async (
     data: string | Uint8Array,
-    origin: string
+    origin: string,
+    appConnections: PushWalletAppConnectionData[]
   ): Promise<Uint8Array> => {
-    // TODO: This needs to be fixed
-    const appFound = this.appConnections.find((each) => each.origin === origin);
+    const appFound = appConnections.find((each) => each.origin === origin);
     if (!appFound) throw Error("App not Connected");
     const account = hdKeyToAccount(this.derivedHDNode);
     const client = createWalletClient({
@@ -635,108 +630,6 @@ export class PushWallet {
     return await pushSigner.signMessage(
       typeof data === "string" ? data : bytesToString(data)
     );
-  };
-
-  public requestToConnect = (origin: string) => {
-    const appFound = this.appConnections.find(
-      (each) =>
-        each.origin === origin && each.appConnectionStatus !== "rejected"
-    );
-
-    if (!appFound) {
-      this.appConnections.push({
-        origin,
-        appConnectionStatus: "pending",
-      });
-
-      // Store updated appConnections in localStorage
-      localStorage.setItem(
-        "appConnections",
-        JSON.stringify(this.appConnections)
-      );
-    }
-  };
-
-  public checkAppConnectionStatus = (
-    origin: string
-  ): {
-    authStatus: AppConnection["authStatus"];
-    appConnectionStatus: AppConnection["appConnectionStatus"];
-  } => {
-    console.log("appConnections reuqest >>>", this.appConnections);
-
-    const newAppRequest = this.appConnections.find(
-      (each) =>
-        each.origin === origin && each.appConnectionStatus !== "rejected"
-    );
-
-    const previousAppRequest = this.appConnections.find(
-      (each) => each.origin === origin
-    );
-
-    if (!newAppRequest) {
-      return {
-        authStatus: "loggedIn",
-        appConnectionStatus: previousAppRequest
-          ? previousAppRequest.appConnectionStatus
-          : "notReceived",
-      };
-    }
-    return {
-      authStatus: "loggedIn",
-      appConnectionStatus: newAppRequest.appConnectionStatus,
-    };
-  };
-
-  public acceptConnectionReq = (origin: string) => {
-    const appFound = this.appConnections.find((each) => each.origin === origin);
-    if (appFound) {
-      this.appConnections = this.appConnections.map((each) =>
-        each.origin === appFound.origin
-          ? {
-              ...appFound,
-              appConnectionStatus: "connected",
-            }
-          : each
-      );
-
-      // Store updated appConnections in localStorage
-      localStorage.setItem(
-        "appConnections",
-        JSON.stringify(this.appConnections)
-      );
-    }
-  };
-
-  public rejectConnectionReq = (origin: string) => {
-    const appFound = this.appConnections.find((each) => each.origin === origin);
-
-    if (appFound) {
-      this.appConnections = this.appConnections.map((each) =>
-        each.origin === appFound.origin
-          ? {
-              ...appFound,
-              appConnectionStatus: "rejected",
-            }
-          : each
-      );
-
-      // Store updated appConnections in localStorage
-      localStorage.setItem(
-        "appConnections",
-        JSON.stringify(this.appConnections)
-      );
-    }
-  };
-
-  public rejectAllConnectionReqs = () => {
-    this.appConnections = this.appConnections.map((app) =>
-      app.appConnectionStatus === "pending"
-        ? { ...app, appConnectionStatus: "rejected" }
-        : app
-    );
-    // Store updated appConnections in localStorage
-    localStorage.setItem("appConnections", JSON.stringify(this.appConnections));
   };
 
   /**

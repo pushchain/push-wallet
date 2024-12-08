@@ -22,6 +22,12 @@ export const handleCopy = async (
   }
 };
 
+export const getAppParamValue = () => {
+  const searchParams = new URLSearchParams(window.location.search);
+
+  return searchParams.get("app");
+};
+
 export const getAllAppConnections = (): PushWalletAppConnectionData[] =>
   localStorage.getItem("appConnections")
     ? JSON.parse(localStorage.getItem("appConnections"))
