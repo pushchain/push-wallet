@@ -42,12 +42,12 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
     primaryWallet?.connector?.endSession();
     dynamicLogOut();
 
-    handleLogOutEvent();
-
     sessionStorage.removeItem("jwt");
     localStorage.clear();
 
     navigate(APP_ROUTES.AUTH);
+
+    handleLogOutEvent();
   };
 
   return (

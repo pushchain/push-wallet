@@ -254,7 +254,9 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
     // TODO: Fix this afterwards
 
-    getAppParamValue() && window.close();
+    setTimeout(() => {
+      getAppParamValue() && window.close();
+    }, 1000);
   };
 
   const handlePushWalletTabClosedEvent = () => {
