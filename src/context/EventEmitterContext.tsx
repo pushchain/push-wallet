@@ -31,11 +31,11 @@ export type EventEmitterState = {
 
 // Create context
 const WalletContext = createContext<EventEmitterState>({
-  handleUserLoggedIn: () => {},
-  handleLogOutEvent: () => {},
-  handleAppConnectionSuccess: () => {},
-  handleAppConnectionRejected: () => {},
-  handleRejectAllAppConnections: () => {},
+  handleUserLoggedIn: () => { },
+  handleLogOutEvent: () => { },
+  handleAppConnectionSuccess: () => { },
+  handleAppConnectionRejected: () => { },
+  handleRejectAllAppConnections: () => { },
 });
 
 // Custom hook to use the WalletContext
@@ -252,11 +252,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     walletRef.current = null;
     externalWalletRef.current = null;
 
-    // TODO: Fix this afterwards
-
-    setTimeout(() => {
-      getAppParamValue() && window.close();
-    }, 1000);
   };
 
   const handlePushWalletTabClosedEvent = () => {
