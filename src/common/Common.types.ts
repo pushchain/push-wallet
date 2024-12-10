@@ -16,6 +16,7 @@ export enum WALLET_TO_APP_ACTION {
 
   IS_LOGGED_OUT = "loggedOut",
   TAB_CLOSED = "tabClosed",
+  ERROR = "error",
 }
 
 export enum APP_TO_WALLET_ACTION {
