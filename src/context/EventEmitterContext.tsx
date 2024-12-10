@@ -222,6 +222,12 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       // pass the error to other tab as well
       console.log(error);
       dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "rejected" });
+      sendMessageToMainTab({
+        type: WALLET_TO_APP_ACTION.ERROR,
+        data: {
+          error: error
+        }
+      })
     }
   };
 
