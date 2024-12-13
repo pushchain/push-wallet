@@ -11,10 +11,10 @@ export const extractStateFromUrl = () => {
     const appUrlObj = new URL(appUrl);
     const state = appUrlObj.searchParams.get("state");
 
-    appUrlObj.searchParams.delete("state");
+    // appUrlObj.searchParams.delete("state");
 
     const modifiedAppUrl = appUrlObj.toString().replace(/\/$/, "");
-    window.history.replaceState({}, "", `?app=${modifiedAppUrl}`);
+    // window.history.replaceState({}, "", `?app=${modifiedAppUrl}`);
 
     return state;
   }

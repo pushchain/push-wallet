@@ -12,6 +12,8 @@ api.interceptors.request.use(
     const token = sessionStorage.getItem("jwt"); // or localStorage
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
+      // config.headers["Access-Control-Allow-Headers"] = '*';
+      // config.headers["Permissions-Policy"] = 'publickey-credentials-create=(self "http://localhost:5173"), publickey-credentials-get=(self "http://localhost:5173")';
     }
     return config;
   },

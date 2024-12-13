@@ -30,13 +30,25 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
       setEmail(values.email);
 
       if (values.email) {
+        // window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
+        //   }/auth/authorize-email?email=${encodeURIComponent(
+        //     values.email
+        //   )}&redirectUri=${encodeURIComponent(
+        //     window.location.origin + envRouteAlias + persistQuery(APP_ROUTES.WALLET)
+        //   )}`;
 
-        window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
+        const backendURL = `${import.meta.env.VITE_APP_BACKEND_URL
           }/auth/authorize-email?email=${encodeURIComponent(
             values.email
           )}&redirectUri=${encodeURIComponent(
-            window.location.origin + envRouteAlias + persistQuery(APP_ROUTES.WALLET)
+            window.location.origin + envRouteAlias + APP_ROUTES.OAUTH_REDIRECT
           )}`;
+        // Open the child tab with the OAuth URL
+        const oauthWindow = window.open(
+          backendURL,
+          "Google OAuth",
+          "width=500,height=600"
+        );
       }
     },
   });
@@ -46,10 +58,22 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
     provider: "github" | "google" | "discord" | "twitter" | "apple"
   ) => {
 
-    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
+    // window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
+    //   }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
+    //     window.location.origin + envRouteAlias + persistQuery(APP_ROUTES.WALLET)
+    //   )}`;
+
+    const backendURL = `${import.meta.env.VITE_APP_BACKEND_URL
       }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
-        window.location.origin + envRouteAlias + persistQuery(APP_ROUTES.WALLET)
+        window.location.origin + envRouteAlias + APP_ROUTES.OAUTH_REDIRECT
       )}`;
+    // Open the child tab with the OAuth URL
+    const oauthWindow = window.open(
+      backendURL,
+      "Google OAuth",
+      "width=500,height=600"
+    );
+
   };
 
   return (

@@ -37,4 +37,5 @@ export const networkToSolChainId = {
 export const APP_ROUTES = {
   AUTH: "/auth",
   WALLET: "/wallet",
+  OAUTH_REDIRECT: "/oauth-redirect",
 };

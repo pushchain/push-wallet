@@ -98,7 +98,12 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     }
 
     const messageHandler = (event: MessageEvent) => {
-      if (event.origin !== getAppParamValue()) return;
+      console.log("Get APP PAram Value", getAppParamValue());
+
+      // if (event.origin !== getAppParamValue()) return;
+
+      console.log("Event ", event);
+
 
       switch (event.data.type) {
         case APP_TO_WALLET_ACTION.NEW_CONNECTION_REQUEST:
@@ -107,6 +112,12 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
           console.log("Signing Message on wallet tab");
           handleSignAndSendMessage(event.data.data, event.origin);
+          break;
+        case 'state':
+          console.log("App Data received", event.data.state)
+          dispatch({ type: "INITIALIZE_STATE_APP_PARAMS", payload: event.data.state });
+          // setAppValue(event.data.app)
+          // window.removeEventListener("message", messageListener);
           break;
         default:
           console.warn("Unknown message type:", event.data.type);
