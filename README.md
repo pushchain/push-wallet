@@ -119,6 +119,11 @@ We welcome contributions from the community! To contribute, please follow these 
 
 Please ensure your code adheres to our coding standards and includes appropriate tests.
 
-## License
+## Licenses
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+All crates of this repository are licensed under either of
+
+- Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+
+at your option.
