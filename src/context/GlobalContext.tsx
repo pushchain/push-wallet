@@ -4,10 +4,9 @@ import {
   useContext,
   useReducer,
   useEffect,
-  useMemo,
 } from "react";
 import { PushWallet } from "../services/pushWallet/pushWallet";
-import { extractStateFromUrl, fetchJwtUsingState } from "../helpers/AuthHelper";
+import { fetchJwtUsingState } from "../helpers/AuthHelper";
 import { useDynamicContext, Wallet } from "@dynamic-labs/sdk-react-core";
 import { getAllAppConnections, PushWalletAppConnectionData } from "../common";
 import { APP_ROUTES } from "../constants";
@@ -25,13 +24,13 @@ export type GlobalState = {
   walletLoadState: "idle" | "success" | "loading" | "rejected";
   messageSignState: "idle" | "loading" | "rejected";
   externalWalletAppConnectionStatus: "pending" | "connected";
-  appParam: string | null;
+  stateParam: string | null;
 };
 
 // Define actions for state management
 export type GlobalAction =
   | { type: "INITIALIZE_WALLET"; payload: PushWallet }
-  | { type: "INITIALIZE_STATE_APP_PARAMS"; payload: GlobalState['appParam'] }
+  | { type: "INITIALIZE_STATE_APP_PARAMS"; payload: GlobalState['stateParam'] }
   | { type: "SET_APP_CONNECTIONS"; payload: PushWalletAppConnectionData[] }
   | { type: "SET_DYNAMIC_WALLET"; payload: Wallet }
   | { type: "RESET_WALLET" }
@@ -58,7 +57,7 @@ const initialState: GlobalState = {
   walletLoadState: "idle",
   messageSignState: "idle",
   externalWalletAppConnectionStatus: "pending",
-  appParam: null,
+  stateParam: null,
 };
 
 // Reducer function to manage state transitions
@@ -72,7 +71,7 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
     case "INITIALIZE_STATE_APP_PARAMS":
       return {
         ...state,
-        appParam: action.payload,
+        stateParam: action.payload,
       };
     case "SET_APP_CONNECTIONS":
       return {
@@ -143,48 +142,27 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   // const stateParam = extractStateFromUrl();
   const storedToken = sessionStorage.getItem("jwt");
 
-  console.log("Params Available from store 1", state.appParam)
-
-  // const stateParam = useMemo(() => {
-  //   return state.appParam
-  // }, [state.appParam])
-
-  // console.log("State Param", stateParam);
-
   useEffect(() => {
     console.count();
-
-    console.log("Variables in useEffect", state.appParam, storedToken, primaryWallet, sdkHasLoaded);
-
 
     const fetchUser = async () => {
       try {
         dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "loading" });
 
-        console.log("Params Available from store in useEffect", state.appParam)
+        console.log("Params Available from store in useEffect", state.stateParam)
 
         // This condition is valid for social login and email for redirection during login
-        if (state.appParam) {
+        if (state.stateParam) {
           const jwtToken = await fetchJwtUsingState({
-            stateParam: state.appParam,
+            stateParam: state.stateParam,
           });
 
           sessionStorage.setItem("jwt", jwtToken);
 
           dispatch({ type: "SET_JWT", payload: jwtToken });
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
+
           navigate(APP_ROUTES.WALLET)
-          // dispatch({ type: "INITIALIZE_STATE_APP_PARAMS", payload: null });
-
-          // const url = new URL(window.location.href);
-
-          // console.log("Deleting the state");
-
-          // url.searchParams.delete("state");
-
-          // window.history.replaceState({}, document.title, url.toString());
-
-          // dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
         }
 
         // This condition is valid for social login and email for during reload
@@ -200,7 +178,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
           dispatch({ type: "SET_DYNAMIC_WALLET", payload: primaryWallet });
         }
 
-        if (!state.appParam && !storedToken && !primaryWallet && sdkHasLoaded) {
+        if (!state.stateParam && !storedToken && !primaryWallet && sdkHasLoaded) {
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "rejected" });
         }
       } catch (error) {
@@ -211,7 +189,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
     };
 
     fetchUser();
-  }, [state.appParam, primaryWallet, sdkHasLoaded]);
+  }, [state.stateParam, primaryWallet, sdkHasLoaded]);
 
   return (
     <GlobalContext.Provider

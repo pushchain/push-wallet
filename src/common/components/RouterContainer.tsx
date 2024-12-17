@@ -6,17 +6,13 @@ import { PrivateRoute } from "../../pages/PrivateRoute";
 import { APP_ROUTES } from "../../constants";
 import { usePersistedQuery } from "../hooks/usePersistedQuery";
 import { OAuthRedirect } from "../../modules/OAuth/OAuthRedirect";
-import { ParentTab } from "../../modules/OAuth/ParentTab";
 const RouterContainer: FC = () => {
   const persistQuery = usePersistedQuery();
 
   return (
     <Routes>
-      {/* <Route path="/"
-        element={<Navigate to={persistQuery(APP_ROUTES.WALLET)} />}
-      /> */}
       <Route path="/"
-        element={<ParentTab />}
+        element={<Navigate to={persistQuery(APP_ROUTES.WALLET)} />}
       />
       <Route path={APP_ROUTES.OAUTH_REDIRECT}
         element={<OAuthRedirect />}
