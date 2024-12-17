@@ -64,6 +64,8 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     if (walletRef.current && !isLoggedEmitterCalled) {
+      console.log("Sending connection request");
+
       setLoginEmitterStatus(true);
       handleUserLoggedIn();
     }
@@ -98,11 +100,11 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     }
 
     const messageHandler = (event: MessageEvent) => {
-      console.log("Get APP PAram Value", getAppParamValue());
 
       // if (event.origin !== getAppParamValue()) return;
 
       console.log("Event ", event);
+      console.log("Event Data TYpe", event.data);
 
 
       switch (event.data.type) {
@@ -133,9 +135,15 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   // Function to send messages to the main tab
   const sendMessageToMainTab = (data: any) => {
-    if (window.opener) {
+    console.log("Sending Message to the parent tab", data, window.frames, window);
+
+    if (window.parent) {
       try {
-        window.opener.postMessage(data, getAppParamValue());
+        // console.log("Parent localtion origin ", window);
+        console.log("Sending Message to parent tab", window.parent);
+        // console.log("App param value", getAppParamValue());
+
+        window.parent.postMessage(data, 'http://localhost:5174')
       } catch (error) {
         console.error("Error sending message to main tab:", error);
       }
