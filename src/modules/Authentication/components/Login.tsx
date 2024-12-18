@@ -20,7 +20,6 @@ const validationSchema = Yup.object().shape({
 const envRouteAlias =
   import.meta.env.VITE_DEV_MODE === "testing" ? "/push-wallet" : "";
 
-
 const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
   const persistQuery = usePersistedQuery();
   const formik = useFormik({
@@ -37,12 +36,13 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
         //     window.location.origin + envRouteAlias + persistQuery(APP_ROUTES.WALLET)
         //   )}`;
 
-        const backendURL = `${import.meta.env.VITE_APP_BACKEND_URL
-          }/auth/authorize-email?email=${encodeURIComponent(
-            values.email
-          )}&redirectUri=${encodeURIComponent(
-            window.location.origin + envRouteAlias + APP_ROUTES.OAUTH_REDIRECT
-          )}`;
+        const backendURL = `${
+          import.meta.env.VITE_APP_BACKEND_URL
+        }/auth/authorize-email?email=${encodeURIComponent(
+          values.email
+        )}&redirectUri=${encodeURIComponent(
+          window.location.origin + envRouteAlias + APP_ROUTES.OAUTH_REDIRECT
+        )}`;
         // Open the child tab with the OAuth URL
         const oauthWindow = window.open(
           backendURL,
@@ -53,27 +53,33 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
     },
   });
 
-
   const handleSocialLogin = (
     provider: "github" | "google" | "discord" | "twitter" | "apple"
   ) => {
-
     // window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
     //   }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
     //     window.location.origin + envRouteAlias + persistQuery(APP_ROUTES.WALLET)
     //   )}`;
 
-    const backendURL = `${import.meta.env.VITE_APP_BACKEND_URL
-      }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
-        window.location.origin + envRouteAlias + APP_ROUTES.OAUTH_REDIRECT
-      )}`;
+    const backendURL = `${
+      import.meta.env.VITE_APP_BACKEND_URL
+    }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
+      window.location.origin + envRouteAlias + APP_ROUTES.OAUTH_REDIRECT
+    )}`;
     // Open the child tab with the OAuth URL
-    const oauthWindow = window.open(
-      backendURL,
-      "Google OAuth",
-      "width=500,height=600"
-    );
 
+    // Calculate the screen width and height
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+
+    // Calculate the position to center the window
+    const left = (screenWidth - 500) / 2;
+    const top = (screenHeight - 600) / 2;
+
+    // Open a new window with the calculated position
+    const windowFeatures = `width=${500},height=${600},left=${left},top=${top},resizable,scrollbars`;
+
+    window.open(backendURL, "Google OAuth", windowFeatures);
   };
 
   return (

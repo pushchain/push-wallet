@@ -27,15 +27,17 @@ export type EventEmitterState = {
   handleAppConnectionSuccess: (origin: string) => void;
   handleAppConnectionRejected: (origin: string) => void;
   handleRejectAllAppConnections: () => void;
+  handleRetryAppConnection: () => void;
 };
 
 // Create context
 const WalletContext = createContext<EventEmitterState>({
-  handleUserLoggedIn: () => { },
-  handleLogOutEvent: () => { },
-  handleAppConnectionSuccess: () => { },
-  handleAppConnectionRejected: () => { },
-  handleRejectAllAppConnections: () => { },
+  handleUserLoggedIn: () => {},
+  handleLogOutEvent: () => {},
+  handleAppConnectionSuccess: () => {},
+  handleAppConnectionRejected: () => {},
+  handleRejectAllAppConnections: () => {},
+  handleRetryAppConnection: () => {},
 });
 
 // Custom hook to use the WalletContext
@@ -90,22 +92,8 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   // Event listener for messages
   useEffect(() => {
-    if (getAppParamValue()) {
-      // Send a message to the parent when the child tab is closed
-      window.onbeforeunload = () => {
-        if (window.opener) {
-          handlePushWalletTabClosedEvent();
-        }
-      };
-    }
-
     const messageHandler = (event: MessageEvent) => {
-
       // if (event.origin !== getAppParamValue()) return;
-
-      console.log("Event ", event);
-      console.log("Event Data TYpe", event.data);
-
 
       switch (event.data.type) {
         case APP_TO_WALLET_ACTION.NEW_CONNECTION_REQUEST:
@@ -115,9 +103,12 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
           console.log("Signing Message on wallet tab");
           handleSignAndSendMessage(event.data.data, event.origin);
           break;
-        case 'state':
-          console.log("App Data received", event.data.state)
-          dispatch({ type: "INITIALIZE_STATE_APP_PARAMS", payload: event.data.state });
+        case "state":
+          console.log("App Data received", event.data.state);
+          dispatch({
+            type: "INITIALIZE_STATE_APP_PARAMS",
+            payload: event.data.state,
+          });
           // setAppValue(event.data.app)
           // window.removeEventListener("message", messageListener);
           break;
@@ -135,7 +126,12 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   // Function to send messages to the main tab
   const sendMessageToMainTab = (data: any) => {
-    console.log("Sending Message to the parent tab", data, window.frames, window);
+    console.log(
+      "Sending Message to the parent tab",
+      data,
+      window.frames,
+      window
+    );
 
     if (window.parent) {
       try {
@@ -143,7 +139,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         console.log("Sending Message to parent tab", window.parent);
         // console.log("App param value", getAppParamValue());
 
-        window.parent.postMessage(data, 'http://localhost:5174')
+        window.parent.postMessage(data, "http://localhost:5174");
       } catch (error) {
         console.error("Error sending message to main tab:", error);
       }
@@ -213,9 +209,16 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     });
   };
 
-  const handleSignAndSendMessage = async (message: string, origin: string) => {
-    console.log("Signing message", message, origin);
+  const handleRetryAppConnection = () => {
+    sendMessageToMainTab({
+      type: WALLET_TO_APP_ACTION.APP_CONNECTION_RETRY,
+      data: {
+        account: null,
+      },
+    });
+  };
 
+  const handleSignAndSendMessage = async (message: string, origin: string) => {
     try {
       dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "loading" });
       const signature = externalWalletRef?.current
@@ -244,9 +247,9 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       sendMessageToMainTab({
         type: WALLET_TO_APP_ACTION.ERROR,
         data: {
-          error: error
-        }
-      })
+          error: error,
+        },
+      });
     }
   };
 
@@ -276,17 +279,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     setLoginEmitterStatus(false);
     walletRef.current = null;
     externalWalletRef.current = null;
-
-  };
-
-  const handlePushWalletTabClosedEvent = () => {
-    // TODO: do it afterwards
-    // sendMessageToMainTab({
-    //   type: WALLET_TO_APP_ACTION.TAB_CLOSED,
-    //   data: {
-    //     account: null,
-    //   },
-    // });
   };
 
   return (
@@ -297,6 +289,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         handleAppConnectionSuccess,
         handleAppConnectionRejected,
         handleRejectAllAppConnections,
+        handleRetryAppConnection,
       }}
     >
       {children}

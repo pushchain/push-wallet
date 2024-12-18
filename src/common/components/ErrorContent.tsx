@@ -6,7 +6,7 @@ export type ErrorContentProps = {
   title: string;
   subTitle: string;
   retryText?: string;
-  onClose: () => void;
+  onClose?: () => void;
   onRetry?: () => void;
   note?: string;
   icon?: ReactNode;
@@ -35,9 +35,11 @@ const ErrorContent: FC<ErrorContentProps> = ({
         border-top: var(--border-xmd) solid var(--stroke-secondary);
       `}
     >
-      <Box alignSelf="flex-end" cursor="pointer" onClick={onClose}>
-        <Cross size={16} color="icon-primary" />
-      </Box>
+      {onClose && (
+        <Box alignSelf="flex-end" cursor="pointer" onClick={onClose}>
+          <Cross size={16} color="icon-primary" />
+        </Box>
+      )}
       {icon && (
         <Box
           display="flex"
