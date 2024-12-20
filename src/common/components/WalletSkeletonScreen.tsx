@@ -18,7 +18,7 @@ const WalletSkeletonScreen: FC<WalletSkeletonScreenProps> = ({ content }) => {
           display="flex"
           height="570px"
           justifyContent="start"
-          width="376px"
+          width={{ initial: "376px", ml: "100%" }}
           padding="spacing-md"
           gap="spacing-xs"
           margin="spacing-sm spacing-none spacing-none spacing-none"
@@ -120,7 +120,7 @@ const WalletSkeletonScreen: FC<WalletSkeletonScreenProps> = ({ content }) => {
             flexDirection="column"
             backgroundColor="surface-primary"
             borderRadius="radius-md"
-            width="372px"
+            width="98%"
             padding="spacing-xl spacing-lg spacing-lg spacing-lg"
             position="absolute"
             css={css`

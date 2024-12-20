@@ -16,7 +16,7 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
       borderRadius="radius-md"
       justifyContent="center"
       position="relative"
-      width="auto"
+      width={{ initial: "auto", ml: "90%" }}
       css={css`
         background: linear-gradient(
           160deg,
@@ -35,7 +35,7 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
         flexDirection="column"
         borderRadius="radius-md"
         justifyContent="center"
-        width="auto"
+        width={{ initial: "auto", ml: "100%" }}
       >
         {children}
       </Box>

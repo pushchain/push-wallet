@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 
-import { APP_ROUTES } from "../constants";
-import { useGlobalState } from "../context/GlobalContext";
+import { APP_ROUTES } from "../../constants";
+import { useGlobalState } from "../../context/GlobalContext";
 import { PushWalletLoadingContent, WalletSkeletonScreen } from "common";
-import { usePersistedQuery } from "../common/hooks/usePersistedQuery";
+import { usePersistedQuery } from "../hooks/usePersistedQuery";
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const {

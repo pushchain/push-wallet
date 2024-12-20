@@ -298,7 +298,7 @@ const Wallet: FC<WalletProps> = () => {
         <Box
           flexDirection="column"
           display="flex"
-          width="376px"
+          width={{ initial: "376px", ml: "100%" }}
           padding="spacing-md"
           gap="spacing-sm"
           position="relative"

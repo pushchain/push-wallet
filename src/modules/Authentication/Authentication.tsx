@@ -18,7 +18,7 @@ const Authentication = () => {
           alignItems="center"
           flexDirection="column"
           display="flex"
-          width="376px"
+          width={{ initial: "376px", ml: "100%" }}
           padding="spacing-md"
         >
           {(connectMethod === "authentication" ||

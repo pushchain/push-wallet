@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Authentication } from "../../modules/Authentication";
 import { Wallet } from "../../modules/wallet";
-import { PrivateRoute } from "../../pages/PrivateRoute";
+import { PrivateRoute } from "./PrivateRoute";
 import { APP_ROUTES } from "../../constants";
 import { usePersistedQuery } from "../hooks/usePersistedQuery";
 import { OAuthRedirect } from "../../modules/OAuth/OAuthRedirect";
