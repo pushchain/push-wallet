@@ -117,7 +117,7 @@ const AppConnectionStatus: FC<AppConnectionStatusDrawerProps> = ({
             size="small"
             variant="primary"
             css={css`
-              width: 66%;
+              flex: 1;
             `}
             onClick={() => onSuccess(appConnection?.origin)}
           >
