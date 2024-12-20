@@ -205,8 +205,6 @@ const Wallet: FC<WalletProps> = () => {
         if (state.jwt) {
           setCreateAccountLoading(true);
 
-          console.log("JWT", state.jwt);
-
           await fetchUserProfile(state.jwt);
         }
         // else if (!primaryWallet) {

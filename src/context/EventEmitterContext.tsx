@@ -6,19 +6,23 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useNavigate } from "react-router-dom";
 import { useGlobalState } from "./GlobalContext";
 import {
   acceptPushWalletConnectionRequest,
+  APP_TO_APP_ACTION,
   APP_TO_WALLET_ACTION,
   getAllAppConnections,
   getAppParamValue,
   rejectAllPushWalletConnectionRequests,
   rejectPushWalletConnectionRequest,
+  usePersistedQuery,
   WALLET_TO_APP_ACTION,
 } from "../common";
 import { requestToConnectPushWallet } from "../common";
 import { PushSigner } from "../services/pushSigner/pushSigner";
-import { Signer } from "src/services/pushSigner/pushSigner.types";
+import { Signer } from "../services/pushSigner/pushSigner.types";
+import { APP_ROUTES } from "../constants";
 
 // Define the shape of the app state
 export type EventEmitterState = {
@@ -57,6 +61,10 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   const [isLoggedEmitterCalled, setLoginEmitterStatus] = useState(false);
 
+  const navigate = useNavigate();
+
+  const persistQuery = usePersistedQuery();
+
   // TODO: Right now we check the logged in wallet type. But we need to support the functionality of selected wallet type of the app.
 
   // For social login and email
@@ -93,27 +101,25 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   // Event listener for messages
   useEffect(() => {
     const messageHandler = (event: MessageEvent) => {
-      // if (event.origin !== getAppParamValue()) return;
-
-      switch (event.data.type) {
-        case APP_TO_WALLET_ACTION.NEW_CONNECTION_REQUEST:
-          handleNewConnectionRequest(event.origin);
-          break;
-        case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
-          console.log("Signing Message on wallet tab");
-          handleSignAndSendMessage(event.data.data, event.origin);
-          break;
-        case "state":
-          console.log("App Data received", event.data.state);
-          dispatch({
-            type: "INITIALIZE_STATE_APP_PARAMS",
-            payload: event.data.state,
-          });
-          // setAppValue(event.data.app)
-          // window.removeEventListener("message", messageListener);
-          break;
-        default:
-          console.warn("Unknown message type:", event.data.type);
+      if (
+        event.origin === getAppParamValue() ||
+        event.origin === window.location.origin
+      ) {
+        switch (event.data.type) {
+          case APP_TO_WALLET_ACTION.NEW_CONNECTION_REQUEST:
+            handleNewConnectionRequest(event.origin);
+            break;
+          case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
+            console.log("Signing Message on wallet tab");
+            handleSignAndSendMessage(event.data.data, event.origin);
+            break;
+          case APP_TO_APP_ACTION.AUTH_STATE_PARAM:
+            console.log("App Data received", event.data);
+            handleAuthStateParam(event.data.state);
+            break;
+          default:
+            console.warn("Unknown message type:", event.data.type);
+        }
       }
     };
 
@@ -126,25 +132,15 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   // Function to send messages to the main tab
   const sendMessageToMainTab = (data: any) => {
-    console.log(
-      "Sending Message to the parent tab",
-      data,
-      window.frames,
-      window
-    );
-
     if (window.parent) {
       try {
-        // console.log("Parent localtion origin ", window);
-        console.log("Sending Message to parent tab", window.parent);
-        // console.log("App param value", getAppParamValue());
-
-        window.parent.postMessage(data, "http://localhost:5174");
+        window.parent.postMessage(data, getAppParamValue());
       } catch (error) {
         console.error("Error sending message to main tab:", error);
       }
     }
   };
+
   const handleNewConnectionRequest = (origin: string) => {
     const appConnections = requestToConnectPushWallet(origin);
 
@@ -279,6 +275,13 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     setLoginEmitterStatus(false);
     walletRef.current = null;
     externalWalletRef.current = null;
+  };
+
+  const handleAuthStateParam = (state: string) => {
+    dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "idle" });
+    navigate(`${persistQuery(APP_ROUTES.WALLET)}&state=${state}`, {
+      replace: true,
+    });
   };
 
   return (

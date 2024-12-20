@@ -25,6 +25,10 @@ export enum APP_TO_WALLET_ACTION {
   SIGN_MESSAGE = "signMessage",
 }
 
+export enum APP_TO_APP_ACTION {
+  AUTH_STATE_PARAM = "authStateParam",
+}
+
 export type PushWalletAppConnectionData = {
   origin: string;
   appConnectionStatus: "connected" | "pending";

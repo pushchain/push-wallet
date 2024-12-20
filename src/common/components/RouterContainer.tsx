@@ -11,12 +11,11 @@ const RouterContainer: FC = () => {
 
   return (
     <Routes>
-      <Route path="/"
+      <Route
+        path="/"
         element={<Navigate to={persistQuery(APP_ROUTES.WALLET)} />}
       />
-      <Route path={APP_ROUTES.OAUTH_REDIRECT}
-        element={<OAuthRedirect />}
-      />
+      <Route path={APP_ROUTES.OAUTH_REDIRECT} element={<OAuthRedirect />} />
       <Route
         path={APP_ROUTES.WALLET}
         element={
