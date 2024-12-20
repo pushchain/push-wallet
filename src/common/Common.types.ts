@@ -11,6 +11,7 @@ export enum WALLET_TO_APP_ACTION {
 
   APP_CONNECTION_REJECTED = "appConnectionRejected",
   APP_CONNECTION_SUCCESS = "appConnectionSuccess",
+  APP_CONNECTION_RETRY = "appConnectionRetry",
 
   SIGNATURE = "signature",
 
@@ -22,6 +23,10 @@ export enum WALLET_TO_APP_ACTION {
 export enum APP_TO_WALLET_ACTION {
   NEW_CONNECTION_REQUEST = "newConnectionRequest",
   SIGN_MESSAGE = "signMessage",
+}
+
+export enum APP_TO_APP_ACTION {
+  AUTH_STATE_PARAM = "authStateParam",
 }
 
 export type PushWalletAppConnectionData = {

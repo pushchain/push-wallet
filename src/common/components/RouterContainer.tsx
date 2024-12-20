@@ -5,14 +5,17 @@ import { Wallet } from "../../modules/wallet";
 import { PrivateRoute } from "../../pages/PrivateRoute";
 import { APP_ROUTES } from "../../constants";
 import { usePersistedQuery } from "../hooks/usePersistedQuery";
+import { OAuthRedirect } from "../../modules/OAuth/OAuthRedirect";
 const RouterContainer: FC = () => {
   const persistQuery = usePersistedQuery();
 
   return (
     <Routes>
-      <Route path="/"
+      <Route
+        path="/"
         element={<Navigate to={persistQuery(APP_ROUTES.WALLET)} />}
       />
+      <Route path={APP_ROUTES.OAUTH_REDIRECT} element={<OAuthRedirect />} />
       <Route
         path={APP_ROUTES.WALLET}
         element={

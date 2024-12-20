@@ -1,9 +1,20 @@
+import { FC } from "react";
 import BlockiesSvg from "blockies-react-svg";
 import { css } from "styled-components";
 import { Box, Button, Cross, HoverableSVG, PushLogo, Text } from "blocks";
 import { centerMaskWalletAddress } from "../Common.utils";
+import { WalletListType } from "../../modules/wallet/Wallet.types";
+import { PushWalletAppConnectionData } from "../Common.types";
 
-const AppConnectionStatus = ({
+export type AppConnectionStatusDrawerProps = {
+  selectedWallet: WalletListType;
+  appConnection: PushWalletAppConnectionData;
+  onSuccess: (origin: string) => void;
+  onReject: (origin: string) => void;
+  onRejectAll?: () => void;
+};
+
+const AppConnectionStatus: FC<AppConnectionStatusDrawerProps> = ({
   selectedWallet,
   appConnection,
   onSuccess,
@@ -33,12 +44,14 @@ const AppConnectionStatus = ({
         alignItems="center"
         width="100%"
       >
-        <Box alignSelf="flex-end" display="flex">
-          <HoverableSVG
-            onClick={onRejectAll}
-            icon={<Cross color="icon-secondary" size={16} />}
-          />
-        </Box>
+        {onRejectAll && (
+          <Box alignSelf="flex-end" display="flex">
+            <HoverableSVG
+              onClick={onRejectAll}
+              icon={<Cross color="icon-secondary" size={16} />}
+            />
+          </Box>
+        )}
         <Box
           display="flex"
           css={css`

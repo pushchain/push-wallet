@@ -19,9 +19,9 @@ const GlobalStyle = createGlobalStyle`
     /* New blocks theme css variables*/
   
     ${(props) => {
-      // @ts-expect-error
-      return getBlocksCSSVariables(props.theme.blocksTheme);
-    }}
+    // @ts-expect-error
+    return getBlocksCSSVariables(props.theme.blocksTheme);
+  }}
   }
 `;
 
@@ -87,13 +87,15 @@ export default function App() {
     >
       <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
         <GlobalStyle />
-        <GlobalProvider>
-          <EventEmitterProvider>
-            <Router basename={getAppBasePath()}>
+        <Router basename={getAppBasePath()}>
+          <GlobalProvider>
+            <EventEmitterProvider>
+
               <RouterContainer />
-            </Router>
-          </EventEmitterProvider>
-        </GlobalProvider>
+              {/* </Router> */}
+            </EventEmitterProvider>
+          </GlobalProvider>
+        </Router>
       </ThemeProvider>
     </DynamicContextProvider>
   );

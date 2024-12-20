@@ -22,7 +22,7 @@ const PushWalletAppConnection: FC<PushWalletAppConnectionProps> = ({
   const {
     handleAppConnectionRejected,
     handleAppConnectionSuccess,
-    handleRejectAllAppConnections,
+    handleRetryAppConnection,
   } = useEventEmitterContext();
 
   const [appConnectionStatus, setAppConnectionStatus] = useState<
@@ -41,17 +41,10 @@ const PushWalletAppConnection: FC<PushWalletAppConnectionProps> = ({
     setAppConnectionStatus("rejected");
   };
 
-  const handleRejectAllConnections = async () => {
-    handleRejectAllAppConnections();
-    setAppConnectionStatus("notVisible");
-  };
-
   const handleCloseWhenSuccess = () => setAppConnectionStatus("notVisible");
 
-  const handleCloseWhenReject = () => setAppConnectionStatus("notVisible");
-
   const handleCloseTabWhenReject = () => {
-    window.close();
+    handleRetryAppConnection();
   };
 
   const hasPendingRequest = state?.appConnections.some(
@@ -72,7 +65,6 @@ const PushWalletAppConnection: FC<PushWalletAppConnectionProps> = ({
           appConnection={latestAppConnectionRequest}
           onSuccess={handleAccept}
           onReject={handleReject}
-          onRejectAll={handleRejectAllConnections}
         />
       </DrawerWrapper>
     );
@@ -94,12 +86,10 @@ const PushWalletAppConnection: FC<PushWalletAppConnectionProps> = ({
       <DrawerWrapper>
         <ErrorContent
           icon={<Info size={32} color="icon-state-danger-subtle" />}
-          title="Could not verify"
-          subTitle="Please go back to the app and retry"
-          retryText="Close"
-          onClose={handleCloseWhenReject}
+          title="Rejected by user"
+          subTitle="Try again to authenticate"
+          retryText="Retry"
           onRetry={handleCloseTabWhenReject}
-          note="Closing this window will log you out."
         />
       </DrawerWrapper>
     );

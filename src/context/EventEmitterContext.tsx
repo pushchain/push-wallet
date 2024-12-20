@@ -6,19 +6,23 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useNavigate } from "react-router-dom";
 import { useGlobalState } from "./GlobalContext";
 import {
   acceptPushWalletConnectionRequest,
+  APP_TO_APP_ACTION,
   APP_TO_WALLET_ACTION,
   getAllAppConnections,
   getAppParamValue,
   rejectAllPushWalletConnectionRequests,
   rejectPushWalletConnectionRequest,
+  usePersistedQuery,
   WALLET_TO_APP_ACTION,
 } from "../common";
 import { requestToConnectPushWallet } from "../common";
 import { PushSigner } from "../services/pushSigner/pushSigner";
-import { Signer } from "src/services/pushSigner/pushSigner.types";
+import { Signer } from "../services/pushSigner/pushSigner.types";
+import { APP_ROUTES } from "../constants";
 
 // Define the shape of the app state
 export type EventEmitterState = {
@@ -27,15 +31,17 @@ export type EventEmitterState = {
   handleAppConnectionSuccess: (origin: string) => void;
   handleAppConnectionRejected: (origin: string) => void;
   handleRejectAllAppConnections: () => void;
+  handleRetryAppConnection: () => void;
 };
 
 // Create context
 const WalletContext = createContext<EventEmitterState>({
-  handleUserLoggedIn: () => { },
-  handleLogOutEvent: () => { },
-  handleAppConnectionSuccess: () => { },
-  handleAppConnectionRejected: () => { },
-  handleRejectAllAppConnections: () => { },
+  handleUserLoggedIn: () => {},
+  handleLogOutEvent: () => {},
+  handleAppConnectionSuccess: () => {},
+  handleAppConnectionRejected: () => {},
+  handleRejectAllAppConnections: () => {},
+  handleRetryAppConnection: () => {},
 });
 
 // Custom hook to use the WalletContext
@@ -55,6 +61,10 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   const [isLoggedEmitterCalled, setLoginEmitterStatus] = useState(false);
 
+  const navigate = useNavigate();
+
+  const persistQuery = usePersistedQuery();
+
   // TODO: Right now we check the logged in wallet type. But we need to support the functionality of selected wallet type of the app.
 
   // For social login and email
@@ -64,6 +74,8 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     if (walletRef.current && !isLoggedEmitterCalled) {
+      console.log("Sending connection request");
+
       setLoginEmitterStatus(true);
       handleUserLoggedIn();
     }
@@ -88,28 +100,26 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   // Event listener for messages
   useEffect(() => {
-    if (getAppParamValue()) {
-      // Send a message to the parent when the child tab is closed
-      window.onbeforeunload = () => {
-        if (window.opener) {
-          handlePushWalletTabClosedEvent();
-        }
-      };
-    }
-
     const messageHandler = (event: MessageEvent) => {
-      if (event.origin !== getAppParamValue()) return;
-
-      switch (event.data.type) {
-        case APP_TO_WALLET_ACTION.NEW_CONNECTION_REQUEST:
-          handleNewConnectionRequest(event.origin);
-          break;
-        case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
-          console.log("Signing Message on wallet tab");
-          handleSignAndSendMessage(event.data.data, event.origin);
-          break;
-        default:
-          console.warn("Unknown message type:", event.data.type);
+      if (
+        event.origin === getAppParamValue() ||
+        event.origin === window.location.origin
+      ) {
+        switch (event.data.type) {
+          case APP_TO_WALLET_ACTION.NEW_CONNECTION_REQUEST:
+            handleNewConnectionRequest(event.origin);
+            break;
+          case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
+            console.log("Signing Message on wallet tab");
+            handleSignAndSendMessage(event.data.data, event.origin);
+            break;
+          case APP_TO_APP_ACTION.AUTH_STATE_PARAM:
+            console.log("App Data received", event.data);
+            handleAuthStateParam(event.data.state);
+            break;
+          default:
+            console.warn("Unknown message type:", event.data.type);
+        }
       }
     };
 
@@ -122,14 +132,15 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   // Function to send messages to the main tab
   const sendMessageToMainTab = (data: any) => {
-    if (window.opener) {
+    if (window.parent) {
       try {
-        window.opener.postMessage(data, getAppParamValue());
+        window.parent.postMessage(data, getAppParamValue());
       } catch (error) {
         console.error("Error sending message to main tab:", error);
       }
     }
   };
+
   const handleNewConnectionRequest = (origin: string) => {
     const appConnections = requestToConnectPushWallet(origin);
 
@@ -194,9 +205,16 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     });
   };
 
-  const handleSignAndSendMessage = async (message: string, origin: string) => {
-    console.log("Signing message", message, origin);
+  const handleRetryAppConnection = () => {
+    sendMessageToMainTab({
+      type: WALLET_TO_APP_ACTION.APP_CONNECTION_RETRY,
+      data: {
+        account: null,
+      },
+    });
+  };
 
+  const handleSignAndSendMessage = async (message: string, origin: string) => {
     try {
       dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "loading" });
       const signature = externalWalletRef?.current
@@ -225,9 +243,9 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       sendMessageToMainTab({
         type: WALLET_TO_APP_ACTION.ERROR,
         data: {
-          error: error
-        }
-      })
+          error: error,
+        },
+      });
     }
   };
 
@@ -257,17 +275,13 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     setLoginEmitterStatus(false);
     walletRef.current = null;
     externalWalletRef.current = null;
-
   };
 
-  const handlePushWalletTabClosedEvent = () => {
-    // TODO: do it afterwards
-    // sendMessageToMainTab({
-    //   type: WALLET_TO_APP_ACTION.TAB_CLOSED,
-    //   data: {
-    //     account: null,
-    //   },
-    // });
+  const handleAuthStateParam = (state: string) => {
+    dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "idle" });
+    navigate(`${persistQuery(APP_ROUTES.WALLET)}&state=${state}`, {
+      replace: true,
+    });
   };
 
   return (
@@ -278,6 +292,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         handleAppConnectionSuccess,
         handleAppConnectionRejected,
         handleRejectAllAppConnections,
+        handleRetryAppConnection,
       }}
     >
       {children}

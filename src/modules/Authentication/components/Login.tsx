@@ -1,11 +1,16 @@
 import { FC } from "react";
 import { Box, Button, Front, Google, Text, TextInput } from "../../../blocks";
-import { PoweredByPush } from "../../../common";
-import { WalletState } from "../Authentication.types";
+import { getAppParamValue, PoweredByPush } from "../../../common";
+import { SocialProvider, WalletState } from "../Authentication.types";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { APP_ROUTES } from "../../../constants";
 import { usePersistedQuery } from "../../../common/hooks/usePersistedQuery";
+import {
+  getAuthWindowConfig,
+  getEmailAuthRoute,
+  getSocialAuthRoute,
+} from "../Authentication.utils";
 
 export type LoginProps = {
   email: string;
@@ -17,12 +22,11 @@ const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email address").required("Required"),
 });
 
-const envRouteAlias =
-  import.meta.env.VITE_DEV_MODE === "testing" ? "/push-wallet" : "";
-
-
 const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
   const persistQuery = usePersistedQuery();
+
+  const isOpenedInIframe = !!getAppParamValue();
+
   const formik = useFormik({
     initialValues: { email },
     validationSchema,
@@ -30,26 +34,40 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
       setEmail(values.email);
 
       if (values.email) {
+        if (isOpenedInIframe) {
+          const backendURL = getEmailAuthRoute(
+            values.email,
+            APP_ROUTES.OAUTH_REDIRECT
+          );
 
-        window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
-          }/auth/authorize-email?email=${encodeURIComponent(
-            values.email
-          )}&redirectUri=${encodeURIComponent(
-            window.location.origin + envRouteAlias + persistQuery(APP_ROUTES.WALLET)
-          )}`;
+          // Open the child tab with the OAuth URL
+          window.open(backendURL, "Google OAuth", getAuthWindowConfig());
+        } else {
+          // Redirect to the auth page in the same tab
+          window.location.href = getEmailAuthRoute(
+            values.email,
+            persistQuery(APP_ROUTES.WALLET)
+          );
+        }
       }
     },
   });
 
-
-  const handleSocialLogin = (
-    provider: "github" | "google" | "discord" | "twitter" | "apple"
-  ) => {
-
-    window.location.href = `${import.meta.env.VITE_APP_BACKEND_URL
-      }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
-        window.location.origin + envRouteAlias + persistQuery(APP_ROUTES.WALLET)
-      )}`;
+  const handleSocialLogin = (provider: SocialProvider) => {
+    if (isOpenedInIframe) {
+      const backendURL = getSocialAuthRoute(
+        provider,
+        APP_ROUTES.OAUTH_REDIRECT
+      );
+      //   console.log(backendURL);
+      window.open(backendURL, "Google OAuth", getAuthWindowConfig());
+    } else {
+      // Redirect to the auth page in the same tab
+      window.location.href = getSocialAuthRoute(
+        provider,
+        persistQuery(APP_ROUTES.WALLET)
+      );
+    }
   };
 
   return (
