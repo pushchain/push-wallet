@@ -58,20 +58,25 @@ const Wallet: FC<WalletProps> = () => {
       const mnemonicHex = Buffer.from(instance.mnemonic).toString("hex");
       const shares = secrets.share(mnemonicHex, 3, 2);
 
-      await api.post(`/mnemonic-share/${userId}`, { share: shares[0] });
-      localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
+      // First create the passkeys for storing shard 3
       await instance.storeMnemonicShareAsEncryptedTx(
         userId,
         shares[2],
         instance.mnemonic
       );
+
+      // Send the shard to backend
+      await api.post(`/mnemonic-share/${userId}`, { share: shares[0] });
+
+      // Store shard in localstorage
+      localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
+
       await instance.registerPushAccount();
 
       console.log("Instance of the push wallet", instance);
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
 
-      console.info("Wallet created and mnemonic split into shares", { userId });
     } catch (err) {
       console.error("Error creating wallet:", err);
       throw err;
