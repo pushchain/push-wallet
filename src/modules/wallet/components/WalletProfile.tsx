@@ -49,7 +49,6 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
     dynamicLogOut();
 
     sessionStorage.removeItem("jwt");
-    localStorage.clear();
 
     navigate(persistQuery(APP_ROUTES.AUTH));
 
