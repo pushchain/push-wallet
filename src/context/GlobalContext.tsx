@@ -43,9 +43,9 @@ export type GlobalAction =
   | { type: "SET_WALLET_LOAD_STATE"; payload: GlobalState["walletLoadState"] }
   | { type: "SET_MESSAGE_SIGN_STATE"; payload: GlobalState["messageSignState"] }
   | {
-      type: "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS";
-      payload: GlobalState["externalWalletAppConnectionStatus"];
-    };
+    type: "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS";
+    payload: GlobalState["externalWalletAppConnectionStatus"];
+  };
 
 // Initial state
 const initialState: GlobalState = {

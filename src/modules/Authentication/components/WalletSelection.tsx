@@ -3,6 +3,7 @@ import { Back, Box, Info, Text } from "../../../blocks";
 import {
   DrawerWrapper,
   ErrorContent,
+  getAppParamValue,
   LoadingContent,
   PoweredByPush,
   WalletCategories,
@@ -16,6 +17,7 @@ import {
 } from "@dynamic-labs/sdk-react-core";
 import {
   filterEthereumWallets,
+  getAuthWindowConfig,
   getGroupedWallets,
   getInstalledWallets,
 } from "../Authentication.utils";
@@ -78,8 +80,16 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     else setConnectMethod("authentication");
   };
 
+  const isOpenedInIframe = !!getAppParamValue();
+
   const handleWalletOption = (key: string) => {
-    selectWalletOption(key);
+
+    if (key === 'phantom' && isOpenedInIframe) {
+      window.open(`${window.location.origin}${APP_ROUTES.PHANTOM}`, 'Phantom-login', getAuthWindowConfig())
+    } else {
+      selectWalletOption(key);
+    }
+
   };
 
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {

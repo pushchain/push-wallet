@@ -27,6 +27,7 @@ export enum APP_TO_WALLET_ACTION {
 
 export enum APP_TO_APP_ACTION {
   AUTH_STATE_PARAM = "authStateParam",
+  PHANTOM_SUCCESS = "phantomsuccessful",
 }
 
 export type PushWalletAppConnectionData = {
