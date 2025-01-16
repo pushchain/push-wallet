@@ -5,7 +5,7 @@ import { centerMaskWalletAddress, CHAIN_LOGO } from '../../../common';
 
 
 
-const WalletActivityListItem  = ({
+const WalletActivityListItem = ({
     transaction,
     address
 }) => {
@@ -13,7 +13,7 @@ const WalletActivityListItem  = ({
         if (chainId === 'devnet') {
             return <PushMonotone size={20} />;
         }
-        const IconComponent = CHAIN_LOGO[1];
+        const IconComponent = CHAIN_LOGO?.[chainId];
         if (IconComponent) {
             return <IconComponent size={20} color="icon-tertiary" />;
         } else {
@@ -23,7 +23,7 @@ const WalletActivityListItem  = ({
     }
 
     function fetchChainFromAddress(transaction) {
-        
+
         let displayAddress = '';
         let additionalRecipients = 0;
         if (address === transaction.sender) {
@@ -38,6 +38,7 @@ const WalletActivityListItem  = ({
         }
 
         const { result } = convertCaipToObject(displayAddress);
+
         return (
             <Box display="flex" gap="spacing-xxs" alignItems='center'>
                 <Box
@@ -65,7 +66,7 @@ const WalletActivityListItem  = ({
                     {centerMaskWalletAddress(displayAddress)}
                 </Text>
                 <Text color="text-tertiary" variant="bes-semibold">
-                    {additionalRecipients == 0 && ` +${additionalRecipients} more`}
+                    {additionalRecipients !== 0 && ` +${additionalRecipients} more`}
                 </Text>
             </Box>
         )
@@ -82,7 +83,7 @@ const WalletActivityListItem  = ({
               border-bottom: var(--border-sm) solid var(--stroke-secondary);
             `}
         >
-         
+
             <Box display="flex" gap="spacing-xxs">
                 <Box
                     display="flex"
@@ -108,7 +109,7 @@ const WalletActivityListItem  = ({
                 <Text variant="bes-regular">{formatWalletCategory(transaction.category)}</Text>
                 <Text variant="c-semibold" color='text-tertiary'>{getFixedTime(transaction.ts)}</Text>
             </Box>
-       
+
         </Box>
     );
 };
