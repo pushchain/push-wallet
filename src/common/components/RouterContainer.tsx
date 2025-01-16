@@ -6,7 +6,7 @@ import { PrivateRoute } from "./PrivateRoute";
 import { APP_ROUTES } from "../../constants";
 import { usePersistedQuery } from "../hooks/usePersistedQuery";
 import { OAuthRedirect } from "../../modules/OAuth/OAuthRedirect";
-import PhantomRedirect from "../../modules/solana/PhantomRedirect";
+import { PhantomRedirect } from "../../modules/solana/PhantomRedirect";
 
 const RouterContainer: FC = () => {
   const persistQuery = usePersistedQuery();
