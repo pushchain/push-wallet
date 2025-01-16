@@ -23,6 +23,7 @@ import { requestToConnectPushWallet } from "../common";
 import { PushSigner } from "../services/pushSigner/pushSigner";
 import { Signer } from "../services/pushSigner/pushSigner.types";
 import { APP_ROUTES } from "../constants";
+import { useReinitialize } from "@dynamic-labs/sdk-react-core";
 
 // Define the shape of the app state
 export type EventEmitterState = {
@@ -36,12 +37,12 @@ export type EventEmitterState = {
 
 // Create context
 const WalletContext = createContext<EventEmitterState>({
-  handleUserLoggedIn: () => {},
-  handleLogOutEvent: () => {},
-  handleAppConnectionSuccess: () => {},
-  handleAppConnectionRejected: () => {},
-  handleRejectAllAppConnections: () => {},
-  handleRetryAppConnection: () => {},
+  handleUserLoggedIn: () => { },
+  handleLogOutEvent: () => { },
+  handleAppConnectionSuccess: () => { },
+  handleAppConnectionRejected: () => { },
+  handleRejectAllAppConnections: () => { },
+  handleRetryAppConnection: () => { },
 });
 
 // Custom hook to use the WalletContext
@@ -65,6 +66,8 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   const persistQuery = usePersistedQuery();
 
+  const reinitializeDynamic = useReinitialize();
+
   // TODO: Right now we check the logged in wallet type. But we need to support the functionality of selected wallet type of the app.
 
   // For social login and email
@@ -74,7 +77,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     if (walletRef.current && !isLoggedEmitterCalled) {
-      console.log("Sending connection request");
 
       setLoginEmitterStatus(true);
       handleUserLoggedIn();
@@ -110,12 +112,13 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
             handleNewConnectionRequest(event.origin);
             break;
           case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
-            console.log("Signing Message on wallet tab");
             handleSignAndSendMessage(event.data.data, event.origin);
             break;
           case APP_TO_APP_ACTION.AUTH_STATE_PARAM:
-            console.log("App Data received", event.data);
             handleAuthStateParam(event.data.state);
+            break;
+          case APP_TO_APP_ACTION.PHANTOM_SUCCESS:
+            handlePhantomConnectionSuccessState();
             break;
           default:
             console.warn("Unknown message type:", event.data.type);
@@ -221,8 +224,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         ? await externalWalletRef?.current?.signMessage(message)
         : await walletRef.current.sign(message, origin, getAllAppConnections());
 
-      console.log("Signature signed", signature);
-
       sendMessageToMainTab({
         type: WALLET_TO_APP_ACTION.SIGNATURE,
         data: { signature },
@@ -283,6 +284,13 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       replace: true,
     });
   };
+
+  const handlePhantomConnectionSuccessState = () => {
+    reinitializeDynamic();
+    navigate(`${persistQuery(APP_ROUTES.WALLET)}`, {
+      replace: true,
+    });
+  }
 
   return (
     <WalletContext.Provider

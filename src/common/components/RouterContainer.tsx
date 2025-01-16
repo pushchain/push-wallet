@@ -6,6 +6,8 @@ import { PrivateRoute } from "./PrivateRoute";
 import { APP_ROUTES } from "../../constants";
 import { usePersistedQuery } from "../hooks/usePersistedQuery";
 import { OAuthRedirect } from "../../modules/OAuth/OAuthRedirect";
+import { PhantomRedirect } from "../../modules/solana/PhantomRedirect";
+
 const RouterContainer: FC = () => {
   const persistQuery = usePersistedQuery();
 
@@ -16,6 +18,7 @@ const RouterContainer: FC = () => {
         element={<Navigate to={persistQuery(APP_ROUTES.WALLET)} />}
       />
       <Route path={APP_ROUTES.OAUTH_REDIRECT} element={<OAuthRedirect />} />
+      <Route path={APP_ROUTES.PHANTOM} element={<PhantomRedirect />} />
       <Route
         path={APP_ROUTES.WALLET}
         element={
