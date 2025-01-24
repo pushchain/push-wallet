@@ -25,9 +25,13 @@ export enum APP_TO_WALLET_ACTION {
   SIGN_MESSAGE = "signMessage",
 }
 
-export enum APP_TO_APP_ACTION {
+export enum WALLET_TO_WALLET_ACTION {
   AUTH_STATE_PARAM = "authStateParam",
   PHANTOM_SUCCESS = "phantomsuccessful",
+  PHANTOM_SIGN = "phantomsign",
+  PHANTOM_SIGN_SUCCESS = "phantomsignsuccessful",
+  PHANTOM_SIGN_ERROR = "phantomsignerror",
+  CLOSE_TAB = "closetab",
 }
 
 export type PushWalletAppConnectionData = {
