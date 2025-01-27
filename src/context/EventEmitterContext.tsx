@@ -159,8 +159,11 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const sendMessageBacktoApp = (data: {
-    message: string;
+  const sendMessageBacktoApp = ({
+    signature,
+    status,
+  }: {
+    signature: string;
     status: "error" | "success";
   }) => {
     // closing the phantomwindow tab
@@ -172,18 +175,18 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       `${window.location.origin}${APP_ROUTES.PHANTOM_SIGN}`
     );
 
-    if (data.status === "success") {
+    if (status === "success") {
       sendMessageToMainTab({
         type: WALLET_TO_APP_ACTION.SIGNATURE,
-        data: data.message,
+        data: { signature },
       });
     }
 
-    if (data.status === "error") {
+    if (status === "error") {
       sendMessageToMainTab({
         type: WALLET_TO_APP_ACTION.ERROR,
         data: {
-          error: data.message,
+          error: "Error in signing the data",
         },
       });
     }
@@ -208,7 +211,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         window.opener?.postMessage({
           type: WALLET_TO_WALLET_ACTION.PHANTOM_SIGN_SUCCESS,
           data: {
-            message: signature,
+            signature: signature,
             status: "success",
           },
         });
@@ -217,7 +220,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         window.opener?.postMessage({
           type: WALLET_TO_WALLET_ACTION.PHANTOM_SIGN_ERROR,
           data: {
-            message: "Error in signing the message",
+            signature: null,
             status: "error",
           },
         });
