@@ -19,9 +19,9 @@ const GlobalStyle = createGlobalStyle`
     /* New blocks theme css variables*/
   
     ${(props) => {
-    // @ts-expect-error
-    return getBlocksCSSVariables(props.theme.blocksTheme);
-  }}
+      // @ts-expect-error
+      return getBlocksCSSVariables(props.theme.blocksTheme);
+    }}
   }
 `;
 
@@ -90,7 +90,6 @@ export default function App() {
         <Router basename={getAppBasePath()}>
           <GlobalProvider>
             <EventEmitterProvider>
-
               <RouterContainer />
               {/* </Router> */}
             </EventEmitterProvider>
