@@ -1,4 +1,4 @@
-import { APP_TO_APP_ACTION } from "common";
+import { WALLET_TO_WALLET_ACTION } from "common";
 import { useEffect, FC } from "react";
 
 const OAuthRedirect: FC = () => {
@@ -9,7 +9,7 @@ const OAuthRedirect: FC = () => {
     if (state) {
       // Post the app value back to the parent tab
       window.opener?.postMessage(
-        { type: APP_TO_APP_ACTION.AUTH_STATE_PARAM, state: state },
+        { type: WALLET_TO_WALLET_ACTION.AUTH_STATE_PARAM, state: state },
         window.location.origin
       );
 
