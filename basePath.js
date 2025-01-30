@@ -4,13 +4,13 @@ export function getAppBasePath() {
     if (import.meta.env.VITE_DEV_MODE === "preview")
       return "/push-wallet/pr-preview/"; // add support for pr number
 
-    if (import.meta.env.VITE_DEV_MODE === "testing") return "/push-wallet/";
+    if (import.meta.env.VITE_DEV_MODE === "alpha") return "/push-wallet/";
   } else if (typeof process !== "undefined" && process.env) {
     // Node.js environment (e.g., during the build process)
     if (process.env.VITE_DEV_MODE === "preview")
       return "/push-wallet/pr-preview/"; // add support for pr number
 
-    if (process.env.VITE_DEV_MODE === "testing") return "/push-wallet/";
+    if (process.env.VITE_DEV_MODE === "alpha") return "/push-wallet/";
   }
   return "/";
 }
