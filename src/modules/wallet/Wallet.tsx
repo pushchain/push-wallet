@@ -58,18 +58,18 @@ const Wallet: FC<WalletProps> = () => {
       const mnemonicHex = Buffer.from(instance.mnemonic).toString("hex");
       const shares = secrets.share(mnemonicHex, 3, 2);
 
-      // Send the shard to backend
-      await api.post(`/mnemonic-share/${userId}`, { share: shares[0] });
-
-      // Store shard in localstorage
-      localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
-
       // First create the passkeys for storing shard 3
       await instance.storeMnemonicShareAsEncryptedTx(
         userId,
         shares[2],
         instance.mnemonic
       );
+
+      // Send the shard to backend
+      await api.post(`/mnemonic-share/${userId}`, { share: shares[0] });
+
+      // Store shard in localstorage
+      localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
 
       await instance.registerPushAccount();
 
