@@ -58,12 +58,7 @@ const Wallet: FC<WalletProps> = () => {
       const mnemonicHex = Buffer.from(instance.mnemonic).toString("hex");
       const shares = secrets.share(mnemonicHex, 3, 2);
 
-      // First create the passkeys for storing shard 3
-      await instance.storeMnemonicShareAsEncryptedTx(
-        userId,
-        shares[2],
-        instance.mnemonic
-      );
+      console.log("Shares >>>", shares);
 
       // Send the shard to backend
       await api.post(`/mnemonic-share/${userId}`, { share: shares[0] });
@@ -71,12 +66,18 @@ const Wallet: FC<WalletProps> = () => {
       // Store shard in localstorage
       localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
 
+      // First create the passkeys for storing shard 3
+      await instance.storeMnemonicShareAsEncryptedTx(
+        userId,
+        shares[2],
+        instance.mnemonic
+      );
+
       await instance.registerPushAccount();
 
       console.log("Instance of the push wallet", instance);
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
-
     } catch (err) {
       console.error("Error creating wallet:", err);
       throw err;
@@ -119,6 +120,8 @@ const Wallet: FC<WalletProps> = () => {
       dispatch({ type: "SET_USER", payload: response.data });
       dispatch({ type: "SET_AUTHENTICATED", payload: true });
 
+      console.log("User ID >>>>", userId);
+
       if (!state.wallet) {
         let share1, share2, share3;
 
@@ -129,6 +132,9 @@ const Wallet: FC<WalletProps> = () => {
           );
           share1 = mnemonicShareResponse.data.share;
           share2 = localStorage.getItem(`mnemonicShare2:${userId}`);
+
+          console.log("Share 1", share1);
+          console.log("Share 2", share2);
 
           if (share1 && share2) {
             console.info("Reconstructing wallet with share1 and share2", {

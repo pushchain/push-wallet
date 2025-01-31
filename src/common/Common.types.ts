@@ -23,14 +23,11 @@ export enum WALLET_TO_APP_ACTION {
 export enum APP_TO_WALLET_ACTION {
   NEW_CONNECTION_REQUEST = "newConnectionRequest",
   SIGN_MESSAGE = "signMessage",
+  LOG_OUT = "logOut",
 }
 
 export enum WALLET_TO_WALLET_ACTION {
   AUTH_STATE_PARAM = "authStateParam",
-  PHANTOM_SUCCESS = "phantomsuccessful",
-  PHANTOM_SIGN = "phantomsign",
-  PHANTOM_SIGN_SUCCESS = "phantomsignsuccessful",
-  PHANTOM_SIGN_ERROR = "phantomsignerror",
   CLOSE_TAB = "closetab",
 }
 
