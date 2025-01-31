@@ -58,8 +58,6 @@ const Wallet: FC<WalletProps> = () => {
       const mnemonicHex = Buffer.from(instance.mnemonic).toString("hex");
       const shares = secrets.share(mnemonicHex, 3, 2);
 
-      console.log("Shares >>>", shares);
-
       // Send the shard to backend
       await api.post(`/mnemonic-share/${userId}`, { share: shares[0] });
 
@@ -74,8 +72,6 @@ const Wallet: FC<WalletProps> = () => {
       );
 
       await instance.registerPushAccount();
-
-      console.log("Instance of the push wallet", instance);
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
     } catch (err) {
@@ -97,10 +93,7 @@ const Wallet: FC<WalletProps> = () => {
       );
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
-
-      console.info("Wallet reconstructed successfully");
     } catch (err) {
-      console.log("Error in reconstructing wallet", err);
       console.error("Error reconstructing wallet:", err);
       setError("Failed to reconstruct wallet. Please try again.");
       throw err;
@@ -120,8 +113,6 @@ const Wallet: FC<WalletProps> = () => {
       dispatch({ type: "SET_USER", payload: response.data });
       dispatch({ type: "SET_AUTHENTICATED", payload: true });
 
-      console.log("User ID >>>>", userId);
-
       if (!state.wallet) {
         let share1, share2, share3;
 
@@ -133,13 +124,7 @@ const Wallet: FC<WalletProps> = () => {
           share1 = mnemonicShareResponse.data.share;
           share2 = localStorage.getItem(`mnemonicShare2:${userId}`);
 
-          console.log("Share 1", share1);
-          console.log("Share 2", share2);
-
           if (share1 && share2) {
-            console.info("Reconstructing wallet with share1 and share2", {
-              userId,
-            });
             await reconstructWallet(share1, share2);
             return;
           }
@@ -159,17 +144,11 @@ const Wallet: FC<WalletProps> = () => {
             );
 
             if (share1 && share3) {
-              console.info("Reconstructing wallet with share1 and share3", {
-                userId,
-              });
               await reconstructWallet(share1, share3);
               return;
             }
 
             if (share2 && share3) {
-              console.info("Reconstructing wallet with share2 and share3", {
-                userId,
-              });
               await reconstructWallet(share2, share3);
               return;
             }
@@ -183,20 +162,10 @@ const Wallet: FC<WalletProps> = () => {
 
         // Only single or no share is found directly ask user if they want to create a new wallet or go back
         const hasAnyShare = share1 || share2 || share3;
-        console.log("Only single share is present", hasAnyShare);
         if (hasAnyShare) {
           setShowCreateNewWalletModal(true);
           return;
         }
-
-        console.info("Creating new wallet", {
-          userId,
-          availableShares: {
-            share1: !!share1,
-            share2: !!share2,
-            share3: !!share3,
-          },
-        });
 
         await createWalletAndGenerateMnemonic(userId);
       }
@@ -257,7 +226,6 @@ const Wallet: FC<WalletProps> = () => {
     try {
       await createWalletAndGenerateMnemonic(state.user.id);
     } catch (error) {
-      console.log("Error in creating new Wallet", error);
       handleResetAndRedirectUser();
     } finally {
       setShowCreateNewWalletModal(false);
