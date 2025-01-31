@@ -54,9 +54,8 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   }, [primaryWallet]);
 
   const wallets = useMemo(() => {
-    const installedEthereumWallets: WalletKeyPairType = getInstalledWallets(
-      filterEthereumWallets(getGroupedWallets(walletOptions)),
-      walletOptions
+    const installedEthereumWallets: WalletKeyPairType = filterEthereumWallets(
+      getGroupedWallets(walletOptions)
     );
 
     const installedSolanaWallets = getInstalledWallets(

@@ -19,3 +19,25 @@ export const fetchJwtUsingState = async ({
     return null;
   }
 };
+
+export const extractAndCleanStateFromUrl = () => {
+  const params = new URLSearchParams(location.search);
+
+  // When appconnection request comes then the url has ?app
+  const connectedAppURL = params.get("app");
+  if (connectedAppURL) {
+    const appUrlObj = new URL(connectedAppURL);
+    const state = appUrlObj.searchParams.get("state");
+
+    appUrlObj.searchParams.delete("state");
+
+    const modifiedAppUrl = appUrlObj.toString().replace(/\/$/, "");
+    window.history.replaceState({}, "", `?app=${modifiedAppUrl}`);
+
+    return state;
+  }
+
+  // When social login or email login comes then the url has ?state=
+  const state = params.get("state");
+  return state;
+};
