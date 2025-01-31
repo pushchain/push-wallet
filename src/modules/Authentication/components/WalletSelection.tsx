@@ -83,15 +83,18 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const isOpenedInIframe = !!getAppParamValue();
 
   const handleWalletOption = (key: string) => {
-    if (key === "phantom" && isOpenedInIframe) {
-      window.open(
-        `${window.location.origin}${APP_ROUTES.PHANTOM}`,
-        "Phantom-login",
-        getAuthWindowConfig()
-      );
-    } else {
-      selectWalletOption(key);
-    }
+    selectWalletOption(key);
+
+    // Below is the logic for iframe case
+    // if (key === "phantom" && isOpenedInIframe) {
+    //   window.open(
+    //     `${window.location.origin}${APP_ROUTES.PHANTOM}`,
+    //     "Phantom-login",
+    //     getAuthWindowConfig()
+    //   );
+    // } else {
+    //   selectWalletOption(key);
+    // }
   };
 
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {

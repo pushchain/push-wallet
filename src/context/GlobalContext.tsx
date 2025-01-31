@@ -43,9 +43,9 @@ export type GlobalAction =
   | { type: "SET_WALLET_LOAD_STATE"; payload: GlobalState["walletLoadState"] }
   | { type: "SET_MESSAGE_SIGN_STATE"; payload: GlobalState["messageSignState"] }
   | {
-    type: "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS";
-    payload: GlobalState["externalWalletAppConnectionStatus"];
-  };
+      type: "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS";
+      payload: GlobalState["externalWalletAppConnectionStatus"];
+    };
 
 // Initial state
 const initialState: GlobalState = {
@@ -141,7 +141,10 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
 
   const stateParam = params.get("state");
 
+  console.log("State Pram", stateParam);
+
   const storedToken = sessionStorage.getItem("jwt");
+  console.log("Stored token", storedToken);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -153,6 +156,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
           const jwtToken = await fetchJwtUsingState({
             stateParam,
           });
+          console.log("JWT TOken", jwtToken);
 
           sessionStorage.setItem("jwt", jwtToken);
 
