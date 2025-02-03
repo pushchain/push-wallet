@@ -38,6 +38,19 @@ export const solanaWallets: WalletKeyPairType = {
   solflare: "Solflare",
 };
 
+export const arbitrumWallets: WalletKeyPairType = {
+  trust: "Trust",
+  metamask: "Metamask",
+  coinbase: "Coinbase",
+  okxwallet: "OKX Wallet",
+};
+
+export const binanceWallets: WalletKeyPairType = {
+  binance: "Binance",
+  trust: "Trust",
+  metamask: "Metamask",
+};
+
 export const allowedEvmWallets = [
   "metamask",
   "trust",

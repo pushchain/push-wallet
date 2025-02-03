@@ -9,13 +9,18 @@ import {
   WalletCategories,
   WALLETS_LOGO,
 } from "../../../common";
-import { solanaWallets } from "../Authentication.constants";
+import {
+  arbitrumWallets,
+  binanceWallets,
+  solanaWallets,
+} from "../Authentication.constants";
 import { css } from "styled-components";
 import {
   useDynamicContext,
   useWalletOptions,
 } from "@dynamic-labs/sdk-react-core";
 import {
+  displayInstalledAndAllowedWallets,
   filterEthereumWallets,
   getAuthWindowConfig,
   getGroupedWallets,
@@ -64,16 +69,31 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
       walletOptions
     );
 
+    const installedArbitrumWalelts = displayInstalledAndAllowedWallets(
+      arbitrumWallets,
+      walletOptions
+    );
+    const installedBinanceWalelts = displayInstalledAndAllowedWallets(
+      binanceWallets,
+      walletOptions
+    );
+
     return {
       solanaWallets: installedSolanaWallets,
       ethereumWallets: installedEthereumWallets,
+      arbitrumWallets: installedArbitrumWalelts,
+      binanceWallets: installedBinanceWalelts,
     };
   }, [walletOptions]);
 
   const walletsToShow =
     selectedWalletCategory === "ethereum"
       ? wallets.ethereumWallets
-      : wallets.solanaWallets;
+      : selectedWalletCategory === "solana"
+      ? wallets.solanaWallets
+      : selectedWalletCategory === "arbitrum"
+      ? wallets.arbitrumWallets
+      : selectedWalletCategory === "binance" && wallets.binanceWallets;
 
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory("");

@@ -1,10 +1,8 @@
-import { useSearchParams } from "react-router-dom";
-
 export const usePersistedQuery = () => {
-  const [searchParams] = useSearchParams();
+  const params = new URLSearchParams(location.search);
 
   const persistQuery = (path: string) => {
-    const app = searchParams.get("app");
+    const app = params.get("app");
     return `${path}${app ? `?app=${app}` : ""}`;
   };
 
