@@ -38,25 +38,38 @@ export const solanaWallets: WalletKeyPairType = {
   solflare: "Solflare",
 };
 
+export const arbitrumWallets: WalletKeyPairType = {
+  trust: "Trust",
+  metamask: "Metamask",
+  coinbase: "Coinbase",
+  okxwallet: "OKX Wallet",
+};
+
+export const binanceWallets: WalletKeyPairType = {
+  binance: "Binance",
+  trust: "Trust",
+  metamask: "Metamask",
+};
+
 export const allowedEvmWallets = [
   "metamask",
   "trust",
-  // "safepal",
+  "safepal",
   "binance",
-  // "uniswap",
-  // "coinbase",
-  // "walletconnect",
-  // "rainbow",
-  // "backpack",
-  // "zerion",
-  // "rabby",
-  // "flowwallet",
-  // "sequence",
-  // "unstoppable",
-  // "frontier",
-  // "1inch",
-  // "mewwallet",
-  // "obvious",
-  // "enkrypt",
-  // "krakenwallet",
+  "uniswap",
+  "coinbase",
+  "walletconnect",
+  "rainbow",
+  "backpack",
+  "zerion",
+  "rabby",
+  "flowwallet",
+  "sequence",
+  "unstoppable",
+  "frontier",
+  "1inch",
+  "mewwallet",
+  "obvious",
+  "enkrypt",
+  "krakenwallet",
 ];

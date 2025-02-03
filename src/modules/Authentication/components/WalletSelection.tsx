@@ -9,7 +9,11 @@ import {
   WalletCategories,
   WALLETS_LOGO,
 } from "../../../common";
-import { solanaWallets } from "../Authentication.constants";
+import {
+  arbitrumWallets,
+  binanceWallets,
+  solanaWallets,
+} from "../Authentication.constants";
 import { css } from "styled-components";
 import {
   useDynamicContext,
@@ -54,8 +58,9 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   }, [primaryWallet]);
 
   const wallets = useMemo(() => {
-    const installedEthereumWallets: WalletKeyPairType = filterEthereumWallets(
-      getGroupedWallets(walletOptions)
+    const installedEthereumWallets: WalletKeyPairType = getInstalledWallets(
+      filterEthereumWallets(getGroupedWallets(walletOptions)),
+      walletOptions
     );
 
     const installedSolanaWallets = getInstalledWallets(
@@ -63,16 +68,31 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
       walletOptions
     );
 
+    const installedArbitrumWalelts = getInstalledWallets(
+      arbitrumWallets,
+      walletOptions
+    );
+    const installedBinanceWalelts = getInstalledWallets(
+      binanceWallets,
+      walletOptions
+    );
+
     return {
       solanaWallets: installedSolanaWallets,
       ethereumWallets: installedEthereumWallets,
+      arbitrumWallets: installedArbitrumWalelts,
+      binanceWallets: installedBinanceWalelts,
     };
   }, [walletOptions]);
 
   const walletsToShow =
     selectedWalletCategory === "ethereum"
       ? wallets.ethereumWallets
-      : wallets.solanaWallets;
+      : selectedWalletCategory === "solana"
+      ? wallets.solanaWallets
+      : selectedWalletCategory === "arbitrum"
+      ? wallets.arbitrumWallets
+      : selectedWalletCategory === "binance" && wallets.binanceWallets;
 
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory("");

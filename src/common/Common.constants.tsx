@@ -14,7 +14,6 @@ import {
   MetaMaskIcon,
   NightlyIcon,
   OkxIcon,
-  OneInchIcon,
   OneKeyIcon,
   PhantomIcon,
   RabbyIcon,
@@ -29,6 +28,7 @@ import {
   ZeroDevIcon,
 } from "@dynamic-labs/iconic";
 import {
+  Arbitrum,
   ArbitrumMonotone,
   BnbMonotone,
   Ethereum,
@@ -52,6 +52,16 @@ export const walletCategories: WalletCategoriesType[] = [
     value: "solana",
     label: "Connect Solana Wallet",
     icon: <Solana width={24} height={24} />,
+  },
+  {
+    value: "arbitrum",
+    label: "Connect Arbitrum Wallet",
+    icon: <Arbitrum width={24} height={24} />,
+  },
+  {
+    value: "binance",
+    label: "Connect Binance Wallet",
+    icon: <BnbIcon width={24} height={24} />,
   },
 ];
 
