@@ -41,7 +41,7 @@ export const getInstalledWallets = (
 };
 
 export const envRouteAlias =
-  import.meta.env.VITE_DEV_MODE === "alpha" ? "/push-wallet" : "";
+  import.meta.env.VITE_DEV_MODE === "alpha" ? "/" : "";
 
 export const getEmailAuthRoute = (email: string, redirectRoute: string) =>
   `${
