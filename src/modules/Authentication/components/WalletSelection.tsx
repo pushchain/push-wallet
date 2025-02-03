@@ -20,6 +20,7 @@ import {
   useWalletOptions,
 } from "@dynamic-labs/sdk-react-core";
 import {
+  displayInstalledAndAllowedWallets,
   filterEthereumWallets,
   getAuthWindowConfig,
   getGroupedWallets,
@@ -68,11 +69,11 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
       walletOptions
     );
 
-    const installedArbitrumWalelts = getInstalledWallets(
+    const installedArbitrumWalelts = displayInstalledAndAllowedWallets(
       arbitrumWallets,
       walletOptions
     );
-    const installedBinanceWalelts = getInstalledWallets(
+    const installedBinanceWalelts = displayInstalledAndAllowedWallets(
       binanceWallets,
       walletOptions
     );

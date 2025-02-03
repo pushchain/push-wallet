@@ -40,6 +40,20 @@ export const getInstalledWallets = (
   return result as WalletKeyPairType;
 };
 
+export const displayInstalledAndAllowedWallets = (
+  wallets,
+  walletOptions
+): WalletKeyPairType => {
+  const result = Object.fromEntries(
+    Object.entries(wallets).filter(([key]) =>
+      walletOptions.some(
+        (item) => item.isInstalledOnBrowser === true || item.key === key
+      )
+    )
+  );
+  return result as WalletKeyPairType;
+};
+
 export const envRouteAlias =
   import.meta.env.VITE_DEV_MODE === "alpha" ? "/push-wallet" : "";
 
