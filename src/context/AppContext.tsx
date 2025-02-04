@@ -7,7 +7,8 @@ export type AppState = {
     | "success"
     | "loading"
     | "rejected"
-    | "timeout";
+    | "timeout"
+    | "check_network";
 };
 
 // Define actions for state management

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Box, Info } from "../../blocks";
+import { Box, Button, Info } from "../../blocks";
 import {
   BoxLayout,
   ContentLayout,
@@ -18,13 +18,17 @@ import { PushWallet } from "../../services/pushWallet/pushWallet";
 import { APP_ROUTES, ENV } from "../../constants";
 import secrets from "secrets.js-grempe";
 import { useGlobalState } from "../../context/GlobalContext";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import {
+  useDynamicContext,
+  useSwitchNetwork,
+} from "@dynamic-labs/sdk-react-core";
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
 import { PushWalletAppConnection } from "../../common";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
 import { ConnectionSuccess } from "../../common/components/ConnectionSuccess";
+import { arbitrum } from "viem/chains";
 
 export type WalletProps = {};
 
@@ -36,6 +40,7 @@ const Wallet: FC<WalletProps> = () => {
   const params = new URLSearchParams(location.search);
   const externalOrigin = params.get("app");
   const { primaryWallet } = useDynamicContext();
+  const switchNetwork = useSwitchNetwork();
   const [showConnectionSuccess, setConnectionSuccess] =
     useState<boolean>(false);
 
@@ -282,6 +287,13 @@ const Wallet: FC<WalletProps> = () => {
           gap="spacing-sm"
           position="relative"
         >
+          <Button
+            onClick={() => {
+              switchNetwork({ wallet: primaryWallet, network: arbitrum.id });
+            }}
+          >
+            Change Network
+          </Button>
           <PushWalletAppConnection selectedWallet={selectedWallet} />
           <WalletProfile selectedWallet={selectedWallet} />
           <WalletTabs

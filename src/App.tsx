@@ -65,6 +65,7 @@ export default function App() {
             });
           },
           onAuthFailure: (method, reason) => {
+            console.log("Auth failed ", reason);
             dispatch({
               type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
               payload: "rejected",
@@ -77,10 +78,19 @@ export default function App() {
             });
           },
           onAuthSuccess: (args) => {
+            console.log(
+              "User has successfully authenticated, check the network"
+            );
+
             dispatch({
               type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
-              payload: "success",
+              payload: "check_network",
             });
+
+            // dispatch({
+            //   type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+            //   payload: "success",
+            // });
           },
         },
       }}

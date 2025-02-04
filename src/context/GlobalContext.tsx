@@ -163,10 +163,10 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
         }
 
         // This condition is valid for continue with wallet for during login and reload
-        if (primaryWallet) {
-          dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
-          dispatch({ type: "SET_DYNAMIC_WALLET", payload: primaryWallet });
-        }
+        // if (primaryWallet) {
+        //   dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
+        //   dispatch({ type: "SET_DYNAMIC_WALLET", payload: primaryWallet });
+        // }
 
         if (!stateParam && !storedToken && !primaryWallet && sdkHasLoaded) {
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "rejected" });
