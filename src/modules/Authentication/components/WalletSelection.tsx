@@ -9,18 +9,13 @@ import {
   WalletCategories,
   WALLETS_LOGO,
 } from "../../../common";
-import {
-  arbitrumWallets,
-  binanceWallets,
-  solanaWallets,
-} from "../Authentication.constants";
+import { solanaWallets } from "../Authentication.constants";
 import { css } from "styled-components";
 import {
   useDynamicContext,
   useWalletOptions,
 } from "@dynamic-labs/sdk-react-core";
 import {
-  displayInstalledAndAllowedWallets,
   filterEthereumWallets,
   getAuthWindowConfig,
   getGroupedWallets,
@@ -69,31 +64,16 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
       walletOptions
     );
 
-    const installedArbitrumWalelts = displayInstalledAndAllowedWallets(
-      arbitrumWallets,
-      walletOptions
-    );
-    const installedBinanceWalelts = displayInstalledAndAllowedWallets(
-      binanceWallets,
-      walletOptions
-    );
-
     return {
       solanaWallets: installedSolanaWallets,
       ethereumWallets: installedEthereumWallets,
-      arbitrumWallets: installedArbitrumWalelts,
-      binanceWallets: installedBinanceWalelts,
     };
   }, [walletOptions]);
 
   const walletsToShow =
     selectedWalletCategory === "ethereum"
       ? wallets.ethereumWallets
-      : selectedWalletCategory === "solana"
-      ? wallets.solanaWallets
-      : selectedWalletCategory === "arbitrum"
-      ? wallets.arbitrumWallets
-      : selectedWalletCategory === "binance" && wallets.binanceWallets;
+      : wallets.solanaWallets;
 
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory("");
@@ -103,18 +83,15 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const isOpenedInIframe = !!getAppParamValue();
 
   const handleWalletOption = (key: string) => {
-    selectWalletOption(key);
-
-    // Below is the logic for iframe case
-    // if (key === "phantom" && isOpenedInIframe) {
-    //   window.open(
-    //     `${window.location.origin}${APP_ROUTES.PHANTOM}`,
-    //     "Phantom-login",
-    //     getAuthWindowConfig()
-    //   );
-    // } else {
-    //   selectWalletOption(key);
-    // }
+    if (key === "phantom" && isOpenedInIframe) {
+      window.open(
+        `${window.location.origin}${APP_ROUTES.PHANTOM}`,
+        "Phantom-login",
+        getAuthWindowConfig()
+      );
+    } else {
+      selectWalletOption(key);
+    }
   };
 
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {

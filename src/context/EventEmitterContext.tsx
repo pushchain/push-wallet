@@ -23,10 +23,7 @@ import { requestToConnectPushWallet } from "../common";
 import { PushSigner } from "../services/pushSigner/pushSigner";
 import { Signer } from "../services/pushSigner/pushSigner.types";
 import { APP_ROUTES } from "../constants";
-import {
-  useDynamicContext,
-  useReinitialize,
-} from "@dynamic-labs/sdk-react-core";
+import { useReinitialize } from "@dynamic-labs/sdk-react-core";
 import { getAuthWindowConfig } from "../modules/Authentication/Authentication.utils";
 
 // Define the shape of the app state
@@ -70,7 +67,11 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   const persistQuery = usePersistedQuery();
 
-  const { primaryWallet, handleLogOut: dynamicLogOut } = useDynamicContext();
+  const reinitializeDynamic = useReinitialize();
+
+  const phantomWindowRef = useRef<Window | null>(null);
+
+  const { pathname } = useLocation();
 
   // TODO: Right now we check the logged in wallet type. But we need to support the functionality of selected wallet type of the app.
 
@@ -87,6 +88,9 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   // for external wallets
   const externalWalletRef = useRef<Signer | null>(null);
+
+  const dynamicWalletRef = useRef(state.dynamicWallet);
+  dynamicWalletRef.current = state.dynamicWallet;
 
   useEffect(() => {
     if (state.dynamicWallet && !isLoggedEmitterCalled) {
@@ -116,12 +120,20 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
           case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
             handleSignAndSendMessage(event.data.data, event.origin);
             break;
-          case APP_TO_WALLET_ACTION.LOG_OUT:
-            console.log("Log Out event received");
-            handleLogOutEvent();
-            break;
           case WALLET_TO_WALLET_ACTION.AUTH_STATE_PARAM:
             handleAuthStateParam(event.data.state);
+            break;
+          case WALLET_TO_WALLET_ACTION.PHANTOM_SUCCESS:
+            handlePhantomConnectionSuccessState();
+            break;
+          case WALLET_TO_WALLET_ACTION.PHANTOM_SIGN:
+            handlePhantomSignAndSendMessage(event.data.data);
+            break;
+          case WALLET_TO_WALLET_ACTION.PHANTOM_SIGN_SUCCESS:
+            sendMessageBacktoApp(event.data.data);
+            break;
+          case WALLET_TO_WALLET_ACTION.PHANTOM_SIGN_ERROR:
+            sendMessageBacktoApp(event.data.data);
             break;
           default:
             console.warn("Unknown message type:", event.data.type);
@@ -138,36 +150,141 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   // Function to send messages to the main tab
   const sendMessageToMainTab = (data: any) => {
-    if (window.opener) {
+    if (window.parent) {
       try {
-        window.opener.postMessage(data, getAppParamValue());
+        window.parent.postMessage(data, getAppParamValue());
       } catch (error) {
         console.error("Error sending message to main tab:", error);
       }
     }
   };
 
-  // Function to sign the message coming from dapp
-  const handleSignAndSendMessage = async (message: string, origin: string) => {
-    try {
-      dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "loading" });
+  const sendMessageBacktoApp = ({
+    signature,
+    status,
+  }: {
+    signature: string;
+    status: "error" | "success";
+  }) => {
+    // closing the phantomwindow tab
+    phantomWindowRef.current.postMessage(
+      {
+        type: WALLET_TO_WALLET_ACTION.CLOSE_TAB,
+        data: "closeTab",
+      },
+      `${window.location.origin}${APP_ROUTES.PHANTOM_SIGN}`
+    );
 
-      const signature = externalWalletRef?.current
-        ? await externalWalletRef?.current?.signMessage(message)
-        : await walletRef.current.sign(message, origin, getAllAppConnections());
-
+    if (status === "success") {
       sendMessageToMainTab({
         type: WALLET_TO_APP_ACTION.SIGNATURE,
         data: { signature },
       });
+    }
 
-      if (externalWalletRef?.current?.account) {
-        dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" });
-      } else {
-        setTimeout(
-          () => dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" }),
-          2000
+    if (status === "error") {
+      sendMessageToMainTab({
+        type: WALLET_TO_APP_ACTION.ERROR,
+        data: {
+          error: "Error in signing the data",
+        },
+      });
+    }
+
+    if (externalWalletRef?.current?.account) {
+      dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" });
+    } else {
+      setTimeout(
+        () => dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" }),
+        2000
+      );
+    }
+  };
+
+  const handlePhantomSignAndSendMessage = async (message: string) => {
+    if (pathname === APP_ROUTES.PHANTOM_SIGN) {
+      try {
+        const signature = await externalWalletRef?.current?.signMessage(
+          message
         );
+
+        window.opener?.postMessage({
+          type: WALLET_TO_WALLET_ACTION.PHANTOM_SIGN_SUCCESS,
+          data: {
+            signature: signature,
+            status: "success",
+          },
+        });
+      } catch (error) {
+        console.log("Error in signing message", error);
+        window.opener?.postMessage({
+          type: WALLET_TO_WALLET_ACTION.PHANTOM_SIGN_ERROR,
+          data: {
+            signature: null,
+            status: "error",
+          },
+        });
+      }
+    }
+  };
+
+  const openPhantomSignpage = (message: string) => {
+    try {
+      phantomWindowRef.current = window.open(
+        `${window.location.origin}${APP_ROUTES.PHANTOM_SIGN}`,
+        "_blank",
+        getAuthWindowConfig()
+      );
+
+      setTimeout(() => {
+        phantomWindowRef.current.postMessage(
+          {
+            type: WALLET_TO_WALLET_ACTION.PHANTOM_SIGN,
+            data: message,
+          },
+          `${window.location.origin}${APP_ROUTES.PHANTOM_SIGN}`
+        );
+      }, 3000);
+    } catch (error) {
+      console.log("Error in opening window", error);
+      dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "rejected" });
+      sendMessageToMainTab({
+        type: WALLET_TO_APP_ACTION.ERROR,
+        data: {
+          error: error,
+        },
+      });
+    }
+  };
+
+  const handleSignAndSendMessage = async (message: string, origin: string) => {
+    try {
+      dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "loading" });
+
+      if (dynamicWalletRef.current.key == "phantom") {
+        openPhantomSignpage(message);
+      } else {
+        const signature = externalWalletRef?.current
+          ? await externalWalletRef?.current?.signMessage(message)
+          : await walletRef.current.sign(
+              message,
+              origin,
+              getAllAppConnections()
+            );
+
+        sendMessageToMainTab({
+          type: WALLET_TO_APP_ACTION.SIGNATURE,
+          data: { signature },
+        });
+
+        if (externalWalletRef?.current?.account) {
+          dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" });
+        } else {
+          setTimeout(
+            () => dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" }),
+            2000
+          );
+        }
       }
     } catch (error) {
       // pass the error to other tab as well
@@ -272,11 +389,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const handleLogOutEvent = () => {
-    dispatch({ type: "RESET_WALLET" });
-    primaryWallet?.connector?.endSession();
-    dynamicLogOut();
-    sessionStorage.removeItem("jwt");
-
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.IS_LOGGED_OUT,
       data: {
@@ -286,13 +398,18 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     setLoginEmitterStatus(false);
     walletRef.current = null;
     externalWalletRef.current = null;
-
-    navigate(persistQuery(APP_ROUTES.AUTH));
   };
 
   const handleAuthStateParam = (state: string) => {
     dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "idle" });
     navigate(`${persistQuery(APP_ROUTES.WALLET)}&state=${state}`, {
+      replace: true,
+    });
+  };
+
+  const handlePhantomConnectionSuccessState = () => {
+    reinitializeDynamic();
+    navigate(`${persistQuery(APP_ROUTES.WALLET)}`, {
       replace: true,
     });
   };
