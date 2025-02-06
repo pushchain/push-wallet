@@ -6,15 +6,12 @@ import {
   useEffect,
 } from "react";
 import { PushWallet } from "../services/pushWallet/pushWallet";
-import { fetchJwtUsingState } from "../helpers/AuthHelper";
-import { useDynamicContext, Wallet } from "@dynamic-labs/sdk-react-core";
 import {
-  getAllAppConnections,
-  PushWalletAppConnectionData,
-  usePersistedQuery,
-} from "../common";
-import { useNavigate } from "react-router-dom";
-import { APP_ROUTES } from "../constants";
+  extractAndCleanStateFromUrl,
+  fetchJwtUsingState,
+} from "../helpers/AuthHelper";
+import { useDynamicContext, Wallet } from "@dynamic-labs/sdk-react-core";
+import { getAllAppConnections, PushWalletAppConnectionData } from "../common";
 
 // Define the shape of the global state
 export type GlobalState = {
@@ -133,13 +130,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
 
   const { primaryWallet, sdkHasLoaded } = useDynamicContext();
 
-  const params = new URLSearchParams(location.search);
-
-  const navigate = useNavigate();
-
-  const persistQuery = usePersistedQuery();
-
-  const stateParam = params.get("state");
+  const stateParam = extractAndCleanStateFromUrl();
 
   const storedToken = sessionStorage.getItem("jwt");
 
@@ -155,10 +146,11 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
           });
 
           sessionStorage.setItem("jwt", jwtToken);
+          const url = new URL(window.location.href);
+          url.searchParams.delete("state");
+          window.history.replaceState({}, document.title, url.toString());
 
           dispatch({ type: "SET_JWT", payload: jwtToken });
-
-          navigate(persistQuery(window.location.pathname), { replace: true });
 
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
         }
@@ -186,8 +178,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
       }
     };
 
-    // We don't need to do jwt token network calls on the oauth route to avoid expiring the token
-    window.location.pathname !== APP_ROUTES.OAUTH_REDIRECT && fetchUser();
+    fetchUser();
   }, [stateParam, storedToken, primaryWallet, sdkHasLoaded]);
 
   return (
