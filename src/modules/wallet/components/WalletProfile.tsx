@@ -24,6 +24,7 @@ import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { WalletListType } from "../Wallet.types";
 import { APP_ROUTES } from "../../../constants";
 import { useEventEmitterContext } from "../../../context/EventEmitterContext";
+import { useAppState } from "../../../context/AppContext";
 
 export type WalletProfileProps = {
   selectedWallet: WalletListType;
@@ -35,6 +36,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
   const walletName = selectedWallet?.name ?? "External Wallet";
   const [copied, setCopied] = useState(false);
   const { dispatch } = useGlobalState();
+  const { setSelectedWalletCategory } = useAppState();
 
   const { handleLogOutEvent } = useEventEmitterContext();
 
@@ -53,6 +55,8 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
     navigate(persistQuery(APP_ROUTES.AUTH));
 
     handleLogOutEvent();
+
+    setSelectedWalletCategory("");
   };
 
   return (

@@ -28,7 +28,6 @@ import { PushWalletAppConnection } from "../../common";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
 import { ConnectionSuccess } from "../../common/components/ConnectionSuccess";
-import { arbitrum } from "viem/chains";
 
 export type WalletProps = {};
 
@@ -287,13 +286,6 @@ const Wallet: FC<WalletProps> = () => {
           gap="spacing-sm"
           position="relative"
         >
-          <Button
-            onClick={() => {
-              switchNetwork({ wallet: primaryWallet, network: arbitrum.id });
-            }}
-          >
-            Change Network
-          </Button>
           <PushWalletAppConnection selectedWallet={selectedWallet} />
           <WalletProfile selectedWallet={selectedWallet} />
           <WalletTabs

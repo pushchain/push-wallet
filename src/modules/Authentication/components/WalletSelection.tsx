@@ -31,15 +31,14 @@ import { useNavigate } from "react-router-dom";
 import { APP_ROUTES } from "../../../constants";
 import { useAppState } from "../../../context/AppContext";
 import { usePersistedQuery } from "../../../common/hooks/usePersistedQuery";
-import SwitchNetwork from "./SwitchNetwork";
 
 type WalletSelectionProps = {
   setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
 };
 
 const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
-  const [selectedWalletCategory, setSelectedWalletCategory] =
-    useState<string>("");
+  // const [selectedWalletCategory, setSelectedWalletCategory] =
+  //   useState<string>("");
   const { primaryWallet } = useDynamicContext();
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
@@ -47,17 +46,19 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const {
     dispatch,
     state: { externalWalletAuthState },
+    selectedWalletCategory,
+    setSelectedWalletCategory,
   } = useAppState();
   const persistQuery = usePersistedQuery();
 
-  // useEffect(() => {
-  //   (async () => {
-  //     if (primaryWallet) {
-  //       const url = persistQuery(APP_ROUTES.WALLET);
-  //       navigate(url);
-  //     }
-  //   })();
-  // }, [primaryWallet]);
+  useEffect(() => {
+    (async () => {
+      if (primaryWallet) {
+        const url = persistQuery(APP_ROUTES.WALLET);
+        navigate(url);
+      }
+    })();
+  }, [primaryWallet]);
 
   const wallets = useMemo(() => {
     const installedEthereumWallets: WalletKeyPairType = getInstalledWallets(
@@ -87,8 +88,6 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     };
   }, [walletOptions]);
 
-  console.log("walletOptions", walletOptions);
-
   const walletsToShow =
     selectedWalletCategory === "ethereum"
       ? wallets.ethereumWallets
@@ -96,7 +95,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
       ? wallets.solanaWallets
       : selectedWalletCategory === "arbitrum"
       ? wallets.arbitrumWallets
-      : selectedWalletCategory === "binance" && wallets.binanceWallets;
+      : selectedWalletCategory === "bsc" && wallets.binanceWallets;
 
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory("");
@@ -119,8 +118,6 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     //   selectWalletOption(key);
     // }
   };
-
-  console.log("primaryWallet", primaryWallet);
 
   const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {
     return (
@@ -155,7 +152,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
             customScrollbar
           >
             {!primaryWallet &&
-              (!selectedWalletCategory ? (
+              (selectedWalletCategory === "" ? (
                 <WalletCategories
                   setSelectedWalletCategory={setSelectedWalletCategory}
                 />
@@ -228,7 +225,6 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
         </DrawerWrapper>
       )}
 
-      {externalWalletAuthState === "check_network" && <SwitchNetwork />}
       {externalWalletAuthState === "rejected" && (
         <DrawerWrapper>
           <ErrorContent

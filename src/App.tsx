@@ -78,19 +78,10 @@ export default function App() {
             });
           },
           onAuthSuccess: (args) => {
-            console.log(
-              "User has successfully authenticated, check the network"
-            );
-
             dispatch({
               type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
-              payload: "check_network",
+              payload: "success",
             });
-
-            // dispatch({
-            //   type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
-            //   payload: "success",
-            // });
           },
         },
       }}

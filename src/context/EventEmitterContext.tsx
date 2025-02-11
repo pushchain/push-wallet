@@ -28,6 +28,8 @@ import {
   useReinitialize,
 } from "@dynamic-labs/sdk-react-core";
 import { getAuthWindowConfig } from "../modules/Authentication/Authentication.utils";
+import { arbitrum, base, bsc, mainnet } from "viem/chains";
+import { useAppState } from "./AppContext";
 
 // Define the shape of the app state
 export type EventEmitterState = {
@@ -63,6 +65,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { dispatch, state } = useGlobalState();
+  const { selectedWalletCategory } = useAppState();
 
   const [isLoggedEmitterCalled, setLoginEmitterStatus] = useState(false);
 
@@ -88,9 +91,33 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   // for external wallets
   const externalWalletRef = useRef<Signer | null>(null);
 
+  let networkToSwitch;
+  switch (selectedWalletCategory) {
+    case "mainnet":
+      networkToSwitch = mainnet;
+      break;
+    case "arbitrum":
+      networkToSwitch = arbitrum;
+      break;
+    case "base":
+      networkToSwitch = base;
+      break;
+    case "bsc":
+      networkToSwitch = bsc;
+      break;
+    default:
+      networkToSwitch = mainnet;
+      break;
+  }
+
   useEffect(() => {
     if (state.dynamicWallet && !isLoggedEmitterCalled) {
       (async () => {
+        const chainId = await state.dynamicWallet.getNetwork();
+        if (chainId !== networkToSwitch.id) {
+          await state.dynamicWallet.switchNetwork(networkToSwitch.id);
+        }
+
         externalWalletRef.current = await PushSigner.initialize(
           state.dynamicWallet,
           "DYNAMIC"
