@@ -59,7 +59,7 @@ export const walletCategories: WalletCategoriesType[] = [
     icon: <Arbitrum width={24} height={24} />,
   },
   {
-    value: "binance",
+    value: "bsc",
     label: "Connect Binance Wallet",
     icon: <BnbIcon width={24} height={24} />,
   },

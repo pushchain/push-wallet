@@ -37,8 +37,8 @@ type WalletSelectionProps = {
 };
 
 const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
-  const [selectedWalletCategory, setSelectedWalletCategory] =
-    useState<string>("");
+  // const [selectedWalletCategory, setSelectedWalletCategory] =
+  //   useState<string>("");
   const { primaryWallet } = useDynamicContext();
   const { walletOptions, selectWalletOption } = useWalletOptions();
   const navigate = useNavigate();
@@ -46,6 +46,8 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const {
     dispatch,
     state: { externalWalletAuthState },
+    selectedWalletCategory,
+    setSelectedWalletCategory,
   } = useAppState();
   const persistQuery = usePersistedQuery();
 
@@ -93,7 +95,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
       ? wallets.solanaWallets
       : selectedWalletCategory === "arbitrum"
       ? wallets.arbitrumWallets
-      : selectedWalletCategory === "binance" && wallets.binanceWallets;
+      : selectedWalletCategory === "bsc" && wallets.binanceWallets;
 
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory("");
@@ -150,7 +152,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
             customScrollbar
           >
             {!primaryWallet &&
-              (!selectedWalletCategory ? (
+              (selectedWalletCategory === "" ? (
                 <WalletCategories
                   setSelectedWalletCategory={setSelectedWalletCategory}
                 />
@@ -222,6 +224,7 @@ const WalletSelection: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
           />
         </DrawerWrapper>
       )}
+
       {externalWalletAuthState === "rejected" && (
         <DrawerWrapper>
           <ErrorContent

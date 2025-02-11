@@ -65,6 +65,7 @@ export default function App() {
             });
           },
           onAuthFailure: (method, reason) => {
+            console.log("Auth failed ", reason);
             dispatch({
               type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
               payload: "rejected",

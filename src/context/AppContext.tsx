@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useContext, useReducer } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useReducer,
+  useState,
+} from "react";
 
 // Define the shape of the app state
 export type AppState = {
@@ -7,7 +13,8 @@ export type AppState = {
     | "success"
     | "loading"
     | "rejected"
-    | "timeout";
+    | "timeout"
+    | "check_network";
 };
 
 // Define actions for state management
@@ -38,9 +45,13 @@ function appReducer(state: AppState, action: AppAction): AppState {
 const AppContext = createContext<{
   state: AppState;
   dispatch: React.Dispatch<AppAction>;
+  selectedWalletCategory: string;
+  setSelectedWalletCategory: (selectedWalletCategory: string) => void;
 }>({
   state: initialState,
   dispatch: () => null, // Placeholder function for initial context
+  selectedWalletCategory: "",
+  setSelectedWalletCategory: () => {},
 });
 
 // Custom hook to use the AppContext
@@ -57,9 +68,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
+  const [selectedWalletCategory, setSelectedWalletCategory] =
+    useState<string>("");
 
   return (
-    <AppContext.Provider value={{ state, dispatch }}>
+    <AppContext.Provider
+      value={{
+        state,
+        dispatch,
+        selectedWalletCategory,
+        setSelectedWalletCategory,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
