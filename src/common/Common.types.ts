@@ -18,12 +18,16 @@ export enum WALLET_TO_APP_ACTION {
   IS_LOGGED_OUT = "loggedOut",
   TAB_CLOSED = "tabClosed",
   ERROR = "error",
+
+  CONNECT_WALLET = "connectWallet",
 }
 
 export enum APP_TO_WALLET_ACTION {
   NEW_CONNECTION_REQUEST = "newConnectionRequest",
   SIGN_MESSAGE = "signMessage",
   LOG_OUT = "logOut",
+
+  CONNECTION_STATUS = "connectionStatus",
 }
 
 export enum WALLET_TO_WALLET_ACTION {

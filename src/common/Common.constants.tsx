@@ -53,16 +53,6 @@ export const walletCategories: WalletCategoriesType[] = [
     label: "Connect Solana Wallet",
     icon: <Solana width={24} height={24} />,
   },
-  {
-    value: "arbitrum",
-    label: "Connect Arbitrum Wallet",
-    icon: <Arbitrum width={24} height={24} />,
-  },
-  {
-    value: "binance",
-    label: "Connect Binance Wallet",
-    icon: <BnbIcon width={24} height={24} />,
-  },
 ];
 
 export const CHAIN_LOGO: {

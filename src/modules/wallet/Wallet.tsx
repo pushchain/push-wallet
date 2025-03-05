@@ -18,7 +18,7 @@ import { PushWallet } from "../../services/pushWallet/pushWallet";
 import { APP_ROUTES, ENV } from "../../constants";
 import secrets from "secrets.js-grempe";
 import { useGlobalState } from "../../context/GlobalContext";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+// import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
 import { PushWalletAppConnection } from "../../common";
@@ -35,7 +35,7 @@ const Wallet: FC<WalletProps> = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const externalOrigin = params.get("app");
-  const { primaryWallet } = useDynamicContext();
+  // const { primaryWallet } = useDynamicContext();
   const [showConnectionSuccess, setConnectionSuccess] =
     useState<boolean>(false);
 
@@ -220,7 +220,7 @@ const Wallet: FC<WalletProps> = () => {
 
     initializeProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [primaryWallet]);
+  }, []);
 
   const handleCreateNewWallet = async () => {
     try {
@@ -250,11 +250,11 @@ const Wallet: FC<WalletProps> = () => {
   useEffect(() => {
     if (
       externalOrigin &&
-      primaryWallet &&
+      state.externalWallet &&
       state.externalWalletAppConnectionStatus === "connected"
     )
       setConnectionSuccess(true);
-  }, [externalOrigin, state?.externalWalletAppConnectionStatus, primaryWallet]);
+  }, [externalOrigin, state?.externalWalletAppConnectionStatus]);
 
   if (createAccountLoading)
     return <WalletSkeletonScreen content={<PushWalletLoadingContent />} />;
@@ -298,7 +298,7 @@ const Wallet: FC<WalletProps> = () => {
               setIsLoading={setCreateAccountLoading}
             />
           )} */}
-          {state.messageSignState === "loading" && (
+          {/* {state.messageSignState === "loading" && (
             <DrawerWrapper>
               <LoadingContent
                 title={
@@ -313,7 +313,7 @@ const Wallet: FC<WalletProps> = () => {
                 }
               />
             </DrawerWrapper>
-          )}
+          )} */}
 
           {state.messageSignState === "rejected" && (
             <DrawerWrapper>
