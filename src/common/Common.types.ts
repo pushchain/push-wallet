@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
 
 export type WalletCategoriesType = {
-  value: string;
+  chain: string;
+  wallet: 'ethereum' | 'solana';
   label: string;
   icon: ReactNode;
 };

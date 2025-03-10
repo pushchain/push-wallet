@@ -1,7 +1,5 @@
 import React, { FC, useState } from "react";
-import { walletRegistry } from "../../../providers/WalletProviderRegistry";
 import { Back, Box, CaretRight, Info, Text } from "blocks";
-import { useAppState } from "../../../context/AppContext";
 import {
   DrawerWrapper,
   ErrorContent,
@@ -12,23 +10,20 @@ import {
 import { WalletState } from "../Authentication.types";
 import ChainSelector from "./ChainSelector";
 import { css } from "styled-components";
+import { WalletCategoriesType } from "src/types/wallet.types";
+import { useGlobalState } from "../../../context/GlobalContext";
 
 type WalletSelectionProps = {
   setConnectMethod: (connectMethod: WalletState) => void;
 };
 
 const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
-  const {
-    dispatch,
-    state: { externalWalletAuthState },
-  } = useAppState();
+  const { dispatch, state: { externalWalletAuthState } } = useGlobalState();
 
-  const [selectedChain, setSelectedChain] = useState<string | null>(null);
-
-  const supportedChains = walletRegistry.getAllSupportedChains();
+  const [selectedWalletCategory, setSelectedWalletCategory] = useState<WalletCategoriesType | null>(null)
 
   const handleBack = () => {
-    if (selectedChain) setSelectedChain(null);
+    if (selectedWalletCategory) setSelectedWalletCategory(null);
     else setConnectMethod("authentication");
   };
 
@@ -56,7 +51,7 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
             overflow="hidden auto"
             customScrollbar
           >
-            {!selectedChain ? (
+            {!selectedWalletCategory ? (
               <Box display="flex" flexDirection="column" gap="spacing-xxs">
                 {walletCategories?.map((walletCategory) => (
                   <Box
@@ -74,8 +69,10 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
                     backgroundColor="surface-transparent"
                     alignItems="center"
                     justifyContent="space-between"
-                    key={walletCategory.value}
-                    onClick={() => setSelectedChain(walletCategory.value)}
+                    key={walletCategory.chain}
+                    onClick={() => {
+                      setSelectedWalletCategory(walletCategory)
+                    }}
                   >
                     <Box alignItems="center" display="flex" gap="spacing-xxs">
                       {walletCategory.icon}
@@ -88,40 +85,27 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
                 ))}
               </Box>
             ) : (
-              <ChainSelector chainType={selectedChain} />
+              <ChainSelector selectedWalletCategory={selectedWalletCategory} />
             )}
           </Box>
         </Box>
       </Box>
       <PoweredByPush />
-      {/* {externalWalletAuthState === "loading" && (
-          <DrawerWrapper>
-            <LoadingContent
-              title={`Connect ${selectedWalletName}`}
-              subTitle="Click connect in your wallet"
-              onClose={() => dispatch({ type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE", payload:"idle" })}
-            />
-          </DrawerWrapper>
-        )} */}
       {externalWalletAuthState === "loading" && (
         <DrawerWrapper>
           <LoadingContent
-            title="Sign to verify"
-            subTitle="Allow the site to connect and continue"
-            onClose={() =>
-              dispatch({
-                type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
-                payload: "rejected",
-              })
-            }
+            title={`${selectedWalletCategory.label}`}
+            subTitle="Click connect in your wallet"
+            onClose={() => dispatch({ type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE", payload: "idle" })}
           />
         </DrawerWrapper>
       )}
+
       {externalWalletAuthState === "rejected" && (
         <DrawerWrapper>
           <ErrorContent
             icon={<Info size={32} color="icon-state-danger-subtle" />}
-            title="Could not verify"
+            title="Could not Connect"
             subTitle="Please try connecting again"
             onClose={() =>
               dispatch({

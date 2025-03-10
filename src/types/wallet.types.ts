@@ -1,8 +1,11 @@
+import { ReactNode } from "react";
+
 export enum ChainType {
-  ETHEREUM = "ethereum",
+  ETHEREUM = "mainnet",
   SOLANA = "solana",
-  BINANCE = "binance",
+  BINANCE = "bsc",
   ARBITRUM = "arbitrum",
+  AVALANCHE = "avalanche",
 }
 export interface WalletInfo {
   address: string;
@@ -17,4 +20,13 @@ export interface IWalletProvider {
   connect(chainType?: ChainType): Promise<string>;
   signMessage(message: string): Promise<string>;
   disconnect(): Promise<void>;
+  getChainId(): Promise<unknown>;
+  switchNetwork(chainName: ChainType): Promise<void>;
 }
+
+export type WalletCategoriesType = {
+  chain: ChainType;
+  wallet: 'ethereum' | 'solana';
+  label: string;
+  icon: ReactNode;
+};

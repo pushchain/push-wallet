@@ -1,8 +1,9 @@
-import { Box, Button, Modal, Text } from "blocks";
-import React, { FC, useCallback, useState } from "react";
+import { Box, Text } from "blocks";
+import React, { FC } from "react";
 import {
   ChainType,
   IWalletProvider,
+  WalletCategoriesType,
   WalletInfo,
 } from "../../../types/wallet.types";
 import { css } from "styled-components";
@@ -14,11 +15,11 @@ import { APP_ROUTES } from "../../../constants";
 
 interface WalletButtonProps {
   provider: IWalletProvider;
+  walletCategory: WalletCategoriesType;
 }
 
-const WalletSelector: FC<WalletButtonProps> = ({ provider }) => {
+const WalletSelector: FC<WalletButtonProps> = ({ provider, walletCategory }) => {
   const { connect } = useWallet();
-  const [showChainOptions, setShowChainOptions] = useState(false);
 
   const navigate = useNavigate();
 
@@ -41,6 +42,11 @@ const WalletSelector: FC<WalletButtonProps> = ({ provider }) => {
       );
     } else {
       try {
+        dispatch({
+          type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+          payload: "loading",
+        });
+
         const result = await connect(provider, chainType);
 
         const payload: WalletInfo = {
@@ -50,100 +56,64 @@ const WalletSelector: FC<WalletButtonProps> = ({ provider }) => {
         };
 
         if (result) {
+          dispatch({
+            type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+            payload: "success",
+          });
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
           dispatch({ type: "SET_EXTERNAL_WALLET", payload: payload });
           navigate(APP_ROUTES.WALLET);
         }
-        setShowChainOptions(false);
       } catch (error) {
-        console.error(`Failed to connect to ${provider.name}:`, error);
+        dispatch({
+          type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+          payload: "rejected",
+        });
       }
     }
   };
 
   const handleClick = () => {
-    if (provider.supportedChains.length > 1) {
-      setShowChainOptions(true);
-      open();
-    } else {
-      handleConnect(provider.supportedChains[0]);
-    }
+    const chainToConnect = provider.supportedChains.find((curr) => curr === walletCategory.chain);
+    handleConnect(chainToConnect);
   };
 
-  const [isOpen, setIsOpen] = useState(false);
-  const open = useCallback(() => setIsOpen(true), []);
-  const onClose = useCallback(() => setIsOpen(false), []);
-
   return (
-    <>
-      <Box
-        cursor="pointer"
-        css={css`
+    <Box
+      cursor="pointer"
+      css={css`
           :hover {
             border: var(--border-sm, 1px) solid var(--stroke-brand-medium);
           }
         `}
+      display="flex"
+      padding="spacing-xs"
+      borderRadius="radius-xs"
+      border="border-sm solid stroke-tertiary"
+      backgroundColor="surface-transparent"
+      alignItems="center"
+      gap="spacing-xxs"
+      onClick={() => handleClick()}
+    >
+      <Box
+        width="24px"
+        height="24px"
+        overflow="hidden"
         display="flex"
-        padding="spacing-xs"
-        borderRadius="radius-xs"
-        border="border-sm solid stroke-tertiary"
-        backgroundColor="surface-transparent"
         alignItems="center"
-        gap="spacing-xxs"
-        onClick={() => handleClick()}
-      >
-        <Box
-          width="24px"
-          height="24px"
-          overflow="hidden"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          css={css`
+        justifyContent="center"
+        css={css`
             flex-shrink: 0;
           `}
-        >
-          {WALLETS_LOGO[provider.name.toLowerCase()] || (
-            <FallBackWalletIcon walletKey={provider.name} />
-          )}
-        </Box>
-        <Text variant="bs-semibold" color="text-primary">
-          {provider.name}
-        </Text>
+      >
+        {WALLETS_LOGO[provider.name.toLowerCase()] || (
+          <FallBackWalletIcon walletKey={provider.name} />
+        )}
       </Box>
-
-      {showChainOptions && (
-        <Modal
-          isOpen={isOpen}
-          onClose={onClose}
-          size="small"
-          cancelButtonProps={null}
-          acceptButtonProps={null}
-        >
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            width="100%"
-            gap="spacing-md"
-          >
-            <Text variant="h3-regular">Choose Chain</Text>
-            <Box
-              display="flex"
-              flexDirection="column"
-              gap="spacing-xs"
-              width="100%"
-            >
-              {provider.supportedChains.map((chain) => (
-                <Button key={chain} onClick={() => handleConnect(chain)}>
-                  {chain.charAt(0).toUpperCase() + chain.slice(1)}
-                </Button>
-              ))}
-            </Box>
-          </Box>
-        </Modal>
-      )}
-    </>
+      <Text variant="bs-semibold" color="text-primary">
+        {provider.name}
+      </Text>
+    </Box>
   );
 };
 

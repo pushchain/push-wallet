@@ -254,7 +254,7 @@ const Wallet: FC<WalletProps> = () => {
       state.externalWalletAppConnectionStatus === "connected"
     )
       setConnectionSuccess(true);
-  }, [externalOrigin, state?.externalWalletAppConnectionStatus]);
+  }, [externalOrigin, state?.externalWalletAppConnectionStatus, state.externalWallet]);
 
   if (createAccountLoading)
     return <WalletSkeletonScreen content={<PushWalletLoadingContent />} />;

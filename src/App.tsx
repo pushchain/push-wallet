@@ -14,11 +14,10 @@ const GlobalStyle = createGlobalStyle`
       --font-family: 'FK Grotesk Neu';
 
     /* New blocks theme css variables*/
-    /* New blocks theme css variables*/
     ${(props) => {
-      // @ts-expect-error: The getBlocksCSSVariables function is not typed, so we need to suppress the error here.
-      return getBlocksCSSVariables(props.theme.blocksTheme);
-    }}
+    // @ts-expect-error: The getBlocksCSSVariables function is not typed, so we need to suppress the error here.
+    return getBlocksCSSVariables(props.theme.blocksTheme);
+  }}
   }
 `;
 

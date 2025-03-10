@@ -14,6 +14,8 @@ export abstract class BaseWalletProvider implements IWalletProvider {
   abstract connect(chainType?: ChainType): Promise<string>;
   abstract signMessage(message: string): Promise<string>;
   abstract disconnect(): Promise<void>;
+  abstract getChainId(): Promise<unknown>;
+  abstract switchNetwork(chainName: ChainType): Promise<void>;
 
   protected validateChainType(chainType?: ChainType): ChainType {
     if (!chainType && this.supportedChains.length === 1) {

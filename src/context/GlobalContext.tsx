@@ -29,6 +29,12 @@ export type GlobalState = {
   walletLoadState: "idle" | "success" | "loading" | "rejected";
   messageSignState: "idle" | "loading" | "rejected";
   externalWalletAppConnectionStatus: "pending" | "connected";
+  externalWalletAuthState:
+  | "idle"
+  | "success"
+  | "loading"
+  | "rejected"
+  | "timeout";
 };
 
 // Define actions for state management
@@ -36,6 +42,7 @@ export type GlobalAction =
   | { type: "INITIALIZE_WALLET"; payload: PushWallet }
   | { type: "SET_APP_CONNECTIONS"; payload: PushWalletAppConnectionData[] }
   | { type: "SET_EXTERNAL_WALLET"; payload: WalletInfo }
+  | { type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE"; payload: GlobalState["externalWalletAuthState"] }
   | { type: "RESET_WALLET" }
   | { type: "SET_THEME"; payload: "light" | "dark" }
   | { type: "SET_USER"; payload: any }
@@ -60,6 +67,7 @@ const initialState: GlobalState = {
   walletLoadState: "idle",
   messageSignState: "idle",
   externalWalletAppConnectionStatus: "pending",
+  externalWalletAuthState: "idle",
 };
 
 // Reducer function to manage state transitions
@@ -79,6 +87,11 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
       return {
         ...state,
         externalWallet: action.payload,
+      };
+    case "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE":
+      return {
+        ...state,
+        externalWalletAuthState: action.payload,
       };
     // Reset your all the state variable while logging out
     case "RESET_WALLET":

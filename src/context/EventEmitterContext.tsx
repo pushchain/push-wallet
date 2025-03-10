@@ -92,7 +92,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
             handleSignAndSendMessage(event.data.data, event.origin);
             break;
           case APP_TO_WALLET_ACTION.CONNECTION_STATUS:
-            console.log("Connection status from app", event.data.data);
             handleExternalWalletConnection(event.data.data);
             break;
           case WALLET_TO_WALLET_ACTION.AUTH_STATE_PARAM:
@@ -128,7 +127,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     providerName: IWalletProvider["name"];
     chainType: ChainType;
   }) => {
-    try {
+    if (data.status === 'successful') {
       const walletPayload: WalletInfo = {
         address: data.address,
         chainType: data.chainType,
@@ -140,9 +139,13 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       navigate(`${persistQuery(APP_ROUTES.WALLET)}`, {
         replace: true,
       });
-    } catch (error) {
-      console.log("Error in external wallet connection", error);
+    } else {
+      dispatch({
+        type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
+        payload: "rejected",
+      });
     }
+
   };
 
   const handleSignAndSendMessage = async (message: string, origin: string) => {
@@ -165,7 +168,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         2000
       );
     } catch (error) {
-      console.log(error);
       dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "rejected" });
       sendMessageToMainTab({
         type: WALLET_TO_APP_ACTION.ERROR,

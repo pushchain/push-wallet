@@ -1,23 +1,30 @@
 import React, { FC } from "react";
-import { ChainType } from "../../../types/wallet.types";
+import { WalletCategoriesType } from "../../../types/wallet.types";
 import { walletRegistry } from "../../../providers/WalletProviderRegistry";
 import WalletSelector from "./WalletSelector";
+import { Box, Text } from "blocks";
 
 interface ChainWalletSelectorProps {
-  chainType: string;
+  selectedWalletCategory: WalletCategoriesType;
 }
 
-const ChainSelector: FC<ChainWalletSelectorProps> = ({ chainType }) => {
-  const wallets = walletRegistry.getProvidersByChain(chainType as ChainType);
+const ChainSelector: FC<ChainWalletSelectorProps> = ({ selectedWalletCategory }) => {
+  const wallets = walletRegistry.getProvidersByChain(selectedWalletCategory.chain);
 
   if (wallets.length === 0) {
-    return <div>No wallets available for {chainType}</div>;
+    return (
+      <Box>
+        <Text>
+          No wallets available for {selectedWalletCategory.chain}
+        </Text>
+      </Box>
+    );
   }
 
   return (
     <>
       {wallets.map((wallet) => (
-        <WalletSelector key={wallet.name} provider={wallet} />
+        <WalletSelector key={wallet.name} provider={wallet} walletCategory={selectedWalletCategory} />
       ))}
     </>
   );

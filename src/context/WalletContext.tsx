@@ -27,6 +27,7 @@ export const WalletContextProvider = ({
     try {
       setConnecting(true);
       const walletInfo = await provider.connect(chainType);
+
       const walletDetails = {
         address: walletInfo,
         chainType,
@@ -36,8 +37,7 @@ export const WalletContextProvider = ({
       setCurrentProvider(provider);
       return walletInfo;
     } catch (error) {
-      console.error("Failed to connect wallet:", error);
-      return null;
+      throw new Error('Failed to connect wallet');
     } finally {
       setConnecting(false);
     }
@@ -51,6 +51,7 @@ export const WalletContextProvider = ({
         setCurrentProvider(null);
       } catch (error) {
         console.error("Failed to disconnect:", error);
+        throw new Error('Failed to disconnect wallet');
       }
     }
   };
