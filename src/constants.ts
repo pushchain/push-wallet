@@ -37,6 +37,7 @@ export const networkToSolChainId = {
 export const APP_ROUTES = {
   AUTH: "/auth",
   WALLET: "/wallet",
+  VERIFY_EMAIL_OTP: "/verify-email-otp",
   OAUTH_REDIRECT: "/oauth-redirect",
   PHANTOM: "/phantom-login",
   PHANTOM_SIGN: "/phantom-sign",

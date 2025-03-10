@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
-import { Back, Box, Text, TextInput } from "../../../blocks";
+import { Back, Box, Text, TextInput, Button } from "../../../blocks";
 import { PoweredByPush } from "../../../common";
+import { css } from "styled-components";
 
 type VerifyCodeProps = {};
 
@@ -21,6 +22,7 @@ const VerifyCode: FC<VerifyCodeProps> = () => {
       setCode(newCode);
     }
   };
+
   return (
     <Box flexDirection="column" display="flex" gap="spacing-lg" width="100%">
       <Box cursor="pointer">
@@ -31,35 +33,52 @@ const VerifyCode: FC<VerifyCodeProps> = () => {
         display="flex"
         gap="spacing-md"
         textAlign="center"
+        alignItems="center"
       >
         <Box
           flexDirection="column"
           display="flex"
           gap="spacing-xxl"
           textAlign="center"
+          alignItems="center"
+          maxWidth="400px"
         >
           <Box flexDirection="column" display="flex" gap="spacing-xxxs">
             <Text color="text-primary" variant="h4-semibold">
               Confirm verification code
             </Text>
             <Text color="text-primary" variant="bs-regular">
-              We’ve sent a 6 digit code to zee@push.org. Enter the code to
+              We've sent a 6 digit code to zee@push.org. Enter the code to
               proceed.
             </Text>
           </Box>
-          <Box display="flex" gap="spacing-xxs">
+          <Box display="flex" gap="spacing-xxs" justifyContent="center">
             {code.map((val: string, index: number) => (
               <TextInput
                 key={index}
                 value={val}
                 onChange={(e) => handleChange(e, index)}
+                css={css`
+                  width: 40px;
+                  input {
+                    text-align: center;
+                  }
+                `}
               />
             ))}
+          </Box>
+          <Box>
+            <Button 
+              variant="primary" 
+              css={css`width: 200px;`}
+            >
+              Verify
+            </Button>
           </Box>
         </Box>
         <Box as="span">
           <Text color="text-secondary" variant="bes-semibold" as="span">
-            Didn’t receive a code?
+            Didn't receive a code?
           </Text>{" "}
           <Text color="text-brand-medium" variant="bes-semibold" as="span">
             Send again

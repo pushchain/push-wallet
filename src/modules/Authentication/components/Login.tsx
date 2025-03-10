@@ -8,8 +8,10 @@ import { APP_ROUTES } from "../../../constants";
 import { usePersistedQuery } from "../../../common/hooks/usePersistedQuery";
 import {
   getAuthWindowConfig,
-  getEmailAuthRoute,
-  getSocialAuthRoute,
+  // getEmailAuthRoute,
+  // getSocialAuthRoute,
+  getOTPEmailAuthRoute,
+  getPushSocialAuthRoute,
 } from "../Authentication.utils";
 
 export type LoginProps = {
@@ -44,9 +46,9 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
         //   window.open(backendURL, "Google OAuth", getAuthWindowConfig());
         // } else {
         // Redirect to the auth page in the same tab
-        window.location.href = getEmailAuthRoute(
+        window.location.href = getOTPEmailAuthRoute(
           values.email,
-          persistQuery(APP_ROUTES.WALLET)
+          persistQuery(APP_ROUTES.VERIFY_EMAIL_OTP)
         );
         // }
       }
@@ -63,7 +65,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
     //   window.open(backendURL, "Google OAuth", getAuthWindowConfig());
     // } else {
     // Redirect to the auth page in the same tab
-    window.location.href = getSocialAuthRoute(
+    window.location.href = getPushSocialAuthRoute(
       provider,
       persistQuery(APP_ROUTES.WALLET)
     );
