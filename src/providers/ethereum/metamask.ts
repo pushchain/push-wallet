@@ -88,27 +88,6 @@ export class MetamaskProvider extends BaseWalletProvider {
 
   }
 
-  signMessage = async (message: string): Promise<string> => {
-    try {
-      const provider = this.getProvider();
-      const accounts = await provider.request({ method: "eth_accounts" });
-
-      if (!accounts) {
-        throw new Error("No connected account");
-      }
-
-      const signature = await provider.request({
-        method: "personal_sign",
-        params: [message, accounts[0]],
-      });
-
-      return signature as string;
-    } catch (error) {
-      console.error("MetaMask signing error:", error);
-      throw error;
-    }
-  };
-
   disconnect = async () => {
     const provider = this.getProvider();
     await provider.request({
