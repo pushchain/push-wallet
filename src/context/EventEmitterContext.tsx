@@ -258,13 +258,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         account: walletRef?.current?.signerAccount ?? null,
       },
     });
-
-    if (walletRef?.current?.signerAccount) {
-      dispatch({
-        type: "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS",
-        payload: "connected",
-      });
-    }
   };
 
   const handleLogOutEvent = () => {

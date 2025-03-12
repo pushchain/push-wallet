@@ -35,7 +35,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
 
   const { disconnect } = useWallet();
 
-  const parsedWallet = selectedWallet?.address || state.externalWallet.address;
+  const parsedWallet = selectedWallet?.address || state?.externalWallet?.address;
   const walletName = selectedWallet?.name ?? "External Wallet";
   const [copied, setCopied] = useState(false);
 

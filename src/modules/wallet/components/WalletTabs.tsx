@@ -31,7 +31,7 @@ const WalletTabs: FC<WalletTabsProps> = ({
             children: (
               <WalletActivityList
                 address={
-                  selectedWallet?.fullAddress || state.externalWallet.address
+                  selectedWallet?.fullAddress || state?.externalWallet?.address
                 }
               />
             ),
