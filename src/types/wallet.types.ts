@@ -17,7 +17,7 @@ export interface IWalletProvider {
   name: string;
   icon: string;
   supportedChains: ChainType[];
-  connect(chainType?: ChainType): Promise<string>;
+  connect(chainType?: ChainType): Promise<{ caipAddress: string }>;
   disconnect(): Promise<void>;
   getChainId(): Promise<unknown>;
   switchNetwork(chainName: ChainType): Promise<void>;

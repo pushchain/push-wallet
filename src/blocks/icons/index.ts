@@ -6,6 +6,8 @@ export { default as Add } from "./components/Add";
 export { default as AddEmoji } from "./components/AddEmoji";
 export { default as Apple } from "./components/Apple";
 
+export { default as AvalancheMonotone } from "./components/AvalancheMonotone";
+
 export { default as ArbitrumMonotone } from "./components/ArbitrumMonotone";
 
 export { default as ArrowUpRight } from "./components/ArrowUpRight";
@@ -57,7 +59,7 @@ export { default as Cube } from "./components/Cube";
 export { default as Dash } from "./components/Dash";
 
 export { default as Dashboard } from "./components/Dashboard";
-export {default as DefaultChainMonotone} from "./components/DefaultChainMonotone";
+export { default as DefaultChainMonotone } from "./components/DefaultChainMonotone";
 
 export { default as EditProfile } from "./components/EditProfile";
 

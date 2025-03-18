@@ -63,7 +63,7 @@ const WalletActivityListItem = ({
                     </Text>
                 </Box>
                 <Text color="text-secondary" variant="bes-semibold">
-                    {centerMaskWalletAddress(displayAddress)}
+                    {centerMaskWalletAddress(result.address)}
                 </Text>
                 <Text color="text-tertiary" variant="bes-semibold">
                     {additionalRecipients !== 0 && ` +${additionalRecipients} more`}

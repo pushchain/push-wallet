@@ -21,7 +21,7 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
 
   const fetchActivities = useCallback(
     async (pageNumber: number) => {
-      if (isLoading) return; 
+      if (isLoading) return;
       setIsLoading(true);
       try {
         const pushTx = await PushTx.initialize(config.APP_ENV as ENV);
@@ -37,9 +37,9 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
           .map((tx) => tx.transactions)
           .flat();
 
-          setActivities((prev) => [...prev, ...transactions]);
+        setActivities((prev) => [...prev, ...transactions]);
 
-        setHasMore(response.totalPages > pageNumber); 
+        setHasMore(response.totalPages > pageNumber);
       } catch (error) {
         console.error("Error fetching activities:", error);
       } finally {
@@ -71,13 +71,14 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
       fetchActivities(1);
     }
   }, [address]);
+
   return (
     <Box
       display="flex"
       flexDirection="column"
       height="292px"
       overflow="hidden scroll"
-      onScroll={hasMore?handleScroll:undefined}
+      onScroll={hasMore ? handleScroll : undefined}
       ref={containerRef}
       customScrollbar
     >

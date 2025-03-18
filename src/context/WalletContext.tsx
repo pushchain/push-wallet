@@ -26,16 +26,16 @@ export const WalletContextProvider = ({
   const connect = async (provider: IWalletProvider, chainType?: ChainType) => {
     try {
       setConnecting(true);
-      const walletInfo = await provider.connect(chainType);
+      const { caipAddress } = await provider.connect(chainType);
 
-      const walletDetails = {
-        address: walletInfo,
+      const walletDetails: WalletInfo = {
+        address: caipAddress,
         chainType,
         providerName: provider.name,
       };
       setCurrentWallet(walletDetails);
       setCurrentProvider(provider);
-      return walletInfo;
+      return caipAddress;
     } catch (error) {
       throw new Error('Failed to connect wallet');
     } finally {
