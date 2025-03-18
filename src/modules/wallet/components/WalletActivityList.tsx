@@ -37,7 +37,9 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
           .map((tx) => tx.transactions)
           .flat();
 
-        setActivities((prev) => [...prev, ...transactions]);
+        const filteredTransactions = transactions.filter(transaction => !transaction.category.includes('CHESS'));
+
+        setActivities((prev) => [...prev, ...filteredTransactions]);
 
         setHasMore(response.totalPages > pageNumber);
       } catch (error) {
