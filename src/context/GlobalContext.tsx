@@ -6,18 +6,20 @@ import {
   useEffect,
 } from "react";
 import { PushWallet } from "../services/pushWallet/pushWallet";
+import { fetchJwtUsingState } from "../helpers/AuthHelper";
 import {
-  extractAndCleanStateFromUrl,
-  fetchJwtUsingState,
-} from "../helpers/AuthHelper";
-import { useDynamicContext, Wallet } from "@dynamic-labs/sdk-react-core";
-import { getAllAppConnections, PushWalletAppConnectionData } from "../common";
+  getAllAppConnections,
+  PushWalletAppConnectionData,
+} from "../common";
+import { APP_ROUTES } from "../constants";
+import { useWallet } from "./WalletContext";
+import { WalletInfo } from "../types/wallet.types";
 
 // Define the shape of the global state
 export type GlobalState = {
   wallet: PushWallet | null;
   appConnections: PushWalletAppConnectionData[];
-  dynamicWallet: Wallet | null;
+  externalWallet: WalletInfo | null;
   theme: "light" | "dark";
   user: any;
   isAuthenticated: boolean;
@@ -25,13 +27,20 @@ export type GlobalState = {
   walletLoadState: "idle" | "success" | "loading" | "rejected";
   messageSignState: "idle" | "loading" | "rejected";
   externalWalletAppConnectionStatus: "pending" | "connected";
+  externalWalletAuthState:
+  | "idle"
+  | "success"
+  | "loading"
+  | "rejected"
+  | "timeout";
 };
 
 // Define actions for state management
 export type GlobalAction =
   | { type: "INITIALIZE_WALLET"; payload: PushWallet }
   | { type: "SET_APP_CONNECTIONS"; payload: PushWalletAppConnectionData[] }
-  | { type: "SET_DYNAMIC_WALLET"; payload: Wallet }
+  | { type: "SET_EXTERNAL_WALLET"; payload: WalletInfo }
+  | { type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE"; payload: GlobalState["externalWalletAuthState"] }
   | { type: "RESET_WALLET" }
   | { type: "SET_THEME"; payload: "light" | "dark" }
   | { type: "SET_USER"; payload: any }
@@ -40,15 +49,15 @@ export type GlobalAction =
   | { type: "SET_WALLET_LOAD_STATE"; payload: GlobalState["walletLoadState"] }
   | { type: "SET_MESSAGE_SIGN_STATE"; payload: GlobalState["messageSignState"] }
   | {
-      type: "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS";
-      payload: GlobalState["externalWalletAppConnectionStatus"];
-    };
+    type: "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS";
+    payload: GlobalState["externalWalletAppConnectionStatus"];
+  };
 
 // Initial state
 const initialState: GlobalState = {
   wallet: null,
   appConnections: getAllAppConnections(),
-  dynamicWallet: null,
+  externalWallet: null,
   theme: "light",
   user: null,
   isAuthenticated: false,
@@ -56,6 +65,7 @@ const initialState: GlobalState = {
   walletLoadState: "idle",
   messageSignState: "idle",
   externalWalletAppConnectionStatus: "pending",
+  externalWalletAuthState: "idle",
 };
 
 // Reducer function to manage state transitions
@@ -71,10 +81,15 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
         ...state,
         appConnections: action.payload,
       };
-    case "SET_DYNAMIC_WALLET":
+    case "SET_EXTERNAL_WALLET":
       return {
         ...state,
-        dynamicWallet: action.payload,
+        externalWallet: action.payload,
+      };
+    case "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE":
+      return {
+        ...state,
+        externalWalletAuthState: action.payload,
       };
     // Reset your all the state variable while logging out
     case "RESET_WALLET":
@@ -128,9 +143,11 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [state, dispatch] = useReducer(globalReducer, initialState);
 
-  const { primaryWallet, sdkHasLoaded } = useDynamicContext();
+  const params = new URLSearchParams(location.search);
 
-  const stateParam = extractAndCleanStateFromUrl();
+  const { currentWallet } = useWallet();
+
+  const stateParam = params.get("state");
 
   const storedToken = sessionStorage.getItem("jwt");
 
@@ -162,13 +179,12 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
         }
 
-        // This condition is valid for continue with wallet for during login and reload
-        if (primaryWallet) {
+        if (currentWallet) {
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
-          dispatch({ type: "SET_DYNAMIC_WALLET", payload: primaryWallet });
+          dispatch({ type: "SET_EXTERNAL_WALLET", payload: currentWallet });
         }
 
-        if (!stateParam && !storedToken && !primaryWallet && sdkHasLoaded) {
+        if (!stateParam && !storedToken && !currentWallet) {
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "rejected" });
         }
       } catch (error) {
@@ -178,8 +194,9 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
       }
     };
 
-    fetchUser();
-  }, [stateParam, storedToken, primaryWallet, sdkHasLoaded]);
+    // We don't need to do jwt token network calls on the oauth route to avoid expiring the token
+    window.location.pathname !== APP_ROUTES.OAUTH_REDIRECT && fetchUser();
+  }, [stateParam, storedToken, currentWallet]);
 
   return (
     <GlobalContext.Provider

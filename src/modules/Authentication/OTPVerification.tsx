@@ -1,20 +1,21 @@
 import { FC, useState } from 'react';
 import { Box, Text, Button, TextInput } from '../../blocks';
-import { DrawerWrapper, LoadingContent, ErrorContent } from '../../common';
+import { DrawerWrapper, LoadingContent, ErrorContent, WALLET_TO_WALLET_ACTION, ContentLayout, BoxLayout, getAppParamValue } from '../../common';
 import { verifyOTPEmailAuth } from './Authentication.utils';
 import { useSearchParams } from 'react-router-dom';
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
-import { APP_ROUTES } from '../../constants';
 import { css } from 'styled-components';
+import { Footer } from '../../common/components/Footer';
+import { APP_ROUTES } from '../../constants';
 
 type OTPVerificationProps = {
   userId: string;
   onVerificationComplete: () => void;
 };
 
-export const OTPVerification: FC<OTPVerificationProps> = ({ 
-  userId, 
-  onVerificationComplete 
+export const OTPVerification: FC<OTPVerificationProps> = ({
+  userId,
+  onVerificationComplete
 }) => {
   const persistQuery = usePersistedQuery();
   const [searchParams] = useSearchParams();
@@ -31,8 +32,6 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
       const email = searchParams.get('email') || '';
       const response = await verifyOTPEmailAuth(otp, state, challengeId, email);
 
-      console.log(response);
-
       const data = await response.json();
 
       if (!response.ok) {
@@ -41,7 +40,13 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
 
       if (response.ok && data.success) {
         onVerificationComplete();
-        window.location.href = `${window.location.origin}${APP_ROUTES.WALLET}?state=${data.state}`;
+
+        window.opener?.postMessage(
+          { type: WALLET_TO_WALLET_ACTION.AUTH_STATE_PARAM, state: data.state },
+          window.location.origin
+        );
+        window.close();
+
       }
     } catch (err) {
       setError(err.message || 'Failed to verify OTP');
@@ -51,80 +56,82 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
   };
 
   return (
-    <Box 
-      flexDirection="column" 
-      display="flex" 
-      gap="spacing-lg" 
-      width="100%" 
-      maxWidth="400px" 
-      padding="spacing-lg"
-    >
-      <Box flexDirection="column" display="flex" gap="spacing-md">
-        <Text 
-          color="text-primary" 
-          variant="h4-semibold"
-          css={css`
+    <ContentLayout footer={<Footer />}>
+      <BoxLayout>
+        <Box
+          flexDirection="column"
+          display="flex"
+          gap="spacing-lg"
+          width="100%"
+          maxWidth="400px"
+          padding="spacing-lg"
+        >
+          <Box flexDirection="column" display="flex" gap="spacing-md">
+            <Text
+              color="text-primary"
+              variant="h4-semibold"
+              css={css`
             font-size: 24px;
             margin-bottom: 8px;
           `}
-        >
-          Enter Verification Code
-        </Text>
-        <Text 
-          color="text-secondary" 
-          variant="bs-regular"
-        >
-          Please enter the verification code sent to your device
-        </Text>
+            >
+              Enter Verification Code
+            </Text>
+            <Text
+              color="text-secondary"
+              variant="bs-regular"
+            >
+              Please enter the verification code sent to your device
+            </Text>
 
-        <TextInput
-          type="text"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          placeholder="Enter OTP"
-          css={css`
+            <TextInput
+              type="text"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              placeholder="Enter OTP"
+              css={css`
             padding: 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
             font-size: 16px;
             width: 100%;
             margin: 16px 0;
           `}
-        />
+            />
 
-        <Button
-          onClick={handleSubmit}
-          disabled={!otp || isLoading}
-          variant="primary"
-          css={css`
+            <Button
+              onClick={handleSubmit}
+              disabled={!otp || isLoading}
+              variant="primary"
+              css={css`
             width: 100%;
             max-width: 200px;
             margin: 0 auto;
           `}
-        >
-          Verify
-        </Button>
-      </Box>
+            >
+              Verify
+            </Button>
+          </Box>
 
-      {isLoading && (
-        <DrawerWrapper>
-          <LoadingContent
-            title="Verifying Code"
-            subTitle="Please wait while we verify your code"
-          />
-        </DrawerWrapper>
-      )}
+          {isLoading && (
+            <DrawerWrapper>
+              <LoadingContent
+                title="Verifying Code"
+                subTitle="Please wait while we verify your code"
+              />
+            </DrawerWrapper>
+          )}
 
-      {error && (
-        <DrawerWrapper>
-          <ErrorContent
-            title="Verification Failed"
-            subTitle={error}
-            onClose={() => setError('')}
-          />
-        </DrawerWrapper>
-      )}
-    </Box>
+          {error && (
+            <DrawerWrapper>
+              <ErrorContent
+                title="Verification Failed"
+                subTitle={error}
+                onClose={() => setError('')}
+              />
+            </DrawerWrapper>
+          )}
+        </Box>
+      </BoxLayout>
+    </ContentLayout>
   );
 };
 

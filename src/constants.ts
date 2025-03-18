@@ -39,6 +39,4 @@ export const APP_ROUTES = {
   WALLET: "/wallet",
   VERIFY_EMAIL_OTP: "/verify-email-otp",
   OAUTH_REDIRECT: "/oauth-redirect",
-  PHANTOM: "/phantom-login",
-  PHANTOM_SIGN: "/phantom-sign",
 };

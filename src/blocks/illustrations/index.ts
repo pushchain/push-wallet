@@ -5,6 +5,8 @@ export { default as ActivePushPoints } from './components/ActivePushPoints';
 
 export { default as AlphaAccessNFT } from './components/AlphaAccessNFT';
 
+export { default as Avalanche } from './components/Avalanche';
+
 export { default as Arbitrum } from './components/Arbitrum';
 
 export { default as Base } from './components/Base';
