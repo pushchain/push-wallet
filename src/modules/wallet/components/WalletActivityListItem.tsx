@@ -22,9 +22,6 @@ const WalletActivityListItem = ({
 
     function fetchChainFromAddress(transaction) {
 
-        console.log("transaction", transaction);
-
-
         let displayAddress = '';
         let additionalRecipients = 0;
         if (address === transaction.sender) {
