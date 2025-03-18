@@ -2,7 +2,9 @@ import { MetaMaskSDK } from "@metamask/sdk";
 import { ChainType } from "../../types/wallet.types";
 import { BaseWalletProvider } from "../BaseWalletProvider";
 import * as chains from "viem/chains"
-import { Hex, toHex } from "viem";
+import { toHex } from "viem";
+import { getAddress } from 'ethers';
+
 export class MetamaskProvider extends BaseWalletProvider {
   private sdk: MetaMaskSDK;
 
@@ -21,13 +23,26 @@ export class MetamaskProvider extends BaseWalletProvider {
     return !!provider;
   };
 
-  async connect(chainType: ChainType): Promise<string> {
+  async connect(chainType: ChainType): Promise<{ caipAddress: string }> {
     try {
+      // const accounts = await this.sdk.connect();
+
+      // await this.switchNetwork(chainType)
+
+      // return accounts[0];
+
       const accounts = await this.sdk.connect();
+      const rawAddress = accounts[0];
+      const checksumAddress = getAddress(rawAddress);
 
-      await this.switchNetwork(chainType)
+      await this.switchNetwork(chainType);
 
-      return accounts[0];
+      const chainId = await this.getChainId();
+
+      const addressincaip = this.formatAddress(checksumAddress, ChainType.ETHEREUM, chainId);
+
+      return addressincaip;
+
     } catch (error) {
       console.error("Failed to connect to MetaMask:", error);
       throw error;
@@ -38,7 +53,7 @@ export class MetamaskProvider extends BaseWalletProvider {
     return this.sdk.getProvider();
   };
 
-  getChainId = async (): Promise<unknown> => {
+  getChainId = async (): Promise<number> => {
     const provider = this.getProvider();
     if (!provider) {
       throw new Error('Provider is undefined');
@@ -46,11 +61,10 @@ export class MetamaskProvider extends BaseWalletProvider {
     const hexChainId = await provider.request({
       method: 'eth_chainId',
       params: [],
-    }) as Hex;
+    });
 
     const chainId = parseInt(hexChainId.toString(), 16);
     return chainId;
-
   };
 
   switchNetwork = async (chainName: ChainType) => {

@@ -298,22 +298,14 @@ const Wallet: FC<WalletProps> = () => {
               setIsLoading={setCreateAccountLoading}
             />
           )} */}
-          {/* {state.messageSignState === "loading" && (
+          {state.messageSignState === "loading" && (
             <DrawerWrapper>
               <LoadingContent
-                title={
-                  primaryWallet
-                    ? "Confirm Transaction"
-                    : "Processing Transaction"
-                }
-                subTitle={
-                  primaryWallet
-                    ? "Please confirm the transaction in your wallet to continue"
-                    : "Your transaction is being verified"
-                }
+                title={"Processing Transaction"}
+                subTitle={"Your transaction is being verified"}
               />
             </DrawerWrapper>
-          )} */}
+          )}
 
           {state.messageSignState === "rejected" && (
             <DrawerWrapper>

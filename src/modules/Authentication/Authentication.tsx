@@ -29,7 +29,6 @@ const Authentication = () => {
                 setConnectMethod={setConnectMethod}
               />
             )}
-          {/* <VerifyCode/> */}
           {connectMethod === "connectWallet" && (
             <ConnectWallet setConnectMethod={setConnectMethod} />
           )}

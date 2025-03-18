@@ -31,6 +31,7 @@ import {
   Arbitrum,
   ArbitrumMonotone,
   Avalanche,
+  AvalancheMonotone,
   BNB,
   BnbMonotone,
   Ethereum,
@@ -92,7 +93,11 @@ export const CHAIN_LOGO: {
   10: OptimismMonotone,
   2442: PolygonMonotone,
   1101: PolygonMonotone,
-  "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": SolanaMonotone,
+  43114: AvalancheMonotone,
+  43113: AvalancheMonotone,
+  '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp': SolanaMonotone, // mainnet
+  '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z': SolanaMonotone, // testnet
+  'EtWTRABZaYq6iMfeYKouRu166VU2xqa1': SolanaMonotone, // devnet
   devnet: PushMonotone,
 };
 

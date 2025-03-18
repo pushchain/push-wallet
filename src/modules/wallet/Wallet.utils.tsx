@@ -1,6 +1,7 @@
 import { PushWallet } from "src/services/pushWallet/pushWallet";
+import { ChainType } from "../../types/wallet.types";
 
-export const getWalletlist = (attachedAccounts: string[],wallet: PushWallet) => {
+export const getWalletlist = (attachedAccounts: string[], wallet: PushWallet) => {
   const walletList = [];
   if (attachedAccounts?.length) {
     attachedAccounts?.forEach((account, index) => {
@@ -9,7 +10,7 @@ export const getWalletlist = (attachedAccounts: string[],wallet: PushWallet) => 
         walletObj = {
           name: "Push Account",
           address: wallet?.signerAccount,
-          fullAddress:  wallet?.signerAccount,
+          fullAddress: wallet?.signerAccount,
           isSelected: false,
           type: "push",
         };
@@ -79,7 +80,7 @@ export const getFixedTime = (timestamp: number): string => {
 
   const diffInMonths = Math.floor(diffInWeeks / 4);
   if (diffInMonths < 12) {
-    return `${diffInMonths}m ago`;
+    return `${diffInMonths}M ago`;
   }
 
   const diffInYears = Math.floor(diffInMonths / 12);
@@ -139,3 +140,36 @@ export const convertCaipToObject = (
     };
   }
 };
+
+
+export function toCAIPFormat(
+  rawAddress: string,
+  chain: ChainType,
+  chainId: number | string
+) {
+  const formattedAddress = rawAddress;
+  let formattedChainId = chainId;
+  let namespace = '';
+
+  if (
+    chain.toLowerCase() === ChainType.ETHEREUM ||
+    chain.toLowerCase() === ChainType.BINANCE ||
+    chain.toLowerCase() === ChainType.ARBITRUM ||
+    chain.toLowerCase() === ChainType.AVALANCHE
+  ) {
+    namespace = 'eip155';
+
+    if (typeof chainId === 'string' && chainId.startsWith('0x')) {
+      formattedChainId = parseInt(chainId, 16);
+    }
+  } else if (chain.toLowerCase() === ChainType.SOLANA) {
+    namespace = 'solana';
+
+    // TODO: Find a method to get the solana chain id in caip format
+    formattedChainId = '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z'; //testnet
+  } else {
+    throw new Error("Unsupported chain. Use 'ethereum' or 'solana'.");
+  }
+
+  return `${namespace}:${formattedChainId}:${formattedAddress}`;
+}

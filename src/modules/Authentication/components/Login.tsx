@@ -8,8 +8,8 @@ import { APP_ROUTES } from "../../../constants";
 import { usePersistedQuery } from "../../../common/hooks/usePersistedQuery";
 import {
   getAuthWindowConfig,
-  getEmailAuthRoute,
-  getSocialAuthRoute,
+  getOTPEmailAuthRoute,
+  getPushSocialAuthRoute,
 } from "../Authentication.utils";
 
 export type LoginProps = {
@@ -35,35 +35,32 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
 
       if (values.email) {
         if (isOpenedInIframe) {
-          const backendURL = getEmailAuthRoute(
+          const backendURL = getOTPEmailAuthRoute(
             values.email,
-            APP_ROUTES.OAUTH_REDIRECT
+            APP_ROUTES.VERIFY_EMAIL_OTP
           );
-
-          // Open the child tab with the OAuth URL
           window.open(backendURL, "Google OAuth", getAuthWindowConfig());
         } else {
-          // Redirect to the auth page in the same tab
-          window.location.href = getEmailAuthRoute(
+          const backendURL = getOTPEmailAuthRoute(
             values.email,
-            persistQuery(APP_ROUTES.WALLET)
+            persistQuery(APP_ROUTES.VERIFY_EMAIL_OTP)
           );
+
+          window.open(backendURL, "Google OAuth", getAuthWindowConfig());
         }
       }
-    },
+    }
   });
 
   const handleSocialLogin = (provider: SocialProvider) => {
     if (isOpenedInIframe) {
-      const backendURL = getSocialAuthRoute(
+      const backendURL = getPushSocialAuthRoute(
         provider,
         APP_ROUTES.OAUTH_REDIRECT
       );
-      //   console.log(backendURL);
       window.open(backendURL, "Google OAuth", getAuthWindowConfig());
     } else {
-      // Redirect to the auth page in the same tab
-      window.location.href = getSocialAuthRoute(
+      window.location.href = getPushSocialAuthRoute(
         provider,
         persistQuery(APP_ROUTES.WALLET)
       );

@@ -20,7 +20,6 @@ const WalletTabs: FC<WalletTabsProps> = ({
   const [activeTab, setActiveTab] = useState("activity");
   const { state } = useGlobalState();
 
-  // console.log("LOADING----", isLoading);
   return (
     <Box height="340px">
       <Tabs

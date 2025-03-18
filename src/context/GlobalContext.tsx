@@ -10,9 +10,7 @@ import { fetchJwtUsingState } from "../helpers/AuthHelper";
 import {
   getAllAppConnections,
   PushWalletAppConnectionData,
-  usePersistedQuery,
 } from "../common";
-import { useNavigate } from "react-router-dom";
 import { APP_ROUTES } from "../constants";
 import { useWallet } from "./WalletContext";
 import { WalletInfo } from "../types/wallet.types";
@@ -149,10 +147,6 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
 
   const { currentWallet } = useWallet();
 
-  const navigate = useNavigate();
-
-  const persistQuery = usePersistedQuery();
-
   const stateParam = params.get("state");
 
   const storedToken = sessionStorage.getItem("jwt");
@@ -169,10 +163,11 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
           });
 
           sessionStorage.setItem("jwt", jwtToken);
+          const url = new URL(window.location.href);
+          url.searchParams.delete("state");
+          window.history.replaceState({}, document.title, url.toString());
 
           dispatch({ type: "SET_JWT", payload: jwtToken });
-
-          navigate(persistQuery(window.location.pathname), { replace: true });
 
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
         }

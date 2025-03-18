@@ -25,6 +25,7 @@ import { WalletListType } from "../Wallet.types";
 import { APP_ROUTES } from "../../../constants";
 import { useEventEmitterContext } from "../../../context/EventEmitterContext";
 import { useWallet } from "../../../context/WalletContext";
+import { convertCaipToObject } from "../Wallet.utils";
 
 export type WalletProfileProps = {
   selectedWallet: WalletListType;
@@ -60,6 +61,8 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
       handleLogOutEvent();
     }
   };
+
+  const { result } = convertCaipToObject(parsedWallet);
 
   return (
     <Box
@@ -117,7 +120,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
         <Text variant="bl-semibold">{walletName}</Text>
         <Box display="flex" gap="spacing-xxxs">
           <Text variant="bes-semibold" color="text-tertiary">
-            {centerMaskWalletAddress(parsedWallet)}
+            {centerMaskWalletAddress(result.address)}
           </Text>
 
           <Box cursor="pointer">

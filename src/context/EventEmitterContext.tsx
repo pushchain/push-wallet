@@ -91,6 +91,9 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
           case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
             handleSignAndSendMessage(event.data.data, event.origin);
             break;
+          case APP_TO_WALLET_ACTION.LOG_OUT:
+            handleLogOutEvent();
+            break;
           case APP_TO_WALLET_ACTION.CONNECTION_STATUS:
             handleExternalWalletConnection(event.data.data);
             break;
@@ -261,6 +264,9 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const handleLogOutEvent = () => {
+    dispatch({ type: "RESET_WALLET" });
+    sessionStorage.removeItem("jwt");
+
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.IS_LOGGED_OUT,
       data: {
@@ -273,7 +279,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   const handleAuthStateParam = (state: string) => {
     dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "idle" });
-    navigate(`${persistQuery(APP_ROUTES.WALLET)}&state=${state}`, {
+    navigate(`${persistQuery(APP_ROUTES.WALLET, state)}`, {
       replace: true,
     });
   };
