@@ -1,6 +1,6 @@
 {
   "name": "push-network-keys",
-  "homepage": "https://push-protocol.github.io/push-wallet/",
+  "homepage": "https://wallet-alpha.push.org",
   "private": true,
   "version": "0.0.0",
   "type": "module",
