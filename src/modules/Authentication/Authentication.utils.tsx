@@ -55,11 +55,10 @@ export const displayInstalledAndAllowedWallets = (
 };
 
 export const envRouteAlias =
-  import.meta.env.VITE_DEV_MODE === "alpha" ? "/" : "";
+  import.meta.env.VITE_DEV_MODE === "alpha" ? "" : "";
 
 export const getEmailAuthRoute = (email: string, redirectRoute: string) =>
-  `${
-    import.meta.env.VITE_APP_BACKEND_URL
+  `${import.meta.env.VITE_APP_BACKEND_URL
   }/auth/authorize-email?email=${encodeURIComponent(
     email
   )}&redirectUri=${encodeURIComponent(
@@ -70,30 +69,28 @@ export const getSocialAuthRoute = (
   provider: SocialProvider,
   redirectRoute: string
 ) =>
-  `${
-    import.meta.env.VITE_APP_BACKEND_URL
+  `${import.meta.env.VITE_APP_BACKEND_URL
   }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
     window.location.origin + envRouteAlias + redirectRoute
   )}`;
 
-  export const getPushSocialAuthRoute = (
-    provider: SocialProvider,
-    redirectRoute: string
-  ) =>
-    `${
-      import.meta.env.VITE_APP_BACKEND_URL
-    }/auth/authorize-push-social?provider=${provider}&redirectUri=${encodeURIComponent(
-      window.location.origin + envRouteAlias + redirectRoute
-    )}`;
+
+export const getPushSocialAuthRoute = (
+  provider: SocialProvider,
+  redirectRoute: string
+) =>
+  `${import.meta.env.VITE_APP_BACKEND_URL
+  }/auth/authorize-push-social?provider=${provider}&redirectUri=${encodeURIComponent(
+    window.location.origin + envRouteAlias + redirectRoute
+  )}`;
 
 export const getOTPEmailAuthRoute = (email: string, redirectRoute: string) =>
-    `${
-      import.meta.env.VITE_APP_BACKEND_URL
-    }/auth/authorize-email-otp?email=${encodeURIComponent(
-      email
-    )}&redirectUri=${encodeURIComponent(
+  `${import.meta.env.VITE_APP_BACKEND_URL
+  }/auth/authorize-email-otp?email=${encodeURIComponent(
+    email
+  )}&redirectUri=${encodeURIComponent(
     window.location.origin + envRouteAlias + redirectRoute
-  )}`;      
+  )}`;
 
 export const verifyOTPEmailAuth = async (
   otp: string,
