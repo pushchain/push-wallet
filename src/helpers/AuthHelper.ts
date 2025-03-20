@@ -16,7 +16,7 @@ export const fetchJwtUsingState = async ({
     return token;
   } catch (err) {
     console.error("Error fetching JWT:", err);
-    return null;
+    throw new Error('Error fetching JWT')
   }
 };
 

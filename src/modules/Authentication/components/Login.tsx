@@ -41,12 +41,11 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
           );
           window.open(backendURL, "Google OAuth", getAuthWindowConfig());
         } else {
-          const backendURL = getOTPEmailAuthRoute(
+          window.location.href = getOTPEmailAuthRoute(
             values.email,
             persistQuery(APP_ROUTES.VERIFY_EMAIL_OTP)
           );
 
-          window.open(backendURL, "Google OAuth", getAuthWindowConfig());
         }
       }
     }

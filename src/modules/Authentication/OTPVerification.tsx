@@ -2,8 +2,7 @@ import { FC, useState } from 'react';
 import { Box, Text, Button, TextInput } from '../../blocks';
 import { DrawerWrapper, LoadingContent, ErrorContent, WALLET_TO_WALLET_ACTION, ContentLayout, BoxLayout, getAppParamValue } from '../../common';
 import { verifyOTPEmailAuth } from './Authentication.utils';
-import { useSearchParams } from 'react-router-dom';
-import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { css } from 'styled-components';
 import { Footer } from '../../common/components/Footer';
 import { APP_ROUTES } from '../../constants';
@@ -17,7 +16,7 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
   userId,
   onVerificationComplete
 }) => {
-  const persistQuery = usePersistedQuery();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -41,11 +40,20 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
       if (response.ok && data.success) {
         onVerificationComplete();
 
-        window.opener?.postMessage(
-          { type: WALLET_TO_WALLET_ACTION.AUTH_STATE_PARAM, state: data.state },
-          window.location.origin
-        );
-        window.close();
+        if (window.opener) {
+          window.opener?.postMessage(
+            { type: WALLET_TO_WALLET_ACTION.AUTH_STATE_PARAM, state: data.state },
+            window.location.origin
+          );
+          window.close();
+        } else {
+          window.location.href = `${window.location.origin}${APP_ROUTES.WALLET}?state=${data.state}`;
+        }
+
+
+
+
+
 
       }
     } catch (err) {
@@ -100,6 +108,7 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
             <Button
               onClick={handleSubmit}
               disabled={!otp || isLoading}
+              loading={isLoading}
               variant="primary"
               css={css`
             width: 100%;
