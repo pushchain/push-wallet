@@ -98,6 +98,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
           <Box width="100%">
             <form onSubmit={formik.handleSubmit}>
               <TextInput
+                disabled
                 value={formik.values.email}
                 onChange={formik.handleChange("email")}
                 placeholder="Enter your email"
@@ -122,6 +123,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
           <Button
             variant="outline"
             block
+            disabled
             leadingIcon={<Google width={24} height={24} />}
             onClick={() => handleSocialLogin("google")}
           >
