@@ -15,26 +15,30 @@ import {
 } from "../../../blocks";
 import {
   centerMaskWalletAddress,
+  getAppParamValue,
   handleCopy,
   usePersistedQuery,
 } from "../../../common";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { WalletListType } from "../Wallet.types";
 import { APP_ROUTES } from "../../../constants";
 import { useEventEmitterContext } from "../../../context/EventEmitterContext";
+import { useWallet } from "../../../context/WalletContext";
+import { convertCaipToObject } from "../Wallet.utils";
 
 export type WalletProfileProps = {
   selectedWallet: WalletListType;
 };
 
 const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
-  const { primaryWallet, handleLogOut: dynamicLogOut } = useDynamicContext();
-  const parsedWallet = selectedWallet?.address || primaryWallet?.address;
+  const { state, dispatch } = useGlobalState();
+
+  const { disconnect } = useWallet();
+
+  const parsedWallet = selectedWallet?.address || state?.externalWallet?.address;
   const walletName = selectedWallet?.name ?? "External Wallet";
   const [copied, setCopied] = useState(false);
-  const { dispatch } = useGlobalState();
 
   const { handleLogOutEvent } = useEventEmitterContext();
 
@@ -42,18 +46,23 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
 
   const persistQuery = usePersistedQuery();
 
+  const isOpenedInIframe = !!getAppParamValue();
+
   const handleLogOut = () => {
     dispatch({ type: "RESET_WALLET" });
 
-    primaryWallet?.connector?.endSession();
-    dynamicLogOut();
+    disconnect();
 
     sessionStorage.removeItem("jwt");
 
     navigate(persistQuery(APP_ROUTES.AUTH));
 
-    handleLogOutEvent();
+    if (isOpenedInIframe) {
+      handleLogOutEvent();
+    }
   };
+
+  const { result } = convertCaipToObject(parsedWallet);
 
   return (
     <Box
@@ -111,7 +120,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
         <Text variant="bl-semibold">{walletName}</Text>
         <Box display="flex" gap="spacing-xxxs">
           <Text variant="bes-semibold" color="text-tertiary">
-            {centerMaskWalletAddress(parsedWallet)}
+            {centerMaskWalletAddress(result.address)}
           </Text>
 
           <Box cursor="pointer">

@@ -3,8 +3,8 @@ import { Box } from "../../blocks";
 import { BoxLayout, ContentLayout } from "../../common";
 import { Footer } from "../../common/components/Footer";
 import { Login } from "./components/Login";
-import { WalletSelection } from "./components/WalletSelection";
 import { WalletState } from "./Authentication.types";
+import ConnectWallet from "./components/ConnectWallet";
 
 const Authentication = () => {
   const [email, setEmail] = useState<string>("");
@@ -23,15 +23,14 @@ const Authentication = () => {
         >
           {(connectMethod === "authentication" ||
             connectMethod === "social") && (
-            <Login
-              email={email}
-              setEmail={setEmail}
-              setConnectMethod={setConnectMethod}
-            />
-          )}
-          {/* <VerifyCode/> */}
+              <Login
+                email={email}
+                setEmail={setEmail}
+                setConnectMethod={setConnectMethod}
+              />
+            )}
           {connectMethod === "connectWallet" && (
-            <WalletSelection setConnectMethod={setConnectMethod} />
+            <ConnectWallet setConnectMethod={setConnectMethod} />
           )}
         </Box>
       </BoxLayout>

@@ -30,6 +30,9 @@ import {
 import {
   Arbitrum,
   ArbitrumMonotone,
+  Avalanche,
+  AvalancheMonotone,
+  BNB,
   BnbMonotone,
   Ethereum,
   EthereumMonotone,
@@ -40,28 +43,38 @@ import {
   Solana,
   SolanaMonotone,
 } from "../blocks";
-import { WalletCategoriesType } from "./Common.types";
+import { ChainType, WalletCategoriesType } from "../types/wallet.types";
 
 export const walletCategories: WalletCategoriesType[] = [
   {
-    value: "ethereum",
+    chain: ChainType.ETHEREUM,
+    wallet: "ethereum",
     label: "Connect Ethereum Wallet",
     icon: <Ethereum width={24} height={24} />,
   },
   {
-    value: "solana",
+    chain: ChainType.SOLANA,
+    wallet: "solana",
     label: "Connect Solana Wallet",
     icon: <Solana width={24} height={24} />,
   },
   {
-    value: "arbitrum",
+    chain: ChainType.ARBITRUM,
+    wallet: "ethereum",
     label: "Connect Arbitrum Wallet",
     icon: <Arbitrum width={24} height={24} />,
   },
   {
-    value: "binance",
+    chain: ChainType.BINANCE,
+    wallet: "ethereum",
     label: "Connect Binance Wallet",
-    icon: <BnbIcon width={24} height={24} />,
+    icon: <BNB width={24} height={24} />,
+  },
+  {
+    chain: ChainType.AVALANCHE,
+    wallet: "ethereum",
+    label: "Connect Avalanche Wallet",
+    icon: <Avalanche width={24} height={24} />,
   },
 ];
 
@@ -80,7 +93,11 @@ export const CHAIN_LOGO: {
   10: OptimismMonotone,
   2442: PolygonMonotone,
   1101: PolygonMonotone,
-  "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": SolanaMonotone,
+  43114: AvalancheMonotone,
+  43113: AvalancheMonotone,
+  '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp': SolanaMonotone, // mainnet
+  '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z': SolanaMonotone, // testnet
+  'EtWTRABZaYq6iMfeYKouRu166VU2xqa1': SolanaMonotone, // devnet
   devnet: PushMonotone,
 };
 

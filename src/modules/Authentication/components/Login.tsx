@@ -8,8 +8,8 @@ import { APP_ROUTES } from "../../../constants";
 import { usePersistedQuery } from "../../../common/hooks/usePersistedQuery";
 import {
   getAuthWindowConfig,
-  getEmailAuthRoute,
-  getSocialAuthRoute,
+  getOTPEmailAuthRoute,
+  getPushSocialAuthRoute,
 } from "../Authentication.utils";
 
 export type LoginProps = {
@@ -25,7 +25,7 @@ const validationSchema = Yup.object().shape({
 const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
   const persistQuery = usePersistedQuery();
 
-  // const isOpenedInIframe = !!getAppParamValue();
+  const isOpenedInIframe = !!getAppParamValue();
 
   const formik = useFormik({
     initialValues: { email },
@@ -34,40 +34,36 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
       setEmail(values.email);
 
       if (values.email) {
-        // if (isOpenedInIframe) {
-        //   const backendURL = getEmailAuthRoute(
-        //     values.email,
-        //     APP_ROUTES.OAUTH_REDIRECT
-        //   );
+        if (isOpenedInIframe) {
+          const backendURL = getOTPEmailAuthRoute(
+            values.email,
+            APP_ROUTES.VERIFY_EMAIL_OTP
+          );
+          window.open(backendURL, "Google OAuth", getAuthWindowConfig());
+        } else {
+          window.location.href = getOTPEmailAuthRoute(
+            values.email,
+            persistQuery(APP_ROUTES.VERIFY_EMAIL_OTP)
+          );
 
-        //   // Open the child tab with the OAuth URL
-        //   window.open(backendURL, "Google OAuth", getAuthWindowConfig());
-        // } else {
-        // Redirect to the auth page in the same tab
-        window.location.href = getEmailAuthRoute(
-          values.email,
-          persistQuery(APP_ROUTES.WALLET)
-        );
-        // }
+        }
       }
-    },
+    }
   });
 
   const handleSocialLogin = (provider: SocialProvider) => {
-    // if (isOpenedInIframe) {
-    //   const backendURL = getSocialAuthRoute(
-    //     provider,
-    //     APP_ROUTES.OAUTH_REDIRECT
-    //   );
-    //   //   console.log(backendURL);
-    //   window.open(backendURL, "Google OAuth", getAuthWindowConfig());
-    // } else {
-    // Redirect to the auth page in the same tab
-    window.location.href = getSocialAuthRoute(
-      provider,
-      persistQuery(APP_ROUTES.WALLET)
-    );
-    // }
+    if (isOpenedInIframe) {
+      const backendURL = getPushSocialAuthRoute(
+        provider,
+        APP_ROUTES.OAUTH_REDIRECT
+      );
+      window.open(backendURL, "Google OAuth", getAuthWindowConfig());
+    } else {
+      window.location.href = getPushSocialAuthRoute(
+        provider,
+        persistQuery(APP_ROUTES.WALLET)
+      );
+    }
   };
 
   return (

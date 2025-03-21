@@ -3,8 +3,6 @@ import { css } from 'styled-components';
 import { convertCaipToObject, formatWalletCategory, getFixedTime } from '../Wallet.utils';
 import { centerMaskWalletAddress, CHAIN_LOGO } from '../../../common';
 
-
-
 const WalletActivityListItem = ({
     transaction,
     address
@@ -29,7 +27,7 @@ const WalletActivityListItem = ({
         if (address === transaction.sender) {
             // Address is the sender
             const recipients = transaction.recipients.recipients;
-            displayAddress = recipients[0].address; // Show first recipient
+            displayAddress = recipients[0]?.address; // Show first recipient
             additionalRecipients = recipients.length - 1; // Count additional recipients
         } else if (transaction.recipients.recipients.some(recipient => recipient.address === address)) {
             // Address is in recipients
@@ -39,40 +37,42 @@ const WalletActivityListItem = ({
 
         const { result } = convertCaipToObject(displayAddress);
 
-        return (
-            <Box display="flex" gap="spacing-xxs" alignItems='center'>
-                <Box
-                    height="16px"
-                    width="16px"
-                    backgroundColor="surface-tertiary"
-                    borderRadius="radius-xxxs"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                >
-                    <Text
-                        color="text-tertiary"
-                        variant="os-bold"
-                        css={css`
-            font-size: 8px;
-            padding-top: 1px;
-          `}
+        if (result.address) {
+            return (
+                <Box display="flex" gap="spacing-xxs" alignItems='center'>
+                    <Box
+                        height="16px"
+                        width="16px"
+                        backgroundColor="surface-tertiary"
+                        borderRadius="radius-xxxs"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
                     >
+                        <Text
+                            color="text-tertiary"
+                            variant="os-bold"
+                            css={css`
+                    font-size: 8px;
+                    padding-top: 1px;
+                  `}
+                        >
 
-                        {result.chainId && getChainIcon(result.chainId)}
+                            {result.chainId && getChainIcon(result.chainId)}
+                        </Text>
+                    </Box>
+                    <Text color="text-secondary" variant="bes-semibold">
+                        {centerMaskWalletAddress(result.address)}
+                    </Text>
+                    <Text color="text-tertiary" variant="bes-semibold">
+                        {additionalRecipients >= 0 && ` +${additionalRecipients} more`}
                     </Text>
                 </Box>
-                <Text color="text-secondary" variant="bes-semibold">
-                    {centerMaskWalletAddress(displayAddress)}
-                </Text>
-                <Text color="text-tertiary" variant="bes-semibold">
-                    {additionalRecipients !== 0 && ` +${additionalRecipients} more`}
-                </Text>
-            </Box>
-        )
+            )
+        }
+
 
     }
-
 
     return (
         <Box

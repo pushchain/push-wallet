@@ -8,7 +8,7 @@ import { usePersistedQuery } from "../hooks/usePersistedQuery";
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const {
-    state: { walletLoadState, jwt, dynamicWallet },
+    state: { walletLoadState, jwt, externalWallet },
   } = useGlobalState();
 
   const persistQuery = usePersistedQuery();
@@ -21,7 +21,7 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
     return <>{children}</>;
   }
 
-  if (walletLoadState === "success" && dynamicWallet) {
+  if (walletLoadState === "success" && externalWallet) {
     return <>{children}</>;
   }
 

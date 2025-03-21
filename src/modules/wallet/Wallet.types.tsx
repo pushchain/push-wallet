@@ -5,3 +5,10 @@ export type WalletListType = {
   isSelected: boolean;
   type: string;
 };
+
+
+export type UniversalAddress = {
+  chainId: string | null;
+  chain: string | null;
+  address: string | null;
+}

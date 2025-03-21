@@ -55,11 +55,10 @@ export const displayInstalledAndAllowedWallets = (
 };
 
 export const envRouteAlias =
-  import.meta.env.VITE_DEV_MODE === "alpha" ? "/" : "";
+  import.meta.env.VITE_DEV_MODE === "alpha" ? "" : "";
 
 export const getEmailAuthRoute = (email: string, redirectRoute: string) =>
-  `${
-    import.meta.env.VITE_APP_BACKEND_URL
+  `${import.meta.env.VITE_APP_BACKEND_URL
   }/auth/authorize-email?email=${encodeURIComponent(
     email
   )}&redirectUri=${encodeURIComponent(
@@ -70,11 +69,67 @@ export const getSocialAuthRoute = (
   provider: SocialProvider,
   redirectRoute: string
 ) =>
-  `${
-    import.meta.env.VITE_APP_BACKEND_URL
+  `${import.meta.env.VITE_APP_BACKEND_URL
   }/auth/authorize-social?provider=${provider}&redirectUri=${encodeURIComponent(
     window.location.origin + envRouteAlias + redirectRoute
   )}`;
+
+
+export const getPushSocialAuthRoute = (
+  provider: SocialProvider,
+  redirectRoute: string
+) =>
+  `${import.meta.env.VITE_APP_BACKEND_URL
+  }/auth/authorize-push-social?provider=${provider}&redirectUri=${encodeURIComponent(
+    window.location.origin + envRouteAlias + redirectRoute
+  )}`;
+
+export const getOTPEmailAuthRoute = (email: string, redirectRoute: string) =>
+  `${import.meta.env.VITE_APP_BACKEND_URL
+  }/auth/authorize-email-otp?email=${encodeURIComponent(
+    email
+  )}&redirectUri=${encodeURIComponent(
+    window.location.origin + envRouteAlias + redirectRoute
+  )}`;
+
+export const verifyOTPEmailAuth = async (
+  otp: string,
+  state: string,
+  challengeId: string,
+  email: string,
+) => {
+  const response = await fetch(
+    `${import.meta.env.VITE_APP_BACKEND_URL}/auth/verify-email-otp`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        otp,
+        state,
+        challengeId,
+        email,
+      })
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('OTP verification failed');
+  }
+
+  return response;
+};
+
+// Helper to parse URL parameters for OTP verification page
+export const getOTPVerificationParams = () => {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    state: params.get('state'),
+    challengeId: params.get('challengeId'),
+    email: params.get('email'),
+  };
+};
 
 export const getAuthWindowConfig = () => {
   // Calculate the screen width and height
