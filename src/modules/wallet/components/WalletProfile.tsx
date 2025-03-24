@@ -26,6 +26,7 @@ import { APP_ROUTES } from "../../../constants";
 import { useEventEmitterContext } from "../../../context/EventEmitterContext";
 import { useWallet } from "../../../context/WalletContext";
 import { convertCaipToObject } from "../Wallet.utils";
+import { css } from "styled-components";
 
 export type WalletProfileProps = {
   selectedWallet: WalletListType;
@@ -80,6 +81,9 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
         <Box display="flex" gap="spacing-xxs">
           {/* <HoverableSVG icon={<Lock size={24} color="icon-primary" />} /> */}
           <Dropdown
+            css={css`
+              z-index:3;
+              `}
             overlay={
               <Menu>
                 {/* <MenuItem label="Linked Accounts" icon={<Pin />} /> */}

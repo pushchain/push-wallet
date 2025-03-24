@@ -73,7 +73,6 @@ export const StyledLineTabs = styled(ReachTabs)`
 `;
 
 export const StyledLineTabList = styled(TabList)`
-  overflow: auto hidden;
   display: flex;
   background-color: var(--surface-transparent);
   gap: var(--spacing-xs);
