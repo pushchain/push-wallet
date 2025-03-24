@@ -18,14 +18,53 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
       position="relative"
       width={{ initial: "auto", ml: "90%" }}
       css={css`
-        background: linear-gradient(
-          160deg,
-          #313338 0 25%,
-          #d548ec,
-          #0056d0,
-          #313338 75% 100%
-        );
+        position: relative;
         padding: 1.5px;
+        overflow: hidden;
+
+        &::before {
+          content: "";
+          position: absolute;
+          width: 200%;
+          height: 200%;
+          top: -50%;
+          left: -50%;
+          z-index: 0;
+          background: linear-gradient(
+            160deg,
+            rgb(49, 51, 56) 0px,
+            rgb(49, 51, 56) 25%,
+            rgb(213, 72, 236),
+            rgb(0, 86, 208),
+            rgb(49, 51, 56) 55%,
+            rgb(49, 51, 56) 100%
+          );
+          animation: anim_rotate 20s linear infinite;
+          border-radius: inherit;
+        }
+
+        &::after {
+          content: "";
+          position: absolute;
+          inset: 1.5px;
+          background: rgb(49, 51, 56);
+          border-radius: inherit;
+          z-index: 1;
+        }
+
+        > * {
+          position: relative;
+          z-index: 2;
+        }
+
+        @keyframes anim_rotate {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
       `}
     >
       <Box
