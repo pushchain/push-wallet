@@ -124,12 +124,16 @@ export class PushWallet {
       mnemonicToAccount(mnemonic).address,
       env
     );
+
+    console.log("Account address >>", account);
+
     const walletClient = createWalletClient({
       account: mnemonicToAccount(mnemonic),
       chain: mainnet,
       transport: http(),
     });
     const signer = await PushSigner.initialize(walletClient);
+    console.log("Signer account", signer);
     signer.account = account; // Overwrite account with Push Wallet's 1st Account in CAIP-10 Format
     return await PushWallet.loginWithWallet(signer, env);
   };
@@ -141,7 +145,8 @@ export class PushWallet {
     this.pushValidator = await PushValidator.initalize({ env });
 
     const encPushAccount = await PushWallet.getPushWallet(pushSigner.account);
-    console.log(encPushAccount);
+
+    console.log("encPushAccount >>>", encPushAccount);
     if (encPushAccount == null) {
       return null;
     } else {
@@ -156,13 +161,15 @@ export class PushWallet {
         undefined,
         env
       );
+      console.log("Push Wallet instance >>>", pushWalletInstance);
+
       pushWalletInstance.attachedAccounts = encPushAccount.attachedaccounts;
       return pushWalletInstance;
     }
   };
 
   // TODO: Implement Later
-  private static loginWithSocial = async () => {};
+  private static loginWithSocial = async () => { };
 
   /**
    * Get Push Wallet details from Push Network
@@ -177,18 +184,18 @@ export class PushWallet {
     );
     return encPushAccount.items.length > 0
       ? {
-          did: encPushAccount.items[0].did,
-          derivedKeyIndex: parseInt(encPushAccount.items[0].derivedkeyindex),
-          encDerivedPrivKey: {
-            ...JSON.parse(encPushAccount.items[0].encryptedderivedprivatekey),
-            preKey: JSON.parse(
-              encPushAccount.items[0].encryptedderivedprivatekey
-            ).prekey,
-          },
-          attachedaccounts: encPushAccount?.items[0]?.attachedaccounts?.map(
-            (account) => account.address
-          ),
-        }
+        did: encPushAccount.items[0].did,
+        derivedKeyIndex: parseInt(encPushAccount.items[0].derivedkeyindex),
+        encDerivedPrivKey: {
+          ...JSON.parse(encPushAccount.items[0].encryptedderivedprivatekey),
+          preKey: JSON.parse(
+            encPushAccount.items[0].encryptedderivedprivatekey
+          ).prekey,
+        },
+        attachedaccounts: encPushAccount?.items[0]?.attachedaccounts?.map(
+          (account) => account.address
+        ),
+      }
       : null;
   };
 
