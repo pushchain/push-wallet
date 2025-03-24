@@ -39,7 +39,7 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
             rgb(49, 51, 56) 55%,
             rgb(49, 51, 56) 100%
           );
-          animation: anim_rotate 20s linear infinite;
+          animation: anim_rotate 14s linear infinite;
           border-radius: inherit;
         }
 
