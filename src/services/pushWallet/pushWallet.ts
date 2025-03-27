@@ -1,44 +1,29 @@
 import * as bip39 from '@scure/bip39'
 import { wordlist } from '@scure/bip39/wordlists/english'
-import { HDKey } from '@scure/bip32'
-import { bytesToHex, utf8ToBytes, randomBytes } from '@noble/hashes/utils'
+import { bytesToHex } from '@noble/hashes/utils'
 import {
   Validator as PushValidator,
   Tx as PushTx,
   Address,
 } from '@pushprotocol/push-chain'
-
 import {
   InitDid,
   EncryptedText,
 } from '@pushprotocol/push-chain/src/lib/generated/txData/init_did'
 import { EncPushAccount, AccountInfo } from './pushWallet.types'
-import { bytesToString, createWalletClient, hexToBytes, http } from 'viem'
-import { PushSigner } from '../pushSigner/pushSigner'
-import { Signer } from '../pushSigner/pushSigner.types'
-import { PushEncryption } from '../pushEncryption/pushEncryption'
+import { hexToBytes, stringToBytes } from 'viem'
 import { sha256 } from '@noble/hashes/sha256'
 import { ENV } from '../../constants'
-import {
-  hdKeyToAccount,
-  mnemonicToAccount,
-  privateKeyToAccount,
-} from 'viem/accounts'
-import { mainnet } from 'viem/chains'
-import { EncryptedPrivateKey } from '../pushEncryption/pushEncryption.types'
+import { mnemonicToAccount, privateKeyToAccount, HDKey } from 'viem/accounts'
 import api from '../../services/api' // Axios instance
 import { PushWalletAppConnectionData } from '../../common'
+import { createUniversalSigner, UniversalSigner } from '@pushchain/devnet'
+import { CHAIN, CHAIN_ID } from '@pushchain/devnet/src/lib/constants'
+import { chainSignerRegistry } from './signerRegistry'
 
 export class PushWallet {
   private static pushValidator: PushValidator
   private static unRegisteredProfile = false
-  /**
-   * Address of Derived Key encoded in Push CAIP-10 format `push:network:pushconsumer...`
-   * This is referred as Push Consumer Account, as it is used to sign all messages
-   */
-  public signerAccount: string
-
-  public attachedAccounts: string[] = []
   /**
    * Accounts to Encrypted Derived Key Mapping
    * push_caip_account -> { encDerivedPrivKey, signature }    // 1st Account of Push Wallet
@@ -61,105 +46,85 @@ export class PushWallet {
      */
     private did: string,
     /**
-     * 1st Account of Push Wallet when created or Web3 Account used to login to Push Wallet
-     * In CAIP-10 Format
-     */
-    public account: string,
-    private derivedHDNode: HDKey,
-    /**
      * TODO: Encrypt Mnemonic
      * Encrypted Mnemonic of the Push Wallet
      * Encryption is done via PIN / Password / PassKey
-     * In case of login via Web3 Account, this field is undefined
      */
-    public mnemonic: string | undefined = undefined,
-    private env: ENV
-  ) {
-    this.signerAccount = Address.toPushCAIP(
-      Address.evmToPush(
-        hdKeyToAccount(derivedHDNode).address,
-        'pushconsumer'
-      ) as `push${string}`,
-      env
-    )
+    public mnemonic: string,
+    /**
+     * Specifies ENV for wallet - Currently works on devnet
+     */
+    private env: ENV,
+    public universalSigner: UniversalSigner
+  ) {}
+
+  private static async createUniSigner(
+    mnemonic: string,
+    chain: CHAIN,
+    chainId: string
+  ): Promise<UniversalSigner> {
+    const seed = await bip39.mnemonicToSeed(mnemonic)
+    const masterNode = HDKey.fromMasterSeed(seed)
+
+    const handler = chainSignerRegistry[chain]
+    if (!handler) throw new Error(`Unsupported chain: ${chain}`)
+
+    const { address, signMessage } = await handler(masterNode)
+
+    return createUniversalSigner({
+      chain,
+      chainId,
+      address,
+      signMessage,
+    })
   }
 
-  public static signUp = async (env: ENV = ENV.STAGING) => {
+  public static signUp = async (
+    env: ENV = ENV.STAGING,
+    chain: CHAIN = CHAIN.ETHEREUM,
+    chainId: string = CHAIN_ID.ETHEREUM.MAINNET
+  ) => {
     // 1. Mark Wallet as Unregistered
     PushWallet.unRegisteredProfile = true
     // 2. Generate Push Wallet
     const pushWallet = await PushWallet.generatePushWallet()
-    // 3. Generate 1st Push Account in CAIP-10 Format
-    const account = Address.toPushCAIP(
-      mnemonicToAccount(pushWallet.mnemonic).address,
-      env
-    )
-    // 4. Initialize Push Wallet
+    // 3. Clear Local Storage
     localStorage.removeItem('appConnections')
-    const pushWalletInstance = new PushWallet(
-      pushWallet.did,
-      account,
-      pushWallet.derivedNode,
+    // 4. Create Universal Signer
+    const universalSigner = await PushWallet.createUniSigner(
       pushWallet.mnemonic,
-      env
+      chain,
+      chainId
     )
-    // 5. Encrypt Derived Keys with PushWallet's 1st Account
-    const walletClient = createWalletClient({
-      account: mnemonicToAccount(pushWallet.mnemonic),
-      chain: mainnet,
-      transport: http(),
-    })
-    const signer = await PushSigner.initialize(walletClient)
-    signer.account = account // Overwrite account with Push Wallet's 1st Account in CAIP-10 Format
-    await pushWalletInstance.connectWalletWithAccount(signer)
-    return pushWalletInstance
+    // 5. Initialize
+    return new PushWallet(
+      pushWallet.did,
+      pushWallet.mnemonic,
+      env,
+      universalSigner
+    )
   }
 
   public static logInWithMnemonic = async (
     mnemonic: string,
-    env: ENV = ENV.STAGING
+    env: ENV = ENV.STAGING,
+    chain: CHAIN = CHAIN.ETHEREUM,
+    chainId: string = CHAIN_ID.ETHEREUM.MAINNET
   ) => {
-    // Generate 1st Push Account in CAIP-10 Format
-    const account = Address.toPushCAIP(mnemonicToAccount(mnemonic).address, env)
-    const walletClient = createWalletClient({
-      account: mnemonicToAccount(mnemonic),
-      chain: mainnet,
-      transport: http(),
-    })
-    const signer = await PushSigner.initialize(walletClient)
-    signer.account = account // Overwrite account with Push Wallet's 1st Account in CAIP-10 Format
-    return await PushWallet.loginWithWallet(signer, env)
-  }
-
-  public static loginWithWallet = async (
-    pushSigner: Signer,
-    env: ENV = ENV.STAGING
-  ) => {
+    // 1. Registration Check - exit if wallet ( created by this mnemonic ) is not registered
     this.pushValidator = await PushValidator.initalize({ env })
-
-    const encPushAccount = await PushWallet.getPushWallet(pushSigner.account)
-    console.log(encPushAccount)
-    if (encPushAccount == null) {
-      return null
-    } else {
-      const derivedNode = await PushWallet.decryptDerivedNode(
-        encPushAccount.encDerivedPrivKey,
-        pushSigner
-      )
-      const pushWalletInstance = new PushWallet(
-        encPushAccount.did,
-        pushSigner.account,
-        derivedNode,
-        undefined,
-        env
-      )
-      pushWalletInstance.attachedAccounts = encPushAccount.attachedaccounts
-      return pushWalletInstance
-    }
+    const account = Address.toPushCAIP(mnemonicToAccount(mnemonic).address, env) // TODO - Can't Remove this without devnet node changes
+    const encPushAccount = await PushWallet.getPushWallet(account)
+    if (encPushAccount == null) return null
+    // 2. Create Universal Signer
+    const universalSigner = await PushWallet.createUniSigner(
+      mnemonic,
+      chain,
+      chainId
+    )
+    // 3. Initialize
+    return new PushWallet(encPushAccount.did, mnemonic, env, universalSigner)
   }
-
-  // TODO: Implement Later
-  private static loginWithSocial = async () => {}
 
   /**
    * Get Push Wallet details from Push Network
@@ -230,45 +195,6 @@ export class PushWallet {
     }
   }
 
-  /**
-   * Decrypts a Derived Key using Signer
-   */
-  private static decryptDerivedNode = async (
-    encDerivedPrivKey: EncryptedPrivateKey,
-    signer: Signer
-  ): Promise<HDKey> => {
-    const privateExtendedKey = await PushEncryption.decrypt(
-      encDerivedPrivKey,
-      signer
-    )
-    return HDKey.fromExtendedKey(privateExtendedKey)
-  }
-
-  public connectWalletWithAccount = async (pushSigner: Signer) => {
-    if (!PushWallet.unRegisteredProfile)
-      throw Error('Only Allowed for Unregistered Profile')
-
-    // 1. Encrypt Derived Priv Key with account
-    const encDerivedPrivKey = await PushEncryption.encrypt(
-      this.derivedHDNode.privateExtendedKey,
-      pushSigner
-    )
-    // 2. Ask for confirmation signature - Serves as a conformation for user and proof for network
-    const seed = await bip39.mnemonicToSeed(this.mnemonic as string)
-    const masterNode = HDKey.fromMasterSeed(seed)
-    const pushDID = `PUSH_DID:${bytesToHex(sha256(masterNode.publicKey))}`
-    const signature = await pushSigner.signMessage(
-      `Connect Account To ${pushDID}`
-    )
-
-    // 3. Append details to Wallet Tx Payload
-    this.walletToEncDerivedKey[pushSigner.account] = {
-      encDerivedPrivKey: encDerivedPrivKey,
-      signature,
-    }
-    this.attachedAccounts.push(pushSigner.account)
-  }
-
   public registerPushAccount = async () => {
     if (!PushWallet.unRegisteredProfile)
       throw Error('Only Allowed for Unregistered Profile')
@@ -277,10 +203,11 @@ export class PushWallet {
     const seed = await bip39.mnemonicToSeed(this.mnemonic as string)
 
     const masterNode = HDKey.fromMasterSeed(seed)
+    const derivedNode = await PushWallet.generateDerivedNode(masterNode)
     const txData: InitDid = {
       masterPubKey: bytesToHex(masterNode.publicKey as Uint8Array),
-      derivedKeyIndex: this.derivedHDNode.index,
-      derivedPubKey: bytesToHex(this.derivedHDNode.publicKey as Uint8Array),
+      derivedKeyIndex: derivedNode.index,
+      derivedPubKey: bytesToHex(derivedNode.publicKey as Uint8Array),
       walletToEncDerivedKey: this.walletToEncDerivedKey,
     }
     const pushTx = await PushTx.initialize(this.env)
@@ -290,9 +217,6 @@ export class PushWallet {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       PushTx.serializeData(txData, 'INIT_DID' as any)
     )
-
-    console.log('InitDIDTx:', initDIDTx)
-    console.log(`0x${bytesToHex(masterNode.privateKey as Uint8Array)}`)
 
     // 2. Send Tx
     const account = privateKeyToAccount(
@@ -605,7 +529,6 @@ export class PushWallet {
   }
 
   /**
-   * SIGN DATA WITH DERIVED KEY
    * @param data data to be signed
    * @param origin origin from where the sig Req is incoming
    * @returns signature
@@ -617,63 +540,8 @@ export class PushWallet {
   ): Promise<Uint8Array> => {
     const appFound = appConnections.find((each) => each.origin === origin)
     if (!appFound) throw Error('App not Connected')
-    const account = hdKeyToAccount(this.derivedHDNode)
-    const client = createWalletClient({
-      account,
-      chain: mainnet,
-      transport: http(),
-    })
-    const pushSigner = await PushSigner.initialize(client)
-    return await pushSigner.signMessage(
-      typeof data === 'string' ? data : bytesToString(data)
+    return await this.universalSigner.signMessage(
+      typeof data === 'string' ? stringToBytes(data) : data
     )
-  }
-
-  /**
-   * Generates a random session key (hardened key) from derived key
-   * @dev - To avoid any collisions ( theoretically ), no. of possible comb. = (2^31)^9
-   */
-  private generateRandomSessionKey = (): {
-    privateKey: string | undefined
-    publicKey: string | undefined
-  } => {
-    let derivedNode = this.derivedHDNode
-
-    // Randomness = (2^31)^9
-    const levels = 9
-    for (let i = 0; i < levels; i++) {
-      // Generate a random 32-bit index within the hardened range
-      const randomBuffer = randomBytes(4)
-      // Convert the buffer to an unsigned 32-bit integer (big-endian)
-      const randomIndex =
-        (randomBuffer[0] << 24) |
-        (randomBuffer[1] << 16) |
-        (randomBuffer[2] << 8) |
-        randomBuffer[3]
-      const hardenedIndex = randomIndex + 2 ** 31
-      // Derive the next hardened child key
-      derivedNode = derivedNode.deriveChild(hardenedIndex)
-    }
-    return {
-      privateKey: derivedNode.privateKey?.toString(),
-      publicKey: derivedNode.publicKey?.toString(),
-    }
-  }
-
-  // TODO: Implement Later
-  public addSessionKey = (origin: string | null = null) => {
-    const sessionKeys = this.generateRandomSessionKey()
-    console.log(origin, sessionKeys)
-    // TODO: Create a AddSessionKey Tx
-    // TODO: Sign Tx with derivedKey
-    // TODO: Send Tx to vnodes
-  }
-
-  // TODO: Implement Later
-  public revokeSessionKey = (publicKey: string) => {
-    console.log(publicKey)
-    // TODO: Create a RevokeSessionKey Tx
-    // TODO: Sign Tx with derivedKey
-    // TODO: Send Tx to vnodes
   }
 }

@@ -1,10 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { PushWallet } from './pushWallet'
 import { ENV } from '../../constants'
-import { createWalletClient, http } from 'viem'
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
-import { sepolia } from 'viem/chains'
-import { PushSigner } from '../pushSigner/pushSigner'
 import { sha256 } from '@noble/hashes/sha256'
 import { bytesToHex } from '@noble/hashes/utils'
 
@@ -15,8 +11,6 @@ describe('PushWallet', () => {
     const pushWallet = await PushWallet.signUp(env)
     expect(pushWallet).toBeInstanceOf(PushWallet)
     expect(pushWallet['did']).toBeDefined()
-    expect(pushWallet.account).toBeDefined()
-    expect(pushWallet['derivedHDNode']).toBeDefined()
     expect(pushWallet['mnemonic']).toBeDefined()
   })
 
@@ -30,8 +24,6 @@ describe('PushWallet', () => {
     )
     expect(pushWallet).toBeInstanceOf(PushWallet)
     expect(pushWallet['did']).toBeDefined()
-    expect(pushWallet.account).toBeDefined()
-    expect(pushWallet['derivedHDNode']).toBeDefined()
     expect(pushWallet['mnemonic']).toBeDefined()
   })
 
@@ -40,46 +32,6 @@ describe('PushWallet', () => {
     await expect(
       PushWallet.logInWithMnemonic(invalidMnemonic, env)
     ).rejects.toThrow('Invalid mnemonic')
-  })
-
-  it('should reject when logging in with a wallet if Push account is not found', async () => {
-    const walletClient = createWalletClient({
-      account: privateKeyToAccount(generatePrivateKey()),
-      chain: sepolia,
-      transport: http(),
-    })
-    const signer = await PushSigner.initialize(walletClient)
-    await expect(PushWallet.loginWithWallet(signer, env)).rejects.toThrow()
-    // await expect(PushWallet.loginWithWallet(walletClient, env)).rejects.toThrow(
-    //   'Push Account Not Found!'
-    // )
-  })
-
-  it('should connect a wallet with an unregistered profile', async () => {
-    const pushWallet = await PushWallet.signUp(env)
-    const walletClient = createWalletClient({
-      account: privateKeyToAccount(generatePrivateKey()),
-      chain: sepolia,
-      transport: http(),
-    })
-    const signer = await PushSigner.initialize(walletClient)
-    await expect(
-      pushWallet.connectWalletWithAccount(signer)
-    ).resolves.not.toThrow()
-  })
-
-  it('should throw an error if trying to connect wallet without unregistered profile', async () => {
-    const pushWallet = await PushWallet.signUp(env)
-    PushWallet['unRegisteredProfile'] = false
-    const walletClient = createWalletClient({
-      account: privateKeyToAccount(generatePrivateKey()),
-      chain: sepolia,
-      transport: http(),
-    })
-    const signer = await PushSigner.initialize(walletClient)
-    await expect(pushWallet.connectWalletWithAccount(signer)).rejects.toThrow(
-      'Only Allowed for Unregistered Profile'
-    )
   })
 
   it('should register a Push account when unregistered profile is true', async () => {
@@ -99,9 +51,9 @@ describe('PushWallet', () => {
     const pushWallet = await PushWallet.signUp(env)
     const data = 'test data'
     const origin = 'https://test-wallet.com'
-    pushWallet.requestToConnect(origin)
-    pushWallet.acceptConnectionReq(origin)
-    const signature = pushWallet.sign(data, origin)
+    const signature = pushWallet.sign(data, origin, [
+      { origin: 'https://test-wallet.com', appConnectionStatus: 'connected' },
+    ])
     expect(signature).toBeDefined()
   })
 
@@ -109,42 +61,12 @@ describe('PushWallet', () => {
     const pushWallet = await PushWallet.signUp(env)
     const data = 'test data'
     const origin = 'unconnectedApp'
-    await expect(pushWallet.sign(data, origin)).rejects.toThrow(
+    await expect(pushWallet.sign(data, origin, [])).rejects.toThrow(
       'App not Connected'
     )
   })
 
-  it('should return connection status for a connected app', async () => {
-    const pushWallet = await PushWallet.signUp(env)
-    const origin = 'app1'
-    pushWallet.requestToConnect(origin)
-    const statusBefore = pushWallet.ConnectionStatus(origin)
-    expect(statusBefore.isPending).toBe(true)
-    pushWallet.acceptConnectionReq(origin)
-    const statusAfter = pushWallet.ConnectionStatus(origin)
-    expect(statusAfter.isConnected).toBe(true)
-    expect(statusAfter.isPending).toBe(false)
-  })
-
-  it('should handle rejecting connection requests', async () => {
-    const pushWallet = await PushWallet.signUp(env)
-    const origin = 'app1'
-    pushWallet.requestToConnect(origin)
-    pushWallet.rejectConnectionReq(origin)
-    const status = pushWallet.ConnectionStatus(origin)
-    expect(status.isConnected).toBe(false)
-    expect(status.isPending).toBe(false)
-  })
-
-  it('should generate random session keys', async () => {
-    const pushWallet = await PushWallet.signUp(env)
-    const sessionKey = pushWallet['generateRandomSessionKey']()
-    expect(sessionKey).toBeDefined()
-    expect(sessionKey.privateKey).toBeDefined()
-    expect(sessionKey.publicKey).toBeDefined()
-  })
-
-  it.only('should create DID from MasterPublicKey', async () => {
+  it('should create DID from MasterPublicKey', async () => {
     const did = `PUSH_DID:${bytesToHex(
       sha256(
         '02a975748d5ed9a8194d8368f98b62183cfc9e62864d850c63678c1778e457d038'
