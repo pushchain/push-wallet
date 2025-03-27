@@ -1,9 +1,10 @@
 import { privateKeyToAccount } from 'viem/accounts'
-import { bytesToHex, hexToBytes } from '@noble/hashes/utils'
+import { bytesToHex } from '@noble/hashes/utils'
 import { HDKey } from 'viem/accounts'
 import nacl from 'tweetnacl'
 import bs58 from 'bs58'
 import { CHAIN } from '@pushchain/devnet/src/lib/constants'
+import { hexToBytes } from 'viem'
 
 export type ChainSignerHandler = (masterNode: HDKey) => Promise<{
   address: string
