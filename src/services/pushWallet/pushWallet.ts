@@ -1,28 +1,26 @@
 import * as bip39 from '@scure/bip39'
 import { wordlist } from '@scure/bip39/wordlists/english'
 import { bytesToHex } from '@noble/hashes/utils'
-import {
-  Validator as PushValidator,
-  Tx as PushTx,
-  Address,
-} from '@pushprotocol/push-chain'
+import { Tx as PushTx, Address } from '@pushprotocol/push-chain'
 import {
   InitDid,
   EncryptedText,
 } from '@pushprotocol/push-chain/src/lib/generated/txData/init_did'
-import { EncPushAccount, AccountInfo } from './pushWallet.types'
 import { hexToBytes, stringToBytes } from 'viem'
 import { sha256 } from '@noble/hashes/sha256'
 import { ENV } from '../../constants'
-import { mnemonicToAccount, privateKeyToAccount, HDKey } from 'viem/accounts'
+import { privateKeyToAccount, HDKey } from 'viem/accounts'
 import api from '../../services/api' // Axios instance
 import { PushWalletAppConnectionData } from '../../common'
-import { createUniversalSigner, UniversalSigner } from '@pushchain/devnet'
+import {
+  createUniversalSigner,
+  PushChain,
+  UniversalSigner,
+} from '@pushchain/devnet'
 import { CHAIN, CHAIN_ID } from '@pushchain/devnet/src/lib/constants'
 import { chainSignerRegistry } from './signerRegistry'
 
 export class PushWallet {
-  private static pushValidator: PushValidator
   private static unRegisteredProfile = false
   /**
    * Accounts to Encrypted Derived Key Mapping
@@ -112,47 +110,54 @@ export class PushWallet {
     chainId: string = CHAIN_ID.ETHEREUM.MAINNET
   ) => {
     // 1. Registration Check - exit if wallet ( created by this mnemonic ) is not registered
-    this.pushValidator = await PushValidator.initalize({ env })
-    const account = Address.toPushCAIP(mnemonicToAccount(mnemonic).address, env) // TODO - Can't Remove this without devnet node changes
-    const encPushAccount = await PushWallet.getPushWallet(account)
-    if (encPushAccount == null) return null
-    // 2. Create Universal Signer
+    const pushChain = await PushChain.initialize(null)
+    const seed = await bip39.mnemonicToSeed(mnemonic)
+    const masterNode = HDKey.fromMasterSeed(seed)
+    const address = privateKeyToAccount(
+      `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`
+    ).address
+
+    const account = Address.toPushCAIP(address, env)
+    const res = await pushChain.tx.get(account, { category: 'INIT_DID' })
+    if (res.blocks.length === 0) return null
+    // 2. Create Universal Signer & DID
     const universalSigner = await PushWallet.createUniSigner(
       mnemonic,
       chain,
       chainId
     )
+    const did = `PUSH_DID:${bytesToHex(sha256(masterNode.publicKey))}`
     // 3. Initialize
-    return new PushWallet(encPushAccount.did, mnemonic, env, universalSigner)
+    return new PushWallet(did, mnemonic, env, universalSigner)
   }
 
-  /**
-   * Get Push Wallet details from Push Network
-   * @param account - account in CAIP-10 Format
-   */
-  private static getPushWallet = async (
-    account: string
-  ): Promise<null | EncPushAccount> => {
-    const encPushAccount = await this.pushValidator.call<null | AccountInfo>(
-      'push_accountInfo',
-      [account]
-    )
-    return encPushAccount.items.length > 0
-      ? {
-          did: encPushAccount.items[0].did,
-          derivedKeyIndex: parseInt(encPushAccount.items[0].derivedkeyindex),
-          encDerivedPrivKey: {
-            ...JSON.parse(encPushAccount.items[0].encryptedderivedprivatekey),
-            preKey: JSON.parse(
-              encPushAccount.items[0].encryptedderivedprivatekey
-            ).prekey,
-          },
-          attachedaccounts: encPushAccount?.items[0]?.attachedaccounts?.map(
-            (account) => account.address
-          ),
-        }
-      : null
-  }
+  // /**
+  //  * Get Push Wallet details from Push Network
+  //  * @param account - account in CAIP-10 Format
+  //  */
+  // private static getPushWallet = async (
+  //   account: string
+  // ): Promise<null | EncPushAccount> => {
+  //   const encPushAccount = await this.pushValidator.call<null | AccountInfo>(
+  //     'push_accountInfo',
+  //     [account]
+  //   )
+  //   return encPushAccount.items.length > 0
+  //     ? {
+  //         did: encPushAccount.items[0].did,
+  //         derivedKeyIndex: parseInt(encPushAccount.items[0].derivedkeyindex),
+  //         encDerivedPrivKey: {
+  //           ...JSON.parse(encPushAccount.items[0].encryptedderivedprivatekey),
+  //           preKey: JSON.parse(
+  //             encPushAccount.items[0].encryptedderivedprivatekey
+  //           ).prekey,
+  //         },
+  //         attachedaccounts: encPushAccount?.items[0]?.attachedaccounts?.map(
+  //           (account) => account.address
+  //         ),
+  //       }
+  //     : null
+  // }
 
   /**
    * @description Derives a hardened key from master key
