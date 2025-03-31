@@ -22,6 +22,7 @@ import {
 import { requestToConnectPushWallet } from "../common";
 import { APP_ROUTES } from "../constants";
 import { ChainType, IWalletProvider, WalletInfo } from "../types/wallet.types";
+import { PushChain } from "@pushchain/devnet";
 
 // Define the shape of the app state
 export type EventEmitterState = {
@@ -205,10 +206,17 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       payload: appConnections,
     });
 
+    const universalSigner = walletRef?.current?.universalSigner
+    const account = PushChain.utils.account.toChainAgnostic({
+      chain: universalSigner.chain,
+      chainId: universalSigner.chainId,
+      address: universalSigner.address
+    });
+
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.APP_CONNECTION_SUCCESS,
       data: {
-        account: walletRef.current.signerAccount,
+        account: account,
       },
     });
   };
@@ -255,10 +263,18 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const handleUserLoggedIn = () => {
+
+    const universalSigner = walletRef?.current?.universalSigner
+    const account = PushChain.utils.account.toChainAgnostic({
+      chain: universalSigner.chain,
+      chainId: universalSigner.chainId,
+      address: universalSigner.address
+    });
+
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.IS_LOGGED_IN,
       data: {
-        account: walletRef?.current?.signerAccount ?? null,
+        account: account ?? null,
       },
     });
   };

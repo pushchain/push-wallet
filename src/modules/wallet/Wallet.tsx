@@ -241,11 +241,11 @@ const Wallet: FC<WalletProps> = () => {
   };
 
   useEffect(() => {
-    if (state?.wallet?.attachedAccounts.length)
+    if (state?.wallet?.universalSigner.address)
       setSelectedWallet(
-        getWalletlist(state?.wallet?.attachedAccounts, state.wallet)[0]
+        getWalletlist(state.wallet)[0]
       );
-  }, [state?.wallet?.attachedAccounts]);
+  }, [state?.wallet?.universalSigner]);
 
   useEffect(() => {
     if (
@@ -286,7 +286,6 @@ const Wallet: FC<WalletProps> = () => {
           <WalletProfile selectedWallet={selectedWallet} />
           <WalletTabs
             walletList={getWalletlist(
-              state?.wallet?.attachedAccounts,
               state.wallet
             )}
             selectedWallet={selectedWallet}

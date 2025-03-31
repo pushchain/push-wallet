@@ -1,32 +1,52 @@
 import { PushWallet } from "src/services/pushWallet/pushWallet";
 import { ChainType } from "../../types/wallet.types";
+import { PushChain } from "@pushchain/devnet";
 
-export const getWalletlist = (attachedAccounts: string[], wallet: PushWallet) => {
+export const getWalletlist = (wallet: PushWallet) => {
   const walletList = [];
-  if (attachedAccounts?.length) {
-    attachedAccounts?.forEach((account, index) => {
-      let walletObj = {};
-      if (account.includes("push")) {
-        walletObj = {
-          name: "Push Account",
-          address: wallet?.signerAccount,
-          fullAddress: wallet?.signerAccount,
-          isSelected: false,
-          type: "push",
-        };
-      } else {
-        walletObj = {
-          name: `Account ${index + 1}`,
-          address: account.split(':')[2],
-          fullAddress: account,
-          isSelected: false,
-          //TODO:change the type as per backend later
-          type: "metamask",
-        };
-      }
-      walletList.push(walletObj);
-    });
+  // if (attachedAccounts?.length) {
+  //   attachedAccounts?.forEach((account, index) => {
+  //     let walletObj = {};
+  //     if (account.includes("push")) {
+  //       walletObj = {
+  //         name: "Push Account",
+  //         address: wallet?.signerAccount,
+  //         fullAddress: wallet?.signerAccount,
+  //         isSelected: false,
+  //         type: "push",
+  //       };
+  //     } else {
+  //       walletObj = {
+  //         name: `Account ${index + 1}`,
+  //         address: account.split(':')[2],
+  //         fullAddress: account,
+  //         isSelected: false,
+  //         //TODO:change the type as per backend later
+  //         type: "metamask",
+  //       };
+  //     }
+  //     walletList.push(walletObj);
+  //   });
+  // }
+
+  const universalSigner = wallet?.universalSigner
+  const account = PushChain.utils.account.toChainAgnostic({
+    chain: universalSigner.chain,
+    chainId: universalSigner.chainId,
+    address: universalSigner.address
+  });
+
+  if (wallet) {
+    const walletObj = {
+      name: "Push Account",
+      address: wallet.universalSigner.address,
+      fullAddress: account,
+      isSelected: false,
+      type: "push",
+    };
+    walletList.push(walletObj);
   }
+
   walletList.reverse();
   return walletList; // Return the wallet list instead of null
 };
