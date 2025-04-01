@@ -109,25 +109,27 @@ export class PushWallet {
     chain: CHAIN = CHAIN.ETHEREUM,
     chainId: string = CHAIN_ID.ETHEREUM.MAINNET
   ) => {
-    // 1. Registration Check - exit if wallet ( created by this mnemonic ) is not registered
-    const pushChain = await PushChain.initialize(null)
     const seed = await bip39.mnemonicToSeed(mnemonic)
     const masterNode = HDKey.fromMasterSeed(seed)
     const address = privateKeyToAccount(
       `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`
     ).address
-
-    const account = Address.toPushCAIP(address, env)
-    const res = await pushChain.tx.get(account, { category: 'INIT_DID' })
-    if (res.blocks.length === 0) return null
-    // 2. Create Universal Signer & DID
+    const did = `PUSH_DID:${bytesToHex(sha256(masterNode.publicKey))}`
     const universalSigner = await PushWallet.createUniSigner(
       mnemonic,
       chain,
       chainId
     )
-    const did = `PUSH_DID:${bytesToHex(sha256(masterNode.publicKey))}`
-    // 3. Initialize
+    // 1. Registration Check - exit if wallet ( created by this mnemonic ) is not registered
+    const pushChain = await PushChain.initialize(universalSigner)
+
+    const account = Address.toPushCAIP(address, env)
+    const res = await pushChain.tx.get(
+      PushChain.utils.account.toUniversal(account),
+      { category: 'INIT_DID' }
+    )
+    if (res.blocks.length === 0) return null
+    // 2. Initialize
     return new PushWallet(did, mnemonic, env, universalSigner)
   }
 
