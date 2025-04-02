@@ -29,14 +29,13 @@ export const getWalletlist = (wallet: PushWallet) => {
   //   });
   // }
 
-  const universalSigner = wallet?.universalSigner
-  const account = PushChain.utils.account.toChainAgnostic({
-    chain: universalSigner.chain,
-    chainId: universalSigner.chainId,
-    address: universalSigner.address
-  });
-
   if (wallet) {
+    const universalSigner = wallet?.universalSigner
+    const account = PushChain.utils.account.toChainAgnostic({
+      chain: universalSigner.chain,
+      chainId: universalSigner.chainId,
+      address: universalSigner.address
+    });
     const walletObj = {
       name: "Push Account",
       address: wallet.universalSigner.address,
