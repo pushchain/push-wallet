@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Box, Info } from "../../blocks";
+import { Box, Button, Info } from "../../blocks";
 import {
   BoxLayout,
   ContentLayout,
@@ -25,6 +25,7 @@ import { PushWalletAppConnection } from "../../common";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
 import { ConnectionSuccess } from "../../common/components/ConnectionSuccess";
+import { CreateNewWallet } from "../../common/components/CreateNewWallet";
 
 export type WalletProps = {};
 
@@ -41,6 +42,8 @@ const Wallet: FC<WalletProps> = () => {
 
   const [showCreateNewWalletModal, setShowCreateNewWalletModal] =
     useState(false);
+
+  const [showReconstructionErrorModal, setShowReconstructionErrorModal] = useState(false);
 
   // TODO: This needs to go to a top level context
   const [selectedWallet, setSelectedWallet] = useState<WalletListType>();
@@ -162,12 +165,16 @@ const Wallet: FC<WalletProps> = () => {
 
         // Only single or no share is found directly ask user if they want to create a new wallet or go back
         const hasAnyShare = share1 || share2 || share3;
+        console.log("Has any share >>", hasAnyShare);
+
         if (hasAnyShare) {
-          setShowCreateNewWalletModal(true);
+          setShowReconstructionErrorModal(true);
           return;
+        } else {
+          // User has no share as them to create a new wallet.
+          setShowCreateNewWalletModal(true);
         }
 
-        await createWalletAndGenerateMnemonic(userId);
       }
     } catch (err) {
       console.error("Error fetching user profile:", err);
@@ -229,6 +236,7 @@ const Wallet: FC<WalletProps> = () => {
       handleResetAndRedirectUser();
     } finally {
       setShowCreateNewWalletModal(false);
+      setShowReconstructionErrorModal(false);
     }
   };
 
@@ -241,11 +249,11 @@ const Wallet: FC<WalletProps> = () => {
   };
 
   useEffect(() => {
-    if (state?.wallet?.attachedAccounts.length)
+    if (state?.wallet?.universalSigner.address)
       setSelectedWallet(
-        getWalletlist(state?.wallet?.attachedAccounts, state.wallet)[0]
+        getWalletlist(state.wallet)[0]
       );
-  }, [state?.wallet?.attachedAccounts]);
+  }, [state?.wallet?.universalSigner]);
 
   useEffect(() => {
     if (
@@ -257,15 +265,31 @@ const Wallet: FC<WalletProps> = () => {
   }, [externalOrigin, state?.externalWalletAppConnectionStatus, state.externalWallet]);
 
   if (createAccountLoading)
-    return <WalletSkeletonScreen content={<PushWalletLoadingContent />} />;
+    return (
+      <WalletSkeletonScreen content={<PushWalletLoadingContent />} />
+      // <Button onClick={async () => {
+      //   await fetchUserProfile(state.jwt);
+      // }}>Create passkey</Button>
+    );
 
-  if (showCreateNewWalletModal)
+  if (showReconstructionErrorModal)
     return (
       <WalletSkeletonScreen
         content={
           <WalletReconstructionErrorContent
             onSuccess={handleCreateNewWallet}
             onError={handleResetAndRedirectUser}
+          />
+        }
+      />
+    );
+
+  if (showCreateNewWalletModal)
+    return (
+      <WalletSkeletonScreen
+        content={
+          <CreateNewWallet
+            onSuccess={handleCreateNewWallet}
           />
         }
       />
@@ -286,7 +310,6 @@ const Wallet: FC<WalletProps> = () => {
           <WalletProfile selectedWallet={selectedWallet} />
           <WalletTabs
             walletList={getWalletlist(
-              state?.wallet?.attachedAccounts,
               state.wallet
             )}
             selectedWallet={selectedWallet}
