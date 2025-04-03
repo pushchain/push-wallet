@@ -54,7 +54,7 @@ export class PushWallet {
      */
     private env: ENV,
     public universalSigner: UniversalSigner
-  ) {}
+  ) { }
 
   private static async createUniSigner(
     mnemonic: string,
