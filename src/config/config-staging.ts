@@ -1,10 +1,12 @@
+import { ENV } from "@pushchain/devnet/src/lib/constants";
+
 export const config = {
   /**
    * APP INFO
    */
   APP_NAME: 'Push Testnet Wallet',
   NODE_ENV: 'staging',
-  APP_ENV: 'staging',
+  APP_ENV: ENV.TESTNET,
 
   /**
    * CHAIN INFO
