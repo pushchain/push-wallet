@@ -165,7 +165,6 @@ const Wallet: FC<WalletProps> = () => {
 
         // Only single or no share is found directly ask user if they want to create a new wallet or go back
         const hasAnyShare = share1 || share2 || share3;
-        console.log("Has any share >>", hasAnyShare);
 
         if (hasAnyShare) {
           setShowReconstructionErrorModal(true);

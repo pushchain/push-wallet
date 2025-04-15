@@ -1,11 +1,11 @@
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 
 import { Box, Text, Spinner } from "../../../blocks";
-import { Tx as PushTx } from "@pushprotocol/push-chain";
-import config from "../../../config";
-import { ENV } from "../../../constants";
-import { BlockType } from "@pushprotocol/push-chain/src/lib/block/block.types";
 import { WalletActivityListItem } from "./WalletActivityListItem";
+import { PushChain } from "@pushchain/devnet";
+import { ORDER } from '@pushchain/devnet/src/lib/constants'
+import { BlockType } from "@pushchain/devnet/src/lib/block/block.types";
+import config from "../../../config";
 
 export type WalletActivityListProps = {
   address: string;
@@ -24,14 +24,19 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
       if (isLoading) return;
       setIsLoading(true);
       try {
-        const pushTx = await PushTx.initialize(config.APP_ENV as ENV);
-        const response = await pushTx.get(
-          Math.floor(Date.now()),
-          "DESC",
-          20,
-          pageNumber,
-          address || null
-        );
+        const pushChain = await PushChain.initialize(null, {
+          network: config.APP_ENV,
+          rpcUrl: import.meta.env.VITE_APP_RPC_URL,
+        });
+
+        const universalAccount = PushChain.utils.account.toUniversal(address)
+
+        const response = await pushChain.tx.get(universalAccount, {
+          startTime: Math.floor(Date.now()),
+          order: ORDER.DESC,
+          page: pageNumber,
+          limit: 20,
+        })
 
         const transactions = response.blocks
           .map((tx) => tx.transactions)
@@ -86,7 +91,7 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
     >
       {activities.map((transaction, index) => (
         <WalletActivityListItem
-          key={`${transaction.txnHash}-${index}`}
+          key={`${transaction.hash}-${index}`}
           transaction={transaction}
           address={address}
         />

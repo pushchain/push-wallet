@@ -2,8 +2,15 @@ import { Box, DefaultChainMonotone, ExternalLinkIcon, InternalLink, PushMonotone
 import { css } from 'styled-components';
 import { convertCaipToObject, formatWalletCategory, getFixedTime } from '../Wallet.utils';
 import { centerMaskWalletAddress, CHAIN_LOGO } from '../../../common';
+import { TxResponse } from '@pushchain/devnet/src/lib/tx/tx.types';
+import { FC } from 'react';
 
-const WalletActivityListItem = ({
+type WalletActivityListItemProps = {
+    transaction: TxResponse
+    address: string
+}
+
+const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
     transaction,
     address
 }) => {
@@ -20,18 +27,18 @@ const WalletActivityListItem = ({
         }
     }
 
-    function fetchChainFromAddress(transaction) {
+    function fetchChainFromAddress(transaction: TxResponse) {
 
         let displayAddress = '';
         let additionalRecipients = 0;
-        if (address === transaction.sender) {
+        if (address === transaction.from) {
             // Address is the sender
-            const recipients = transaction.recipients.recipients;
-            displayAddress = recipients[0]?.address; // Show first recipient
+            const recipients = transaction.recipients;
+            displayAddress = recipients[0]; // Show first recipient
             additionalRecipients = recipients.length - 1; // Count additional recipients
-        } else if (transaction.recipients.recipients.some(recipient => recipient.address === address)) {
+        } else if (transaction.recipients.some(recipient => recipient === address)) {
             // Address is in recipients
-            displayAddress = transaction.sender; // Show sender address
+            displayAddress = transaction.from; // Show sender address
 
         }
 
@@ -95,19 +102,19 @@ const WalletActivityListItem = ({
                     width="32px"
                     height="32px"
                 >
-                    {address === transaction.sender ? <ExternalLinkIcon size={16} color="icon-primary" /> : transaction.recipients.recipients.some(recipient => recipient.address === address) && <InternalLink size={16} color="icon-primary" />}
+                    {address === transaction.from ? <ExternalLinkIcon size={16} color="icon-primary" /> : transaction.recipients.some(recipient => recipient === address) && <InternalLink size={16} color="icon-primary" />}
 
                 </Box>
                 <Box display="flex" flexDirection="column" gap='spacing-xxxs'>
                     <Text variant="bm-regular">
-                        {address === transaction.sender ? 'Send' : transaction.recipients.recipients.some(recipient => recipient.address === address) ? 'Receive' : null}
+                        {address === transaction.from ? 'Send' : transaction.recipients.some(recipient => recipient === address) ? 'Receive' : null}
                     </Text>
                     {fetchChainFromAddress(transaction)}
                 </Box>
             </Box>
             <Box display="flex" flexDirection="column" gap="spacing-xxxs">
                 <Text variant="bes-regular">{formatWalletCategory(transaction.category)}</Text>
-                <Text variant="c-semibold" color='text-tertiary'>{getFixedTime(transaction.ts)}</Text>
+                <Text variant="c-semibold" color='text-tertiary'>{getFixedTime(transaction.timestamp)}</Text>
             </Box>
 
         </Box>

@@ -1,11 +1,6 @@
 import * as bip39 from '@scure/bip39'
 import { wordlist } from '@scure/bip39/wordlists/english'
 import { bytesToHex } from '@noble/hashes/utils'
-import { Tx as PushTx, Address } from '@pushprotocol/push-chain'
-import {
-  InitDid,
-  EncryptedText,
-} from '@pushprotocol/push-chain/src/lib/generated/txData/init_did'
 import { hexToBytes, stringToBytes } from 'viem'
 import { sha256 } from '@noble/hashes/sha256'
 import { ENV } from '../../constants'
@@ -17,8 +12,10 @@ import {
   PushChain,
   UniversalSigner,
 } from '@pushchain/devnet'
-import { CHAIN, CHAIN_ID } from '@pushchain/devnet/src/lib/constants'
+import { CHAIN, CHAIN_ID, ENV as DevnetENV } from '@pushchain/devnet/src/lib/constants'
 import { chainSignerRegistry } from './signerRegistry'
+import { TxCategory } from '@pushchain/devnet/src/lib/tx/tx.types'
+import { EncryptedText } from '@pushchain/devnet/src/lib/generated/txData/init_did'
 
 export class PushWallet {
   private static unRegisteredProfile = false
@@ -86,6 +83,7 @@ export class PushWallet {
     PushWallet.unRegisteredProfile = true
     // 2. Generate Push Wallet
     const pushWallet = await PushWallet.generatePushWallet()
+
     // 3. Clear Local Storage
     localStorage.removeItem('appConnections')
     // 4. Create Universal Signer
@@ -94,6 +92,7 @@ export class PushWallet {
       chain,
       chainId
     )
+
     // 5. Initialize
     return new PushWallet(
       pushWallet.did,
@@ -111,21 +110,27 @@ export class PushWallet {
   ) => {
     const seed = await bip39.mnemonicToSeed(mnemonic)
     const masterNode = HDKey.fromMasterSeed(seed)
-    const address = privateKeyToAccount(
+    const account = privateKeyToAccount(
       `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`
-    ).address
+    )
     const did = `PUSH_DID:${bytesToHex(sha256(masterNode.publicKey))}`
     const universalSigner = await PushWallet.createUniSigner(
       mnemonic,
       chain,
       chainId
     )
+
     // 1. Registration Check - exit if wallet ( created by this mnemonic ) is not registered
     const pushChain = await PushChain.initialize(universalSigner)
 
-    const account = Address.toPushCAIP(address, env)
+    const universalAccount = {
+      chain: CHAIN.PUSH,
+      chainId: CHAIN_ID.PUSH.DEVNET,
+      address: PushChain.utils.account.evmToPushAddress(account.address)
+    }
+
     const res = await pushChain.tx.get(
-      PushChain.utils.account.toUniversal(account),
+      universalAccount,
       { category: 'INIT_DID' }
     )
     if (res.blocks.length === 0) return null
@@ -207,39 +212,48 @@ export class PushWallet {
       throw Error('Only Allowed for Unregistered Profile')
 
     // 1. Create Init_did tx
-    const seed = await bip39.mnemonicToSeed(this.mnemonic as string)
-
+    const seed = await bip39.mnemonicToSeed(this.mnemonic)
     const masterNode = HDKey.fromMasterSeed(seed)
+
     const derivedNode = await PushWallet.generateDerivedNode(masterNode)
-    const txData: InitDid = {
+
+    const account = privateKeyToAccount(
+      `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`
+    )
+
+    const txData = {
       masterPubKey: bytesToHex(masterNode.publicKey as Uint8Array),
       derivedKeyIndex: derivedNode.index,
       derivedPubKey: bytesToHex(derivedNode.publicKey as Uint8Array),
       walletToEncDerivedKey: this.walletToEncDerivedKey,
     }
-    const pushTx = await PushTx.initialize(this.env)
-    const initDIDTx = pushTx.createUnsigned(
-      'INIT_DID',
-      [],
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      PushTx.serializeData(txData, 'INIT_DID' as any)
-    )
-
-    // 2. Send Tx
-    const account = privateKeyToAccount(
-      `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`
-    )
 
     const signer = {
-      account: Address.toPushCAIP(account.address, this.env),
+      address: PushChain.utils.account.evmToPushAddress(account.address),
       signMessage: async (dataToBeSigned: Uint8Array) => {
         const signature = await account.signMessage({
           message: { raw: dataToBeSigned },
         })
         return hexToBytes(signature)
       },
+      chain: CHAIN.PUSH,
+      chainId: CHAIN_ID.PUSH.DEVNET,
     }
-    await pushTx.send(initDIDTx, signer)
+
+    const pushChain = await PushChain.initialize(signer, {
+      network: DevnetENV.DEVNET,
+      rpcUrl: import.meta.env.VITE_APP_RPC_URL,
+    })
+
+    const serializedData = PushChain.utils.tx.serializeData(txData, TxCategory.INIT_DID);
+
+    await pushChain.tx.send([], {
+      category: TxCategory.INIT_DID,
+      data: Buffer.from(serializedData).toString(
+        'base64'
+      ),
+    })
+
     PushWallet.unRegisteredProfile = false
   }
 
@@ -357,36 +371,24 @@ export class PushWallet {
       ])
 
       // Do a Custom transaction on pushChain
-      const txInstance = await PushTx.initialize(this.env)
       const recipients = []
-      const tx = txInstance.createUnsigned(
-        'CUSTOM:MNEMONIC_SHARE_REGISTRATION',
-        recipients,
-        combinedData
-      )
 
-      const seed = await bip39.mnemonicToSeed(mnemonic as string)
-      const masterNode = HDKey.fromMasterSeed(seed)
+      // 1. Registration Check - exit if wallet ( created by this mnemonic ) is not registered
+      const pushChain = await PushChain.initialize(this.universalSigner, {
+        network: DevnetENV.DEVNET,
+        rpcUrl: import.meta.env.VITE_APP_RPC_URL,
+      })
 
-      const account = privateKeyToAccount(
-        `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`
-      )
+      const hexData = bytesToHex(combinedData);
 
-      const signer = {
-        account: Address.toPushCAIP(account.address, this.env),
-        signMessage: async (dataToBeSigned: Uint8Array) => {
-          const signature = await account.signMessage({
-            message: { raw: dataToBeSigned },
-          })
-          return hexToBytes(signature)
-        },
-      }
+      const tx = await pushChain.tx.send(recipients, {
+        category: 'CUSTOM:MNEMONIC_SHARE_REGISTRATION',
+        data: hexData,
+      })
 
-      const res = await txInstance.send(tx, signer)
-
-      console.log('::::::::::::::::Tx Response::::::::::', res)
+      console.log('::::::::::::::::Tx Response::::::::::', tx)
       await api.put(`/auth/passkey/transaction/${userId}`, {
-        transactionHash: res,
+        transactionHash: tx.txHash,
         iv: PushWallet.bufferToBase64URL(iv),
       })
     } catch (error) {
@@ -403,28 +405,26 @@ export class PushWallet {
       const txDataResponse = await api.get(
         `/auth/passkey/transaction/${userId}`
       )
+
       if (!txDataResponse?.data?.transactionHash) {
         throw new Error('No transaction hash found')
       }
-
       // 2. Retrieve encrypted data from blockchain
-      const txInstance = await PushTx.initialize(env)
-      const txSearchResult = await txInstance.search(
-        txDataResponse.data.transactionHash
-      )
+      const pushChain = await PushChain.initialize(null, {
+        network: DevnetENV.DEVNET,
+        rpcUrl: import.meta.env.VITE_APP_RPC_URL,
+      });
 
-      const txData =
-        txSearchResult.blocks[0]?.blockDataAsJson.txobjList[0]?.tx.data
+      const txSearchResult = await pushChain.tx.get(txDataResponse.data.transactionHash, { raw: true });
+
+      const txData = txSearchResult.blocks[0]?.transactions[0].data
+
       if (!txData) {
         throw new Error('Transaction data not found')
       }
 
       // 3. Decode encrypted data from base64
-      const encryptedData = new Uint8Array(
-        atob(txData)
-          .split('')
-          .map((char) => char.charCodeAt(0))
-      )
+      const encryptedData = hexToBytes(`0x${txData}`);
 
       // Get authentication challenge from server
       const challengeResponse = await api.get(
@@ -442,6 +442,7 @@ export class PushWallet {
       const credential = (await navigator.credentials.get({
         publicKey: options,
       })) as PublicKeyCredential
+
 
       if (!credential) {
         throw new Error('Failed to get PassKey credential')
