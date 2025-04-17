@@ -120,9 +120,9 @@ export const CHAIN_LOGO: {
   1101: Polygon,
   43114: Avalanche,
   43113: Avalanche,
-  '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp': SolanaMonotone, // mainnet
-  '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z': SolanaMonotone, // testnet
-  'EtWTRABZaYq6iMfeYKouRu166VU2xqa1': SolanaMonotone, // devnet
+  '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp': Solana, // mainnet
+  '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z': Solana, // testnet
+  'EtWTRABZaYq6iMfeYKouRu166VU2xqa1': Solana, // devnet
 };
 
 export const WALLETS_LOGO = {
