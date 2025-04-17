@@ -1,7 +1,7 @@
 import { Box, DefaultChainMonotone, ExternalLinkIcon, InternalLink, PushMonotone, Text } from '../../../blocks';
 import { css } from 'styled-components';
 import { convertCaipToObject, formatWalletCategory, getFixedTime } from '../Wallet.utils';
-import { centerMaskWalletAddress, CHAIN_LOGO } from '../../../common';
+import { centerMaskWalletAddress, CHAIN_MONOTONE_LOGO } from '../../../common';
 import { TxResponse } from '@pushchain/devnet/src/lib/tx/tx.types';
 import { FC } from 'react';
 
@@ -18,7 +18,7 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
         if (chainId === 'devnet') {
             return <PushMonotone size={20} />;
         }
-        const IconComponent = CHAIN_LOGO?.[chainId];
+        const IconComponent = CHAIN_MONOTONE_LOGO?.[chainId];
         if (IconComponent) {
             return <IconComponent size={20} color="icon-tertiary" />;
         } else {

@@ -37,7 +37,9 @@ import {
   Ethereum,
   EthereumMonotone,
   IconProps,
+  Optimisim,
   OptimismMonotone,
+  Polygon,
   PolygonMonotone,
   PushMonotone,
   Solana,
@@ -78,7 +80,7 @@ export const walletCategories: WalletCategoriesType[] = [
   },
 ];
 
-export const CHAIN_LOGO: {
+export const CHAIN_MONOTONE_LOGO: {
   [x: number | string]: FC<IconProps>;
 } = {
   1: EthereumMonotone,
@@ -99,6 +101,28 @@ export const CHAIN_LOGO: {
   '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z': SolanaMonotone, // testnet
   'EtWTRABZaYq6iMfeYKouRu166VU2xqa1': SolanaMonotone, // devnet
   devnet: PushMonotone,
+};
+
+export const CHAIN_LOGO: {
+  [x: number | string]: FC<IconProps>;
+} = {
+  1: Ethereum,
+  11155111: Ethereum,
+  137: Polygon,
+  80002: Polygon,
+  97: BNB,
+  56: BNB,
+  42161: Arbitrum,
+  421614: Arbitrum,
+  11155420: Optimisim,
+  10: Optimisim,
+  2442: Polygon,
+  1101: Polygon,
+  43114: Avalanche,
+  43113: Avalanche,
+  '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp': SolanaMonotone, // mainnet
+  '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z': SolanaMonotone, // testnet
+  'EtWTRABZaYq6iMfeYKouRu166VU2xqa1': SolanaMonotone, // devnet
 };
 
 export const WALLETS_LOGO = {
