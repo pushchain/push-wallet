@@ -41,6 +41,18 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').trim();
+
+    if (/^\d{6}$/.test(pastedData)) {
+      const newOtp = pastedData.split('');
+      setOtp(newOtp);
+
+      inputRefs.current[5]?.focus();
+    }
+  };
+
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
@@ -123,6 +135,7 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
                   value={digit}
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
+                  onPaste={handlePaste}
                   ref={(el) => (inputRefs.current[index] = el)}
                   maxLength={1}
                 />
