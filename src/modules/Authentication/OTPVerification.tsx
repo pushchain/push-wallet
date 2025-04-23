@@ -85,7 +85,9 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
           );
           window.close();
         } else {
-          window.location.href = `${window.location.origin}${APP_ROUTES.WALLET}?state=${data.state}`;
+          const dAppURL = sessionStorage.getItem("App_Connections");
+          sessionStorage.removeItem("App_Connections");
+          window.location.href = `${window.location.origin}${APP_ROUTES.WALLET}?state=${data.state}&app=${dAppURL}`;
         }
       }
     } catch (err) {

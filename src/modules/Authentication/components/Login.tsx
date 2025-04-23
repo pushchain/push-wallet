@@ -35,11 +35,15 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
 
       if (values.email) {
         if (isOpenedInIframe) {
-          const backendURL = getOTPEmailAuthRoute(
+
+          const appURL = getAppParamValue();
+          sessionStorage.setItem('App_Connections', appURL);
+
+          window.location.href = getOTPEmailAuthRoute(
             values.email,
             APP_ROUTES.VERIFY_EMAIL_OTP
           );
-          window.open(backendURL, "Google OAuth", getAuthWindowConfig());
+
         } else {
           window.location.href = getOTPEmailAuthRoute(
             values.email,
