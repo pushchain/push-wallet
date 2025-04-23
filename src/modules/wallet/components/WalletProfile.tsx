@@ -1,13 +1,14 @@
 import { FC, useState } from "react";
 import BlockiesSvg from "blockies-react-svg";
 import {
+  BellRingFilled,
   Box,
   Copy,
   Dropdown,
   Logout,
   Menu,
   MenuItem,
-  PushLogo,
+  PushMonotone,
   Settings,
   Text,
   TickCircleFilled,
@@ -15,6 +16,8 @@ import {
 } from "../../../blocks";
 import {
   centerMaskWalletAddress,
+  CHAIN_LOGO,
+  CHAIN_MONOTONE_LOGO,
   getAppParamValue,
   handleCopy,
   usePersistedQuery,
@@ -37,7 +40,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
 
   const { disconnect } = useWallet();
 
-  const parsedWallet = selectedWallet?.address || state?.externalWallet?.address;
+  const parsedWallet = selectedWallet?.fullAddress || state?.externalWallet?.address;
   const walletName = selectedWallet?.name ?? "External Wallet";
   const [copied, setCopied] = useState(false);
 
@@ -65,6 +68,31 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
 
   const { result } = convertCaipToObject(parsedWallet);
 
+  function getChainIcon(chainId: string | null) {
+    if (!chainId) {
+      return <BellRingFilled color="icon-brand-medium" />
+    }
+    const IconComponent = CHAIN_LOGO[chainId];
+    if (IconComponent) {
+      return <IconComponent />;
+    } else {
+      return <BellRingFilled color="icon-brand-medium" />
+    }
+  }
+
+  function getMonotoneChainIcon(chainId: string | null) {
+    if (!chainId) {
+      return <PushMonotone />;
+    }
+    const IconComponent = CHAIN_MONOTONE_LOGO[chainId];
+    if (IconComponent) {
+      return <IconComponent />;
+    } else {
+      return <PushMonotone />;
+    }
+  }
+
+
   return (
     <Box
       display="flex"
@@ -74,10 +102,9 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
     >
       <Box
         display="flex"
-        justifyContent="space-between"
+        justifyContent="end"
         width="-webkit-fill-available"
       >
-        <PushLogo height={48} width={48} />
         <Box display="flex" gap="spacing-xxs">
           {/* <HoverableSVG icon={<Lock size={24} color="icon-primary" />} /> */}
           <Dropdown
@@ -106,15 +133,35 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
           </Dropdown>
         </Box>
       </Box>
+
       <Box
-        width="56px"
-        height="56px"
-        borderRadius="radius-xl"
-        overflow="hidden"
-        alignSelf="center"
+        position="relative"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
       >
-        <BlockiesSvg address={parsedWallet} />
+        <Box
+          width="56px"
+          height="56px"
+          borderRadius="radius-xl"
+          overflow="hidden"
+          alignSelf="center"
+        >
+          <BlockiesSvg address={parsedWallet} />
+        </Box>
+        <Box
+          position="absolute"
+          css={css`
+          bottom:-12px;
+          right:50%;
+          left:52%;
+          `}
+        >
+          {getChainIcon(result.chainId)}
+        </Box>
+
       </Box>
+
       <Box
         display="flex"
         flexDirection="column"
@@ -123,6 +170,8 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
       >
         <Text variant="bl-semibold">{walletName}</Text>
         <Box display="flex" gap="spacing-xxxs">
+          {getMonotoneChainIcon(result.chainId)}
+
           <Text variant="bes-semibold" color="text-tertiary">
             {centerMaskWalletAddress(result.address)}
           </Text>
