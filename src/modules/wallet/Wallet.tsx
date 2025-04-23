@@ -62,17 +62,21 @@ const Wallet: FC<WalletProps> = () => {
       const shares = secrets.share(mnemonicHex, 3, 2);
 
       // First create the passkeys for storing shard 3
-      await instance.storeMnemonicShareAsEncryptedTx(
-        userId,
-        shares[2],
-        instance.mnemonic
-      );
+      // await instance.storeMnemonicShareAsEncryptedTx(
+      //   userId,
+      //   shares[2],
+      //   instance.mnemonic
+      // );
 
-      // Send the shard to backend
-      await api.post(`/mnemonic-share/${userId}`, { share: shares[0] });
+      const share1 = await api.post(`/mnemonic-share`, { share: shares[0], type: 'TYPE1' }); //TODO: type1 and type2 in object in the body
+      console.log("Share 1 >>", share1);
 
       // Store shard in localstorage
       localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
+
+      // Send the shard to backend
+      const share2 = await api.post(`/mnemonic-share`, { share: shares[2], type: 'TYPE2' });
+      console.log("Share 2 >>>", share2);
 
       await instance.registerPushAccount();
 
@@ -122,8 +126,11 @@ const Wallet: FC<WalletProps> = () => {
         // Try share1 + share2 combination first
         try {
           const mnemonicShareResponse = await api.get(
-            `/mnemonic-share/${userId}`
-          );
+            `/mnemonic-share`, {
+            params: 'TYPE1',
+          });
+          console.log("mnemonicShareResponse", mnemonicShareResponse);
+
           share1 = mnemonicShareResponse.data.share;
           share2 = localStorage.getItem(`mnemonicShare2:${userId}`);
 
@@ -141,10 +148,17 @@ const Wallet: FC<WalletProps> = () => {
         // Try combinations with share3 if needed
         if (!share1 || !share2) {
           try {
-            share3 = await PushWallet.retrieveMnemonicShareFromTx(
-              import.meta.env.VITE_APP_ENV as ENV,
-              userId
-            );
+            // share3 = await PushWallet.retrieveMnemonicShareFromTx(
+            //   import.meta.env.VITE_APP_ENV as ENV,
+            //   userId
+            // );
+
+            share3 = await api.get(
+              `/mnemonic-share`, {
+              params: 'TYPE2',
+            });
+
+            console.log("Share 3 >>>", share3);
 
             if (share1 && share3) {
               await reconstructWallet(share1, share3);
