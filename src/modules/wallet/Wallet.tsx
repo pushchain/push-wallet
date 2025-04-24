@@ -68,15 +68,13 @@ const Wallet: FC<WalletProps> = () => {
       //   instance.mnemonic
       // );
 
-      const share1 = await api.post(`/mnemonic-share`, { share: shares[0], type: 'TYPE1' }); //TODO: type1 and type2 in object in the body
-      console.log("Share 1 >>", share1);
+      await api.post(`/mnemonic-share`, { share: shares[0], type: 'TYPE1' });
 
       // Store shard in localstorage
       localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
 
       // Send the shard to backend
-      const share2 = await api.post(`/mnemonic-share`, { share: shares[2], type: 'TYPE2' });
-      console.log("Share 2 >>>", share2);
+      await api.post(`/mnemonic-share`, { share: shares[2], type: 'TYPE2' });
 
       await instance.registerPushAccount();
 
