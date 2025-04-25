@@ -87,7 +87,14 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
         } else {
           const dAppURL = sessionStorage.getItem("App_Connections");
           sessionStorage.removeItem("App_Connections");
-          window.location.href = `${window.location.origin}${APP_ROUTES.WALLET}?state=${data.state}&app=${dAppURL}`;
+
+          // this one is to handle the iframe request in email flow.
+          if (dAppURL) {
+            window.location.href = `${window.location.origin}${APP_ROUTES.WALLET}?state=${data.state}&app=${dAppURL}`;
+          } else {
+            window.location.href = `${window.location.origin}${APP_ROUTES.WALLET}?state=${data.state}`;
+          }
+
         }
       }
     } catch (err) {
