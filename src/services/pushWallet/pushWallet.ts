@@ -121,7 +121,10 @@ export class PushWallet {
     )
 
     // 1. Registration Check - exit if wallet ( created by this mnemonic ) is not registered
-    const pushChain = await PushChain.initialize(universalSigner)
+    const pushChain = await PushChain.initialize(universalSigner, {
+      network: DevnetENV.DEVNET,
+      rpcUrl: import.meta.env.VITE_APP_RPC_URL,
+    })
 
     const universalAccount = {
       chain: CHAIN.PUSH,
