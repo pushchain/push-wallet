@@ -1,10 +1,12 @@
 import { FC } from "react";
 import BlockiesSvg from "blockies-react-svg";
 import { css } from "styled-components";
-import { Box, Button, Cross, HoverableSVG, PushLogo, Text } from "blocks";
+import { BellRingFilled, Box, Button, Cross, HoverableSVG, PushLogo, PushMonotone, Text } from "blocks";
 import { centerMaskWalletAddress } from "../Common.utils";
 import { WalletListType } from "../../modules/wallet/Wallet.types";
 import { PushWalletAppConnectionData } from "../Common.types";
+import { CHAIN_LOGO, CHAIN_MONOTONE_LOGO } from "../Common.constants";
+import { convertCaipToObject } from "../../modules/wallet/Wallet.utils";
 
 export type AppConnectionStatusDrawerProps = {
   selectedWallet: WalletListType;
@@ -22,6 +24,33 @@ const AppConnectionStatus: FC<AppConnectionStatusDrawerProps> = ({
   onRejectAll,
 }) => {
   const address = selectedWallet?.fullAddress;
+
+  const { result } = convertCaipToObject(address);
+
+  function getChainIcon(chainId: string | null) {
+    if (!chainId) {
+      return <BellRingFilled color="icon-brand-medium" size={20} />
+    }
+    const IconComponent = CHAIN_LOGO[chainId];
+    if (IconComponent) {
+      return <IconComponent width={20} height={20} />;
+    } else {
+      return <BellRingFilled color="icon-brand-medium" size={20} />
+    }
+  }
+
+  function getMonotoneChainIcon(chainId: string | null) {
+    if (!chainId) {
+      return <PushMonotone />;
+    }
+    const IconComponent = CHAIN_MONOTONE_LOGO[chainId];
+    if (IconComponent) {
+      return <IconComponent />;
+    } else {
+      return <PushMonotone />;
+    }
+  }
+
 
   return (
     <Box
@@ -90,19 +119,44 @@ const AppConnectionStatus: FC<AppConnectionStatusDrawerProps> = ({
       >
         <Box display="flex" gap="spacing-xs">
           <Box
-            width="40px"
-            height="40px"
-            borderRadius="radius-xl"
-            overflow="hidden"
-            alignSelf="center"
+            position="relative"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
           >
-            <BlockiesSvg address={"321ed12e"} />
+            <Box
+              width="40px"
+              height="40px"
+              borderRadius="radius-xl"
+              overflow="hidden"
+              alignSelf="center"
+            >
+              <BlockiesSvg address={address} />
+            </Box>
+            <Box
+              position="absolute"
+              width="20px"
+              height="20px"
+              css={css`
+          bottom:-5px;
+          left:60%;
+          `}
+            >
+              {getChainIcon(result.chainId)}
+            </Box>
+
           </Box>
           <Box display="flex" flexDirection="column">
             <Text variant="bm-semibold">Push Wallet</Text>
-            <Text variant="bes-semibold" color="text-tertiary">
-              {centerMaskWalletAddress(address)}
-            </Text>
+
+            <Box display="flex" gap="spacing-xxxs">
+              {getMonotoneChainIcon(result.chainId)}
+
+              <Text variant="bes-semibold" color="text-tertiary">
+                {centerMaskWalletAddress(result.address)}
+              </Text>
+            </Box>
+
           </Box>
         </Box>
         <Box display="flex" gap="spacing-xs">

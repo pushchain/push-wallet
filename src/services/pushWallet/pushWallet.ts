@@ -370,30 +370,15 @@ export class PushWallet {
       // Combine salt and encrypted data
       const combinedData = new Uint8Array([
         ...salt,
+        ...iv,
         ...new Uint8Array(encryptedData),
       ])
 
-      // Do a Custom transaction on pushChain
-      const recipients = []
-
-      // 1. Registration Check - exit if wallet ( created by this mnemonic ) is not registered
-      const pushChain = await PushChain.initialize(this.universalSigner, {
-        network: DevnetENV.DEVNET,
-        rpcUrl: import.meta.env.VITE_APP_RPC_URL,
-      })
-
       const hexData = bytesToHex(combinedData);
 
-      const tx = await pushChain.tx.send(recipients, {
-        category: 'CUSTOM:MNEMONIC_SHARE_REGISTRATION',
-        data: hexData,
-      })
+      // here is the new backend call
+      await api.post(`/mnemonic-share`, { share: hexData, type: 'TYPE2' });
 
-      console.log('::::::::::::::::Tx Response::::::::::', tx)
-      await api.put(`/auth/passkey/transaction/${userId}`, {
-        transactionHash: tx.txHash,
-        iv: PushWallet.bufferToBase64URL(iv),
-      })
     } catch (error) {
       console.error('Error in sendMenomicShare:', error)
       throw error
@@ -402,29 +387,11 @@ export class PushWallet {
 
   public static async retrieveMnemonicShareFromTx(
     env: ENV,
-    userId: string
+    userId: string,
+    share: string
   ): Promise<string> {
     try {
-      const txDataResponse = await api.get(
-        `/auth/passkey/transaction/${userId}`
-      )
-
-      if (!txDataResponse?.data?.transactionHash) {
-        throw new Error('No transaction hash found')
-      }
-      // 2. Retrieve encrypted data from blockchain
-      const pushChain = await PushChain.initialize(null, {
-        network: DevnetENV.DEVNET,
-        rpcUrl: import.meta.env.VITE_APP_RPC_URL,
-      });
-
-      const txSearchResult = await pushChain.tx.get(txDataResponse.data.transactionHash, { raw: true });
-
-      const txData = txSearchResult.blocks[0]?.transactions[0].data
-
-      if (!txData) {
-        throw new Error('Transaction data not found')
-      }
+      const txData = share;
 
       // 3. Decode encrypted data from base64
       const encryptedData = hexToBytes(`0x${txData}`);
@@ -453,8 +420,8 @@ export class PushWallet {
 
       // 6. Extract components from encrypted data
       const salt = encryptedData.slice(0, 16)
-      const iv = this.base64URLToBuffer(txDataResponse.data.iv)
-      const actualEncryptedData = encryptedData.slice(16, -16)
+      const iv = encryptedData.slice(16, 28)
+      const actualEncryptedData = encryptedData.slice(28, -16)  // Rest of the data minus auth tag
       const authTag = encryptedData.slice(-16)
       const dataWithTag = new Uint8Array([...actualEncryptedData, ...authTag])
 
@@ -467,7 +434,6 @@ export class PushWallet {
         false,
         ['deriveBits', 'deriveKey']
       )
-
       const decryptionKey = await subtle.deriveKey(
         {
           name: 'PBKDF2',
@@ -509,7 +475,6 @@ export class PushWallet {
         signature: this.bufferToBase64URL(
           (credential.response as AuthenticatorAssertionResponse).signature
         ),
-        transactionHash: txDataResponse.data.transactionHash,
       })
 
       return mnemonicShare

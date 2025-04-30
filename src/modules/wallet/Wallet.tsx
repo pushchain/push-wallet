@@ -62,19 +62,16 @@ const Wallet: FC<WalletProps> = () => {
       const shares = secrets.share(mnemonicHex, 3, 2);
 
       // First create the passkeys for storing shard 3
-      // await instance.storeMnemonicShareAsEncryptedTx(
-      //   userId,
-      //   shares[2],
-      //   instance.mnemonic
-      // );
+      await instance.storeMnemonicShareAsEncryptedTx(
+        userId,
+        shares[2],
+        instance.mnemonic
+      );
 
       await api.post(`/mnemonic-share`, { share: shares[0], type: 'TYPE1' });
 
       // Store shard in localstorage
       localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
-
-      // Send the shard to backend
-      await api.post(`/mnemonic-share`, { share: shares[2], type: 'TYPE2' });
 
       await instance.registerPushAccount();
 
@@ -119,29 +116,55 @@ const Wallet: FC<WalletProps> = () => {
       dispatch({ type: "SET_AUTHENTICATED", payload: true });
 
       if (!state.wallet) {
-        let share1, share3;
+        let share3, share1
 
         const share2 = localStorage.getItem(`mnemonicShare2:${userId}`);
 
         try {
           const mnemonicShareResponse = await api.get(
             `/mnemonic-share`);
-          share1 = mnemonicShareResponse.data[0].share;
+
+          const sharesArray = mnemonicShareResponse.data
+
+          if (!sharesArray.length) {
+            throw new Error('No shares Found')
+          }
+
+          share1 = sharesArray.find((share) => share.type === "TYPE1").share;
 
           if (share1 && share2) {
             await reconstructWallet(share1, share2);
             return;
           }
 
-          if (!share2) {
-            share3 = mnemonicShareResponse.data[1].share;
+          // Find share3 if only single share is present
+          if (!share1 || !share2) {
+            try {
+              share3 = sharesArray.find((share) => share.type === 'TYPE2').share;
 
-            if (share1 && share3) {
-              await reconstructWallet(share1, share3);
-              return;
+              share3 = await PushWallet.retrieveMnemonicShareFromTx(
+                import.meta.env.VITE_APP_ENV as ENV,
+                userId,
+                share3
+              );
+
+              if (share1 && share3) {
+                await reconstructWallet(share1, share3);
+                return;
+              }
+
+              if (share2 && share3) {
+                await reconstructWallet(share2, share3);
+                return;
+              }
+            } catch (error) {
+              console.debug("Share3 not available", {
+                userId,
+                error: (error as Error).message,
+              });
             }
-
           }
+
 
         } catch (error) {
           console.debug("Share1 not available", {
@@ -149,38 +172,6 @@ const Wallet: FC<WalletProps> = () => {
             error: (error as Error).message,
           });
         }
-
-        // Try combinations with share3 if needed (only when passkeys implementation is done)
-        // if (!share1 || !share2) {
-        //   try {
-        //     // share3 = await PushWallet.retrieveMnemonicShareFromTx(
-        //     //   import.meta.env.VITE_APP_ENV as ENV,
-        //     //   userId
-        //     // );
-
-        //     share3 = await api.get(
-        //       `/mnemonic-share`, {
-        //       params: 'TYPE2',
-        //     });
-
-        //     console.log("Share 3 >>>", share3);
-
-        //     if (share1 && share3) {
-        //       await reconstructWallet(share1, share3);
-        //       return;
-        //     }
-
-        //     if (share2 && share3) {
-        //       await reconstructWallet(share2, share3);
-        //       return;
-        //     }
-        //   } catch (error) {
-        //     console.debug("Share3 not available", {
-        //       userId,
-        //       error: (error as Error).message,
-        //     });
-        //   }
-        // }
 
         // Only single or no share is found directly ask user if they want to create a new wallet or go back
         const hasAnyShare = share1 || share2 || share3;
@@ -203,6 +194,8 @@ const Wallet: FC<WalletProps> = () => {
       setCreateAccountLoading(false);
     }
   };
+
+
 
   useEffect(() => {
     const initializeProfile = async () => {
