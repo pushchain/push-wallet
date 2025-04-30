@@ -23,7 +23,7 @@ const AppConnectionStatus: FC<AppConnectionStatusDrawerProps> = ({
   onReject,
   onRejectAll,
 }) => {
-  const address = selectedWallet?.fullAddress;
+  const address = selectedWallet?.address;
 
   const { result } = convertCaipToObject(address);
 

@@ -40,7 +40,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
 
   const { disconnect } = useWallet();
 
-  const parsedWallet = selectedWallet?.fullAddress || state?.externalWallet?.address;
+  const parsedWallet = selectedWallet?.address || state?.externalWallet?.address;
   const walletName = selectedWallet?.name ?? "External Wallet";
   const [copied, setCopied] = useState(false);
 
@@ -70,7 +70,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
 
   function getChainIcon(chainId: string | null) {
     if (!chainId) {
-      return <BellRingFilled color="icon-brand-medium" />
+      return <BellRingFilled color="icon-brand-medium" size={36} />
     }
     const IconComponent = CHAIN_LOGO[chainId];
     if (IconComponent) {
