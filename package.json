@@ -46,6 +46,7 @@
     "@tanstack/react-query": "^5.44.0",
     "@tanstack/react-query-devtools": "^5.44.0",
     "@types/styled-components": "^5.1.34",
+    "@walletconnect/ethereum-provider": "^2.20.2",
     "axios": "^1.7.7",
     "blockies-react-svg": "^0.0.13",
     "dotenv": "^16.4.5",
