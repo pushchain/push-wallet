@@ -13,7 +13,7 @@ import {
 } from "../common";
 import { APP_ROUTES } from "../constants";
 import { useWallet } from "./WalletContext";
-import { WalletInfo } from "../types/wallet.types";
+import { WalletConfig, WalletInfo } from "../types/wallet.types";
 
 // Define the shape of the global state
 export type GlobalState = {
@@ -24,6 +24,7 @@ export type GlobalState = {
   user: any;
   isAuthenticated: boolean;
   jwt: string | null;
+  walletConfig: WalletConfig | null;
   walletLoadState: "idle" | "success" | "loading" | "rejected";
   messageSignState: "idle" | "loading" | "rejected";
   externalWalletAppConnectionStatus: "pending" | "connected";
@@ -46,6 +47,7 @@ export type GlobalAction =
   | { type: "SET_USER"; payload: any }
   | { type: "SET_AUTHENTICATED"; payload: boolean }
   | { type: "SET_JWT"; payload: string }
+  | { type: "WALLET_CONFIG"; payload: WalletConfig }
   | { type: "SET_WALLET_LOAD_STATE"; payload: GlobalState["walletLoadState"] }
   | { type: "SET_MESSAGE_SIGN_STATE"; payload: GlobalState["messageSignState"] }
   | {
@@ -62,6 +64,7 @@ const initialState: GlobalState = {
   user: null,
   isAuthenticated: false,
   jwt: null,
+  walletConfig: null,
   walletLoadState: "idle",
   messageSignState: "idle",
   externalWalletAppConnectionStatus: "pending",
@@ -105,6 +108,8 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
       return { ...state, isAuthenticated: action.payload };
     case "SET_JWT":
       return { ...state, jwt: action.payload };
+    case "WALLET_CONFIG":
+      return { ...state, walletConfig: action.payload };
     case "SET_WALLET_LOAD_STATE":
       return { ...state, walletLoadState: action.payload };
     case "SET_MESSAGE_SIGN_STATE":

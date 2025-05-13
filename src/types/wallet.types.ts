@@ -29,3 +29,29 @@ export type WalletCategoriesType = {
   label: string;
   icon: ReactNode;
 };
+
+export const CONSTANTS = {
+  CHAIN: { EVM: 'evm', SOLANA: 'solana' },
+  THEME: { LIGHT: 'light', DARK: 'dark' },
+}
+
+export type LoginMethodConfig = {
+  email?: boolean;
+  google?: boolean;
+  wallet?: {
+    enabled?: boolean;
+    chains?: (typeof CONSTANTS.CHAIN)[keyof typeof CONSTANTS.CHAIN][];
+  };
+  appPreview?: boolean;
+}
+
+export type AppMetadata = {
+  name: string;
+  logoUrl?: string;
+  description?: string;
+}
+
+export interface WalletConfig {
+  loginDefaults: LoginMethodConfig,
+  appMetadata: AppMetadata,
+}

@@ -18,10 +18,11 @@ import {
   rejectPushWalletConnectionRequest,
   usePersistedQuery,
   WALLET_TO_APP_ACTION,
+  useDarkMode,
 } from "../common";
 import { requestToConnectPushWallet } from "../common";
 import { APP_ROUTES } from "../constants";
-import { ChainType, IWalletProvider, WalletInfo } from "../types/wallet.types";
+import { AppMetadata, ChainType, CONSTANTS, IWalletProvider, LoginMethodConfig, WalletConfig, WalletInfo } from "../types/wallet.types";
 import { PushChain } from "@pushchain/devnet";
 
 // Define the shape of the app state
@@ -58,6 +59,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { dispatch, state } = useGlobalState();
+  const { isDarkMode, enable, disable } = useDarkMode();
 
   const [isLoggedEmitterCalled, setLoginEmitterStatus] = useState(false);
 
@@ -89,6 +91,10 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
           case APP_TO_WALLET_ACTION.NEW_CONNECTION_REQUEST:
             handleNewConnectionRequest(event.origin);
             break;
+          case APP_TO_WALLET_ACTION.WALLET_CONFIG:
+            console.log("Wallet COnfig >>>", event.data)
+            handleWalletConfigs(event.data.data);
+            break;
           case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
             handleSignAndSendMessage(event.data.data, event.origin);
             break;
@@ -102,7 +108,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
             handleAuthStateParam(event.data.state);
             break;
           default:
-            console.warn("Unknown message type:", event.data.type);
+            console.warn("Unknown message type:", event.data);
         }
       }
     };
@@ -252,6 +258,22 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       },
     });
   };
+
+  const handleWalletConfigs = (data: {
+    loginDefaults: LoginMethodConfig,
+    themeMode: typeof CONSTANTS.THEME.LIGHT | typeof CONSTANTS.THEME.DARK,
+    appMetadata: AppMetadata,
+  }) => {
+
+    data.themeMode === CONSTANTS.THEME.DARK ? enable() : disable();
+
+    const walletConfig: WalletConfig = {
+      loginDefaults: data.loginDefaults,
+      appMetadata: data.appMetadata
+    }
+
+    dispatch({ type: "WALLET_CONFIG", payload: walletConfig });
+  }
 
   const handleRetryAppConnection = () => {
     sendMessageToMainTab({

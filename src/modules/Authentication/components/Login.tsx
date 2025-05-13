@@ -11,18 +11,20 @@ import {
   getOTPEmailAuthRoute,
   getPushSocialAuthRoute,
 } from "../Authentication.utils";
+import { WalletConfig } from "src/types/wallet.types";
 
 export type LoginProps = {
   email: string;
   setEmail: React.Dispatch<React.SetStateAction<string>>;
   setConnectMethod: React.Dispatch<React.SetStateAction<WalletState>>;
+  walletConfig: WalletConfig
 };
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email address").required("Required"),
 });
 
-const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
+const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig }) => {
   const persistQuery = usePersistedQuery();
 
   const isOpenedInIframe = !!getAppParamValue();
@@ -70,6 +72,10 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
     }
   };
 
+  const showEmailLogin = walletConfig?.loginDefaults.email
+  const showGoogleLogin = walletConfig?.loginDefaults.google
+  const showWalletLogin = walletConfig?.loginDefaults.wallet.enabled
+
   return (
     <Box
       alignItems="center"
@@ -99,39 +105,44 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
           width="100%"
           alignItems="center"
         >
-          <Box width="100%">
-            <form onSubmit={formik.handleSubmit}>
-              <TextInput
-                value={formik.values.email}
-                onChange={formik.handleChange("email")}
-                placeholder="Enter your email"
-                error={formik.touched?.email && Boolean(formik.errors?.email)}
-                errorMessage={formik.touched?.email ? formik.errors?.email : ""}
-                trailingIcon={
-                  <Front
-                    size={24}
-                    onClick={() => {
-                      formik.handleSubmit();
-                      setConnectMethod("social");
-                    }}
-                  />
-                }
-              />
-            </form>
-          </Box>
+          {showEmailLogin && (
+            <Box width="100%">
+              <form onSubmit={formik.handleSubmit}>
+                <TextInput
+                  value={formik.values.email}
+                  onChange={formik.handleChange("email")}
+                  placeholder="Enter your email"
+                  error={formik.touched?.email && Boolean(formik.errors?.email)}
+                  errorMessage={formik.touched?.email ? formik.errors?.email : ""}
+                  trailingIcon={
+                    <Front
+                      size={24}
+                      onClick={() => {
+                        formik.handleSubmit();
+                        setConnectMethod("social");
+                      }}
+                    />
+                  }
+                />
+              </form>
+            </Box>
+          )}
 
-          <Text variant="os-regular" color="text-tertiary">
+          {showGoogleLogin && <Text variant="os-regular" color="text-tertiary">
             OR
-          </Text>
-          <Button
-            variant="outline"
-            block
-            leadingIcon={<Google width={24} height={24} />}
-            onClick={() => handleSocialLogin("google")}
-          >
-            Continue with Google
-          </Button>
-          {/* <Box
+          </Text>}
+
+          {showGoogleLogin && (
+            <>
+              <Button
+                variant="outline"
+                block
+                leadingIcon={<Google width={24} height={24} />}
+                onClick={() => handleSocialLogin("google")}
+              >
+                Continue with Google
+              </Button>
+              {/* <Box
             display="flex"
             gap="spacing-xs"
             alignItems="center"
@@ -158,16 +169,21 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod }) => {
               />
             ))}
           </Box> */}
-          <Text variant="os-regular" color="text-tertiary">
+            </>
+
+          )}
+
+          {showWalletLogin && <Text variant="os-regular" color="text-tertiary">
             OR
-          </Text>
-          <Button
+          </Text>}
+
+          {showWalletLogin && <Button
             variant="outline"
             block
             onClick={() => setConnectMethod("connectWallet")}
           >
             Continue with a Wallet
-          </Button>
+          </Button>}
         </Box>
         {/* TODO: after functional implementation */}
         {/* <Text variant="bes-semibold" color="text-brand-medium">
