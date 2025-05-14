@@ -12,6 +12,7 @@ import {
   getPushSocialAuthRoute,
 } from "../Authentication.utils";
 import { WalletConfig } from "src/types/wallet.types";
+import styled from "styled-components";
 
 export type LoginProps = {
   email: string;
@@ -72,9 +73,9 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
     }
   };
 
-  const showEmailLogin = walletConfig?.loginDefaults.email
-  const showGoogleLogin = walletConfig?.loginDefaults.google
-  const showWalletLogin = walletConfig?.loginDefaults.wallet.enabled
+  const showEmailLogin = isOpenedInIframe ? walletConfig?.loginDefaults.email : true
+  const showGoogleLogin = isOpenedInIframe ? walletConfig?.loginDefaults.google : true
+  const showWalletLogin = isOpenedInIframe ? walletConfig?.loginDefaults.wallet.enabled : true
 
   return (
     <Box
@@ -83,7 +84,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
       display="flex"
       justifyContent="space-between"
       width="100%"
-      gap="spacing-xl"
+      gap="spacing-md"
       margin="spacing-md spacing-none spacing-none spacing-none"
     >
       <Text variant="h3-semibold" color="text-primary">
@@ -91,6 +92,28 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
         Welcome to
         <br /> Push Wallet
       </Text>
+      <Box
+        display='flex'
+        gap='spacing-xs'
+        alignItems='center'
+        flexDirection='column'
+      >
+        {walletConfig?.appMetadata?.logoUrl && <Box
+          width="64px"
+          height="64px"
+        >
+          <Image
+            src={walletConfig.appMetadata.logoUrl}
+          />
+        </Box>}
+        <Text
+          variant="h4-semibold"
+          color="text-primary"
+          textAlign="center"
+        >
+          {walletConfig?.appMetadata?.name}
+        </Text>
+      </Box>
       <Box
         flexDirection="column"
         display="flex"
@@ -106,31 +129,33 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
           alignItems="center"
         >
           {showEmailLogin && (
-            <Box width="100%">
-              <form onSubmit={formik.handleSubmit}>
-                <TextInput
-                  value={formik.values.email}
-                  onChange={formik.handleChange("email")}
-                  placeholder="Enter your email"
-                  error={formik.touched?.email && Boolean(formik.errors?.email)}
-                  errorMessage={formik.touched?.email ? formik.errors?.email : ""}
-                  trailingIcon={
-                    <Front
-                      size={24}
-                      onClick={() => {
-                        formik.handleSubmit();
-                        setConnectMethod("social");
-                      }}
-                    />
-                  }
-                />
-              </form>
-            </Box>
-          )}
+            <>
+              <Box width="100%">
+                <form onSubmit={formik.handleSubmit}>
+                  <TextInput
+                    value={formik.values.email}
+                    onChange={formik.handleChange("email")}
+                    placeholder="Enter your email"
+                    error={formik.touched?.email && Boolean(formik.errors?.email)}
+                    errorMessage={formik.touched?.email ? formik.errors?.email : ""}
+                    trailingIcon={
+                      <Front
+                        size={24}
+                        onClick={() => {
+                          formik.handleSubmit();
+                          setConnectMethod("social");
+                        }}
+                      />
+                    }
+                  />
+                </form>
+              </Box>
 
-          {showGoogleLogin && <Text variant="os-regular" color="text-tertiary">
-            OR
-          </Text>}
+              <Text variant="os-regular" color="text-tertiary">
+                OR
+              </Text>
+            </>
+          )}
 
           {showGoogleLogin && (
             <>
@@ -169,13 +194,13 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
               />
             ))}
           </Box> */}
+              <Text variant="os-regular" color="text-tertiary">
+                OR
+              </Text>
+
             </>
 
           )}
-
-          {showWalletLogin && <Text variant="os-regular" color="text-tertiary">
-            OR
-          </Text>}
 
           {showWalletLogin && <Button
             variant="outline"
@@ -196,3 +221,10 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
 };
 
 export { Login };
+
+const Image = styled.img`
+  width:inherit;
+  height:inherit;
+  border-radius: 16px;
+  border: 1px solid var(--stroke-secondary, #313338);
+`

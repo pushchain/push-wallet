@@ -33,13 +33,14 @@ export type WalletCategoriesType = {
 export const CONSTANTS = {
   CHAIN: { EVM: 'evm', SOLANA: 'solana' },
   THEME: { LIGHT: 'light', DARK: 'dark' },
+  LOGIN: { SPLIT: 'split', SIMPLE: 'simple' }
 }
 
 export type LoginMethodConfig = {
-  email?: boolean;
-  google?: boolean;
-  wallet?: {
-    enabled?: boolean;
+  email: boolean;
+  google: boolean;
+  wallet: {
+    enabled: boolean;
     chains?: (typeof CONSTANTS.CHAIN)[keyof typeof CONSTANTS.CHAIN][];
   };
   appPreview?: boolean;
@@ -51,7 +52,16 @@ export type AppMetadata = {
   description?: string;
 }
 
+export type ModalDefaultsProps = {
+  loginLayout: typeof CONSTANTS.LOGIN.SPLIT | typeof CONSTANTS.LOGIN.SIMPLE;
+  showModalAppPreview: boolean;
+  bgImage?: string;
+  bgColor: string;
+  textColor: string;
+}
+
 export interface WalletConfig {
   loginDefaults: LoginMethodConfig,
   appMetadata: AppMetadata,
+  modalDefaults: ModalDefaultsProps
 }
