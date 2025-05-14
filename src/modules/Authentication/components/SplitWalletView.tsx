@@ -72,7 +72,9 @@ const SplitWalletView: FC<SplitWalletViewProps> = ({
                     </Box>
 
                 </Box>
-                <BoxLayout>
+                <BoxLayout
+                    previewPaneVisible={true}
+                >
                     <Box
                         alignItems="center"
                         flexDirection="column"
