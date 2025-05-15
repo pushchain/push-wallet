@@ -6,17 +6,16 @@ import { useDarkMode } from "../hooks";
 
 type BoxLayoutProps = {
   children: ReactNode;
-  previewPaneVisible?: boolean
 };
 
-const BoxLayout: FC<BoxLayoutProps> = ({ children, previewPaneVisible = false }) => {
+const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
   const { isDarkMode } = useDarkMode();
   return (
     <Box
       alignItems="center"
       display="flex"
       flexDirection="column"
-      borderRadius={previewPaneVisible ? "radius-none radius-md radius-md radius-none" : "radius-md"}
+      borderRadius="radius-md"
       justifyContent="center"
       position="relative"
       width={{ initial: "auto", ml: "90%" }}

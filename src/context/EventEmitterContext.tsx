@@ -22,7 +22,7 @@ import {
 } from "../common";
 import { requestToConnectPushWallet } from "../common";
 import { APP_ROUTES } from "../constants";
-import { AppMetadata, ChainType, CONSTANTS, IWalletProvider, LoginMethodConfig, ModalDefaultsProps, WalletConfig, WalletInfo } from "../types/wallet.types";
+import { AppMetadata, ChainType, CONSTANTS, IWalletProvider, LoginMethodConfig, WalletConfig, WalletInfo } from "../types/wallet.types";
 import { PushChain } from "@pushchain/devnet";
 
 // Define the shape of the app state
@@ -263,7 +263,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     loginDefaults: LoginMethodConfig,
     themeMode: typeof CONSTANTS.THEME.LIGHT | typeof CONSTANTS.THEME.DARK,
     appMetadata: AppMetadata,
-    modalDefaults: ModalDefaultsProps
+
   }) => {
 
     data.themeMode === CONSTANTS.THEME.DARK ? enable() : disable();
@@ -271,7 +271,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     const walletConfig: WalletConfig = {
       loginDefaults: data.loginDefaults,
       appMetadata: data.appMetadata,
-      modalDefaults: data.modalDefaults
     }
 
     dispatch({ type: "WALLET_CONFIG", payload: walletConfig });

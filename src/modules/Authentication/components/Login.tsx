@@ -13,6 +13,7 @@ import {
 } from "../Authentication.utils";
 import { WalletConfig } from "src/types/wallet.types";
 import styled from "styled-components";
+import { trimText } from "../../../helpers/AuthHelper";
 
 export type LoginProps = {
   email: string;
@@ -77,6 +78,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
   const showGoogleLogin = isOpenedInIframe ? walletConfig?.loginDefaults.google : true
   const showWalletLogin = isOpenedInIframe ? walletConfig?.loginDefaults.wallet.enabled : true
 
+
   return (
     <Box
       alignItems="center"
@@ -84,36 +86,53 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
       display="flex"
       justifyContent="space-between"
       width="100%"
-      gap="spacing-md"
+      gap={walletConfig?.appMetadata ? "spacing-md" : "spacing-xl"}
       margin="spacing-md spacing-none spacing-none spacing-none"
     >
       <Text variant="h3-semibold" color="text-primary">
         {" "}
-        Welcome to
-        <br /> Push Wallet
+        Log in or Sign up
       </Text>
-      <Box
-        display='flex'
-        gap='spacing-xs'
-        alignItems='center'
-        flexDirection='column'
-      >
-        {walletConfig?.appMetadata?.logoUrl && <Box
-          width="64px"
-          height="64px"
+      {walletConfig?.appMetadata && (
+        <Box
+          display='flex'
+          gap='spacing-xs'
+          alignItems='center'
+          flexDirection='column'
         >
-          <Image
-            src={walletConfig.appMetadata.logoUrl}
-          />
-        </Box>}
-        <Text
-          variant="h4-semibold"
-          color="text-primary"
-          textAlign="center"
-        >
-          {walletConfig?.appMetadata?.name}
-        </Text>
-      </Box>
+          {walletConfig?.appMetadata?.logoUrl && <Box
+            width="64px"
+            height="64px"
+          >
+            <Image
+              src={walletConfig.appMetadata.logoUrl}
+            />
+          </Box>}
+          <Box
+            display='flex'
+            flexDirection='column'
+            gap='spacing-xxs'
+            alignSelf='stretch'
+            alignItems='center'
+          >
+            <Text
+              variant="h4-semibold"
+              color="text-primary"
+            >
+              {walletConfig.appMetadata.name}
+            </Text>
+            <Text
+              variant="bm-regular"
+              color="text-secondary"
+              textAlign="center"
+            >
+              {trimText(walletConfig.appMetadata.description, 15)}
+            </Text>
+          </Box>
+
+        </Box>
+      )}
+
       <Box
         flexDirection="column"
         display="flex"
@@ -150,12 +169,12 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
                   />
                 </form>
               </Box>
-
-              <Text variant="os-regular" color="text-tertiary">
-                OR
-              </Text>
             </>
           )}
+
+          {showEmailLogin && showGoogleLogin && (<Text variant="os-regular" color="text-tertiary">
+            OR
+          </Text>)}
 
           {showGoogleLogin && (
             <>
@@ -194,13 +213,14 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
               />
             ))}
           </Box> */}
-              <Text variant="os-regular" color="text-tertiary">
-                OR
-              </Text>
 
             </>
 
           )}
+
+          {((showGoogleLogin && showWalletLogin) || (showEmailLogin && showWalletLogin)) && (<Text variant="os-regular" color="text-tertiary">
+            OR
+          </Text>)}
 
           {showWalletLogin && <Button
             variant="outline"
