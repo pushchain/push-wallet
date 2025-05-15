@@ -92,7 +92,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
         {" "}
         Log in or Sign up
       </Text>
-      {walletConfig?.appMetadata && (
+      {walletConfig?.loginDefaults?.appPreview && walletConfig?.appMetadata && (
         <Box
           display='flex'
           gap='spacing-xs'
