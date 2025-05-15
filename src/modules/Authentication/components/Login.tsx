@@ -78,7 +78,6 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
   const showGoogleLogin = isOpenedInIframe ? walletConfig?.loginDefaults.google : true
   const showWalletLogin = isOpenedInIframe ? walletConfig?.loginDefaults.wallet.enabled : true
 
-
   return (
     <Box
       alignItems="center"
@@ -100,12 +99,12 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
           alignItems='center'
           flexDirection='column'
         >
-          {walletConfig?.appMetadata?.logoUrl && <Box
+          {walletConfig?.appMetadata?.logoURL && <Box
             width="64px"
             height="64px"
           >
             <Image
-              src={walletConfig.appMetadata.logoUrl}
+              src={walletConfig.appMetadata.logoURL}
             />
           </Box>}
           <Box
@@ -119,7 +118,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
               variant="h4-semibold"
               color="text-primary"
             >
-              {walletConfig.appMetadata.name}
+              {walletConfig.appMetadata.title}
             </Text>
             <Text
               variant="bm-regular"

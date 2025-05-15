@@ -46,8 +46,8 @@ export type LoginMethodConfig = {
 }
 
 export type AppMetadata = {
-  name: string;
-  logoUrl?: string;
+  title: string;
+  logoURL?: string;
   description?: string;
 }
 
