@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, useMemo } from "react";
 import { Back, Box, CaretRight, Info, Text } from "blocks";
 import {
   DrawerWrapper,
@@ -18,9 +18,16 @@ type WalletSelectionProps = {
 };
 
 const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
-  const { dispatch, state: { externalWalletAuthState } } = useGlobalState();
+  const { dispatch, state: { externalWalletAuthState, walletConfig } } = useGlobalState();
 
   const [selectedWalletCategory, setSelectedWalletCategory] = useState<WalletCategoriesType | null>(null)
+
+  const filteredWalletCategories = useMemo(() => {
+    if (!walletConfig?.loginDefaults?.wallet?.chains?.length) return walletCategories;
+    return walletCategories.filter(category =>
+      walletConfig.loginDefaults.wallet.chains.includes(category.wallet)
+    );
+  }, [walletConfig?.loginDefaults?.wallet?.chains]);
 
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory(null);
@@ -53,7 +60,7 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
           >
             {!selectedWalletCategory ? (
               <Box display="flex" flexDirection="column" gap="spacing-xxs">
-                {walletCategories?.map((walletCategory) => (
+                {filteredWalletCategories?.map((walletCategory) => (
                   <Box
                     cursor="pointer"
                     css={css`
