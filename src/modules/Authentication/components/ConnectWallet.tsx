@@ -1,10 +1,11 @@
 import React, { FC, useState } from "react";
-import { Back, Box, CaretRight, Info, Text } from "blocks";
+import { Back, Box, CaretRight, deviceSizes, Info, Text } from "blocks";
 import {
   DrawerWrapper,
   ErrorContent,
   LoadingContent,
   PoweredByPush,
+  useDeviceWidthCheck,
   walletCategories,
 } from "common";
 import { WalletState } from "../Authentication.types";
@@ -19,13 +20,17 @@ type WalletSelectionProps = {
 
 const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const { dispatch, state: { externalWalletAuthState } } = useGlobalState();
-
+  const isMobile = useDeviceWidthCheck(parseInt(deviceSizes.tablet));
   const [selectedWalletCategory, setSelectedWalletCategory] = useState<WalletCategoriesType | null>(null)
 
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory(null);
     else setConnectMethod("authentication");
   };
+
+  const filteredWalletCategories = walletCategories.filter(
+    (wallet) => wallet.isMobile === isMobile
+  );
 
   return (
     <Box flexDirection="column" display="flex" gap="spacing-lg" width="100%">
@@ -53,7 +58,7 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
           >
             {!selectedWalletCategory ? (
               <Box display="flex" flexDirection="column" gap="spacing-xxs">
-                {walletCategories?.map((walletCategory) => (
+                {filteredWalletCategories?.map((walletCategory) => (
                   <Box
                     cursor="pointer"
                     css={css`
