@@ -15,22 +15,31 @@ export class MetamaskProvider extends BaseWalletProvider {
       ChainType.AVALANCHE,
       ChainType.BINANCE
     ]);
-    this.sdk = new MetaMaskSDK();
+    this.sdk = new MetaMaskSDK({
+      dappMetadata: {
+        name: "My Dapp",
+        url: window.location.href,
+      },
+      logging: {
+        sdk: false,
+      },
+      useDeeplink: true,
+      injectProvider: true,
+    });
   }
 
   isInstalled = async (): Promise<boolean> => {
     const provider = this.sdk.getProvider();
-    return !!provider;
+    if (window.ethereum && window.ethereum.isMetaMask) return true;
+
+    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+    if (isMobile && provider?.isMetaMask) return true;
+
+    return false;
   };
 
   async connect(chainType: ChainType): Promise<{ caipAddress: string }> {
     try {
-      // const accounts = await this.sdk.connect();
-
-      // await this.switchNetwork(chainType)
-
-      // return accounts[0];
-
       const accounts = await this.sdk.connect();
       const rawAddress = accounts[0];
       const checksumAddress = getAddress(rawAddress);

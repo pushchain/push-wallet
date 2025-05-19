@@ -1,10 +1,11 @@
 import React, { FC, useState, useMemo } from "react";
-import { Back, Box, CaretRight, Info, Text } from "blocks";
+import { Back, Box, CaretRight, deviceSizes, Info, Text } from "blocks";
 import {
   DrawerWrapper,
   ErrorContent,
   LoadingContent,
   PoweredByPush,
+  useDeviceWidthCheck,
   walletCategories,
 } from "common";
 import { WalletState } from "../Authentication.types";
@@ -19,15 +20,24 @@ type WalletSelectionProps = {
 
 const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const { dispatch, state: { externalWalletAuthState, walletConfig } } = useGlobalState();
-
+  const isMobile = useDeviceWidthCheck(parseInt(deviceSizes.tablet));
   const [selectedWalletCategory, setSelectedWalletCategory] = useState<WalletCategoriesType | null>(null)
 
   const filteredWalletCategories = useMemo(() => {
-    if (!walletConfig?.loginDefaults?.wallet?.chains?.length) return walletCategories;
-    return walletCategories.filter(category =>
-      walletConfig.loginDefaults.wallet.chains.includes(category.wallet)
-    );
-  }, [walletConfig?.loginDefaults?.wallet?.chains]);
+    let filtered = walletCategories;
+
+    // Filter by device type (mobile/desktop)
+    filtered = filtered.filter((wallet) => wallet.isMobile === isMobile);
+
+    // Filter by configured chains
+    if (walletConfig?.loginDefaults?.wallet?.chains?.length) {
+      filtered = filtered.filter(category =>
+        walletConfig.loginDefaults.wallet.chains.includes(category.wallet)
+      );
+    }
+
+    return filtered;
+  }, [walletConfig?.loginDefaults?.wallet?.chains, isMobile]);
 
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory(null);
