@@ -2,12 +2,14 @@ import { FC, ReactNode } from "react";
 import { Box } from "../../blocks";
 import React from "react";
 import { css } from "styled-components";
+import { useDarkMode } from "../hooks";
 
 type BoxLayoutProps = {
   children: ReactNode;
 };
 
 const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
+  const { isDarkMode } = useDarkMode();
   return (
     <Box
       alignItems="center"
@@ -32,12 +34,12 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
           z-index: 0;
           background: linear-gradient(
             160deg,
-            rgb(49, 51, 56) 0px,
-            rgb(49, 51, 56) 25%,
-            rgb(213, 72, 236),
-            rgb(0, 86, 208),
-            rgb(49, 51, 56) 55%,
-            rgb(49, 51, 56) 100%
+            ${isDarkMode ? 'rgb(49, 51, 56)' : 'rgb(240, 240, 240)'} 0px,
+            ${isDarkMode ? 'rgb(49, 51, 56)' : 'rgb(240, 240, 240)'} 25%,
+            ${isDarkMode ? 'rgba(213, 72, 236, 0.8)' : 'rgba(243, 174, 255, 1)'},
+            ${isDarkMode ? 'rgba(0, 86, 208, 0.8)' : 'rgba(162, 201, 255, 1)'},
+            ${isDarkMode ? 'rgb(49, 51, 56)' : 'rgb(240, 240, 240)'} 55%,
+            ${isDarkMode ? 'rgb(49, 51, 56)' : 'rgb(240, 240, 240)'} 100%
           );
           animation: anim_rotate 14s linear infinite;
           border-radius: inherit;
@@ -47,7 +49,7 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
           content: "";
           position: absolute;
           inset: 1.5px;
-          background: rgb(49, 51, 56);
+          background: ${isDarkMode ? 'rgb(49, 51, 56)' : 'rgb(255, 255, 255)'};
           border-radius: inherit;
           z-index: 1;
         }

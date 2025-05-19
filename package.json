@@ -11,8 +11,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "predeploy": "npm run build",
-    "deploy:alpha": "VITE_DEV_MODE=alpha VITE_APP_BACKEND_URL=https://push-auth.push.org VITE_APP_DYNAMIC_ENV_ID=82e8732d-11b8-428d-a553-7087d0c44171 VITE_APP_RPC_URL=https://sepolia.infura.io/v3/cb15f62fce624067ae11531dd4c6b0c8 yarn build && echo 'wallet-alpha.push.org' > ./build/CNAME && gh-pages -d build -r https://github.com/push-protocol/push-wallet-alpha-deployment",
-    "deploy:prod": "VITE_DEV_MODE=prod VITE_APP_BACKEND_URL=https://auth.push.org VITE_APP_DYNAMIC_ENV_ID=96b13b8c-0708-4ebb-b48d-472308690021 VITE_APP_RPC_URL=https://sepolia.infura.io/v3/cb15f62fce624067ae11531dd4c6b0c8 yarn build && echo 'wallet.push.org' > ./build/CNAME && gh-pages -d build -r https://github.com/push-protocol/push-wallet-prod-deployment"
+    "deploy:alpha": "VITE_DEV_MODE=alpha VITE_APP_BACKEND_URL=https://push-auth.push.org VITE_APP_DYNAMIC_ENV_ID=82e8732d-11b8-428d-a553-7087d0c44171 VITE_APP_RPC_URL=https://sepolia.infura.io/v3/cb15f62fce624067ae11531dd4c6b0c8 VITE_APP_REOWN_PROJECT_ID=575a3e339ad56f54669c32264c133172 yarn build && echo 'wallet-alpha.push.org' > ./build/CNAME && gh-pages -d build -r https://github.com/push-protocol/push-wallet-alpha-deployment",
+    "deploy:prod": "VITE_DEV_MODE=prod VITE_APP_BACKEND_URL=https://auth.push.org VITE_APP_DYNAMIC_ENV_ID=96b13b8c-0708-4ebb-b48d-472308690021 VITE_APP_RPC_URL=https://sepolia.infura.io/v3/cb15f62fce624067ae11531dd4c6b0c8 VITE_APP_REOWN_PROJECT_ID=575a3e339ad56f54669c32264c133172 yarn build && echo 'wallet.push.org' > ./build/CNAME && gh-pages -d build -r https://github.com/push-protocol/push-wallet-prod-deployment"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",

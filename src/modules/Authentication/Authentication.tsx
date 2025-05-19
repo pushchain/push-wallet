@@ -5,11 +5,13 @@ import { Footer } from "../../common/components/Footer";
 import { Login } from "./components/Login";
 import { WalletState } from "./Authentication.types";
 import ConnectWallet from "./components/ConnectWallet";
+import { useGlobalState } from "../../context/GlobalContext";
 
 const Authentication = () => {
   const [email, setEmail] = useState<string>("");
   const [connectMethod, setConnectMethod] =
     useState<WalletState>("authentication");
+  const { state } = useGlobalState();
 
   return (
     <ContentLayout footer={<Footer />}>
@@ -27,6 +29,7 @@ const Authentication = () => {
                 email={email}
                 setEmail={setEmail}
                 setConnectMethod={setConnectMethod}
+                walletConfig={state.walletConfig}
               />
             )}
           {connectMethod === "connectWallet" && (
@@ -34,8 +37,10 @@ const Authentication = () => {
           )}
         </Box>
       </BoxLayout>
+
     </ContentLayout>
   );
 };
 
 export { Authentication };
+
