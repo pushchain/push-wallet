@@ -20,6 +20,18 @@ export const getButtonVariantStyles = (variant: ButtonVariant, loading: boolean)
             }
           `
         };
+        &:focus-visible {
+          background-color:  color-mix(in srgb, var(--pw-int-btn-primary-bg-color), #FFFFFF 10%);
+          border: var(--border-sm) solid var(--pw-int-brand-primary-subtle-color);
+          outline: none;
+        }
+        ${
+          !loading &&
+          `&:disabled {
+            background-color: var(--pw-int-bg-disabled-color);
+            color: var(--pw-int-text-disabled-color);
+          }`
+        };
       `;
     }
     case 'outline': {
@@ -46,6 +58,14 @@ export const getButtonVariantStyles = (variant: ButtonVariant, loading: boolean)
           border: var(--border-sm) solid var(--pw-int-btn-secondary-border-focused-color);
           background-color: transparent;
         }
+        ${
+          !loading &&
+          `&:disabled {
+              border: none;
+              background-color: var(--pw-int-bg-disabled-color);
+              color: var(--pw-int-text-disabled-color);
+          }`
+        };
       `;
     }
   }

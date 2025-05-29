@@ -34,8 +34,6 @@ export default function App() {
 
   const { state } = useAppState();
 
-  console.log(state.themeOverrides);
-
   return (
     <ThemeProvider theme={{...(isDarkMode ? themeConfig.dark : themeConfig.light), themeOverrides: state.themeOverrides}}>
       <GlobalStyle />
