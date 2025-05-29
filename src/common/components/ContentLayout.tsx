@@ -17,7 +17,7 @@ const ContentLayout: FC<ContentLayoutProps> = ({ children, footer }) => {
     <Box
       alignItems="center"
       alignSelf="center"
-      backgroundColor={isOpenedInIframe ? "surface-transparent" : "surface-secondary"}
+      backgroundColor={isOpenedInIframe ? "pw-int-bg-transparent" : "pw-int-bg-primary-color"}
       display="flex"
       gap="spacing-lg"
       flexDirection="column"

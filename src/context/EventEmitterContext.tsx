@@ -24,6 +24,7 @@ import { requestToConnectPushWallet } from "../common";
 import { APP_ROUTES } from "../constants";
 import { AppMetadata, ChainType, CONSTANTS, IWalletProvider, LoginMethodConfig, WalletConfig, WalletInfo } from "../types/wallet.types";
 import { PushChain } from "@pushchain/devnet";
+import { useAppState } from "./AppContext";
 
 // Define the shape of the app state
 export type EventEmitterState = {
@@ -59,7 +60,8 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { dispatch, state } = useGlobalState();
-  const { isDarkMode, enable, disable } = useDarkMode();
+  const { dispatch: appDispatch } = useAppState();
+  const { enable, disable } = useDarkMode();
 
   const [isLoggedEmitterCalled, setLoginEmitterStatus] = useState(false);
 
@@ -263,9 +265,10 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     loginDefaults: LoginMethodConfig,
     themeMode: typeof CONSTANTS.THEME.LIGHT | typeof CONSTANTS.THEME.DARK,
     appMetadata: AppMetadata,
-
+    themeOverrides: Record<string, string>,
   }) => {
 
+    console.log(data.themeOverrides);
     data.themeMode === CONSTANTS.THEME.DARK ? enable() : disable();
 
     const walletConfig: WalletConfig = {
@@ -273,6 +276,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       appMetadata: data.appMetadata,
     }
 
+    appDispatch({ type: "SET_THEME_OVERRIDES", payload: {...data.themeOverrides} });
     dispatch({ type: "WALLET_CONFIG", payload: walletConfig });
   }
 

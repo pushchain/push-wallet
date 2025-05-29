@@ -85,7 +85,7 @@ const PushWalletAppConnection: FC<PushWalletAppConnectionProps> = ({
     return (
       <DrawerWrapper>
         <ErrorContent
-          icon={<Info size={32} color="icon-state-danger-subtle" />}
+          icon={<Info size={32} color="pw-int-error-primary-subtle-color" />}
           title="Rejected by user"
           subTitle="Try again to authenticate"
           retryText="Retry"

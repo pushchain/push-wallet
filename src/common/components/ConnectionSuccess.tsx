@@ -11,25 +11,25 @@ const ConnectionSuccess = ({ onClose }) => {
       gap="spacing-sm"
       width="-webkit-fill-available"
       borderRadius="radius-md"
-      backgroundColor="surface-primary"
+      backgroundColor="pw-int-bg-primary-color"
       css={css`
-        border-top: var(--border-xmd) solid var(--stroke-secondary);
+        border-top: var(--border-xmd) solid var(--pw-int-border-secondary-color);
       `}
     >
       <Box alignSelf="flex-end" cursor="pointer" onClick={() => onClose()}>
-        <Cross size={16} color="icon-primary" />
+        <Cross size={16} color="pw-int-icon-primary-color" />
       </Box>
       <Box
         display="flex"
         justifyContent="center"
         alignItems="center"
-        backgroundColor="surface-state-success-subtle"
+        backgroundColor="pw-int-success-primary-subtle-color"
         borderRadius="radius-sm"
         width="48px"
         height="48px"
         cursor="pointer"
       >
-        <Tick size={32} color="icon-state-success-bold" />
+        <Tick size={32} color="pw-int-success-primary-color" />
       </Box>
 
       <Box
@@ -38,14 +38,14 @@ const ConnectionSuccess = ({ onClose }) => {
         textAlign="center"
         gap="spacing-xxxs"
       >
-        <Text variant="h3-semibold" color="text-primary">
+        <Text variant="h3-semibold" color="pw-int-text-primary-color">
           Logged in Successfully
         </Text>
-        <Text variant="bs-regular" color="text-secondary">
+        <Text variant="bs-regular" color="pw-int-text-secondary-color">
           You can now return to the app to continue
         </Text>
       </Box>
-      <Text variant="bs-regular" color="text-tertiary">
+      <Text variant="bs-regular" color="pw-int-text-tertiary-color">
         Closing this window will log you out.
       </Text>
     </Box>

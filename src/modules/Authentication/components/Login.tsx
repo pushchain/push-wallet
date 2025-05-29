@@ -88,7 +88,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
       gap={walletConfig?.appMetadata ? "spacing-md" : "spacing-xl"}
       margin="spacing-md spacing-none spacing-none spacing-none"
     >
-      <Text variant="h3-semibold" color="text-primary">
+      <Text variant="h3-semibold" color="pw-int-text-primary-color">
         {" "}
         Log in or Sign up
       </Text>
@@ -115,14 +115,14 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
             alignItems='center'
           >
             <Text
-              variant="h4-semibold"
-              color="text-primary"
+              variant="bl-semibold"
+              color="pw-int-text-primary-color"
             >
               {walletConfig.appMetadata.title}
             </Text>
             <Text
               variant="bm-regular"
-              color="text-secondary"
+              color="pw-int-text-secondary-color"
               textAlign="center"
             >
               {trimText(walletConfig.appMetadata.description, 15)}
@@ -171,7 +171,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
             </>
           )}
 
-          {showEmailLogin && showGoogleLogin && (<Text variant="os-regular" color="text-tertiary">
+          {showEmailLogin && showGoogleLogin && (<Text variant="os-regular" color="pw-int-text-tertiary-color">
             OR
           </Text>)}
 
@@ -217,7 +217,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
 
           )}
 
-          {((showGoogleLogin && showWalletLogin) || (showEmailLogin && showWalletLogin)) && (<Text variant="os-regular" color="text-tertiary">
+          {((showGoogleLogin && showWalletLogin) || (showEmailLogin && showWalletLogin)) && (<Text variant="os-regular" color="pw-int-text-tertiary-color">
             OR
           </Text>)}
 
@@ -245,5 +245,5 @@ const Image = styled.img`
   width:inherit;
   height:inherit;
   border-radius: 16px;
-  border: 1px solid var(--stroke-secondary, #313338);
+  border: 1px solid var(--pw-int-border-secondary-color, #313338);
 `

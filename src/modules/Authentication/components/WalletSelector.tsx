@@ -83,14 +83,14 @@ const WalletSelector: FC<WalletButtonProps> = ({ provider, walletCategory }) => 
       cursor="pointer"
       css={css`
           :hover {
-            border: var(--border-sm, 1px) solid var(--stroke-brand-medium);
+            border: var(--border-sm, 1px) solid var(--pw-int-brand-primary-color);
           }
         `}
       display="flex"
       padding="spacing-xs"
       borderRadius="radius-xs"
-      border="border-sm solid stroke-tertiary"
-      backgroundColor="surface-transparent"
+      border="border-sm solid pw-int-border-tertiary-color"
+      backgroundColor="pw-int-bg-transparent"
       alignItems="center"
       gap="spacing-xxs"
       onClick={() => handleClick()}
@@ -110,7 +110,7 @@ const WalletSelector: FC<WalletButtonProps> = ({ provider, walletCategory }) => 
           <FallBackWalletIcon walletKey={provider.name} />
         )}
       </Box>
-      <Text variant="bs-semibold" color="text-primary">
+      <Text variant="bs-semibold" color="pw-int-text-primary-color">
         {provider.name}
       </Text>
     </Box>
@@ -121,7 +121,7 @@ export default WalletSelector;
 
 const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {
   return (
-    <Text color="text-tertiary" variant="bes-bold" textAlign="center">
+    <Text color="pw-int-text-tertiary-color" variant="bes-bold" textAlign="center">
       {walletKey.slice(0, 2).toUpperCase()}
     </Text>
   );

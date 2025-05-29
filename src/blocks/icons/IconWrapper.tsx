@@ -25,7 +25,7 @@ type StyledIconWrapperProps = {
 
 const StyledIconWrapper = styled.span<StyledIconWrapperProps>`
   /* Common Wrapper CSS */
-  color: ${({ color }) => color};
+  color: ${({ color }) => `${color}`};
   width: ${({ size }) => size};
   height: ${({ size }) => size};
   display: inline-flex;

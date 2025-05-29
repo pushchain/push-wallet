@@ -20,7 +20,7 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
         }
         const IconComponent = CHAIN_MONOTONE_LOGO?.[chainId];
         if (IconComponent) {
-            return <IconComponent size={20} color="icon-tertiary" />;
+            return <IconComponent size={20} color="pw-int-icon-tertiary-color" />;
         } else {
             //TODO: give a fallback icon here
             return <DefaultChainMonotone size={20} />;
@@ -50,14 +50,14 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
                     <Box
                         height="16px"
                         width="16px"
-                        backgroundColor="surface-tertiary"
+                        backgroundColor="pw-int-bg-tertiary-color"
                         borderRadius="radius-xxxs"
                         display="flex"
                         alignItems="center"
                         justifyContent="center"
                     >
                         <Text
-                            color="text-tertiary"
+                            color="pw-int-text-tertiary-color"
                             variant="os-bold"
                             css={css`
                     font-size: 8px;
@@ -68,10 +68,10 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
                             {result.chainId && getChainIcon(result.chainId)}
                         </Text>
                     </Box>
-                    <Text color="text-secondary" variant="bes-semibold">
+                    <Text color="pw-int-text-secondary-color" variant="bes-semibold">
                         {centerMaskWalletAddress(result.address)}
                     </Text>
-                    <Text color="text-tertiary" variant="bes-semibold">
+                    <Text color="pw-int-text-tertiary-color" variant="bes-semibold">
                         {additionalRecipients >= 0 && ` +${additionalRecipients} more`}
                     </Text>
                 </Box>
@@ -87,7 +87,7 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
             justifyContent="space-between"
             padding="spacing-sm spacing-xxxs"
             css={css`
-              border-bottom: var(--border-sm) solid var(--stroke-secondary);
+              border-bottom: var(--border-sm) solid var(--pw-int-border-secondary-color);
             `}
         >
 
@@ -97,12 +97,12 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
                     padding="spacing-xxs"
                     alignItems="center"
                     borderRadius="radius-xs"
-                    backgroundColor="surface-primary"
-                    border="border-sm solid stroke-secondary"
+                    backgroundColor="pw-int-bg-primary-color"
+                    border="border-sm solid pw-int-border-secondary-color"
                     width="32px"
                     height="32px"
                 >
-                    {address === transaction.from ? <ExternalLinkIcon size={16} color="icon-primary" /> : transaction.recipients.some(recipient => recipient === address) && <InternalLink size={16} color="icon-primary" />}
+                    {address === transaction.from ? <ExternalLinkIcon size={16} color="pw-int-icon-primary-color" /> : transaction.recipients.some(recipient => recipient === address) && <InternalLink size={16} color="pw-int-icon-primary-color" />}
 
                 </Box>
                 <Box display="flex" flexDirection="column" gap='spacing-xxxs'>
@@ -114,7 +114,7 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
             </Box>
             <Box display="flex" flexDirection="column" gap="spacing-xxxs">
                 <Text variant="bes-regular">{formatWalletCategory(transaction.category)}</Text>
-                <Text variant="c-semibold" color='text-tertiary'>{getFixedTime(transaction.timestamp)}</Text>
+                <Text variant="c-semibold" color='pw-int-icon-tertiary-color'>{getFixedTime(transaction.timestamp)}</Text>
             </Box>
 
         </Box>

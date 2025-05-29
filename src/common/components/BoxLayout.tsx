@@ -70,7 +70,7 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
       `}
     >
       <Box
-        backgroundColor="surface-primary"
+        backgroundColor="pw-int-bg-secondary-color"
         alignItems="center"
         display="flex"
         flexDirection="column"

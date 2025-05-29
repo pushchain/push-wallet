@@ -1,22 +1,23 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 
-import { GlobalProvider } from "./context/GlobalContext";
+import { GlobalProvider, useGlobalState } from "./context/GlobalContext";
 import { blocksTheme, getBlocksCSSVariables } from "./blocks";
 import { getAppBasePath } from "../basePath";
 import { useDarkMode, RouterContainer } from "./common";
 import { EventEmitterProvider } from "./context/EventEmitterContext";
 import { WalletContextProvider } from "./context/WalletContext";
+import { useEffect, useState } from "react";
+import { useAppState } from "./context/AppContext";
 
 const GlobalStyle = createGlobalStyle`
   :root{
     /* Font Family */
-      --font-family: 'FK Grotesk Neu';
-
+      --pw-int-font-family: 'FK Grotesk Neu';
     /* New blocks theme css variables*/
     ${(props) => {
     // @ts-expect-error: The getBlocksCSSVariables function is not typed, so we need to suppress the error here.
-    return getBlocksCSSVariables(props.theme.blocksTheme);
+    return getBlocksCSSVariables(props.theme.blocksTheme, props.theme.scheme, props.theme.themeOverrides);
   }}
   }
 `;
@@ -31,8 +32,13 @@ const themeConfig = {
 
 export default function App() {
   const { isDarkMode } = useDarkMode();
+
+  const { state } = useAppState();
+
+  console.log(state.themeOverrides);
+
   return (
-    <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
+    <ThemeProvider theme={{...(isDarkMode ? themeConfig.dark : themeConfig.light), themeOverrides: state.themeOverrides}}>
       <GlobalStyle />
       <Router basename={getAppBasePath()}>
         <WalletContextProvider>

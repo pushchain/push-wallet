@@ -114,7 +114,7 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
           display="flex"
           justifyContent="center"
         >
-          <Text variant="bes-semibold" color="text-primary">
+          <Text variant="bes-semibold" color="pw-int-text-primary-color">
             Your activity will appear here
           </Text>
         </Box>

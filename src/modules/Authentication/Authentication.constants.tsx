@@ -4,15 +4,15 @@ import { SocialsType, WalletKeyPairType } from "./Authentication.types";
 export const socialLoginConfig: SocialsType[] = [
   {
     name: "apple",
-    icon: <Apple color="icon-hero-icons" size={24} />,
+    icon: <Apple color="pw-int-text-primary-color" size={24} />,
   },
   {
     name: "github",
-    icon: <Github color="icon-hero-icons" size={24} />,
+    icon: <Github color="pw-int-text-primary-color" size={24} />,
   },
   {
     name: "twitter",
-    icon: <TwitterSimple color="icon-hero-icons" size={24} />,
+    icon: <TwitterSimple color="pw-int-text-primary-color" size={24} />,
   },
   {
     name: "discord",

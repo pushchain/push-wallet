@@ -13,6 +13,8 @@ const Authentication = () => {
     useState<WalletState>("authentication");
   const { state } = useGlobalState();
 
+  console.log(state.walletConfig);
+
   return (
     <ContentLayout footer={<Footer />}>
       <BoxLayout>

@@ -70,13 +70,13 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
 
   function getChainIcon(chainId: string | null) {
     if (!chainId) {
-      return <BellRingFilled color="icon-brand-medium" size={36} />
+      return <BellRingFilled color="pw-int-brand-primary-color" size={36} />
     }
     const IconComponent = CHAIN_LOGO[chainId];
     if (IconComponent) {
       return <IconComponent />;
     } else {
-      return <BellRingFilled color="icon-brand-medium" />
+      return <BellRingFilled color="pw-int-brand-primary-color" />
     }
   }
 
@@ -106,7 +106,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
         width="-webkit-fill-available"
       >
         <Box display="flex" gap="spacing-xxs">
-          {/* <HoverableSVG icon={<Lock size={24} color="icon-primary" />} /> */}
+          {/* <HoverableSVG icon={<Lock size={24} color="pw-int-icon-primary-color" />} /> */}
           <Dropdown
             css={css`
               z-index:3;
@@ -128,7 +128,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
             }
           >
             <Box cursor="pointer">
-              <Settings size={24} color="icon-primary" />
+              <Settings size={24} color="pw-int-icon-primary-color" />
             </Box>
           </Dropdown>
         </Box>
@@ -172,7 +172,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
         <Box display="flex" gap="spacing-xxxs">
           {getMonotoneChainIcon(result.chainId)}
 
-          <Text variant="bes-semibold" color="text-tertiary">
+          <Text variant="bes-semibold" color="pw-int-text-tertiary-color">
             {centerMaskWalletAddress(result.address)}
           </Text>
 
@@ -182,11 +182,11 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
                 <TickCircleFilled
                   autoSize
                   size={16}
-                  color="icon-state-success-bold"
+                  color="pw-int-success-primary-color"
                 />
               ) : (
                 <Copy
-                  color="icon-tertiary"
+                  color="pw-int-icon-tertiary-color"
                   onClick={() => handleCopy(parsedWallet, setCopied)}
                 />
               )}

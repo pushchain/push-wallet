@@ -1,4 +1,5 @@
 import { colorSemantics, semanticKeys } from './colors/colors.semantics';
+import { sizeSemantics } from './sizes/sizes.semantics';
 import { blurVariables } from './variables/variables.blur';
 import { borderRadiusVariables } from './variables/variables.borderRadius';
 import { borderSizeVariables } from './variables/variables.borderSize';
@@ -24,6 +25,7 @@ export type Theme = {
   borderSize: typeof borderSizeVariables;
   opacity: typeof opacityVariables;
   spacing: typeof spacingVariables;
+  size: typeof sizeSemantics;
 };
 
 export type ThemeBorderRadius = keyof Theme['borderRadius'];
@@ -32,10 +34,10 @@ export type ThemeBorderSize = keyof Theme['borderSize'];
 
 export type ThemeSpacing = keyof Theme['spacing'];
 
-export type SurfaceColors = keyof ThemeColorsConfig<{ [semanticKeys.surface]: ColorSemantics['surface'] }>;
+export type SurfaceColors = keyof ThemeColorsConfig<{ [semanticKeys.surface]: ColorSemantics['pw-int-bg'] }>;
 
-export type TextColors = keyof ThemeColorsConfig<{ [semanticKeys.text]: ColorSemantics['text'] }>;
+export type TextColors = keyof ThemeColorsConfig<{ [semanticKeys.text]: ColorSemantics['pw-int-text'] }>;
 
-export type IconColors = keyof ThemeColorsConfig<{ [semanticKeys.icon]: ColorSemantics['icon'] }>;
+export type IconColors = keyof ThemeColorsConfig<{ [semanticKeys.icon]: ColorSemantics['pw-int-icon'] }>;
 
-export type StrokeColors = keyof ThemeColorsConfig<{ [semanticKeys.stroke]: ColorSemantics['stroke'] }>;
+export type StrokeColors = keyof ThemeColorsConfig<{ [semanticKeys.stroke]: ColorSemantics['pw-int-border'] }>;
