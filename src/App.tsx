@@ -1,13 +1,12 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 
-import { GlobalProvider, useGlobalState } from "./context/GlobalContext";
+import { GlobalProvider } from "./context/GlobalContext";
 import { blocksTheme, getBlocksCSSVariables } from "./blocks";
 import { getAppBasePath } from "../basePath";
 import { useDarkMode, RouterContainer } from "./common";
 import { EventEmitterProvider } from "./context/EventEmitterContext";
 import { WalletContextProvider } from "./context/WalletContext";
-import { useEffect, useState } from "react";
 import { useAppState } from "./context/AppContext";
 
 const GlobalStyle = createGlobalStyle`

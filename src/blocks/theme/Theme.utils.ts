@@ -1,4 +1,4 @@
-import { Theme, ThemeMode } from './Theme.types';
+import { Theme, ThemeMode, ThemeOverrides } from './Theme.types';
 import { colorSemantics } from './colors/colors.semantics';
 import { sizeSemantics } from './sizes/sizes.semantics';
 import { blurVariables } from './variables/variables.blur';
@@ -33,9 +33,16 @@ export const createTheme = (mode: ThemeMode): Theme => ({
   size: getThemeSizes(),
 });
 
-export const getBlocksCSSVariables = (theme: Theme, themeMode: 'dark' | 'light', themeOverrides: Record<string, string> = {}) => {
+export const getBlocksCSSVariables = (theme: Theme, themeMode: 'dark' | 'light', themeOverrides: ThemeOverrides = {}) => {
   const vars: Record<string, string> = {};
   const isLightMode = themeMode === 'light';
+  const { light = {}, dark = {}, ...global } = themeOverrides || {};
+
+  const activeOverrides = {
+    ...global,                         // global values
+    ...(isLightMode ? light : dark),  // mode-specific overrides take priority
+  };
+
 
   // Flatten original theme
   Object.values(theme).forEach((section) => {
@@ -44,10 +51,8 @@ export const getBlocksCSSVariables = (theme: Theme, themeMode: 'dark' | 'light',
     });
   });
 
-  console.log(themeOverrides);
-
   // Handle overrides
-  Object.entries(themeOverrides).forEach(([key, value]) => {
+  Object.entries(activeOverrides).forEach(([key, value]) => {
     switch(key) {
       case '--pw-core-text-size': {
         const size = parseInt(value, 10);
@@ -65,7 +70,7 @@ export const getBlocksCSSVariables = (theme: Theme, themeMode: 'dark' | 'light',
         break;
       }
       case '--pw-core-brand-primary-color': {
-        vars['--pw-int-brand-primary-color'] = isLightMode ? value : `color-mix(in srgb, ${value}, #ffffff 10%)`;
+        vars['--pw-int-brand-primary-color'] = value;
         vars['--pw-int-brand-primary-subtle-color'] = isLightMode ? `color-mix(in srgb, ${value}, #ffffff 50%)` : value;
         vars['--pw-int-btn-secondary-border-hover-color'] = vars['--pw-int-brand-primary-subtle-color'];
         vars['--pw-int-btn-secondary-border-focused-color'] = vars['--pw-int-brand-primary-subtle-color'];
@@ -73,57 +78,29 @@ export const getBlocksCSSVariables = (theme: Theme, themeMode: 'dark' | 'light',
         break;
       }
       case '--pw-core-text-primary-color': {
-        vars['--pw-int-text-primary-color'] = isLightMode ? value : `color-mix(in srgb, ${value}, #ffffff 95%)`;
+        vars['--pw-int-text-primary-color'] = value;
         vars['--pw-int-icon-primary-color'] = isLightMode ? `color-mix(in srgb, ${value}, #ffffff 3%)` : `color-mix(in srgb, ${value}, #ffffff 70%)`;
         vars['--pw-int-btn-secondary-text-color'] = vars['--pw-int-text-primary-color'];
         break;
       }
       case '--pw-core-text-secondary-color': {
-        vars['--pw-int-text-secondary-color'] = isLightMode ? value : `color-mix(in srgb, ${value}, #ffffff 70%)`;
+        vars['--pw-int-text-secondary-color'] = value;
         vars['--pw-int-icon-secondary-color'] = isLightMode ? `color-mix(in srgb, ${value}, #ffffff 85%)` : `color-mix(in srgb, ${value}, #ffffff 95%)`;
         break;
       }
       case '--pw-core-text-tertiary-color': {
-        vars['--pw-int-text-tertiary-color'] = isLightMode ? value : `color-mix(in srgb, ${value}, #000000 20%)`;
+        vars['--pw-int-text-tertiary-color'] = value;
         vars['--pw-int-icon-tertiary-color'] = isLightMode ? `color-mix(in srgb, ${value}, #ffffff 40%)` : `color-mix(in srgb, ${value}, #000000 50%)`;
         break;
       }
       case '--pw-core-text-link-color': {
-        vars['--pw-int-text-link-color'] = isLightMode ? value : `color-mix(in srgb, ${value}, #ffffff 15%)`;
+        vars['--pw-int-text-link-color'] = value;
         vars['--pw-int-icon-brand-color'] = isLightMode ? `color-mix(in srgb, ${value}, #ffffff 5%)` : `color-mix(in srgb, ${value}, #ffffff 15%)`;
         break;
       }
-      case '--pw-core-text-disabled-color': {
-        vars['--pw-int-text-disabled-color'] = isLightMode ? value : `color-mix(in srgb, ${value}, #000000 50%)`;
-        break;
-      }
-      case '--pw-core-bg-primary-color': {
-        vars['--pw-int-bg-primary-color'] = isLightMode ? value : `color-mix(in srgb, ${value}, #000000 93%)`;
-        break;
-      }
-      case '--pw-core-bg-secondary-color': {
-        vars['--pw-int-bg-secondary-color'] = isLightMode ? value : `color-mix(in srgb, ${value}, #000000 90%)`;
-        break;
-      }
-      case '--pw-core-bg-tertiary-color': {
-        vars['--pw-int-bg-tertiary-color'] = isLightMode ? value : `color-mix(in srgb, ${value}, #000000 80%)`;
-        break;
-      }
-      case '--pw-core-bg-disabled-color': {
-        vars['--pw-int-bg-disabled-color'] = isLightMode ? value : `color-mix(in srgb, ${value}, #000000 80%)`;
-        break;
-      }
       case '--pw-core-success-primary-color': {
-        vars['--pw-int-success-primary-color'] = isLightMode ? value : `color-mix(in srgb, ${value}, #ffffff 35%)`;
+        vars['--pw-int-success-primary-color'] = value;
         vars['--pw-int-success-primary-subtle-color'] = isLightMode ? `color-mix(in srgb, ${value}, #ffffff 83%)` : `color-mix(in srgb, ${value}, #000000 40%)`;
-        break;
-      }
-      case '--pw-core-btn-primary-bg-color': {
-        vars['--pw-int-btn-primary-bg-color'] = value;
-        break;
-      }
-      case '--pw-core-btn-primary-text-color': {
-        vars['--pw-int-btn-primary-text-color'] = value;
         break;
       }
       case '--pw-core-btn-border-radius': {
