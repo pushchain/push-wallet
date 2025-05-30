@@ -42,10 +42,10 @@ const WalletList: FC<WalletListProps> = ({
           borderRadius="radius-xs"
           alignItems="center"
           justifyContent="space-between"
-          border={`border-sm solid stroke-${wallet?.address === selectedWallet?.address
-              ? "brand-medium"
-              : "secondary"
-            }`}
+          border={`border-sm solid ${wallet?.address === selectedWallet?.address
+            ? "pw-int-border-brand-medium"
+            : "pw-int-border-secondary-color"
+          }`}
         >
           <Box display="flex" gap="spacing-xxs">
             {/* Add support for different icons */}
@@ -64,7 +64,7 @@ const WalletList: FC<WalletListProps> = ({
             )}
             <Box display="flex" flexDirection="column">
               <Text variant="bs-semibold">{wallet.name}</Text>
-              <Text variant="cs-semibold" color="text-tertiary">
+              <Text variant="cs-semibold" color="pw-int-text-tertiary-color">
                 {centerMaskWalletAddress(wallet.address)}
               </Text>
             </Box>
@@ -83,7 +83,7 @@ const WalletList: FC<WalletListProps> = ({
               }
             >
               <Box cursor="pointer">
-                <KebabMenuVertical size={16} color="icon-secondary" />
+                <KebabMenuVertical size={16} color="pw-int-icon-secondary-color" />
               </Box>
             </Dropdown>
           )}

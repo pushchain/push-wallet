@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Box, Button, Info } from "../../blocks";
+import { Box, Info } from "../../blocks";
 import {
   BoxLayout,
   ContentLayout,
@@ -344,7 +344,7 @@ const Wallet: FC<WalletProps> = () => {
           {state.messageSignState === "rejected" && (
             <DrawerWrapper>
               <ErrorContent
-                icon={<Info size={32} color="icon-state-danger-subtle" />}
+                icon={<Info size={32} color="pw-int-error-primary-subtle-color" />}
                 title="Could not verify"
                 subTitle="Please try again"
                 onClose={() =>

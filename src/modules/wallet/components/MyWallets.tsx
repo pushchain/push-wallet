@@ -25,7 +25,7 @@ const MyWallets: FC<MyWalletsProps> = ({walletList,setSelectedWallet,selectedWal
         <Separator />
         <Text
           variant="c-bold"
-          color="text-tertiary"
+          color="pw-int-text-tertiary-color"
           css={css`
             flex-shrink: 0;
           `}

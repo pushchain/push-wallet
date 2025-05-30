@@ -47,15 +47,15 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   return (
     <Box flexDirection="column" display="flex" gap="spacing-lg" width="100%">
       <Box cursor="pointer" onClick={() => handleBack()}>
-        <Back color="icon-tertiary" size={24} />
+        <Back color="pw-int-icon-tertiary-color" size={24} />
       </Box>
       <Box flexDirection="column" display="flex" gap="spacing-md">
         <Box flexDirection="column" display="flex" gap="spacing-md">
           <Box flexDirection="column" display="flex" textAlign="center">
-            <Text color="text-primary" variant="h4-semibold">
+            <Text color="pw-int-text-primary-color" variant="h4-semibold">
               Connect External Wallet
             </Text>
-            <Text color="text-primary" variant="bs-regular">
+            <Text color="pw-int-text-primary-color" variant="bs-regular">
               Choose what kind of wallet you would like to link with Push
             </Text>
           </Box>
@@ -76,14 +76,14 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
                     css={css`
                       :hover {
                         border: var(--border-sm, 1px) solid
-                          var(--stroke-brand-medium);
+                          var(--pw-int-brand-primary-color);
                       }
                     `}
                     display="flex"
                     padding="spacing-xs"
                     borderRadius="radius-xs"
-                    border="border-sm solid stroke-tertiary"
-                    backgroundColor="surface-transparent"
+                    border="border-sm solid pw-int-border-tertiary-color"
+                    backgroundColor="pw-int-bg-transparent"
                     alignItems="center"
                     justifyContent="space-between"
                     key={walletCategory.chain}
@@ -93,11 +93,11 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
                   >
                     <Box alignItems="center" display="flex" gap="spacing-xxs">
                       {walletCategory.icon}
-                      <Text variant="bs-semibold" color="text-primary">
+                      <Text variant="bs-semibold" color="pw-int-text-primary-color">
                         {walletCategory.label}
                       </Text>
                     </Box>
-                    <CaretRight size={24} color="icon-tertiary" />
+                    <CaretRight size={24} color="pw-int-icon-tertiary-color" />
                   </Box>
                 ))}
               </Box>
@@ -121,7 +121,7 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
       {externalWalletAuthState === "rejected" && (
         <DrawerWrapper>
           <ErrorContent
-            icon={<Info size={32} color="icon-state-danger-subtle" />}
+            icon={<Info size={32} color="pw-int-error-primary-subtle-color" />}
             title="Could not Connect"
             subTitle="Please try connecting again"
             onClose={() =>

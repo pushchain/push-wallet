@@ -1,6 +1,6 @@
 import { FC, useState, useRef, useEffect } from 'react';
 import { Box, Text, Button, Back } from '../../blocks';
-import { DrawerWrapper, LoadingContent, ErrorContent, WALLET_TO_WALLET_ACTION, ContentLayout, BoxLayout, getAppParamValue, PoweredByPush } from '../../common';
+import { DrawerWrapper, LoadingContent, ErrorContent, WALLET_TO_WALLET_ACTION, ContentLayout, BoxLayout, PoweredByPush } from '../../common';
 import { verifyOTPEmailAuth } from './Authentication.utils';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
@@ -15,7 +15,6 @@ type OTPVerificationProps = {
 };
 
 export const OTPVerification: FC<OTPVerificationProps> = ({
-  userId,
   onVerificationComplete
 }) => {
   const navigate = useNavigate();
@@ -116,19 +115,19 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
           padding="spacing-lg"
         >
           <Box onClick={() => navigate(APP_ROUTES.AUTH)}>
-            <Back color='icon-tertiary' size={24} />
+            <Back color='pw-int-icon-tertiary-color' size={24} />
           </Box>
 
           <Box flexDirection="column" display="flex" gap="spacing-xxl">
             <Box flexDirection="column" display="flex" gap='spacing-xxxs' justifyContent="center" alignItems="center">
               <Text
-                color="text-primary"
+                color="pw-int-text-primary-color"
                 variant="h4-semibold"
               >
                 Confirm Verification Code
               </Text>
               <Text
-                color="text-secondary"
+                color="pw-int-text-secondary-color"
                 variant="bs-regular"
                 textAlign="center"
               >
@@ -199,18 +198,18 @@ const StyledOTPInput = styled.input`
   padding: var(--spacing-xs, 12px);
   font-size: 18px;
   text-align: center;
-  border: 1.5px solid var(--components-inputs-stroke-default, #313338);
+  border: 1.5px solid var(pw-int-border-primary-color, #313338);
   border-radius: 8px;
-  background: var(--components-inputs-background-focus, #313338);
-  color: var(--components-inputs-text-default);
-  font-family: var(--font-family);
+  background: var(--pw-int-bg-secondary-color, #313338);
+  color: var(--pw-int-text-primary-color);
+  font-family: var(--pw-int-font-family);
   
   &:focus {
-    border-color: var(--components-inputs-stroke-focus, #CF59E2);
+    border-color: var(--pw-int-brand-primary-color, #CF59E2);
     outline: none;
   }
   
   &::placeholder {
-    color: var(--components-inputs-text-placeholder);
+    color: var(--pw-int-text-tertiary-color);
   }
 `;

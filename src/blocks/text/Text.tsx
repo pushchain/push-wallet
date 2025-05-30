@@ -2,7 +2,7 @@ import { ReactNode, forwardRef } from 'react';
 import styled, { FlattenSimpleInterpolation } from 'styled-components';
 
 import { TransformedHTMLAttributes } from '../Blocks.types';
-import { TextColors } from '../theme/Theme.types';
+import { ThemeColors } from '../theme/Theme.types';
 import { TextAlign, TextHTMLTags, TextResponsiveProps, TextTransform, TextVariants } from './Text.types';
 import { getVariantStyles } from './Text.utils';
 import { getTextResponsiveCSS } from './Text.utils';
@@ -13,7 +13,7 @@ export type TextProps = {
   /* Children pass to the Text component */
   children?: ReactNode;
   /* Sets the css property for text color */
-  color?: TextColors;
+  color?: ThemeColors;
   /* Extra css prop from styled components to apply custom css not supported by Text component */
   css?: FlattenSimpleInterpolation;
   /* For truncating the contents with ... when there's container overflow */
@@ -40,7 +40,7 @@ const StyledText = styled.p.withConfig({
   ${({ variant }) => getVariantStyles(variant)}
 
   color: ${({ color }) => `var(--${color})`};
-  font-family: var(--font-family);
+  font-family: var(--pw-int-font-family);
   margin: 0px;
   text-align: ${({ textAlign }) => textAlign};
   text-transform: ${({ textTransform }) => textTransform};
@@ -83,7 +83,7 @@ const StyledText = styled.p.withConfig({
   ${(props) => props.css || ''}
 `;
 
-const Text = forwardRef<HTMLElement, TextProps>(({ as = 'p', color = 'text-primary', ...props }, ref) => (
+const Text = forwardRef<HTMLElement, TextProps>(({ as = 'p', color = 'pw-int-text-primary-color', ...props }, ref) => (
   <StyledText
     as={as}
     color={color}

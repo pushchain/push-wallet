@@ -64,7 +64,7 @@ export const textVariants = {
     textTransform: null,
   },
   "h3-bold": {
-    fontSize: "26px",
+    fontSize: 'var(--pw-int-text-heading-large-size)',
     fontStyle: null,
     fontWeight: "700",
     lineHeight: "36px",
@@ -72,7 +72,7 @@ export const textVariants = {
     textTransform: null,
   },
   "h4-bold": {
-    fontSize: "20px",
+    fontSize: 'var(--pw-int-text-heading-small-size)',
     fontStyle: null,
     fontWeight: "700",
     lineHeight: "30px",
@@ -113,7 +113,7 @@ export const textVariants = {
     textTransform: null,
   },
   "h3-semibold": {
-    fontSize: "26px",
+    fontSize: 'var(--pw-int-text-heading-large-size)',
     fontStyle: null,
     fontWeight: "500",
     lineHeight: "36px",
@@ -121,7 +121,7 @@ export const textVariants = {
     textTransform: null,
   },
   "h4-semibold": {
-    fontSize: "20px",
+    fontSize: 'var(--pw-int-text-heading-small-size)',
     fontStyle: null,
     fontWeight: "500",
     lineHeight: "30px",
@@ -161,7 +161,7 @@ export const textVariants = {
     textTransform: null,
   },
   "h3-regular": {
-    fontSize: "26px",
+    fontSize: 'var(--pw-int-text-heading-large-size)',
     fontStyle: null,
     fontWeight: "400",
     lineHeight: "36px",
@@ -169,7 +169,7 @@ export const textVariants = {
     textTransform: null,
   },
   "h4-regular": {
-    fontSize: "20px",
+    fontSize: 'var(--pw-int-text-heading-small-size)',
     fontStyle: null,
     fontWeight: "400",
     lineHeight: "30px",
@@ -193,7 +193,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bl-bold": {
-    fontSize: "18px",
+    fontSize: "var(--pw-int-text-heading-xsmall-size)",
     fontStyle: null,
     fontWeight: "700",
     lineHeight: "27px",
@@ -201,7 +201,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bl-semibold": {
-    fontSize: "18px",
+    fontSize: "var(--pw-int-text-heading-xsmall-size)",
     fontStyle: null,
     fontWeight: "500",
     lineHeight: "27px",
@@ -209,7 +209,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bl-regular": {
-    fontSize: "18px",
+    fontSize: "var(--pw-int-text-heading-xsmall-size)",
     fontStyle: null,
     fontWeight: "400",
     lineHeight: "27px",
@@ -217,7 +217,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bl-bold-italic": {
-    fontSize: "18px",
+    fontSize: "var(--pw-int-text-heading-xsmall-size)",
     fontStyle: "italic",
     fontWeight: "400",
     lineHeight: "27px",
@@ -225,7 +225,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bm-bold": {
-    fontSize: "16px",
+    fontSize: "var(--pw-int-text-body-large-size)",
     fontStyle: null,
     fontWeight: "700",
     lineHeight: "22px",
@@ -233,7 +233,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bm-semibold": {
-    fontSize: "16px",
+    fontSize: "var(--pw-int-text-body-large-size)",
     fontStyle: null,
     fontWeight: "500",
     lineHeight: "22px",
@@ -241,7 +241,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bm-regular": {
-    fontSize: "16px",
+    fontSize: "var(--pw-int-text-body-large-size)",
     fontStyle: null,
     fontWeight: "400",
     lineHeight: "22px",
@@ -249,7 +249,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bm-regular-italic": {
-    fontSize: "16px",
+    fontSize: "var(--pw-int-text-body-large-size)",
     fontStyle: "italic",
     fontWeight: "400",
     lineHeight: "22px",
@@ -257,7 +257,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bs-bold": {
-    fontSize: "14px",
+    fontSize: 'var(--pw-int-text-body-size)',
     fontStyle: null,
     fontWeight: "700",
     lineHeight: "20px",
@@ -265,7 +265,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bs-semibold": {
-    fontSize: "14px",
+    fontSize: 'var(--pw-int-text-body-size)',
     fontStyle: null,
     fontWeight: "500",
     lineHeight: "20px",
@@ -273,7 +273,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bs-regular": {
-    fontSize: "14px",
+    fontSize: 'var(--pw-int-text-body-size)',
     fontStyle: null,
     fontWeight: "400",
     lineHeight: "20px",
@@ -281,7 +281,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bs-regular-italic": {
-    fontSize: "14px",
+    fontSize: 'var(--pw-int-text-body-size)',
     fontStyle: "italic",
     fontWeight: "400",
     lineHeight: "20px",
@@ -289,7 +289,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bes-bold": {
-    fontSize: "12px",
+    fontSize: 'var(--pw-int-text-body-small-size)',
     fontStyle: null,
     fontWeight: "700",
     lineHeight: "18px",
@@ -297,7 +297,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bes-semibold": {
-    fontSize: "12px",
+    fontSize: 'var(--pw-int-text-body-small-size)',
     fontStyle: null,
     fontWeight: "500",
     lineHeight: "18px",
@@ -305,7 +305,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bes-regular": {
-    fontSize: "12px",
+    fontSize: 'var(--pw-int-text-body-small-size)',
     fontStyle: null,
     fontWeight: "400",
     lineHeight: "18px",
@@ -313,7 +313,7 @@ export const textVariants = {
     textTransform: null,
   },
   "bes-regular-italic": {
-    fontSize: "12px",
+    fontSize: 'var(--pw-int-text-body-small-size)',
     fontStyle: "italic",
     fontWeight: "400",
     lineHeight: "18px",
@@ -321,7 +321,7 @@ export const textVariants = {
     textTransform: null,
   },
   "ol-bold": {
-    fontSize: "12px",
+    fontSize: 'var(--pw-int-text-body-small-size)',
     fontStyle: null,
     fontWeight: "700",
     lineHeight: "16px",
@@ -329,7 +329,7 @@ export const textVariants = {
     textTransform: "uppercase",
   },
   "ol-regular": {
-    fontSize: "12px",
+    fontSize: 'var(--pw-int-text-body-small-size)',
     fontStyle: null,
     fontWeight: "500",
     lineHeight: "16px",
@@ -337,7 +337,7 @@ export const textVariants = {
     textTransform: "uppercase",
   },
   "os-bold": {
-    fontSize: "10px",
+    fontSize: 'var(--pw-int-text-body-xsmall-size)',
     fontStyle: null,
     fontWeight: "700",
     lineHeight: "14px",
@@ -345,7 +345,7 @@ export const textVariants = {
     textTransform: "uppercase",
   },
   "os-regular": {
-    fontSize: "10px",
+    fontSize: 'var(--pw-int-text-body-xsmall-size)',
     fontStyle: null,
     fontWeight: "500",
     lineHeight: "14px",
@@ -353,7 +353,7 @@ export const textVariants = {
     textTransform: "uppercase",
   },
   "c-regular": {
-    fontSize: "12px",
+    fontSize: 'var(--pw-int-text-body-small-size)',
     fontStyle: null,
     fontWeight: "400",
     lineHeight: "16px",
@@ -361,7 +361,7 @@ export const textVariants = {
     textTransform: null,
   },
   "c-semibold": {
-    fontSize: "12px",
+    fontSize: 'var(--pw-int-text-body-small-size)',
     fontStyle: null,
     fontWeight: 500,
     lineHeight: "16px",
@@ -369,7 +369,7 @@ export const textVariants = {
     textTransform: null,
   },
   "c-bold": {
-    fontSize: "12px",
+    fontSize: 'var(--pw-int-text-body-small-size)',
     fontStyle: null,
     fontWeight: "700",
     lineHeight: "16px",
@@ -377,7 +377,7 @@ export const textVariants = {
     textTransform: null,
   },
   "cs-regular": {
-    fontSize: "10px",
+    fontSize: 'var(--pw-int-text-body-xsmall-size)',
     fontStyle: null,
     fontWeight: "400",
     lineHeight: "14px",
@@ -385,7 +385,7 @@ export const textVariants = {
     textTransform: null,
   },
   "cs-semibold": {
-    fontSize: "10px",
+    fontSize: 'var(--pw-int-text-body-xsmall-size)',
     fontStyle: null,
     fontWeight: 500,
     lineHeight: "14px",
@@ -393,7 +393,7 @@ export const textVariants = {
     textTransform: null,
   },
   "cs-bold": {
-    fontSize: "12px",
+    fontSize: "var(--pw-int-text-body-xsmall-size)",
     fontStyle: null,
     fontWeight: "700",
     lineHeight: "14px",

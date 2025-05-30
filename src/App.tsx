@@ -7,16 +7,16 @@ import { getAppBasePath } from "../basePath";
 import { useDarkMode, RouterContainer } from "./common";
 import { EventEmitterProvider } from "./context/EventEmitterContext";
 import { WalletContextProvider } from "./context/WalletContext";
+import { useAppState } from "./context/AppContext";
 
 const GlobalStyle = createGlobalStyle`
   :root{
     /* Font Family */
-      --font-family: 'FK Grotesk Neu';
-
+      --pw-int-font-family: 'FK Grotesk Neu';
     /* New blocks theme css variables*/
     ${(props) => {
     // @ts-expect-error: The getBlocksCSSVariables function is not typed, so we need to suppress the error here.
-    return getBlocksCSSVariables(props.theme.blocksTheme);
+    return getBlocksCSSVariables(props.theme.blocksTheme, props.theme.scheme, props.theme.themeOverrides);
   }}
   }
 `;
@@ -31,8 +31,11 @@ const themeConfig = {
 
 export default function App() {
   const { isDarkMode } = useDarkMode();
+
+  const { state } = useAppState();
+
   return (
-    <ThemeProvider theme={isDarkMode ? themeConfig.dark : themeConfig.light}>
+    <ThemeProvider theme={{...(isDarkMode ? themeConfig.dark : themeConfig.light), themeOverrides: state.themeOverrides}}>
       <GlobalStyle />
       <Router basename={getAppBasePath()}>
         <WalletContextProvider>
