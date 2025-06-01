@@ -1,9 +1,9 @@
 import { PushWalletAppConnectionData } from "./Common.types";
 
-export const centerMaskWalletAddress = (address: string) => {
+export const centerMaskWalletAddress = (address: string, length?: number) => {
   if (address) {
-    const start = address.substring(0, 7);
-    const end = address.substring(address.length - 7);
+    const start = address.substring(0, length ?? 7);
+    const end = address.substring(address.length - (length ?? 7));
     return start + "..." + end;
   }
   return "";
@@ -72,9 +72,9 @@ export const acceptPushWalletConnectionRequest = (
     const updatedAppConnections = previousAppConnections.map((each) =>
       each.origin === appFound.origin
         ? {
-            ...appFound,
-            appConnectionStatus: "connected",
-          }
+          ...appFound,
+          appConnectionStatus: "connected",
+        }
         : each
     );
 

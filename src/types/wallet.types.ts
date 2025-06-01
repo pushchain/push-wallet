@@ -57,3 +57,14 @@ export interface WalletConfig {
   loginDefaults: LoginMethodConfig,
   appMetadata: AppMetadata,
 }
+
+export type ActiveStates = 'wallet' | 'send' | 'receive' | 'addTokens'
+export type TokenType = {
+  id: number;
+  name: string;
+  symbol: string;
+  amount: number;
+  amountInUsd: number;
+  amountChange: string;
+  contractAddress: string;
+}

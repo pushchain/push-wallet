@@ -41,11 +41,12 @@ import {
   OptimismMonotone,
   Polygon,
   PolygonMonotone,
+  PushAlpha,
   PushMonotone,
   Solana,
   SolanaMonotone,
 } from "../blocks";
-import { ChainType, WalletCategoriesType } from "../types/wallet.types";
+import { ChainType, TokenType, WalletCategoriesType } from "../types/wallet.types";
 
 export const walletCategories: WalletCategoriesType[] = [
   {
@@ -137,6 +138,12 @@ export const CHAIN_LOGO: {
   'EtWTRABZaYq6iMfeYKouRu166VU2xqa1': Solana, // devnet
 };
 
+export const TOKEN_LOGO = {
+  'pETH': Ethereum,
+  'pPOL': Polygon,
+  'PCZ': PushAlpha
+}
+
 export const WALLETS_LOGO = {
   coinbasesolana: <CoinbaseIcon />,
   backpacksol: <BackpackIcon />,
@@ -175,3 +182,34 @@ export const WALLETS_LOGO = {
   backpack: <BackpackIcon />,
   sequence: <SequenceIcon />,
 };
+
+
+export const tokens: TokenType[] = [
+  {
+    id: 1,
+    name: 'Push Chain Donut',
+    symbol: 'PCZ',
+    amount: 124.53,
+    amountInUsd: 124.53,
+    amountChange: '+24.54',
+    contractAddress: '0xf418588522d5dd018b425E472991E52EB',
+  },
+  {
+    id: 2,
+    name: 'Ethereum',
+    symbol: 'pETH',
+    amount: 1.49,
+    amountInUsd: 3225.21,
+    amountChange: '-125.37',
+    contractAddress: '0x6D2a0194bD791CADd7a3F5c9464cE9fC24a49e71',
+  },
+  {
+    id: 3,
+    name: 'Polygon',
+    symbol: 'pPOL',
+    amount: 256,
+    amountInUsd: 44800.20,
+    amountChange: '+8500.00',
+    contractAddress: '0x6D2a0194bD791CADd7a3F5c9464cE9fC24a49a3',
+  }
+]

@@ -1,18 +1,11 @@
 import { FC, useEffect, useState } from "react";
-import { Box, Button, Info } from "../../blocks";
 import {
   BoxLayout,
   ContentLayout,
   PushWalletLoadingContent,
   WalletSkeletonScreen,
   WalletReconstructionErrorContent,
-  DrawerWrapper,
-  LoadingContent,
-  ErrorContent,
-  getAppParamValue,
 } from "../../common";
-import { WalletProfile } from "./components/WalletProfile";
-import { WalletTabs } from "./components/WalletTabs";
 import api from "../../services/api";
 import { PushWallet } from "../../services/pushWallet/pushWallet";
 import { APP_ROUTES, ENV } from "../../constants";
@@ -21,13 +14,18 @@ import { useGlobalState } from "../../context/GlobalContext";
 // import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { getWalletlist } from "./Wallet.utils";
 import { WalletListType } from "./Wallet.types";
-import { PushWalletAppConnection } from "../../common";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
-import { ConnectionSuccess } from "../../common/components/ConnectionSuccess";
 import { CreateNewWallet } from "../../common/components/CreateNewWallet";
+import { ActiveStates } from "src/types/wallet.types";
+import WalletDashboard from "./components/WalletDashboard";
+import AddTokens from "./components/AddTokens";
+import { Box } from "blocks";
+import { WalletProvider } from "./WalletContext";
+import { Receive } from "./components/Receive";
+import { Send } from "./components/sendComponent/Send";
 
-export type WalletProps = {};
+export type WalletProps = Record<string, never>;
 
 const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
@@ -50,6 +48,7 @@ const Wallet: FC<WalletProps> = () => {
 
   const navigate = useNavigate();
   const persistQuery = usePersistedQuery();
+  const [activeState, setActiveState] = useState<ActiveStates>('send');
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -195,8 +194,6 @@ const Wallet: FC<WalletProps> = () => {
     }
   };
 
-
-
   useEffect(() => {
     const initializeProfile = async () => {
       try {
@@ -313,55 +310,24 @@ const Wallet: FC<WalletProps> = () => {
           flexDirection="column"
           display="flex"
           width={{ initial: "376px", ml: "100%" }}
+          height={{ initial: "auto", ml: "100%" }}
           padding="spacing-md"
           gap="spacing-sm"
           position="relative"
         >
-          <PushWalletAppConnection selectedWallet={selectedWallet} />
-          <WalletProfile selectedWallet={selectedWallet} />
-          <WalletTabs
-            walletList={getWalletlist(
-              state.wallet
-            )}
+          <WalletProvider
             selectedWallet={selectedWallet}
             setSelectedWallet={setSelectedWallet}
-          />
-          {/* {!state?.wallet && primaryWallet && (
-            <CreateAccount
-              isLoading={createAccountLoading}
-              setIsLoading={setCreateAccountLoading}
-            />
-          )} */}
-          {state.messageSignState === "loading" && (
-            <DrawerWrapper>
-              <LoadingContent
-                title={"Processing Transaction"}
-                subTitle={"Your transaction is being verified"}
-              />
-            </DrawerWrapper>
-          )}
-
-          {state.messageSignState === "rejected" && (
-            <DrawerWrapper>
-              <ErrorContent
-                icon={<Info size={32} color="icon-state-danger-subtle" />}
-                title="Could not verify"
-                subTitle="Please try again"
-                onClose={() =>
-                  dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" })
-                }
-              />
-            </DrawerWrapper>
-          )}
-          {showConnectionSuccess && getAppParamValue() && (
-            <DrawerWrapper>
-              <ConnectionSuccess
-                onClose={() => {
-                  setConnectionSuccess(false);
-                }}
-              />
-            </DrawerWrapper>
-          )}
+            showConnectionSuccess={showConnectionSuccess}
+            setConnectionSuccess={setConnectionSuccess}
+            activeState={activeState}
+            setActiveState={setActiveState}
+          >
+            {activeState === 'wallet' && <WalletDashboard />}
+            {activeState === 'addTokens' && <AddTokens />}
+            {activeState === 'receive' && <Receive />}
+            {activeState === 'send' && <Send />}
+          </WalletProvider>
         </Box>
       </BoxLayout>
     </ContentLayout>
