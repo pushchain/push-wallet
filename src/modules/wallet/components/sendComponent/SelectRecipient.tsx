@@ -2,12 +2,12 @@ import { Box, Button, PushMonotone, Text, TextInput } from 'blocks';
 import React from 'react';
 import { TOKEN_LOGO } from 'common';
 import { css } from 'styled-components';
-import { useSend } from './SendContext';
-import { useWalletDashboard } from '../../WalletContext';
+import { useWalletDashboard } from '../../../../context/WalletDashboardContext';
+import { useSendTokenContext } from '../../../../context/SendTokenContext';
 
 const SelectRecipient = () => {
 
-    const { tokenSelected, receiverAddress, setReceiverAddress, amount, setAmount, setSendState } = useSend();
+    const { tokenSelected, receiverAddress, setReceiverAddress, amount, setAmount, setSendState } = useSendTokenContext();
 
     const { setActiveState } = useWalletDashboard();
 

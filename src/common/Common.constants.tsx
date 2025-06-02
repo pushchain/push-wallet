@@ -46,7 +46,8 @@ import {
   Solana,
   SolanaMonotone,
 } from "../blocks";
-import { ChainType, TokenType, WalletCategoriesType } from "../types/wallet.types";
+import { ChainType, WalletCategoriesType } from "../types/wallet.types";
+import { TokenType } from "../types";
 
 export const walletCategories: WalletCategoriesType[] = [
   {
@@ -89,6 +90,13 @@ export const walletCategories: WalletCategoriesType[] = [
     wallet: "ethereum",
     label: "Connect Avalanche Wallet",
     icon: <Avalanche width={24} height={24} />,
+    isMobile: false,
+  },
+  {
+    chain: ChainType.PUSH_TESTNET,
+    wallet: "ethereum",
+    label: "Connect Push Testnet",
+    icon: <PushAlpha width={24} height={24} />,
     isMobile: false,
   },
 ];

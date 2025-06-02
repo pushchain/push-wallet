@@ -2,7 +2,7 @@ import { Box, Button, PushAlpha, Text, TextInput } from 'blocks';
 import React, { FC, useState } from 'react';
 import { css } from 'styled-components';
 import WalletHeader from './WalletHeader';
-import { useWalletDashboard } from '../WalletContext';
+import { useWalletDashboard } from '../../../context/WalletDashboardContext';
 
 type Token = {
     name: string;
@@ -105,7 +105,7 @@ const AddTokens: FC = () => {
                     )}
                 </Box>
                 <Box display='flex' gap='spacing-xs'>
-                    <Button variant='outline' css={css`flex:1`} onClick={() => setActiveState('wallet')}>Cancel</Button>
+                    <Button variant='outline' css={css`flex:1`} onClick={() => setActiveState('walletDashboard')}>Cancel</Button>
                     <Button css={css`flex:2`}>Next</Button>
                 </Box>
 

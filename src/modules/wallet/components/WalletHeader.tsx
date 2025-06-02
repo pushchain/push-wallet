@@ -28,8 +28,8 @@ import { css } from "styled-components";
 import BlockiesSvg from "blockies-react-svg";
 import { FC, useState } from "react";
 import { convertCaipToObject } from "../Wallet.utils";
-import { WalletListType } from "../Wallet.types";
-import { useWalletDashboard } from "../WalletContext";
+import { useWalletDashboard } from "../../../context/WalletDashboardContext";
+import { WalletListType } from "../../../types";
 
 type WalletHeaderProps = {
     selectedWallet: WalletListType;
@@ -70,22 +70,22 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet }) => {
     return (
         <Box
             display="flex"
-            justifyContent={activeState === "wallet" ? "space-between" : "flex-start"}
+            justifyContent={activeState === "walletDashboard" ? "space-between" : "flex-start"}
             alignItems="center"
             width="-webkit-fill-available"
             gap="spacing-xxs"
         >
-            {activeState !== "wallet" && (
+            {activeState !== "walletDashboard" && (
                 <Box cursor="pointer">
                     <Back
                         size={24}
                         color="icon-primary"
-                        onClick={() => setActiveState("wallet")}
+                        onClick={() => setActiveState("walletDashboard")}
                     />
                 </Box>
             )}
 
-            {activeState === "wallet" && (
+            {activeState === "walletDashboard" && (
                 <Dropdown
                     css={css`
             z-index: 3;
@@ -179,7 +179,7 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet }) => {
                 </Box>
             </Box>}
 
-            {activeState === "wallet" && (
+            {activeState === "walletDashboard" && (
                 <Dropdown
                     css={css`
             z-index: 3;

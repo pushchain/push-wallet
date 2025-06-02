@@ -2,9 +2,9 @@ import { Box, Button, PushMonotone, Search, Text, TextInput } from 'blocks';
 import React, { FC, useState } from 'react';
 import { css } from 'styled-components';
 import { TOKEN_LOGO, tokens } from 'common';
-import { TokenType } from '../../../../types/wallet.types';
-import { useWalletDashboard } from '../../WalletContext';
-import { useSend } from './SendContext';
+import { TokenType } from '../../../../types';
+import { useWalletDashboard } from '../../../../context/WalletDashboardContext';
+import { useSendTokenContext } from '../../../../context/SendTokenContext';
 
 type SelectTokenProps = {
     handleTokenSelection: (token: TokenType) => void;
@@ -15,7 +15,7 @@ const SelectToken: FC<SelectTokenProps> = ({
     const [searchQuery, setSearchQuery] = useState('');
     const { setActiveState } = useWalletDashboard();
 
-    const { tokenSelected, setTokenSelected } = useSend();
+    const { tokenSelected, setTokenSelected } = useSendTokenContext();
 
     const handleSearch = () => {
         if (!searchQuery) return;

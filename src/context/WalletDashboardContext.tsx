@@ -1,8 +1,7 @@
 import { createContext, useContext, ReactNode } from 'react';
-import { WalletListType } from './Wallet.types';
-import { ActiveStates } from 'src/types/wallet.types';
+import { ActiveStates, WalletListType } from '../types';
 
-interface WalletContextType {
+interface WalletDashboardContextType {
     selectedWallet: WalletListType | undefined;
     setSelectedWallet: (wallet: WalletListType) => void;
     showConnectionSuccess: boolean;
@@ -11,7 +10,7 @@ interface WalletContextType {
     setActiveState: (state: ActiveStates) => void;
 }
 
-const WalletContext = createContext<WalletContextType | undefined>(undefined);
+const WalletDashboardContext = createContext<WalletDashboardContextType | undefined>(undefined);
 
 interface WalletProviderProps {
     children: ReactNode;
@@ -23,7 +22,7 @@ interface WalletProviderProps {
     setActiveState: (state: ActiveStates) => void;
 }
 
-export const WalletProvider = ({
+export const WalletDashboardProvider = ({
     children,
     selectedWallet,
     setSelectedWallet,
@@ -33,7 +32,7 @@ export const WalletProvider = ({
     setActiveState,
 }: WalletProviderProps) => {
     return (
-        <WalletContext.Provider
+        <WalletDashboardContext.Provider
             value={{
                 selectedWallet,
                 setSelectedWallet,
@@ -44,14 +43,14 @@ export const WalletProvider = ({
             }}
         >
             {children}
-        </WalletContext.Provider>
+        </WalletDashboardContext.Provider>
     );
 };
 
 export const useWalletDashboard = () => {
-    const context = useContext(WalletContext);
+    const context = useContext(WalletDashboardContext);
     if (context === undefined) {
-        throw new Error('useWallet must be used within a WalletProvider');
+        throw new Error('useWalletDashboard must be used within a WalletProvider');
     }
     return context;
 }; 

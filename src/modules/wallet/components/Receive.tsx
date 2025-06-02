@@ -1,10 +1,10 @@
 import { Box, Button, Copy, PushAlpha, Text } from 'blocks';
 import React from 'react';
 import WalletHeader from './WalletHeader';
-import { useWalletDashboard } from '../WalletContext';
 import styled from 'styled-components';
 import { useGlobalState } from '../../../context/GlobalContext';
 import { convertCaipToObject } from '../Wallet.utils';
+import { useWalletDashboard } from '../../../context/WalletDashboardContext';
 
 const Receive = () => {
     const { state } = useGlobalState();
@@ -86,7 +86,7 @@ const Receive = () => {
                         Only send to Push chain addresses. Other networks may result in lost tokens
                     </Text>
 
-                    <Button block onClick={() => setActiveState('wallet')}>Close</Button>
+                    <Button block onClick={() => setActiveState('walletDashboard')}>Close</Button>
 
                 </Box>
             </Box>

@@ -14,6 +14,8 @@ export abstract class BaseWalletProvider implements IWalletProvider {
 
   abstract connect(chainType?: ChainType): Promise<{ caipAddress: string }>;
   abstract disconnect(): Promise<void>;
+  abstract signMessage(message: Uint8Array): Promise<Uint8Array>;
+  abstract sendNativeToken(to: string, amountInEth: string): Promise<string>
   abstract getChainId(): Promise<unknown>;
   abstract switchNetwork(chainName: ChainType): Promise<void>;
 

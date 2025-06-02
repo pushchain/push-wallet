@@ -1,9 +1,10 @@
 import { MetaMaskSDK } from "@metamask/sdk";
 import { ChainType } from "../../types/wallet.types";
 import { BaseWalletProvider } from "../BaseWalletProvider";
-import * as chains from "viem/chains"
 import { toHex } from "viem";
 import { getAddress } from 'ethers';
+import { chains } from "./chains";
+import { Chain } from 'viem';
 
 export class MetamaskProvider extends BaseWalletProvider {
   private sdk: MetaMaskSDK;
@@ -13,7 +14,8 @@ export class MetamaskProvider extends BaseWalletProvider {
       ChainType.ETHEREUM,
       ChainType.ARBITRUM,
       ChainType.AVALANCHE,
-      ChainType.BINANCE
+      ChainType.BINANCE,
+      ChainType.PUSH_TESTNET
     ]);
     this.sdk = new MetaMaskSDK({
       dappMetadata: {
@@ -77,7 +79,7 @@ export class MetamaskProvider extends BaseWalletProvider {
   };
 
   switchNetwork = async (chainName: ChainType) => {
-    const network = chains[chainName] as chains.Chain
+    const network = chains[chainName] as Chain
     const provider = this.getProvider();
     const hexNetworkId = toHex(network.id);
 
@@ -110,6 +112,55 @@ export class MetamaskProvider extends BaseWalletProvider {
     }
 
   }
+
+  signMessage = async (message: Uint8Array): Promise<Uint8Array> => {
+    try {
+      const provider = this.getProvider();
+      if (!provider) {
+        throw new Error('Provider is undefined');
+      }
+      const accounts = (await provider.request({
+        method: 'eth_accounts',
+      })) as string[];
+
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No connected account');
+      }
+
+      const hexMessage = '0x' + Buffer.from(message).toString('hex');
+
+      const signature = await provider.request({
+        method: 'personal_sign',
+        params: [hexMessage, accounts[0]],
+      });
+
+      return new Uint8Array(Buffer.from((signature as string).slice(2), 'hex'));
+    } catch (error) {
+      console.error('MetaMask signing error:', error);
+      throw error;
+    }
+  };
+
+  sendNativeToken = async (to: string, amountInEth: string): Promise<string> => {
+    const provider = this.getProvider();
+    const [from] = await provider.request({ method: 'eth_requestAccounts' });
+    console.log("From >>>", from);
+
+    const tx = {
+      from,
+      to,
+      value: toHex(BigInt(parseFloat(amountInEth) * 1e18)), // convert ETH to wei
+    };
+
+    console.log("Transaction", tx);
+
+    const txHash = await provider.request({
+      method: 'eth_sendTransaction',
+      params: [tx],
+    });
+
+    return txHash as string;
+  };
 
   disconnect = async () => {
     const provider = this.getProvider();

@@ -1,18 +1,17 @@
 import { Box } from 'blocks';
 import React from 'react';
 import WalletHeader from '../WalletHeader';
-import { useWalletDashboard } from '../../WalletContext';
-import { TokenType } from '../../../../types/wallet.types';
 import { SelectToken } from './SelectToken';
 import SelectRecipient from './SelectRecipient';
 import Review from './Review';
 import Confirmation from './Confirmation';
-import { SendProvider, useSend } from './SendContext';
+import { TokenType } from '../../../../types';
+import { useWalletDashboard } from '../../../../context/WalletDashboardContext';
+import { SendTokenProvider, useSendTokenContext } from '../../../../context/SendTokenContext';
 
 const SendContent = () => {
     const { selectedWallet } = useWalletDashboard();
-    const { sendState, setTokenSelected, setSendState } = useSend();
-
+    const { sendState, setTokenSelected, setSendState } = useSendTokenContext();
 
     const handleTokenSelection = (token: TokenType) => {
         setTokenSelected(token);
@@ -39,9 +38,9 @@ const SendContent = () => {
 
 const Send = () => {
     return (
-        <SendProvider>
+        <SendTokenProvider>
             <SendContent />
-        </SendProvider>
+        </SendTokenProvider>
     );
 };
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import { Box, Button, SendNotification, Text } from 'blocks';
-import { useSend } from './SendContext';
 import { centerMaskWalletAddress } from 'common';
 import { css } from 'styled-components';
+import { useSendTokenContext } from '../../../../context/SendTokenContext';
 
 const Review = () => {
-    const { tokenSelected, receiverAddress, amount, handleSendTransaction, sendingTransaction } = useSend();
+    const { tokenSelected, receiverAddress, amount, handleSendTransaction, sendingTransaction } = useSendTokenContext();
 
     return (
         <Box

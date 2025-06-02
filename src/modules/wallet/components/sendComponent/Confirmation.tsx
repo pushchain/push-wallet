@@ -1,13 +1,13 @@
 import { Box, Button, ExternalLink, Text, TickCircleFilled } from 'blocks';
 import React from 'react';
 import { css } from 'styled-components';
-import { useSend } from './SendContext';
 import { centerMaskWalletAddress } from 'common';
-import { useWalletDashboard } from '../../WalletContext';
+import { useWalletDashboard } from '../../../../context/WalletDashboardContext';
+import { useSendTokenContext } from '../../../../context/SendTokenContext';
 
 const Confirmation = () => {
 
-    const { tokenSelected, receiverAddress, amount } = useSend();
+    const { tokenSelected, receiverAddress, amount } = useSendTokenContext();
     const { setActiveState } = useWalletDashboard();
 
     const handleBackToHome = () => {

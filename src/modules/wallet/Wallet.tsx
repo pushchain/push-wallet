@@ -13,17 +13,16 @@ import secrets from "secrets.js-grempe";
 import { useGlobalState } from "../../context/GlobalContext";
 // import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { getWalletlist } from "./Wallet.utils";
-import { WalletListType } from "./Wallet.types";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
 import { CreateNewWallet } from "../../common/components/CreateNewWallet";
-import { ActiveStates } from "src/types/wallet.types";
 import WalletDashboard from "./components/WalletDashboard";
 import AddTokens from "./components/AddTokens";
 import { Box } from "blocks";
-import { WalletProvider } from "./WalletContext";
 import { Receive } from "./components/Receive";
 import { Send } from "./components/sendComponent/Send";
+import { WalletDashboardProvider } from "../../context/WalletDashboardContext";
+import { ActiveStates, WalletListType } from "src/types";
 
 export type WalletProps = Record<string, never>;
 
@@ -48,7 +47,7 @@ const Wallet: FC<WalletProps> = () => {
 
   const navigate = useNavigate();
   const persistQuery = usePersistedQuery();
-  const [activeState, setActiveState] = useState<ActiveStates>('send');
+  const [activeState, setActiveState] = useState<ActiveStates>('walletDashboard');
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -315,7 +314,7 @@ const Wallet: FC<WalletProps> = () => {
           gap="spacing-sm"
           position="relative"
         >
-          <WalletProvider
+          <WalletDashboardProvider
             selectedWallet={selectedWallet}
             setSelectedWallet={setSelectedWallet}
             showConnectionSuccess={showConnectionSuccess}
@@ -323,11 +322,11 @@ const Wallet: FC<WalletProps> = () => {
             activeState={activeState}
             setActiveState={setActiveState}
           >
-            {activeState === 'wallet' && <WalletDashboard />}
+            {activeState === 'walletDashboard' && <WalletDashboard />}
             {activeState === 'addTokens' && <AddTokens />}
             {activeState === 'receive' && <Receive />}
             {activeState === 'send' && <Send />}
-          </WalletProvider>
+          </WalletDashboardProvider>
         </Box>
       </BoxLayout>
     </ContentLayout>

@@ -6,7 +6,8 @@ export enum ChainType {
   BINANCE = "bsc",
   ARBITRUM = "arbitrum",
   AVALANCHE = "avalanche",
-  WALLET_CONNECT = "walletConnect"
+  WALLET_CONNECT = "walletConnect",
+  PUSH_TESTNET = 'pushTestnet'
 }
 export interface WalletInfo {
   address: string;
@@ -20,6 +21,8 @@ export interface IWalletProvider {
   supportedChains: ChainType[];
   connect(chainType?: ChainType): Promise<{ caipAddress: string }>;
   disconnect(): Promise<void>;
+  signMessage(message: Uint8Array): Promise<Uint8Array>;
+  sendNativeToken(to: string, amountInEth: string): Promise<string>
   getChainId(): Promise<unknown>;
   switchNetwork(chainName: ChainType): Promise<void>;
 }
@@ -56,15 +59,4 @@ export type AppMetadata = {
 export interface WalletConfig {
   loginDefaults: LoginMethodConfig,
   appMetadata: AppMetadata,
-}
-
-export type ActiveStates = 'wallet' | 'send' | 'receive' | 'addTokens'
-export type TokenType = {
-  id: number;
-  name: string;
-  symbol: string;
-  amount: number;
-  amountInUsd: number;
-  amountChange: string;
-  contractAddress: string;
 }

@@ -4,9 +4,8 @@ import { WalletActivityList } from "./WalletActivityList";
 
 import { MyWallets } from "./MyWallets";
 import { useGlobalState } from "../../../context/GlobalContext";
-import { WalletListType } from "../Wallet.types";
 import { TokensList } from "./TokensList";
-import { ActiveStates } from "src/types/wallet.types";
+import { ActiveStates, WalletListType } from "../../../types";
 
 export type WalletTabsProps = {
   walletList: WalletListType[];

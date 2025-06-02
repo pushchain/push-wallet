@@ -1,9 +1,9 @@
 import { FC } from "react";
 import { Box, Download, Faucet, SendNotification, Text } from "../../../blocks";
-import { WalletListType } from "../Wallet.types";
 import WalletHeader from "./WalletHeader";
 import { css } from "styled-components";
-import { useWalletDashboard } from "../WalletContext";
+import { WalletListType } from "../../../types";
+import { useWalletDashboard } from "../../../context/WalletDashboardContext";
 
 export type WalletProfileProps = {
   selectedWallet: WalletListType;

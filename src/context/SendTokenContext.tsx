@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { TokenType } from '../../../../types/wallet.types';
+import { SendTokenState, TokenType } from '../types';
 
-interface SendContextType {
-    sendState: 'selectToken' | 'selectRecipient' | 'review' | 'confirmation';
-    setSendState: (state: 'selectToken' | 'selectRecipient' | 'review' | 'confirmation') => void;
+interface SendTokenContextType {
+    sendState: SendTokenState;
+    setSendState: (state: SendTokenState) => void;
     tokenSelected: TokenType | null;
     setTokenSelected: (token: TokenType | null) => void;
     receiverAddress: string | null;
@@ -14,10 +14,10 @@ interface SendContextType {
     handleSendTransaction: () => void;
 }
 
-const SendContext = createContext<SendContextType | undefined>(undefined);
+const SendTokenContext = createContext<SendTokenContextType | undefined>(undefined);
 
-export const SendProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [sendState, setSendState] = useState<'selectToken' | 'selectRecipient' | 'review' | 'confirmation'>('selectToken');
+export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const [sendState, setSendState] = useState<SendTokenState>('selectToken');
     const [tokenSelected, setTokenSelected] = useState<TokenType | null>(null);
     const [receiverAddress, setReceiverAddress] = useState<string | null>(null);
     const [amount, setAmount] = useState<number | null>(null);
@@ -48,13 +48,13 @@ export const SendProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         handleSendTransaction,
     };
 
-    return <SendContext.Provider value={value}>{children}</SendContext.Provider>;
+    return <SendTokenContext.Provider value={value}>{children}</SendTokenContext.Provider>;
 };
 
-export const useSend = () => {
-    const context = useContext(SendContext);
+export const useSendTokenContext = () => {
+    const context = useContext(SendTokenContext);
     if (context === undefined) {
-        throw new Error('useSend must be used within a SendProvider');
+        throw new Error('useSendTokenContext must be used within a SendProvider');
     }
     return context;
 }; 
