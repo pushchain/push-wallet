@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode } from 'react';
-import { ActiveStates, WalletListType } from '../types';
+import { ActiveStates, PushNetworks, WalletListType } from '../types';
 
 interface WalletDashboardContextType {
     selectedWallet: WalletListType | undefined;
@@ -8,6 +8,8 @@ interface WalletDashboardContextType {
     setConnectionSuccess: (show: boolean) => void;
     activeState: ActiveStates;
     setActiveState: (state: ActiveStates) => void;
+    selectedNetwork: PushNetworks;
+    setSelectedNetwork: (network: PushNetworks) => void;
 }
 
 const WalletDashboardContext = createContext<WalletDashboardContextType | undefined>(undefined);
@@ -20,6 +22,8 @@ interface WalletProviderProps {
     setConnectionSuccess: (show: boolean) => void;
     activeState: ActiveStates;
     setActiveState: (state: ActiveStates) => void;
+    selectedNetwork: PushNetworks;
+    setSelectedNetwork: (network: PushNetworks) => void;
 }
 
 export const WalletDashboardProvider = ({
@@ -30,6 +34,8 @@ export const WalletDashboardProvider = ({
     setConnectionSuccess,
     activeState,
     setActiveState,
+    selectedNetwork,
+    setSelectedNetwork,
 }: WalletProviderProps) => {
     return (
         <WalletDashboardContext.Provider
@@ -40,6 +46,8 @@ export const WalletDashboardProvider = ({
                 setConnectionSuccess,
                 activeState,
                 setActiveState,
+                selectedNetwork,
+                setSelectedNetwork,
             }}
         >
             {children}

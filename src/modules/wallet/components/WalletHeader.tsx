@@ -33,11 +33,12 @@ import { WalletListType } from "../../../types";
 
 type WalletHeaderProps = {
     selectedWallet: WalletListType;
+    handleBackButton?: () => void;
 };
 
-const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet }) => {
+const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton }) => {
     const { state, dispatch } = useGlobalState();
-    const { activeState, setActiveState } = useWalletDashboard();
+    const { activeState, setSelectedNetwork } = useWalletDashboard();
 
     const parsedWallet =
         selectedWallet?.address || state?.externalWallet?.address;
@@ -75,12 +76,12 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet }) => {
             width="-webkit-fill-available"
             gap="spacing-xxs"
         >
-            {activeState !== "walletDashboard" && (
+            {handleBackButton && (
                 <Box cursor="pointer">
                     <Back
                         size={24}
                         color="icon-primary"
-                        onClick={() => setActiveState("walletDashboard")}
+                        onClick={handleBackButton}
                     />
                 </Box>
             )}
@@ -96,14 +97,14 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet }) => {
                                 label="Push Testnet Donut"
                                 icon={<PushAlpha width={24} height={24} />}
                                 onClick={() => {
-                                    console.log("Change to testnet donut");
+                                    setSelectedNetwork("Push Testnet Donut");
                                 }}
                             />
                             <MenuItem
                                 label="Push Testnet Sushi"
                                 icon={<PushAlpha width={24} height={24} />}
                                 onClick={() => {
-                                    console.log("Change to testnet sushi");
+                                    setSelectedNetwork("Push Testnet Sushi");
                                 }}
                             />
                         </Menu>

@@ -12,6 +12,8 @@ interface SendTokenContextType {
     setAmount: (amount: number | null) => void;
     sendingTransaction: boolean;
     handleSendTransaction: () => void;
+    txhash: string | null;
+    setTxhash: (txHash: string | null) => void;
 }
 
 const SendTokenContext = createContext<SendTokenContextType | undefined>(undefined);
@@ -23,6 +25,7 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({ children 
     const [amount, setAmount] = useState<number | null>(null);
 
     const [sendingTransaction, setSendingTransaction] = useState<boolean>(false);
+    const [txhash, setTxhash] = useState<string | null>(null);
 
     const handleSendTransaction = () => {
 
@@ -32,6 +35,7 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({ children 
         setTimeout(() => {
             setSendingTransaction(false);
             setSendState('confirmation')
+            setTxhash('0x885e40c0a7984167dc6a61bbc31feeae29a91ee3cf0f60c8c1a6da40a0284fd2')
         }, 3000);
     }
 
@@ -46,6 +50,8 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({ children 
         setAmount,
         sendingTransaction,
         handleSendTransaction,
+        txhash,
+        setTxhash
     };
 
     return <SendTokenContext.Provider value={value}>{children}</SendTokenContext.Provider>;

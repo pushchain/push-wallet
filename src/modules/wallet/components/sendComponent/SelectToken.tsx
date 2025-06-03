@@ -5,6 +5,7 @@ import { TOKEN_LOGO, tokens } from 'common';
 import { TokenType } from '../../../../types';
 import { useWalletDashboard } from '../../../../context/WalletDashboardContext';
 import { useSendTokenContext } from '../../../../context/SendTokenContext';
+import WalletHeader from '../WalletHeader';
 
 type SelectTokenProps = {
     handleTokenSelection: (token: TokenType) => void;
@@ -13,7 +14,7 @@ const SelectToken: FC<SelectTokenProps> = ({
     handleTokenSelection
 }) => {
     const [searchQuery, setSearchQuery] = useState('');
-    const { setActiveState } = useWalletDashboard();
+    const { setActiveState, selectedWallet } = useWalletDashboard();
 
     const { tokenSelected, setTokenSelected } = useSendTokenContext();
 
@@ -72,6 +73,8 @@ const SelectToken: FC<SelectTokenProps> = ({
     }
     return (
         <>
+            <WalletHeader selectedWallet={selectedWallet} handleBackButton={() => setActiveState('walletDashboard')} />
+
             <Box
                 display='flex'
                 flexDirection='column'
@@ -165,7 +168,7 @@ const SelectToken: FC<SelectTokenProps> = ({
             </Box>
 
             <Box display='flex' css={css`flex:1`} alignItems='flex-end'>
-                <Button onClick={() => setActiveState('wallet')} block>Close</Button>
+                <Button onClick={() => setActiveState('walletDashboard')} block>Close</Button>
             </Box>
         </>
     );

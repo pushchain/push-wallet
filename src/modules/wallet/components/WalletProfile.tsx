@@ -1,9 +1,12 @@
-import { FC } from "react";
-import { Box, Download, Faucet, SendNotification, Text } from "../../../blocks";
+import { FC, useEffect } from "react";
+import { Box, Download, Faucet, SendNotification, Spinner, Text } from "../../../blocks";
 import WalletHeader from "./WalletHeader";
 import { css } from "styled-components";
 import { WalletListType } from "../../../types";
 import { useWalletDashboard } from "../../../context/WalletDashboardContext";
+import { useGlobalState } from "../../../context/GlobalContext";
+import { useWalletBalance } from "../../../common/hooks/useWalletOperations";
+import { convertCaipToObject } from "../Wallet.utils";
 
 export type WalletProfileProps = {
   selectedWallet: WalletListType;
@@ -31,6 +34,22 @@ const buttonConfigs = [
 
 const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
   const { setActiveState } = useWalletDashboard();
+  const { state } = useGlobalState();
+  const { balance, isLoading: isBalanceLoading, fetchBalance } = useWalletBalance();
+
+  const parsedWallet = selectedWallet?.address || state?.externalWallet?.address;
+
+  const handleFetchBalance = async () => {
+    if (!parsedWallet) return;
+    const { result } = convertCaipToObject(parsedWallet);
+    await fetchBalance(result.address);
+  };
+
+  useEffect(() => {
+    if (parsedWallet) {
+      handleFetchBalance();
+    }
+  }, [parsedWallet])
 
   return (
     <Box
@@ -48,9 +67,16 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
         alignItems="center"
         justifyContent="center"
       >
-        <Text color="text-primary" variant="h2-semibold" textAlign="center">
-          124.53 PC
-        </Text>
+        <Box display='flex' margin='spacing-none spacing-none spacing-xxxs spacing-none'>
+          {isBalanceLoading ? (
+            <Spinner size='extraLarge' variant='primary' />
+          ) : (
+            <Text color="text-primary" variant="h2-semibold" textAlign="center">
+              {Number(Number(balance).toFixed(3)).toLocaleString()} PC
+            </Text>
+          )}
+        </Box>
+
         <Box display="flex" gap="spacing-xxxs">
           <Text color="text-state-success-bold">+$276.29</Text>
           <Box

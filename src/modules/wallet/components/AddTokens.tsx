@@ -55,7 +55,7 @@ const AddTokens: FC = () => {
             gap="spacing-md"
             position="relative"
         >
-            <WalletHeader selectedWallet={selectedWallet} />
+            <WalletHeader selectedWallet={selectedWallet} handleBackButton={() => setActiveState('walletDashboard')} />
             <Box display='flex' flexDirection='column' justifyContent='space-between' css={css`flex:1`}>
                 <Box
                     display="flex"

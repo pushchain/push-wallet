@@ -1,7 +1,7 @@
-import { Box, Button, Copy, PushAlpha, Text } from 'blocks';
-import React from 'react';
+import { Box, Button, Copy, PushAlpha, Text, TickCircleFilled } from 'blocks';
+import React, { useState, useEffect } from 'react';
 import WalletHeader from './WalletHeader';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useGlobalState } from '../../../context/GlobalContext';
 import { convertCaipToObject } from '../Wallet.utils';
 import { useWalletDashboard } from '../../../context/WalletDashboardContext';
@@ -9,12 +9,31 @@ import { useWalletDashboard } from '../../../context/WalletDashboardContext';
 const Receive = () => {
     const { state } = useGlobalState();
     const { selectedWallet, setActiveState } = useWalletDashboard();
+    const [isCopied, setIsCopied] = useState(false);
 
     const parsedWallet =
         selectedWallet?.address || state?.externalWallet?.address;
 
     const { result } = convertCaipToObject(parsedWallet);
 
+    const handleCopyAddress = () => {
+        if (result?.address) {
+            navigator.clipboard.writeText(result.address);
+            setIsCopied(true);
+        }
+    };
+
+    useEffect(() => {
+        let timeout: NodeJS.Timeout;
+        if (isCopied) {
+            timeout = setTimeout(() => {
+                setIsCopied(false);
+            }, 3000);
+        }
+        return () => {
+            if (timeout) clearTimeout(timeout);
+        };
+    }, [isCopied]);
 
     return (
         <Box
@@ -24,7 +43,7 @@ const Receive = () => {
             gap="spacing-md"
             position="relative"
         >
-            <WalletHeader selectedWallet={selectedWallet} />
+            <WalletHeader selectedWallet={selectedWallet} handleBackButton={() => setActiveState('walletDashboard')} />
 
             <Box
                 display='flex'
@@ -32,6 +51,7 @@ const Receive = () => {
                 alignItems='center'
                 justifyContent='center'
                 gap='spacing-md'
+                css={css`flex:1`}
             >
                 <Box
                     display='flex'
@@ -58,6 +78,7 @@ const Receive = () => {
                     justifyContent='center'
                     gap='spacing-xs'
                     width='100%'
+
                 >
                     <Text color='text-primary' variant='h4-semibold'>Push Address</Text>
 
@@ -77,17 +98,30 @@ const Receive = () => {
                         justifyContent='center'
                         alignItems='center'
                         padding='spacing-xxxs'
+                        onClick={handleCopyAddress}
+                        cursor='pointer'
                     >
-                        <Copy color='icon-brand-medium' size={24} />
-                        <Text variant='bs-semibold' color='text-brand-medium'>Copy Address</Text>
+                        {isCopied ? (
+                            <TickCircleFilled color='icon-brand-medium' size={24} />
+                        ) : (
+                            <Copy color='icon-brand-medium' size={24} />
+                        )}
+                        <Text variant='bs-semibold' color='text-brand-medium'>
+                            {isCopied ? 'Address Copied!' : 'Copy Address'}
+                        </Text>
                     </Box>
-
                     <Text variant='c-regular' color='text-tertiary'>
                         Only send to Push chain addresses. Other networks may result in lost tokens
                     </Text>
+                </Box>
+                <Box
+                    css={css`flex:1`}
+                    display='flex'
+                    alignItems='end'
+                    width='100%'
+                >
 
                     <Button block onClick={() => setActiveState('walletDashboard')}>Close</Button>
-
                 </Box>
             </Box>
 

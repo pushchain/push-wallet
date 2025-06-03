@@ -141,27 +141,6 @@ export class MetamaskProvider extends BaseWalletProvider {
     }
   };
 
-  sendNativeToken = async (to: string, amountInEth: string): Promise<string> => {
-    const provider = this.getProvider();
-    const [from] = await provider.request({ method: 'eth_requestAccounts' });
-    console.log("From >>>", from);
-
-    const tx = {
-      from,
-      to,
-      value: toHex(BigInt(parseFloat(amountInEth) * 1e18)), // convert ETH to wei
-    };
-
-    console.log("Transaction", tx);
-
-    const txHash = await provider.request({
-      method: 'eth_sendTransaction',
-      params: [tx],
-    });
-
-    return txHash as string;
-  };
-
   disconnect = async () => {
     const provider = this.getProvider();
     await provider.request({

@@ -22,7 +22,6 @@ export interface IWalletProvider {
   connect(chainType?: ChainType): Promise<{ caipAddress: string }>;
   disconnect(): Promise<void>;
   signMessage(message: Uint8Array): Promise<Uint8Array>;
-  sendNativeToken(to: string, amountInEth: string): Promise<string>
   getChainId(): Promise<unknown>;
   switchNetwork(chainName: ChainType): Promise<void>;
 }

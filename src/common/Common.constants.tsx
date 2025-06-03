@@ -51,6 +51,13 @@ import { TokenType } from "../types";
 
 export const walletCategories: WalletCategoriesType[] = [
   {
+    chain: ChainType.PUSH_TESTNET,
+    wallet: "ethereum",
+    label: "Connect Push Testnet",
+    icon: <PushAlpha width={24} height={24} />,
+    isMobile: false,
+  },
+  {
     chain: ChainType.ETHEREUM,
     wallet: "ethereum",
     label: "Connect Ethereum Wallet",
@@ -91,14 +98,7 @@ export const walletCategories: WalletCategoriesType[] = [
     label: "Connect Avalanche Wallet",
     icon: <Avalanche width={24} height={24} />,
     isMobile: false,
-  },
-  {
-    chain: ChainType.PUSH_TESTNET,
-    wallet: "ethereum",
-    label: "Connect Push Testnet",
-    icon: <PushAlpha width={24} height={24} />,
-    isMobile: false,
-  },
+  }
 ];
 
 export const CHAIN_MONOTONE_LOGO: {
@@ -221,3 +221,7 @@ export const tokens: TokenType[] = [
     contractAddress: '0x6D2a0194bD791CADd7a3F5c9464cE9fC24a49a3',
   }
 ]
+
+
+export const EXPLORER_URL = `https://explorer.dev.push.org`
+export const FAUCET_URL = 'https://faucet.push.org';

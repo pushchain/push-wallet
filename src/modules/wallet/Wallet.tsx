@@ -22,7 +22,7 @@ import { Box } from "blocks";
 import { Receive } from "./components/Receive";
 import { Send } from "./components/sendComponent/Send";
 import { WalletDashboardProvider } from "../../context/WalletDashboardContext";
-import { ActiveStates, WalletListType } from "src/types";
+import { ActiveStates, PushNetworks, WalletListType } from "src/types";
 
 export type WalletProps = Record<string, never>;
 
@@ -48,6 +48,7 @@ const Wallet: FC<WalletProps> = () => {
   const navigate = useNavigate();
   const persistQuery = usePersistedQuery();
   const [activeState, setActiveState] = useState<ActiveStates>('walletDashboard');
+  const [selectedNetwork, setSelectedNetwork] = useState<PushNetworks>('Push Testnet Donut');
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -321,6 +322,8 @@ const Wallet: FC<WalletProps> = () => {
             setConnectionSuccess={setConnectionSuccess}
             activeState={activeState}
             setActiveState={setActiveState}
+            selectedNetwork={selectedNetwork}
+            setSelectedNetwork={setSelectedNetwork}
           >
             {activeState === 'walletDashboard' && <WalletDashboard />}
             {activeState === 'addTokens' && <AddTokens />}
