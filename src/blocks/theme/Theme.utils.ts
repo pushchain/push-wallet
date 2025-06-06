@@ -117,8 +117,6 @@ export const getBlocksCSSVariables = (theme: Theme, themeMode: 'dark' | 'light',
     }
   });
 
-  console.log(vars);
-
   return Object.entries(vars)
     .map(([key, value]) => `${key}: ${value};`)
     .join('\n');

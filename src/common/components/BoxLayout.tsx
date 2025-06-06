@@ -15,14 +15,14 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
       alignItems="center"
       display="flex"
       flexDirection="column"
-      borderRadius="radius-md"
       justifyContent="center"
       position="relative"
       width={{ initial: "auto", ml: "90%" }}
       css={css`
         position: relative;
-        padding: 1.5px;
+        padding: var(--pw-int-modal-border);
         overflow: hidden;
+        border-radius: var(--pw-int-modal-border-radius);
 
         &::before {
           content: "";

@@ -6,6 +6,7 @@ import { Login } from "./components/Login";
 import { WalletState } from "./Authentication.types";
 import ConnectWallet from "./components/ConnectWallet";
 import { useGlobalState } from "../../context/GlobalContext";
+import { css } from "styled-components";
 
 const Authentication = () => {
   const [email, setEmail] = useState<string>("");
@@ -20,8 +21,10 @@ const Authentication = () => {
           alignItems="center"
           flexDirection="column"
           display="flex"
-          width={{ initial: "376px", ml: "100%" }}
-          padding="spacing-md"
+          width={{ initial: "var(--pw-int-modal-width)", ml: "100%" }}
+          css={css`
+            padding: var(--pw-int-modal-padding);  
+          `}
         >
           {(connectMethod === "authentication" ||
             connectMethod === "social") && (

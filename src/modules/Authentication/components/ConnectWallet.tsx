@@ -20,7 +20,7 @@ type WalletSelectionProps = {
 
 const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const { dispatch, state: { externalWalletAuthState, walletConfig } } = useGlobalState();
-  const isMobile = useDeviceWidthCheck(parseInt(deviceSizes.tablet));
+  const isMobile = useDeviceWidthCheck(parseInt(deviceSizes.laptop));
   const [selectedWalletCategory, setSelectedWalletCategory] = useState<WalletCategoriesType | null>(null)
 
   const filteredWalletCategories = useMemo(() => {
@@ -38,6 +38,8 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
 
     return filtered;
   }, [walletConfig?.loginDefaults?.wallet?.chains, isMobile]);
+
+  console.log(isMobile, window.innerWidth, window.outerWidth);
 
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory(null);
