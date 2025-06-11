@@ -5,6 +5,7 @@ import styled, { css } from 'styled-components';
 import { useGlobalState } from '../../../context/GlobalContext';
 import { convertCaipToObject } from '../Wallet.utils';
 import { useWalletDashboard } from '../../../context/WalletDashboardContext';
+import { QRCodeSVG } from 'qrcode.react';
 
 const Receive = () => {
     const { state } = useGlobalState();
@@ -61,12 +62,11 @@ const Receive = () => {
                     backgroundColor='surface-primary'
                     position='relative'
                 >
-                    <Image
-                        src='/Push_QR.png'
-                        alt='Push QR'
-                        width={164}
-                        height={164}
+                    <QRCodeSVG
+                        value={result?.address}
+                        size={164}
                     />
+
                     <LogoContainer>
                         <PushAlpha />
                     </LogoContainer>

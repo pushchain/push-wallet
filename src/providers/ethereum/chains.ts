@@ -2,7 +2,7 @@ import * as viemChains from "viem/chains"
 import { defineChain } from 'viem'
 
 export const pushTestnetChain = defineChain({
-    id: 9000,
+    id: 42101,
     name: 'Push Testnet',
     nativeCurrency: {
         decimals: 18,
@@ -11,12 +11,12 @@ export const pushTestnetChain = defineChain({
     },
     rpcUrls: {
         default: {
-            http: ['https://evm.pn1.dev.push.org'],
+            http: ['https://evm.rpc-testnet-donut-node1.push.org/'],
             webSocket: ['wss://evm.pn1.dev.push.org'],
         },
     },
     blockExplorers: {
-        default: { name: 'Explorer', url: 'https://explorer.dev.push.org' },
+        default: { name: 'Explorer', url: 'https://explorer.testnet.push.org' },
     },
 })
 

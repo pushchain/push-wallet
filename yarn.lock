@@ -14194,6 +14194,7 @@ __metadata:
     gh-pages: "npm:^6.1.1"
     happy-dom: "npm:^15.0.0"
     postcss: "npm:^8.4.47"
+    qrcode.react: "npm:^4.2.0"
     rc-pagination: "npm:^4.2.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
@@ -14227,6 +14228,15 @@ __metadata:
   version: 1.4.4
   resolution: "qrcode-generator@npm:1.4.4"
   checksum: 10/65b2bba237d1f230eba0d08ae4267d04f326859c2265775ade99191be1b522158b623fcc0b613bbfc9d4edbbafb928fc41c66d61053b333f2eb0bcedb2ebadca
+  languageName: node
+  linkType: hard
+
+"qrcode.react@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "qrcode.react@npm:4.2.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/665036d88b160e6d5de4e24d101bc63bd2b76712802e874bbffe56c6b6e5fe50c63f02c3cba2975b2e2b555c1f1e112cbb42987f8cb3a626ce2d17023cfde6ac
   languageName: node
   linkType: hard
 

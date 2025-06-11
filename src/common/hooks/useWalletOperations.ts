@@ -11,10 +11,9 @@ export const useWalletBalance = () => {
         try {
             setIsLoading(true);
             setError(null);
-
             const publicClient = createPublicClient({
                 chain: pushTestnetChain,
-                transport: http(`https://evm.pn1.dev.push.org`),
+                transport: http(),
             });
 
             const balance = await publicClient.getBalance({
