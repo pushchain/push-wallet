@@ -58,7 +58,7 @@ export const walletCategories: WalletCategoriesType[] = [
   {
     chain: ChainType.WALLET_CONNECT,
     wallet: "walletConnect",
-    label: "Wallet Connect",
+    label: "Connect using Wallet Connect",
     icon: <WalletConnectIcon width={24} height={24} />,
     isMobile: true,
   },
