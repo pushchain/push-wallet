@@ -3,16 +3,24 @@ import { bytesToHex } from '@noble/hashes/utils'
 import { HDKey } from 'viem/accounts'
 import nacl from 'tweetnacl'
 import bs58 from 'bs58'
-import { CHAIN } from '@pushchain/devnet/src/lib/constants'
-import { hexToBytes } from 'viem'
+import { hexToBytes, parseTransaction, TypedData, TypedDataDomain } from 'viem'
+import { PublicKey, Transaction } from '@solana/web3.js';
+import { CHAIN } from '@pushchain/core/src/lib/constants/enums'
 
 export type ChainSignerHandler = (masterNode: HDKey) => Promise<{
   address: string
   signMessage: (data: Uint8Array) => Promise<Uint8Array>
+  signTransaction: (data: Uint8Array) => Promise<Uint8Array>
+  signTypedData?: ({ domain, types, primaryType, message }: {
+    domain: TypedDataDomain;
+    types: TypedData;
+    primaryType: string;
+    message: Record<string, unknown>;
+  }) => Promise<Uint8Array> | undefined
 }>
 
 export const chainSignerRegistry: Partial<Record<CHAIN, ChainSignerHandler>> = {
-  [CHAIN.ETHEREUM]: async (masterNode) => {
+  [CHAIN.ETHEREUM_MAINNET]: async (masterNode) => {
     const node = masterNode.derive("m/44'/60'/0'/0/0")
     const account = privateKeyToAccount(`0x${bytesToHex(node.privateKey!)}`)
     return {
@@ -21,15 +29,34 @@ export const chainSignerRegistry: Partial<Record<CHAIN, ChainSignerHandler>> = {
         const sig = await account.signMessage({ message: { raw: data } })
         return hexToBytes(sig)
       },
+      signTransaction: async (tx) => {
+        const transaction = parseTransaction(`0x${bytesToHex(tx)}`);
+        const sig = await account.signTransaction(transaction);
+        return hexToBytes(sig);
+      },
+      signTypedData: async (typedData) => {
+        const sig = await account.signTypedData(typedData);
+        return hexToBytes(sig);
+      },
     }
   },
 
-  [CHAIN.SOLANA]: async (masterNode) => {
+  [CHAIN.SOLANA_MAINNET]: async (masterNode) => {
     const node = masterNode.derive("m/44'/501'/0'/0'")
     const keypair = nacl.sign.keyPair.fromSeed(node.privateKey!.subarray(0, 32))
     return {
       address: bs58.encode(keypair.publicKey),
       signMessage: async (data) => nacl.sign.detached(data, keypair.secretKey),
+      signTransaction: async (serializedTx) => {
+        const tx = Transaction.from(serializedTx);
+        const message = tx.serializeMessage();
+
+        const signature = nacl.sign.detached(message, keypair.secretKey);
+        const publicKey = new PublicKey(keypair.publicKey);
+        tx.addSignature(publicKey, Buffer.from(signature));
+
+        return tx.serialize();
+      },
     }
   },
 }

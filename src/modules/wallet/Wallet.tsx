@@ -27,9 +27,7 @@ import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
 import { ConnectionSuccess } from "../../common/components/ConnectionSuccess";
 import { CreateNewWallet } from "../../common/components/CreateNewWallet";
 
-export type WalletProps = {};
-
-const Wallet: FC<WalletProps> = () => {
+const Wallet: FC = () => {
   const { state, dispatch } = useGlobalState();
   const [createAccountLoading, setCreateAccountLoading] = useState(true);
   const [error, setError] = useState("");
@@ -65,15 +63,12 @@ const Wallet: FC<WalletProps> = () => {
       await instance.storeMnemonicShareAsEncryptedTx(
         userId,
         shares[2],
-        instance.mnemonic
       );
 
       await api.post(`/mnemonic-share`, { share: shares[0], type: 'TYPE1' });
 
       // Store shard in localstorage
       localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
-
-      await instance.registerPushAccount();
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
     } catch (err) {
@@ -260,7 +255,7 @@ const Wallet: FC<WalletProps> = () => {
   };
 
   useEffect(() => {
-    if (state?.wallet?.universalSigner.address)
+    if (state?.wallet?.universalSigner.account.address)
       setSelectedWallet(
         getWalletlist(state.wallet)[0]
       );
