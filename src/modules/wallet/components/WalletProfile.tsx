@@ -71,20 +71,20 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
           {isBalanceLoading ? (
             <Spinner size='extraLarge' variant='primary' />
           ) : (
-            <Text color="text-primary" variant="h2-semibold" textAlign="center">
+            <Text color="pw-int-text-primary-color" variant="h2-semibold" textAlign="center">
               {Number(Number(balance).toFixed(3)).toLocaleString()} PC
             </Text>
           )}
         </Box>
 
         <Box display="flex" gap="spacing-xxxs">
-          <Text color="text-state-success-bold">+$276.29</Text>
+          <Text color="pw-int-text-secondary-color">+$276.29</Text>
           <Box
             padding="spacing-none spacing-xxxs"
             borderRadius="radius-xs"
-            backgroundColor="surface-state-success-subtle"
+            backgroundColor="pw-int-success-primary-subtle-color"
           >
-            <Text color="text-state-success-bold">+0.97%</Text>
+            <Text color="pw-int-text-primary-color">+0.97%</Text>
           </Box>
         </Box>
       </Box>
@@ -101,7 +101,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
             gap="spacing-xxs"
             alignSelf="stretch"
             borderRadius="radius-xs"
-            border="border-sm solid stroke-primary"
+            border="border-sm solid pw-int-border-primary-color"
             cursor="pointer"
             css={css`
               background: linear-gradient(
@@ -113,7 +113,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
             `}
             onClick={() => onClick(setActiveState)}
           >
-            <Icon color='icon-brand-medium' size={24} />
+            <Icon color='pw-int-icon-brand-color' size={24} />
             <Text variant="bes-semibold">{label}</Text>
           </Box>
         ))}

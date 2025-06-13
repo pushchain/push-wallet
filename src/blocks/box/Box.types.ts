@@ -9,7 +9,7 @@ import {
   BlocksGapType,
 } from "../Blocks.types";
 import { FlattenSimpleInterpolation } from "styled-components";
-import { SurfaceColors, TextColors } from "../theme/Theme.types";
+import { TextColors, ThemeColors } from "../theme/Theme.types";
 
 export type BoxResponsiveProps = {
   /* Sets align-items css property */
@@ -50,7 +50,7 @@ export type BoxNonResponsiveProps = {
   /* Sets border-radius css property */
   borderRadius?: BlocksRadiusType;
   /* Sets background-color css property */
-  backgroundColor?: SurfaceColors;
+  backgroundColor?: ThemeColors;
   /* Sets color css property */
   color?: TextColors;
   /* Sets cursor css property */

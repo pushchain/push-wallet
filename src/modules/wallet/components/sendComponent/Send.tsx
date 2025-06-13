@@ -4,13 +4,13 @@ import { SelectToken } from './SelectToken';
 import SelectRecipient from './SelectRecipient';
 import Review from './Review';
 import Confirmation from './Confirmation';
-import { TokenType } from '../../../../types';
+import { TokenFormat } from '../../../../types';
 import { SendTokenProvider, useSendTokenContext } from '../../../../context/SendTokenContext';
 
 const SendContent = () => {
     const { sendState, setTokenSelected, setSendState } = useSendTokenContext();
 
-    const handleTokenSelection = (token: TokenType) => {
+    const handleTokenSelection = (token: TokenFormat) => {
         setTokenSelected(token);
         setSendState('selectRecipient');
     }

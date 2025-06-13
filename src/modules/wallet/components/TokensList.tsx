@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import TokensListItem from './TokensListItem';
-import { ActiveStates, TokenType } from '../../../types/wallet.types';
 import { Box, Text, YieldFarming } from 'blocks';
-import { tokens } from 'common';
+import { ActiveStates, TokenFormat } from '../../../types';
+import { useTokenManager } from '../../../hooks/useTokenManager';
 
 type TokensListProps = {
     setActiveState: (activeStates: ActiveStates) => void;
@@ -10,6 +10,8 @@ type TokensListProps = {
 const TokensList: FC<TokensListProps> = ({
     setActiveState
 }) => {
+
+    const { tokens } = useTokenManager();
 
     return (
 
@@ -26,8 +28,8 @@ const TokensList: FC<TokensListProps> = ({
                 height='240px'
                 padding='spacing-none spacing-xs spacing-none spacing-none'
             >
-                {tokens.map((token: TokenType) => (
-                    <TokensListItem token={token} key={token.id} />
+                {tokens.map((token: TokenFormat) => (
+                    <TokensListItem token={token} key={token.address} />
                 ))}
             </Box>
             <Box
@@ -39,8 +41,8 @@ const TokensList: FC<TokensListProps> = ({
                 cursor='pointer'
                 onClick={() => setActiveState('addTokens')}
             >
-                <YieldFarming color='icon-brand-medium' />
-                <Text variant='bs-regular' color='text-brand-medium'>Manage Tokens</Text>
+                <YieldFarming color='pw-int-icon-brand-color' />
+                <Text variant='bs-regular' color='pw-int-text-link-color'>Manage Tokens</Text>
             </Box>
         </Box>
 

@@ -7,18 +7,23 @@ export type AppState = {
     | "success"
     | "loading"
     | "rejected"
-    | "timeout";
+    | "timeout",
+  themeOverrides: Record<string, string>,
 };
 
 // Define actions for state management
 export type AppAction = {
   type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE";
   payload: AppState["externalWalletAuthState"];
+} | {
+  type: "SET_THEME_OVERRIDES";
+  payload: Record<string, string>;
 };
 
 // Initial state
 const initialState: AppState = {
   externalWalletAuthState: "idle",
+  themeOverrides: {},
 };
 
 // Reducer function to manage state transitions
@@ -29,6 +34,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
         ...state,
         externalWalletAuthState: action.payload,
       };
+    case "SET_THEME_OVERRIDES":
+      return { ...state, themeOverrides: action.payload };
     default:
       return state;
   }

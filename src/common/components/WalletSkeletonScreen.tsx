@@ -1,4 +1,4 @@
-import { Box, Button, PushLogo, Skeleton } from "blocks";
+import { Box, PushLogo, Skeleton } from "blocks";
 import { FC, ReactNode } from "react";
 import { BoxLayout, ContentLayout } from "common";
 import { css } from "styled-components";
@@ -68,7 +68,7 @@ const WalletSkeletonScreen: FC<WalletSkeletonScreenProps> = ({ content }) => {
               alignItems="start"
               padding="spacing-sm"
               css={css`
-                border-bottom: var(--border-sm) solid var(--stroke-secondary);
+                border-bottom: var(--border-sm) solid var(--pw-int-border-secondary-color);
               `}
             >
               <Skeleton isLoading>
@@ -93,7 +93,7 @@ const WalletSkeletonScreen: FC<WalletSkeletonScreenProps> = ({ content }) => {
                   justifyContent="space-between"
                   css={css`
                     border-bottom: var(--border-sm) solid
-                      var(--stroke-secondary);
+                      var(--pw-int-border-secondary-color);
                   `}
                 >
                   <Box display="flex" gap="spacing-xxs" alignItems="center">
@@ -118,7 +118,7 @@ const WalletSkeletonScreen: FC<WalletSkeletonScreenProps> = ({ content }) => {
           <Box
             display="flex"
             flexDirection="column"
-            backgroundColor="surface-primary"
+            backgroundColor="pw-int-bg-primary-color"
             borderRadius="radius-md"
             width="98%"
             padding="spacing-xl spacing-lg spacing-lg spacing-lg"
@@ -126,7 +126,7 @@ const WalletSkeletonScreen: FC<WalletSkeletonScreenProps> = ({ content }) => {
             css={css`
               bottom: 2px;
               left: 3px;
-              border-top: var(--border-xmd) solid var(--stroke-secondary);
+              border-top: var(--border-xmd) solid var(--pw-int-border-secondary-color);
             `}
           >
             {content}

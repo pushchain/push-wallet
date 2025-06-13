@@ -32,18 +32,18 @@ const StyledButton = styled.button<Omit<HoverableSVGProps, 'icon'>>`
   padding: var(--${(props) => props.padding || 'spacing-none'});
   margin: var(--${(props) => props.margin || 'spacing-none'});
   border-radius: ${(props) => getBlocksBorderRadius(props.borderRadius)};
-  background-color: var(--${({ defaultBackground }) => defaultBackground || 'surface-transparent'});
-  color: ${({ defaultColor }) => `var(--${defaultColor})` || 'inherit'};
+  background-color: ${({ defaultBackground }) => defaultBackground ? `var(--${defaultBackground})` : 'transparent'};
+  color: ${({ defaultColor }) => defaultColor ? `--var(${defaultColor})` : 'inherit'};
   border: none;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   transition: background-color 0.3s, color 0.3s;
   height: fit-content;
   &:hover {
-    background-color: var(--${({ hoverBackground }) => hoverBackground || 'surface-transparent'});
-    color: ${({ hoverColor }) => `var(--${hoverColor})` || 'inherit'};
+    background-color: ${({ hoverBackground }) => hoverBackground ? `var(--${hoverBackground})` : 'transparent'};
+    color: ${({ hoverColor }) => hoverColor ? `var(--${hoverColor})` : 'inherit'};
   }
   &:disabled {
-    color: var(--icon-state-disabled);
+    color: var(--pw-int-text-disabled-color);
   }
 `;
 const HoverableSVG: FC<HoverableSVGProps> = ({

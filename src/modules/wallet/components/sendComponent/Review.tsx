@@ -39,7 +39,7 @@ const Review = () => {
                     alignItems="center"
                     gap="spacing-md"
                 >
-                    <Text variant="h3-semibold" color="text-primary" textAlign="center">
+                    <Text variant="h3-semibold" color="pw-int-text-primary-color" textAlign="center">
                         {" "}
                         Review{" "}
                     </Text>
@@ -56,12 +56,12 @@ const Review = () => {
                             alignSelf="stretch"
                             justifyContent="center"
                         >
-                            <SendNotification size={48} color="icon-brand-medium" />
-                            <Text variant="h2-semibold" color="text-primary">
+                            <SendNotification size={48} color="pw-int-icon-brand-color" />
+                            <Text variant="h2-semibold" color="pw-int-text-primary-color">
                                 {amount} {tokenSelected.symbol}
                             </Text>
                         </Box>
-                        <Text color="text-secondary" variant="bs-regular">
+                        <Text color="pw-int-text-secondary-color" variant="bs-regular">
                             $12.45
                         </Text>
                     </Box>
@@ -74,10 +74,10 @@ const Review = () => {
                             alignItems="center"
                             alignSelf="stretch"
                             css={css`
-                border-bottom: 1px solid var(--stroke-secondary, #313338);
-              `}
+                                border-bottom: 1px solid var(--pw-int-border-secondary-color, #313338);
+                            `}
                         >
-                            <Text color="text-tertiary" variant="bs-regular">
+                            <Text color="pw-int-text-tertiary-color" variant="bs-regular">
                                 Send To
                             </Text>
                             <Text variant="bs-regular">
@@ -94,7 +94,7 @@ const Review = () => {
                 border-bottom: 1px solid var(--stroke-secondary, #313338);
               `}
                         >
-                            <Text color="text-tertiary" variant="bs-regular">
+                            <Text color="pw-int-text-tertiary-color" variant="bs-regular">
                                 Network
                             </Text>
                             <Text variant="bs-regular">{selectedNetwork}</Text>
@@ -106,10 +106,10 @@ const Review = () => {
                             alignItems="center"
                             alignSelf="stretch"
                             css={css`
-                                border-bottom: 1px solid var(--stroke-secondary, #313338);
+                                border-bottom: 1px solid var(--pw-int-border-secondary-color, #313338);
                             `}
                         >
-                            <Text color="text-tertiary" variant="bs-regular">
+                            <Text color="pw-int-text-tertiary-color" variant="bs-regular">
                                 Network Fee
                             </Text>
                             <Text variant="bs-regular">0.00002</Text>

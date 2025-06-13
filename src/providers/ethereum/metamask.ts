@@ -3,8 +3,8 @@ import { ChainType } from "../../types/wallet.types";
 import { BaseWalletProvider } from "../BaseWalletProvider";
 import { toHex } from "viem";
 import { getAddress } from 'ethers';
-import { chains } from "./chains";
 import { Chain } from 'viem';
+import { chains } from "./chains";
 
 export class MetamaskProvider extends BaseWalletProvider {
   private sdk: MetaMaskSDK;

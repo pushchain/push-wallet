@@ -11,6 +11,13 @@ export type TokenType = {
     contractAddress: string;
 }
 
+export type TokenFormat = {
+    name: string;
+    symbol: string;
+    address: string;
+    decimals: number
+}
+
 export type WalletListType = {
     name: string;
     address: string;

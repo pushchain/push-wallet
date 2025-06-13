@@ -37,7 +37,7 @@ const StyledButton = styled.button<ButtonProps>`
   align-items: center;
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   display: flex;
-  font-family: var(--font-family);
+  font-family: var(--pw-int-font-family);
   justify-content: center;
   white-space: nowrap;
   flex-shrink: 0;

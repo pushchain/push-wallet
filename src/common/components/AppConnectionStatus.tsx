@@ -29,13 +29,13 @@ const AppConnectionStatus: FC<AppConnectionStatusDrawerProps> = ({
 
   function getChainIcon(chainId: string | null) {
     if (!chainId) {
-      return <BellRingFilled color="icon-brand-medium" size={20} />
+      return <BellRingFilled color="pw-int-icon-brand-color" size={20} />
     }
     const IconComponent = CHAIN_LOGO[chainId];
     if (IconComponent) {
       return <IconComponent width={20} height={20} />;
     } else {
-      return <BellRingFilled color="icon-brand-medium" size={20} />
+      return <BellRingFilled color="pw-int-icon-brand-color" size={20} />
     }
   }
 
@@ -61,9 +61,9 @@ const AppConnectionStatus: FC<AppConnectionStatusDrawerProps> = ({
       gap="spacing-md"
       width="-webkit-fill-available"
       borderRadius="radius-md"
-      backgroundColor="surface-primary"
+      backgroundColor="pw-int-bg-primary-color"
       css={css`
-        border-top: var(--border-xmd) solid var(--stroke-secondary);
+        border-top: var(--border-xmd) solid var(--pw-int-border-secondary-color);
       `}
     >
       <Box
@@ -77,7 +77,7 @@ const AppConnectionStatus: FC<AppConnectionStatusDrawerProps> = ({
           <Box alignSelf="flex-end" display="flex">
             <HoverableSVG
               onClick={onRejectAll}
-              icon={<Cross color="icon-secondary" size={16} />}
+              icon={<Cross color="pw-int-icon-secondary-color" size={16} />}
             />
           </Box>
         )}
@@ -102,7 +102,7 @@ const AppConnectionStatus: FC<AppConnectionStatusDrawerProps> = ({
         <Text variant="h4-semibold" textAlign="center">
           Connect to this site
         </Text>
-        <Text variant="bs-regular" textAlign="center" color="text-tertiary">
+        <Text variant="bs-regular" textAlign="center" color="pw-int-text-tertiary-color">
           Allow the site to see account balance,
           <br /> activity and suggest transactions to approve
         </Text>
@@ -113,7 +113,7 @@ const AppConnectionStatus: FC<AppConnectionStatusDrawerProps> = ({
         padding="spacing-xs"
         gap="spacing-sm"
         borderRadius="radius-sm"
-        backgroundColor="surface-secondary"
+        backgroundColor="pw-int-bg-secondary-color"
         flexDirection="column"
         width="100%"
       >
@@ -152,7 +152,7 @@ const AppConnectionStatus: FC<AppConnectionStatusDrawerProps> = ({
             <Box display="flex" gap="spacing-xxxs">
               {getMonotoneChainIcon(result.chainId)}
 
-              <Text variant="bes-semibold" color="text-tertiary">
+              <Text variant="bes-semibold" color="pw-int-text-tertiary-color">
                 {centerMaskWalletAddress(result.address)}
               </Text>
             </Box>

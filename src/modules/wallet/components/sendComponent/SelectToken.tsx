@@ -1,14 +1,15 @@
-import { Box, Button, PushMonotone, Search, Text, TextInput } from 'blocks';
+import { Box, Button, Search, Text, TextInput } from 'blocks';
 import React, { FC, useState } from 'react';
 import { css } from 'styled-components';
-import { TOKEN_LOGO, tokens } from 'common';
-import { TokenType } from '../../../../types';
+import { TokenFormat } from '../../../../types';
 import { useWalletDashboard } from '../../../../context/WalletDashboardContext';
 import { useSendTokenContext } from '../../../../context/SendTokenContext';
 import WalletHeader from '../WalletHeader';
+import { useTokenManager } from '../../../../hooks/useTokenManager';
+import { TokenLogoComponent } from 'common';
 
 type SelectTokenProps = {
-    handleTokenSelection: (token: TokenType) => void;
+    handleTokenSelection: (token: TokenFormat) => void;
 }
 const SelectToken: FC<SelectTokenProps> = ({
     handleTokenSelection
@@ -18,11 +19,13 @@ const SelectToken: FC<SelectTokenProps> = ({
 
     const { tokenSelected, setTokenSelected } = useSendTokenContext();
 
+    const { tokens } = useTokenManager();
+
     const handleSearch = () => {
         if (!searchQuery) return;
 
         const result = tokens.find(token =>
-            token.contractAddress.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            token.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
             token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             token.symbol.toLowerCase().includes(searchQuery.toLowerCase())
         );
@@ -36,41 +39,6 @@ const SelectToken: FC<SelectTokenProps> = ({
         }
     };
 
-    function getTokenLogo(tokenSymbol: string) {
-        const IconComponent = TOKEN_LOGO[tokenSymbol];
-        if (IconComponent) {
-            return (
-                <Box
-                    position="relative"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                >
-                    <Box
-                        width="36px"
-                        height="36px"
-                        borderRadius="radius-xl"
-                        overflow="hidden"
-                        alignSelf="center"
-                    >
-                        <IconComponent width={36} height={36} />;
-                    </Box>
-                    {tokenSymbol !== 'PCZ' && (
-                        <Box
-                            position="absolute"
-                            css={css`
-                                bottom:-12px;
-                                right:50%;
-                                left:52%;
-                            `}
-                        >
-                            <PushMonotone />
-                        </Box>
-                    )}
-                </Box>
-            )
-        }
-    }
     return (
         <>
             <WalletHeader selectedWallet={selectedWallet} handleBackButton={() => setActiveState('walletDashboard')} />
@@ -107,7 +75,7 @@ const SelectToken: FC<SelectTokenProps> = ({
                         alignSelf='stretch'
                         alignItems='center'
                         borderRadius='radius-sm'
-                        border='border-sm solid stroke-secondary'
+                        border='border-sm solid pw-int-border-secondary-color'
                         onClick={() => handleTokenSelection(tokenSelected)}
                         cursor='pointer'
                     >
@@ -116,13 +84,13 @@ const SelectToken: FC<SelectTokenProps> = ({
                             gap='spacing-xxs'
                             alignItems='center'
                         >
-                            {getTokenLogo(tokenSelected.symbol)}
+                            <TokenLogoComponent tokenSymbol={tokenSelected.symbol} />
                             <Box
                                 display='flex'
                                 flexDirection='column'
                             >
-                                <Text variant='bm-semibold' color='text-primary'>{tokenSelected.name}</Text>
-                                <Text variant='bs-regular' color='text-secondary'>{tokenSelected.amount}{" "}{tokenSelected.symbol}</Text>
+                                <Text variant='bm-semibold' color='pw-int-text-primary-color'>{tokenSelected.name}</Text>
+                                <Text variant='bs-regular' color='pw-int-text-secondary-color'>{0}{" "}{tokenSelected.symbol}</Text>
                             </Box>
                         </Box>
                     </Box>
@@ -133,7 +101,7 @@ const SelectToken: FC<SelectTokenProps> = ({
                         flexDirection='column'
                         gap='spacing-xxs'
                     >
-                        {tokens.map((token: TokenType) => (
+                        {tokens.map((token: TokenFormat) => (
                             <Box
                                 display='flex'
                                 padding='spacing-xs'
@@ -141,8 +109,8 @@ const SelectToken: FC<SelectTokenProps> = ({
                                 alignSelf='stretch'
                                 alignItems='center'
                                 borderRadius='radius-sm'
-                                border='border-sm solid stroke-secondary'
-                                key={token.id}
+                                border='border-sm solid pw-int-border-secondary-color'
+                                key={token.address}
                                 onClick={() => handleTokenSelection(token)}
                                 cursor='pointer'
                             >
@@ -151,13 +119,13 @@ const SelectToken: FC<SelectTokenProps> = ({
                                     gap='spacing-xxs'
                                     alignItems='center'
                                 >
-                                    {getTokenLogo(token.symbol)}
+                                    <TokenLogoComponent tokenSymbol={token.symbol} />
                                     <Box
                                         display='flex'
                                         flexDirection='column'
                                     >
-                                        <Text variant='bm-semibold' color='text-primary'>{token.name}</Text>
-                                        <Text variant='bs-regular' color='text-secondary'>{token.amount}{" "}{token.symbol}</Text>
+                                        <Text variant='bm-semibold' color='pw-int-text-primary-color'>{token.name}</Text>
+                                        <Text variant='bs-regular' color='pw-int-text-secondary-color'>{0}{" "}{token.symbol}</Text>
                                     </Box>
                                 </Box>
                             </Box>

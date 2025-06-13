@@ -2,10 +2,10 @@
 import { useEffect, useState } from 'react';
 
 export function useDeviceWidthCheck(deviceWidth: number) {
-    const [width, setWidth] = useState<number>(window.innerWidth);
+    const [width, setWidth] = useState<number>(window.outerWidth);
 
     function handleWindowSizeChange() {
-        setWidth(window.innerWidth);
+        setWidth(window.outerWidth);
     }
 
     useEffect(() => {

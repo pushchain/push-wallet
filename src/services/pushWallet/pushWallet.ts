@@ -1,24 +1,19 @@
 import * as bip39 from '@scure/bip39'
 import { wordlist } from '@scure/bip39/wordlists/english'
 import { bytesToHex } from '@noble/hashes/utils'
-import { hexToBytes, stringToBytes } from 'viem'
+import { hexToBytes, stringToBytes, TypedData, TypedDataDomain } from 'viem'
 import { sha256 } from '@noble/hashes/sha256'
 import { ENV } from '../../constants'
-import { privateKeyToAccount, HDKey } from 'viem/accounts'
+import { HDKey } from 'viem/accounts'
 import api from '../../services/api' // Axios instance
 import { PushWalletAppConnectionData } from '../../common'
-import {
-  createUniversalSigner,
-  PushChain,
-  UniversalSigner,
-} from '@pushchain/devnet'
-import { CHAIN, CHAIN_ID, ENV as DevnetENV } from '@pushchain/devnet/src/lib/constants'
+import { PushChain } from '@pushchain/core'
 import { chainSignerRegistry } from './signerRegistry'
-import { TxCategory } from '@pushchain/devnet/src/lib/tx/tx.types'
 import { EncryptedText } from '@pushchain/devnet/src/lib/generated/txData/init_did'
+import { UniversalSigner } from '@pushchain/core/src/lib/universal/universal.types'
+import { CHAIN } from '@pushchain/core/src/lib/constants/enums'
 
 export class PushWallet {
-  private static unRegisteredProfile = false
   /**
    * Accounts to Encrypted Derived Key Mapping
    * push_caip_account -> { encDerivedPrivKey, signature }    // 1st Account of Push Wallet
@@ -56,7 +51,6 @@ export class PushWallet {
   private static async createUniSigner(
     mnemonic: string,
     chain: CHAIN,
-    chainId: string
   ): Promise<UniversalSigner> {
     const seed = await bip39.mnemonicToSeed(mnemonic)
     const masterNode = HDKey.fromMasterSeed(seed)
@@ -64,23 +58,27 @@ export class PushWallet {
     const handler = chainSignerRegistry[chain]
     if (!handler) throw new Error(`Unsupported chain: ${chain}`)
 
-    const { address, signMessage } = await handler(masterNode)
+    const { address, signMessage, signTransaction, signTypedData } = await handler(masterNode)
 
-    return createUniversalSigner({
-      chain,
-      chainId,
-      address,
-      signMessage,
-    })
+    const signerSkeleton = PushChain.utils.signer.construct(
+      {
+        address: address,
+        chain: CHAIN.PUSH_TESTNET_DONUT
+      },
+      {
+        signMessage: signMessage,
+        signTransaction: signTransaction,
+        signTypedData: signTypedData
+      }
+    );
+
+    return PushChain.utils.signer.toUniversal(signerSkeleton)
   }
 
   public static signUp = async (
     env: ENV = ENV.STAGING,
-    chain: CHAIN = CHAIN.ETHEREUM,
-    chainId: string = CHAIN_ID.ETHEREUM.MAINNET
+    chain: CHAIN = CHAIN.ETHEREUM_MAINNET,
   ) => {
-    // 1. Mark Wallet as Unregistered
-    PushWallet.unRegisteredProfile = true
     // 2. Generate Push Wallet
     const pushWallet = await PushWallet.generatePushWallet()
 
@@ -90,7 +88,6 @@ export class PushWallet {
     const universalSigner = await PushWallet.createUniSigner(
       pushWallet.mnemonic,
       chain,
-      chainId
     )
 
     // 5. Initialize
@@ -105,39 +102,17 @@ export class PushWallet {
   public static logInWithMnemonic = async (
     mnemonic: string,
     env: ENV = ENV.STAGING,
-    chain: CHAIN = CHAIN.ETHEREUM,
-    chainId: string = CHAIN_ID.ETHEREUM.MAINNET
+    chain: CHAIN = CHAIN.ETHEREUM_MAINNET,
   ) => {
     const seed = await bip39.mnemonicToSeed(mnemonic)
     const masterNode = HDKey.fromMasterSeed(seed)
-    const account = privateKeyToAccount(
-      `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`
-    )
+
     const did = `PUSH_DID:${bytesToHex(sha256(masterNode.publicKey))}`
     const universalSigner = await PushWallet.createUniSigner(
       mnemonic,
       chain,
-      chainId
     )
 
-    // 1. Registration Check - exit if wallet ( created by this mnemonic ) is not registered
-    const pushChain = await PushChain.initialize(universalSigner, {
-      network: DevnetENV.DEVNET,
-      rpcUrl: import.meta.env.VITE_APP_RPC_URL,
-    })
-
-    const universalAccount = {
-      chain: CHAIN.PUSH,
-      chainId: CHAIN_ID.PUSH.DEVNET,
-      address: PushChain.utils.account.evmToPushAddress(account.address)
-    }
-
-    const res = await pushChain.tx.get(
-      universalAccount,
-      { category: 'INIT_DID' }
-    )
-    if (res.blocks.length === 0) return null
-    // 2. Initialize
     return new PushWallet(did, mnemonic, env, universalSigner)
   }
 
@@ -210,60 +185,73 @@ export class PushWallet {
     }
   }
 
-  public registerPushAccount = async () => {
-    if (!PushWallet.unRegisteredProfile)
-      throw Error('Only Allowed for Unregistered Profile')
+  // public registerPushAccount = async () => {
+  //   if (!PushWallet.unRegisteredProfile)
+  //     throw Error('Only Allowed for Unregistered Profile')
 
-    // 1. Create Init_did tx
-    const seed = await bip39.mnemonicToSeed(this.mnemonic)
-    const masterNode = HDKey.fromMasterSeed(seed)
+  //   // 1. Create Init_did tx
+  //   const seed = await bip39.mnemonicToSeed(this.mnemonic)
+  //   const masterNode = HDKey.fromMasterSeed(seed)
 
-    const derivedNode = await PushWallet.generateDerivedNode(masterNode)
+  //   const derivedNode = await PushWallet.generateDerivedNode(masterNode)
 
-    const account = privateKeyToAccount(
-      `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`
-    )
+  //   const account = privateKeyToAccount(
+  //     `0x${bytesToHex(masterNode.privateKey as Uint8Array)}`
+  //   )
 
-    const txData = {
-      masterPubKey: bytesToHex(masterNode.publicKey as Uint8Array),
-      derivedKeyIndex: derivedNode.index,
-      derivedPubKey: bytesToHex(derivedNode.publicKey as Uint8Array),
-      walletToEncDerivedKey: this.walletToEncDerivedKey,
-    }
+  //   const txData = {
+  //     masterPubKey: bytesToHex(masterNode.publicKey as Uint8Array),
+  //     derivedKeyIndex: derivedNode.index,
+  //     derivedPubKey: bytesToHex(derivedNode.publicKey as Uint8Array),
+  //     walletToEncDerivedKey: this.walletToEncDerivedKey,
+  //   }
 
-    const signer = {
-      address: PushChain.utils.account.evmToPushAddress(account.address),
-      signMessage: async (dataToBeSigned: Uint8Array) => {
-        const signature = await account.signMessage({
-          message: { raw: dataToBeSigned },
-        })
-        return hexToBytes(signature)
-      },
-      chain: CHAIN.PUSH,
-      chainId: CHAIN_ID.PUSH.DEVNET,
-    }
+  //   const signerSkeleton = PushChain.utils.signer.construct(
+  //       {
+  //         address: account.address,
+  //         chain: CHAIN.PUSH_TESTNET_DONUT
+  //       },
+  //       {
+  //         signMessage: async (dataToBeSigned: Uint8Array) => {
+  //           const signature = await account.signMessage({
+  //             message: { raw: dataToBeSigned },
+  //           })
+  //           return hexToBytes(signature)
+  //         },
+  //         signTransaction: async (tx: Uint8Array) => {
+  //           const transaction = parseTransaction(`0x${bytesToHex(tx)}`);
+  //           const sig = await account.signTransaction(transaction);
+  //           return hexToBytes(sig);
+  //         },
+  //         signTypedData: async (typedData: {
+  //           domain: TypedDataDomain;
+  //           types: TypedData;
+  //           primaryType: string;
+  //           message: Record<string, unknown>;
+  //         }) => {
+  //           const sig = await account.signTypedData(typedData);
+  //           return hexToBytes(sig);
+  //         },
+  //       }
+  //     );
 
-    const pushChain = await PushChain.initialize(signer, {
-      network: DevnetENV.DEVNET,
-      rpcUrl: import.meta.env.VITE_APP_RPC_URL,
-    })
+  //   const universalSigner = await PushChain.utils.signer.toUniversal(
+  //     signerSkeleton
+  //   );
 
-    const serializedData = PushChain.utils.tx.serializeData(txData, TxCategory.INIT_DID);
+  //   const pushChain = await PushChain.initialize(universalSigner, {
+  //     network: PushChain.CONSTANTS.PUSH_NETWORK.TESTNET_DONUT,
+  //     rpcUrls: {
+  //       'eip155:9000': import.meta.env.VITE_APP_RPC_URL
+  //     },
+  //   })
 
-    await pushChain.tx.send([], {
-      category: TxCategory.INIT_DID,
-      data: Buffer.from(serializedData).toString(
-        'base64'
-      ),
-    })
-
-    PushWallet.unRegisteredProfile = false
-  }
+  //   PushWallet.unRegisteredProfile = false
+  // }
 
   public storeMnemonicShareAsEncryptedTx = async (
     userId: string,
     mnemonicShare: string,
-    mnemonic: string
   ) => {
     try {
       // 1. Get registration options from server
@@ -509,7 +497,7 @@ export class PushWallet {
    * @param origin origin from where the sig Req is incoming
    * @returns signature
    */
-  public sign = async (
+  public signMessage = async (
     data: string | Uint8Array,
     origin: string,
     appConnections: PushWalletAppConnectionData[]
@@ -519,5 +507,33 @@ export class PushWallet {
     return await this.universalSigner.signMessage(
       typeof data === 'string' ? stringToBytes(data) : data
     )
+  }
+
+  public signTransaction = async (
+    data: string | Uint8Array,
+    origin: string,
+    appConnections: PushWalletAppConnectionData[]
+  ): Promise<Uint8Array> => {
+    const appFound = appConnections.find((each) => each.origin === origin)
+    if (!appFound) throw Error('App not Connected')
+    return await this.universalSigner.signTransaction(
+      typeof data === 'string' ? stringToBytes(data) : data
+    )
+  }
+
+
+  public signTypedData = async (
+    data: {
+      domain: TypedDataDomain;
+      types: TypedData;
+      primaryType: string;
+      message: Record<string, unknown>;
+    },
+    origin: string,
+    appConnections: PushWalletAppConnectionData[]
+  ): Promise<Uint8Array> => {
+    const appFound = appConnections.find((each) => each.origin === origin)
+    if (!appFound) throw Error('App not Connected')
+    return await this.universalSigner.signTypedData(data)
   }
 }

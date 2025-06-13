@@ -10,8 +10,8 @@ const StyledMenu = styled.div.withConfig({
 })<MenuProps>`
   display: flex;
   flex-direction: column;
-  background-color: var(--surface-primary);
-  border: var(--border-sm) solid var(--stroke-secondary);
+  background-color: var(--pw-int-bg-primary-color);
+  border: var(--border-sm) solid var(--pw-int-border-secondary-color);
   border-radius: var(--radius-xs);
   padding: var(--spacing-xxs);
   margin: var(--spacing-none);

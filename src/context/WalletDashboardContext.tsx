@@ -37,6 +37,7 @@ export const WalletDashboardProvider = ({
     selectedNetwork,
     setSelectedNetwork,
 }: WalletProviderProps) => {
+
     return (
         <WalletDashboardContext.Provider
             value={{

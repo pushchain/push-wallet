@@ -1,44 +1,36 @@
-import { Box, Button, PushAlpha, Text, TextInput } from 'blocks';
+import { Box, Button, Spinner, Text, TextInput } from 'blocks';
 import React, { FC, useState } from 'react';
 import { css } from 'styled-components';
 import WalletHeader from './WalletHeader';
 import { useWalletDashboard } from '../../../context/WalletDashboardContext';
-
-type Token = {
-    name: string;
-    id: number;
-    contractAddress: string;
-    logo: string;
-}
+import { useTokenManager } from '../../../hooks/useTokenManager';
+import { TokenFormat } from '../../../types';
 
 const AddTokens: FC = () => {
     const { selectedWallet, setActiveState } = useWalletDashboard();
 
     const [tokenAddress, setTokenAddress] = useState<string | null>(null);
-    const [token, setToken] = useState<Token | null>(null);
+    const [token, setToken] = useState<TokenFormat | null>(null);
 
-    const tokenContractAddresses: Token[] = [
-        {
-            name: 'Push Chain Donut',
-            id: 1,
-            contractAddress: '0xf418588522d5dd018b425E472991E52EB',
-            logo: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png'
-        },
-        {
-            name: 'USDC',
-            id: 2,
-            contractAddress: '0x6D2a0194bD791CADd7a3F5c9464cE9fC24a49e71',
-            logo: 'https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png'
-        }
-    ];
+    const [loadingTokenDetails, setLoadingTokens] = useState<boolean>(false);
 
-    const handleSearch = () => {
+    const { addToken, tokens, fetchTokenDetails } = useTokenManager();
+
+    const handleSearch = async () => {
         if (!tokenAddress) return;
 
-        const token = tokenContractAddresses.find(addr =>
-            addr.contractAddress.toLowerCase().includes(tokenAddress.toLowerCase())
-        );
-        setToken(token)
+        setLoadingTokens(true)
+        try {
+            const tokenDetails = await fetchTokenDetails(tokenAddress as `0x${string}`);
+
+            if (tokenDetails) {
+                setToken(tokenDetails)
+            }
+        } catch (error) {
+            console.log("Error in fetching token details", error);
+        } finally {
+            setLoadingTokens(false);
+        }
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -46,6 +38,23 @@ const AddTokens: FC = () => {
             handleSearch();
         }
     };
+
+    const handleAddToken = async () => {
+        if (!token) {
+            handleSearch();
+        }
+
+        const res = await addToken(token);
+
+        if (res.error) {
+            console.log("Error in adding tokens >>", res.error)
+        }
+
+        if (res.success) {
+            console.log("Successfully added tokens");
+            setActiveState('walletDashboard')
+        }
+    }
 
     return (
         <Box
@@ -62,7 +71,7 @@ const AddTokens: FC = () => {
                     flexDirection="column"
                     gap='spacing-md'
                 >
-                    <Text variant='h3-semibold' color='text-primary' textAlign='center'>Add a Token</Text>
+                    <Text variant='h3-semibold' color='pw-int-text-primary-color' textAlign='center'>Add a Token</Text>
 
                     <Box
                         display="flex"
@@ -88,25 +97,40 @@ const AddTokens: FC = () => {
                             `}
                             />
                         </Box>
+
                     </Box>
+
+                    {loadingTokenDetails && (
+                        <Spinner size='large' variant='primary' />
+                    )}
+
                     {token && (
                         <Box
                             display='flex'
                             padding="spacing-xs"
-                            backgroundColor="surface-secondary"
+                            backgroundColor="pw-int-bg-secondary-color"
                             borderRadius="radius-sm"
                             flexDirection='row'
                             alignItems='center'
                             gap='spacing-xxs'
                         >
-                            <PushAlpha />
-                            <Text color="text-primary" variant='bm-semibold'>{token.name}</Text>
+                            <Box
+                                cursor="pointer"
+                                display="flex"
+                                alignItems="center"
+                                padding="spacing-xxs"
+                                borderRadius="radius-sm"
+                                backgroundColor="pw-int-bg-tertiary-color"
+                            >
+                                <Text variant='bl-regular' color='pw-int-text-secondary-color'>{token.symbol}</Text>
+                            </Box>
+                            <Text color="pw-int-text-primary-color" variant='bm-semibold'>{token.name}</Text>
                         </Box>
                     )}
                 </Box>
                 <Box display='flex' gap='spacing-xs'>
                     <Button variant='outline' css={css`flex:1`} onClick={() => setActiveState('walletDashboard')}>Cancel</Button>
-                    <Button css={css`flex:2`}>Next</Button>
+                    <Button onClick={handleAddToken} css={css`flex:2`}>Add</Button>
                 </Box>
 
             </Box>

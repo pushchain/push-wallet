@@ -80,7 +80,7 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
                 <Box cursor="pointer">
                     <Back
                         size={24}
-                        color="icon-primary"
+                        color="pw-int-icon-primary-color"
                         onClick={handleBackButton}
                     />
                 </Box>
@@ -117,10 +117,10 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
                         gap="spacing-xxxs"
                         padding="spacing-xxxs"
                         borderRadius="radius-sm"
-                        backgroundColor="surface-tertiary"
+                        backgroundColor="pw-int-bg-tertiary-color"
                     >
                         <PushAlpha width={24} height={24} />
-                        <CaretDown width={24} height={24} color="icon-primary" />
+                        <CaretDown width={24} height={24} color="pw-int-icon-primary-color" />
                     </Box>
                 </Dropdown>
             )}
@@ -157,7 +157,7 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
                         justifyContent="center"
                         alignItems="center"
                     >
-                        <Text variant="os-regular" color="text-tertiary">
+                        <Text variant="os-regular" color="pw-int-text-tertiary-color">
                             {centerMaskWalletAddress(result.address, 5)}
                         </Text>
 
@@ -166,11 +166,11 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
                                 <TickCircleFilled
                                     autoSize
                                     size={14}
-                                    color="icon-state-success-bold"
+                                    color="pw-int-icon-success-bold-color"
                                 />
                             ) : (
                                 <Copy
-                                    color="icon-tertiary"
+                                    color="pw-int-icon-tertiary-color"
                                     size={14}
                                     onClick={() => handleCopy(parsedWallet, setCopied)}
                                 />
@@ -202,7 +202,7 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
                     }
                 >
                     <Box cursor="pointer">
-                        <Settings size={24} color="icon-primary" />
+                        <Settings size={24} color="pw-int-icon-primary-color" />
                     </Box>
                 </Dropdown>
             )}

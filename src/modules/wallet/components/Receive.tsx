@@ -58,8 +58,8 @@ const Receive = () => {
                     display='flex'
                     padding='spacing-sm'
                     borderRadius='radius-md'
-                    border='border-sm solid stroke-tertiary'
-                    backgroundColor='surface-primary'
+                    border='border-sm solid pw-int-border-tertiary-color'
+                    backgroundColor='pw-int-bg-primary-color'
                     position='relative'
                 >
                     <QRCodeSVG
@@ -80,14 +80,14 @@ const Receive = () => {
                     width='100%'
 
                 >
-                    <Text color='text-primary' variant='h4-semibold'>Push Address</Text>
+                    <Text color='pw-int-text-primary-color' variant='h4-semibold'>Push Address</Text>
 
                     <Box
                         padding='spacing-xs'
                         alignSelf='stretch'
                         borderRadius='radius-xs'
-                        backgroundColor='surface-primary'
-                        border='border-sm solid stroke-tertiary'
+                        backgroundColor='pw-int-bg-primary-color'
+                        border='border-sm solid pw-int-border-tertiary-color'
                     >
                         <Text variant='bs-semibold' wrap>{result?.address}</Text>
                     </Box>
@@ -102,15 +102,15 @@ const Receive = () => {
                         cursor='pointer'
                     >
                         {isCopied ? (
-                            <TickCircleFilled color='icon-brand-medium' size={24} />
+                            <TickCircleFilled color='pw-int-icon-brand-color' size={24} />
                         ) : (
-                            <Copy color='icon-brand-medium' size={24} />
+                            <Copy color='pw-int-icon-brand-color' size={24} />
                         )}
-                        <Text variant='bs-semibold' color='text-brand-medium'>
+                        <Text variant='bs-semibold' color='pw-int-text-link-color'>
                             {isCopied ? 'Address Copied!' : 'Copy Address'}
                         </Text>
                     </Box>
-                    <Text variant='c-regular' color='text-tertiary'>
+                    <Text variant='c-regular' color='pw-int-text-tertiary-color'>
                         Only send to Push chain addresses. Other networks may result in lost tokens
                     </Text>
                 </Box>
@@ -130,8 +130,6 @@ const Receive = () => {
 };
 
 export { Receive };
-
-const Image = styled.img``
 
 const LogoContainer = styled.div`
     position: absolute;

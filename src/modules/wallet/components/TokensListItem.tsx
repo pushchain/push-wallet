@@ -1,53 +1,24 @@
-import React, { FC } from 'react';
-import { TokenType } from '../../../types/wallet.types';
-import { Box, PushMonotone, Text } from 'blocks';
-import { TOKEN_LOGO } from 'common';
-import { css } from 'styled-components';
+import React, { FC, useEffect } from 'react';
+import { Box, Text } from 'blocks';
+import { TokenFormat } from '../../../types';
+import { useWalletBalance } from '../../../common/hooks/useWalletOperations';
+import { TokenLogoComponent } from 'common';
 
 type TokenListItemProps = {
-    token: TokenType
+    token: TokenFormat
 }
 
 const TokensListItem: FC<TokenListItemProps> = ({
     token
 }) => {
 
-    function getTokenLogo(tokenSymbol: string) {
-        const IconComponent = TOKEN_LOGO[tokenSymbol];
-        if (IconComponent) {
-            return (
-                <Box
-                    position="relative"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                >
-                    <Box
-                        width="36px"
-                        height="36px"
-                        borderRadius="radius-xl"
-                        overflow="hidden"
-                        alignSelf="center"
-                    >
-                        <IconComponent width={36} height={36} />;
-                    </Box>
-                    {tokenSymbol !== 'PCZ' && (
-                        <Box
-                            position="absolute"
-                            css={css`
-                                bottom:-12px;
-                                right:50%;
-                                left:52%;
-                            `}
-                        >
-                            <PushMonotone />
-                        </Box>
-                    )}
-                </Box>
-            )
-        }
-    }
+    const { balance, fetchBalance } = useWalletBalance();
 
+    useEffect(() => {
+        if (token.address) {
+            fetchBalance(token.address)
+        }
+    }, [token.address])
 
     return (
         <Box
@@ -57,20 +28,20 @@ const TokensListItem: FC<TokenListItemProps> = ({
             alignSelf='stretch'
             alignItems='center'
             borderRadius='radius-sm'
-            border='border-sm solid stroke-secondary'
+            border='border-sm solid pw-int-border-secondary-color'
         >
             <Box
                 display='flex'
                 gap='spacing-xxs'
                 alignItems='center'
             >
-                {getTokenLogo(token.symbol)}
+                <TokenLogoComponent tokenSymbol={token.symbol} />
                 <Box
                     display='flex'
                     flexDirection='column'
                 >
-                    <Text variant='bm-semibold' color='text-primary'>{token.name}</Text>
-                    <Text variant='bs-regular' color='text-secondary'>{token.amount}{" "}{token.symbol}</Text>
+                    <Text variant='bm-semibold' color='pw-int-text-primary-color'>{token.name}</Text>
+                    <Text variant='bs-regular' color='pw-int-text-secondary-color'>{Number(balance).toLocaleString()}{" "}{token.symbol}</Text>
                 </Box>
             </Box>
 
@@ -80,8 +51,8 @@ const TokensListItem: FC<TokenListItemProps> = ({
                 justifyContent='end'
                 alignItems='end'
             >
-                <Text variant='bm-semibold' color='text-primary'>${token.amountInUsd.toLocaleString()}</Text>
-                <Text variant='c-semibold' color={token.amountChange.includes('+') ? 'text-state-success-bold' : 'text-state-danger-bold'}>{token.amountChange}</Text>
+                <Text variant='bm-semibold' color='pw-int-text-primary-color'>${Number('12045').toLocaleString()}</Text>
+                <Text variant='c-semibold' color={'+1984'.includes('+') ? 'pw-int-text-success-bold-color' : 'pw-int-text-danger-bold-color'}>+{Number('1984').toLocaleString()}</Text>
             </Box>
 
         </Box>

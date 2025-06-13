@@ -16,10 +16,10 @@ const RadixTooltipContent = styled(RadixTooltip.Content).withConfig({
   gap: var(--s1);
   padding: var(--s2);
   border-radius: var(--r3);
-  font-family: var(--font-family);
+  font-family: var(--pw-int-font-family);
   word-wrap: break-word;
-  color: var(--text-primary-inverse);
-  background-color: var(--surface-primary-inverse);
+  color: var(--pw-int-text-primary-inverse);
+  background-color: var(--pw-int-bg-primary-inverse);
 
   /* Tooltip non-responsive styles */
   width: ${({ width }) => width};
@@ -33,8 +33,8 @@ const RadixTooltipContent = styled(RadixTooltip.Content).withConfig({
 `;
 
 const StyledTitle = styled.span`
-  color: var(--text-primary-inverse);
-  font-family: var(--font-family);
+  color: var(--pw-int-text-primary-inverse);
+  font-family: var(--pw-int-font-family);
   font-size: ${textVariants['c-semibold'].fontSize};
   font-style: ${textVariants['c-semibold'].fontStyle};
   font-weight: ${textVariants['c-semibold'].fontWeight};
@@ -42,8 +42,8 @@ const StyledTitle = styled.span`
 `;
 
 const StyledDescription = styled.span`
-  color: var(--text-primary-inverse);
-  font-family: var(--font-family);
+  color: var(--pw-int-text-primary-inverse);
+  font-family: var(--pw-int-font-family);
   font-size: ${textVariants['c-regular'].fontSize};
   font-style: ${textVariants['c-regular'].fontStyle};
   font-weight: ${textVariants['c-regular'].fontWeight};

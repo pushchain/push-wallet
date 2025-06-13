@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { SendTokenState, TokenType } from '../types';
+import { SendTokenState, TokenFormat } from '../types';
 
 interface SendTokenContextType {
     sendState: SendTokenState;
     setSendState: (state: SendTokenState) => void;
-    tokenSelected: TokenType | null;
-    setTokenSelected: (token: TokenType | null) => void;
+    tokenSelected: TokenFormat | null;
+    setTokenSelected: (token: TokenFormat | null) => void;
     receiverAddress: string | null;
     setReceiverAddress: (address: string | null) => void;
     amount: number | null;
@@ -20,7 +20,7 @@ const SendTokenContext = createContext<SendTokenContextType | undefined>(undefin
 
 export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [sendState, setSendState] = useState<SendTokenState>('selectToken');
-    const [tokenSelected, setTokenSelected] = useState<TokenType | null>(null);
+    const [tokenSelected, setTokenSelected] = useState<TokenFormat | null>(null);
     const [receiverAddress, setReceiverAddress] = useState<string | null>(null);
     const [amount, setAmount] = useState<number | null>(null);
 

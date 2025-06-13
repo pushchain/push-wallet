@@ -64,7 +64,7 @@ const SelectRecipient = () => {
                 css={css`flex:1`}
             >
 
-                <Text variant='h3-semibold' color='text-primary'>Send PC </Text>
+                <Text variant='h3-semibold' color='pw-int-text-primary-color'>Send PC </Text>
 
                 <Box
                     display='flex'
@@ -73,7 +73,7 @@ const SelectRecipient = () => {
                     alignSelf='stretch'
                     alignItems='center'
                     borderRadius='radius-sm'
-                    border='border-sm solid stroke-secondary'
+                    border='border-sm solid pw-int-border-secondary-color'
                     cursor='pointer'
                 >
                     <Box
@@ -86,8 +86,8 @@ const SelectRecipient = () => {
                             display='flex'
                             flexDirection='column'
                         >
-                            <Text variant='bm-semibold' color='text-primary'>{tokenSelected.name}</Text>
-                            <Text variant='bs-regular' color='text-secondary'>{tokenSelected.amount}{" "}{tokenSelected.symbol}</Text>
+                            <Text variant='bm-semibold' color='pw-int-text-primary-color'>{tokenSelected.name}</Text>
+                            <Text variant='bs-regular' color='pw-int-text-secondary-color'>{0}{" "}{tokenSelected.symbol}</Text>
                         </Box>
                     </Box>
                 </Box>
@@ -115,9 +115,9 @@ const SelectRecipient = () => {
                     flexDirection='column'
                     alignItems='flex-start'
                     borderRadius='radius-sm'
-                    backgroundColor='surface-tertiary'
+                    backgroundColor="pw-int-bg-tertiary-color"
                 >
-                    <Text variant='bes-semibold' color='text-primary'>Tokens to Send</Text>
+                    <Text variant='bes-semibold' color='pw-int-text-primary-color'>Tokens to Send</Text>
                     <Box
                         display='flex'
                         alignItems='center'
@@ -146,19 +146,19 @@ const SelectRecipient = () => {
                             display='flex'
                             padding='spacing-xxs spacing-xs'
                             alignItems='center'
-                            backgroundColor='surface-secondary'
+                            backgroundColor="pw-int-bg-secondary-color"
                             borderRadius='radius-md'
-                            onClick={() => setAmount(Number(tokenSelected.amount))}
+                            onClick={() => setAmount(Number(0))}
                         >
-                            <Text variant='bs-semibold' color='text-primary'>Max</Text>
+                            <Text variant='bs-semibold' color='pw-int-text-primary-color'>Max</Text>
                         </Box>
                     </Box>
                     <Box display='flex' width='100%'>
                         <Box css={css`flex:1`}>
-                            <Text variant='bs-regular' color='text-tertiary'>~$12.45</Text>
+                            <Text variant='bs-regular' color='pw-int-text-tertiary-color'>~$12.45</Text>
                         </Box>
                         <Box css={css`flex:1`}>
-                            <Text textAlign='right' variant='bs-regular' color='text-tertiary'>Balance: 124.53</Text>
+                            <Text textAlign='right' variant='bs-regular' color='pw-int-text-tertiary-color'>Balance: 124.53</Text>
                         </Box>
                     </Box>
                 </Box>

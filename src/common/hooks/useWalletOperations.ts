@@ -1,6 +1,6 @@
 import { createPublicClient, createWalletClient, http, formatUnits, parseUnits, type Address } from 'viem';
-import { pushTestnetChain } from '../../providers/ethereum/chains';
 import { useState } from 'react';
+import { pushTestnetChain } from '../../utils/chainDetails';
 
 export const useWalletBalance = () => {
     const [balance, setBalance] = useState<string>('0');
@@ -9,6 +9,8 @@ export const useWalletBalance = () => {
 
     const fetchBalance = async (address: string) => {
         try {
+            console.log("Called ");
+
             setIsLoading(true);
             setError(null);
             const publicClient = createPublicClient({

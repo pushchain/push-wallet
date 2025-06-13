@@ -67,7 +67,7 @@ export const walletCategories: WalletCategoriesType[] = [
   {
     chain: ChainType.WALLET_CONNECT,
     wallet: "walletConnect",
-    label: "Wallet Connect",
+    label: "Connect using Wallet Connect",
     icon: <WalletConnectIcon width={24} height={24} />,
     isMobile: true,
   },
@@ -149,7 +149,7 @@ export const CHAIN_LOGO: {
 export const TOKEN_LOGO = {
   'pETH': Ethereum,
   'pPOL': Polygon,
-  'PCZ': PushAlpha
+  'PC': PushAlpha
 }
 
 export const WALLETS_LOGO = {
@@ -221,6 +221,12 @@ export const tokens: TokenType[] = [
     contractAddress: '0x6D2a0194bD791CADd7a3F5c9464cE9fC24a49a3',
   }
 ]
+
+export const ERC20ABI = [
+  { name: 'name', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'string' }] },
+  { name: 'symbol', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'string' }] },
+  { name: 'decimals', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint8' }] },
+];
 
 
 export const EXPLORER_URL = `https://explorer.dev.push.org`
