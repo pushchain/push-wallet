@@ -2,17 +2,14 @@ import { FC, useCallback, useEffect, useRef, useState } from "react";
 
 import { Box, Text, Spinner } from "../../../blocks";
 import { WalletActivityListItem } from "./WalletActivityListItem";
-import { PushChain } from "@pushchain/devnet";
-import { ORDER } from '@pushchain/devnet/src/lib/constants'
-import { BlockType } from "@pushchain/devnet/src/lib/block/block.types";
-import config from "../../../config";
+import { PushChain } from "@pushchain/core";
 
 export type WalletActivityListProps = {
   address: string;
 };
 
 const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
-  const [activities, setActivities] = useState<BlockType["transactions"]>([]);
+  const [activities, setActivities] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
@@ -24,29 +21,41 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
       if (isLoading) return;
       setIsLoading(true);
       try {
-        const pushChain = await PushChain.initialize(null, {
-          network: config.APP_ENV,
-          rpcUrl: import.meta.env.VITE_APP_RPC_URL,
-        });
+        // const pushChain = await PushChain.initialize(null, {
+        //   network: config.APP_ENV,
+        //   rpcUrl: import.meta.env.VITE_APP_RPC_URL,
+        // });
 
-        const universalAccount = PushChain.utils.account.toUniversal(address)
+        const universalAccount = PushChain.utils.account.fromChainAgnostic(address)
 
-        const response = await pushChain.tx.get(universalAccount, {
-          startTime: Math.floor(Date.now()),
-          order: ORDER.DESC,
-          page: pageNumber,
-          limit: 20,
+        const viemClient = await PushChain.viem.createPublicClient({
+          chain: PushChain.CONSTANTS.VIEM_PUSH_TESTNET_DONUT,
+          transport: PushChain.viem.http(),
         })
 
-        const transactions = response.blocks
-          .map((tx) => tx.transactions)
-          .flat();
+        const res = await viemClient.getLogs({
+          address: universalAccount.address as `0x${string}`,
+          
+        })
 
-        const filteredTransactions = transactions.filter(transaction => !transaction.category.includes('CHESS'));
+        console.log(res);
 
-        setActivities((prev) => [...prev, ...filteredTransactions]);
+        // const response = await PushChain.viem.(universalAccount, {
+        //   startTime: Math.floor(Date.now()),
+        //   order: ORDER.DESC,
+        //   page: pageNumber,
+        //   limit: 20,
+        // })
 
-        setHasMore(response.totalPages > pageNumber);
+        // const transactions = response.blocks
+        //   .map((tx) => tx.transactions)
+        //   .flat();
+
+        // const filteredTransactions = transactions.filter(transaction => !transaction.category.includes('CHESS'));
+
+        // setActivities((prev) => [...prev, ...filteredTransactions]);
+
+        // setHasMore(response.totalPages > pageNumber);
       } catch (error) {
         console.error("Error fetching activities:", error);
       } finally {

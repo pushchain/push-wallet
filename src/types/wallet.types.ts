@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
 
 export enum ChainType {
-  ETHEREUM = "mainnet",
+  ETHEREUM = "sepolia",
   SOLANA = "solana",
-  BINANCE = "bsc",
-  ARBITRUM = "arbitrum",
-  AVALANCHE = "avalanche",
+  BINANCE = "bscTestnet",
+  ARBITRUM = "arbitrumSepolia",
+  AVALANCHE = "avalancheFuji",
   WALLET_CONNECT = "walletConnect"
 }
 export interface WalletInfo {

@@ -15,6 +15,7 @@ declare global {
         chainId?: number;
         connect: () => Promise<{ publicKey: { toString: () => string } }>;
         disconnect: () => Promise<void>;
+        request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
       };
     };
   }

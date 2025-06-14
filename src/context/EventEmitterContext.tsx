@@ -23,8 +23,8 @@ import {
 import { requestToConnectPushWallet } from "../common";
 import { APP_ROUTES } from "../constants";
 import { AppMetadata, ChainType, CONSTANTS, IWalletProvider, LoginMethodConfig, WalletConfig, WalletInfo } from "../types/wallet.types";
-import { PushChain } from "@pushchain/devnet";
 import { useAppState } from "./AppContext";
+import { TypedData, TypedDataDomain } from "viem";
 
 // Define the shape of the app state
 export type EventEmitterState = {
@@ -100,6 +100,12 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
           case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
             handleSignAndSendMessage(event.data.data, event.origin);
             break;
+          case APP_TO_WALLET_ACTION.SIGN_TRANSACTION:
+            handleSignTransaction(event.data.data, event.origin);
+            break;
+          case APP_TO_WALLET_ACTION.SIGN_TYPED_DATA:
+            handleSignTypedData(event.data.data, event.origin);
+            break;
           case APP_TO_WALLET_ACTION.LOG_OUT:
             handleLogOutEvent();
             break;
@@ -123,7 +129,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   // Function to send messages to the main tab
-  const sendMessageToMainTab = (data: any) => {
+  const sendMessageToMainTab = (data: unknown) => {
     if (window.parent) {
       try {
         window.parent.postMessage(data, getAppParamValue());
@@ -160,18 +166,83 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   };
 
-  const handleSignAndSendMessage = async (message: string, origin: string) => {
+  const handleSignAndSendMessage = async (message: Uint8Array, origin: string) => {
     try {
       dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "loading" });
 
-      const signature = await walletRef.current.sign(
+      const signature = await walletRef.current.signMessage(
         message,
         origin,
         getAllAppConnections()
       );
 
       sendMessageToMainTab({
-        type: WALLET_TO_APP_ACTION.SIGNATURE,
+        type: WALLET_TO_APP_ACTION.SIGN_MESSAGE,
+        data: { signature },
+      });
+
+      setTimeout(
+        () => dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" }),
+        2000
+      );
+    } catch (error) {
+      dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "rejected" });
+      sendMessageToMainTab({
+        type: WALLET_TO_APP_ACTION.ERROR,
+        data: {
+          error: error,
+        },
+      });
+    }
+  };
+
+  const handleSignTransaction = async (txn: Uint8Array, origin: string) => {
+    try {
+      dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "loading" });
+
+      const signature = await walletRef.current.signTransaction(
+        txn,
+        origin,
+        getAllAppConnections()
+      );
+
+      sendMessageToMainTab({
+        type: WALLET_TO_APP_ACTION.SIGN_TRANSACTION,
+        data: { signature },
+      });
+
+      setTimeout(
+        () => dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" }),
+        2000
+      );
+    } catch (error) {
+      dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "rejected" });
+      sendMessageToMainTab({
+        type: WALLET_TO_APP_ACTION.ERROR,
+        data: {
+          error: error,
+        },
+      });
+    }
+  };
+
+  const handleSignTypedData = async (typedData: {
+      domain: TypedDataDomain;
+      types: TypedData;
+      primaryType: string;
+      message: Record<string, unknown>;
+    }, origin: string) => {
+    try {
+      dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "loading" });
+
+      const signature = await walletRef.current.signTypedData(
+        typedData,
+        origin,
+        getAllAppConnections()
+      );
+
+      sendMessageToMainTab({
+        type: WALLET_TO_APP_ACTION.SIGN_TYPED_DATA,
         data: { signature },
       });
 
@@ -215,16 +286,11 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     });
 
     const universalSigner = walletRef?.current?.universalSigner
-    const account = PushChain.utils.account.toChainAgnostic({
-      chain: universalSigner.chain,
-      chainId: universalSigner.chainId,
-      address: universalSigner.address
-    });
 
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.APP_CONNECTION_SUCCESS,
       data: {
-        account: account,
+        account: universalSigner.account,
       },
     });
   };
@@ -292,16 +358,11 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   const handleUserLoggedIn = () => {
 
     const universalSigner = walletRef?.current?.universalSigner
-    const account = PushChain.utils.account.toChainAgnostic({
-      chain: universalSigner.chain,
-      chainId: universalSigner.chainId,
-      address: universalSigner.address
-    });
 
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.IS_LOGGED_IN,
       data: {
-        account: account ?? null,
+        account: universalSigner.account ?? null,
       },
     });
   };
