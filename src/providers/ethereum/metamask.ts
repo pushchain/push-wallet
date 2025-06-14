@@ -77,7 +77,7 @@ export class MetamaskProvider extends BaseWalletProvider {
   };
 
   switchNetwork = async (chainName: ChainType) => {
-    const network = chains[chainName] as chains.Chain
+    const network = chains[chainName] as chains.Chain;
     const provider = this.getProvider();
     const hexNetworkId = toHex(network.id);
 

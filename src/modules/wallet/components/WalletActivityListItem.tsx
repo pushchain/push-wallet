@@ -2,11 +2,11 @@ import { Box, DefaultChainMonotone, ExternalLinkIcon, InternalLink, PushMonotone
 import { css } from 'styled-components';
 import { convertCaipToObject, formatWalletCategory, getFixedTime } from '../Wallet.utils';
 import { centerMaskWalletAddress, CHAIN_MONOTONE_LOGO } from '../../../common';
-import { TxResponse } from '@pushchain/devnet/src/lib/tx/tx.types';
+
 import { FC } from 'react';
 
 type WalletActivityListItemProps = {
-    transaction: TxResponse
+    transaction: any
     address: string
 }
 
@@ -27,7 +27,7 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
         }
     }
 
-    function fetchChainFromAddress(transaction: TxResponse) {
+    function fetchChainFromAddress(transaction: any) {
 
         let displayAddress = '';
         let additionalRecipients = 0;

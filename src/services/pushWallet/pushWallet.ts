@@ -9,7 +9,6 @@ import api from '../../services/api' // Axios instance
 import { PushWalletAppConnectionData } from '../../common'
 import { PushChain } from '@pushchain/core'
 import { chainSignerRegistry } from './signerRegistry'
-import { EncryptedText } from '@pushchain/devnet/src/lib/generated/txData/init_did'
 import { UniversalSigner } from '@pushchain/core/src/lib/universal/universal.types'
 import { CHAIN } from '@pushchain/core/src/lib/constants/enums'
 
@@ -23,7 +22,7 @@ export class PushWallet {
    */
   public walletToEncDerivedKey: {
     [key: string]: {
-      encDerivedPrivKey: EncryptedText
+      encDerivedPrivKey: any
       signature: Uint8Array
     }
   } = {}

@@ -1,6 +1,6 @@
 import { PushWallet } from "src/services/pushWallet/pushWallet";
 import { ChainType } from "../../types/wallet.types";
-import { PushChain } from "@pushchain/devnet";
+import { PushChain } from "@pushchain/core";
 
 export const getWalletlist = (wallet: PushWallet) => {
   const walletList = [];
@@ -31,14 +31,10 @@ export const getWalletlist = (wallet: PushWallet) => {
 
   if (wallet) {
     const universalSigner = wallet?.universalSigner
-    const account = PushChain.utils.account.toChainAgnostic({
-      chain: universalSigner.chain,
-      chainId: universalSigner.chainId,
-      address: universalSigner.address
-    });
+    const account = PushChain.utils.account.toChainAgnostic(universalSigner.account.address, {chain: universalSigner.account.chain});
     const walletObj = {
       name: "Push Account",
-      address: wallet.universalSigner.address,
+      address: wallet.universalSigner.account.address,
       fullAddress: account,
       isSelected: false,
       type: "push",
