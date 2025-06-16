@@ -18,6 +18,8 @@ export abstract class BaseWalletProvider implements IWalletProvider {
   abstract getChainId(): Promise<unknown>;
   abstract switchNetwork(chainName: ChainType): Promise<void>;
 
+  abstract sendTransaction(to: string, value: bigint): Promise<string>;
+
   protected formatAddress(
     rawAddress: string,
     chainType: ChainType,

@@ -9,6 +9,7 @@ type WalletContextType = {
     chainType?: ChainType
   ) => Promise<string | null>;
   disconnect: () => Promise<void>;
+  sendTransaction: (to: string, value: bigint) => Promise<string>;
 };
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
@@ -37,7 +38,7 @@ export const WalletContextProvider = ({
       setCurrentProvider(provider);
       return caipAddress;
     } catch (error) {
-      throw new Error('Failed to connect wallet');
+      throw new Error("Failed to connect wallet");
     } finally {
       setConnecting(false);
     }
@@ -51,8 +52,25 @@ export const WalletContextProvider = ({
         setCurrentProvider(null);
       } catch (error) {
         console.error("Failed to disconnect:", error);
-        throw new Error('Failed to disconnect wallet');
+        throw new Error("Failed to disconnect wallet");
       }
+    }
+  };
+
+  const sendTransaction = async (
+    to: string,
+    value: bigint
+  ): Promise<string> => {
+    if (!currentProvider) {
+      throw new Error("No wallet connected");
+    }
+
+    try {
+      const txHash = await currentProvider.sendTransaction(to, value);
+      return txHash;
+    } catch (error) {
+      console.error("Transaction failed:", error);
+      throw error;
     }
   };
 
@@ -63,6 +81,7 @@ export const WalletContextProvider = ({
         connecting,
         connect,
         disconnect,
+        sendTransaction,
       }}
     >
       {children}

@@ -24,6 +24,7 @@ export interface IWalletProvider {
   signMessage(message: Uint8Array): Promise<Uint8Array>;
   getChainId(): Promise<unknown>;
   switchNetwork(chainName: ChainType): Promise<void>;
+  sendTransaction: (to: string, value: bigint) => Promise<string>; // ✅ new
 }
 
 export type WalletCategoriesType = {

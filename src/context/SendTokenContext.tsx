@@ -1,66 +1,82 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { SendTokenState, TokenFormat } from '../types';
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { SendTokenState, TokenFormat } from "../types";
+import { useGlobalState } from "./GlobalContext";
+import { useWallet } from "./WalletContext";
+import { formatUnits, parseUnits } from "viem";
 
 interface SendTokenContextType {
-    sendState: SendTokenState;
-    setSendState: (state: SendTokenState) => void;
-    tokenSelected: TokenFormat | null;
-    setTokenSelected: (token: TokenFormat | null) => void;
-    receiverAddress: string | null;
-    setReceiverAddress: (address: string | null) => void;
-    amount: number | null;
-    setAmount: (amount: number | null) => void;
-    sendingTransaction: boolean;
-    handleSendTransaction: () => void;
-    txhash: string | null;
-    setTxhash: (txHash: string | null) => void;
+  sendState: SendTokenState;
+  setSendState: (state: SendTokenState) => void;
+  tokenSelected: TokenFormat | null;
+  setTokenSelected: (token: TokenFormat | null) => void;
+  receiverAddress: string | null;
+  setReceiverAddress: (address: string | null) => void;
+  amount: number | null;
+  setAmount: (amount: number | null) => void;
+  sendingTransaction: boolean;
+  handleSendTransaction: () => void;
+  txhash: string | null;
+  setTxhash: (txHash: string | null) => void;
 }
 
-const SendTokenContext = createContext<SendTokenContextType | undefined>(undefined);
+const SendTokenContext = createContext<SendTokenContextType | undefined>(
+  undefined
+);
 
-export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [sendState, setSendState] = useState<SendTokenState>('selectToken');
-    const [tokenSelected, setTokenSelected] = useState<TokenFormat | null>(null);
-    const [receiverAddress, setReceiverAddress] = useState<string | null>(null);
-    const [amount, setAmount] = useState<number | null>(null);
+export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [sendState, setSendState] = useState<SendTokenState>("selectToken");
+  const [tokenSelected, setTokenSelected] = useState<TokenFormat | null>(null);
+  const [receiverAddress, setReceiverAddress] = useState<string | null>(null);
+  const [amount, setAmount] = useState<number | null>(null);
 
-    const [sendingTransaction, setSendingTransaction] = useState<boolean>(false);
-    const [txhash, setTxhash] = useState<string | null>(null);
+  const [sendingTransaction, setSendingTransaction] = useState<boolean>(false);
+  const [txhash, setTxhash] = useState<string | null>(null);
 
-    const handleSendTransaction = () => {
+  const { sendTransaction } = useWallet();
 
-        setSendingTransaction(true);
-        console.log("Sending transaction");
+  const handleSendTransaction = async () => {
+    const value = parseUnits(amount.toString(), tokenSelected.decimals);
+    const res = await sendTransaction(receiverAddress, value);
+    console.log("Res", res);
 
-        setTimeout(() => {
-            setSendingTransaction(false);
-            setSendState('confirmation')
-            setTxhash('0x885e40c0a7984167dc6a61bbc31feeae29a91ee3cf0f60c8c1a6da40a0284fd2')
-        }, 3000);
-    }
+    // setSendingTransaction(true);
+    // console.log("Sending transaction");
 
-    const value = {
-        sendState,
-        setSendState,
-        tokenSelected,
-        setTokenSelected,
-        receiverAddress,
-        setReceiverAddress,
-        amount,
-        setAmount,
-        sendingTransaction,
-        handleSendTransaction,
-        txhash,
-        setTxhash
-    };
+    // setTimeout(() => {
+    //     setSendingTransaction(false);
+    //     setSendState('confirmation')
+    //     setTxhash('0x885e40c0a7984167dc6a61bbc31feeae29a91ee3cf0f60c8c1a6da40a0284fd2')
+    // }, 3000);
+  };
 
-    return <SendTokenContext.Provider value={value}>{children}</SendTokenContext.Provider>;
+  const value = {
+    sendState,
+    setSendState,
+    tokenSelected,
+    setTokenSelected,
+    receiverAddress,
+    setReceiverAddress,
+    amount,
+    setAmount,
+    sendingTransaction,
+    handleSendTransaction,
+    txhash,
+    setTxhash,
+  };
+
+  return (
+    <SendTokenContext.Provider value={value}>
+      {children}
+    </SendTokenContext.Provider>
+  );
 };
 
 export const useSendTokenContext = () => {
-    const context = useContext(SendTokenContext);
-    if (context === undefined) {
-        throw new Error('useSendTokenContext must be used within a SendProvider');
-    }
-    return context;
-}; 
+  const context = useContext(SendTokenContext);
+  if (context === undefined) {
+    throw new Error("useSendTokenContext must be used within a SendProvider");
+  }
+  return context;
+};

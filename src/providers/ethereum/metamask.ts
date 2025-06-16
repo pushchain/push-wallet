@@ -141,6 +141,73 @@ export class MetamaskProvider extends BaseWalletProvider {
     }
   };
 
+  async sendTransaction(to: string, value: bigint): Promise<string> {
+    try {
+      const provider = this.getProvider();
+      if (!provider) throw new Error("Provider is undefined");
+
+      const accounts = await provider.request({
+        method: 'eth_accounts',
+      }) as string[];
+
+      if (!accounts || accounts.length === 0) {
+        throw new Error("No connected accounts");
+      }
+
+      const from = accounts[0];
+
+      const txParams = {
+        from,
+        to,
+        value: `0x${value.toString(16)}`,
+        gas: `0x${(21000n).toString(16)}`,
+        maxFeePerGas: `0x${(100000n * 1_000_000_000n).toString(16)}`,
+        maxPriorityFeePerGas: `0x${(100n * 1_000_000_000n).toString(16)}`,
+      };
+
+      const txHash = await provider.request({
+        method: 'eth_sendTransaction',
+        params: [txParams],
+      }) as string;
+
+      console.log("Transaction sent, hash:", txHash);
+
+      const receipt = await this.waitForTransactionReceipt(provider, txHash);
+
+      if (!receipt || !receipt.status) {
+        throw new Error("Transaction failed or was reverted");
+      }
+
+      console.log("Transaction confirmed:", receipt);
+      return txHash;
+    } catch (error) {
+      console.error('Transaction failed:', error);
+      throw error;
+    }
+  }
+
+  private async waitForTransactionReceipt(
+    provider: any,
+    txHash: string,
+    retries = 30,
+    delay = 2000
+  ): Promise<any> {
+    for (let i = 0; i < retries; i++) {
+      const receipt = await provider.request({
+        method: 'eth_getTransactionReceipt',
+        params: [txHash],
+      });
+
+      if (receipt && receipt.blockNumber) {
+        return receipt;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    throw new Error('Transaction not confirmed in time');
+  }
+
   disconnect = async () => {
     const provider = this.getProvider();
     await provider.request({
