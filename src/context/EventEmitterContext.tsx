@@ -101,7 +101,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
             handleSignAndSendMessage(event.data.data, event.origin);
             break;
           case APP_TO_WALLET_ACTION.SIGN_TRANSACTION:
-            handleSignTransaction(event.data.data, event.origin);
+            handleSignAndSendTransaction(event.data.data, event.origin);
             break;
           case APP_TO_WALLET_ACTION.SIGN_TYPED_DATA:
             handleSignTypedData(event.data.data, event.origin);
@@ -196,11 +196,11 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const handleSignTransaction = async (txn: Uint8Array, origin: string) => {
+  const handleSignAndSendTransaction = async (txn: Uint8Array, origin: string) => {
     try {
       dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "loading" });
 
-      const signature = await walletRef.current.signTransaction(
+      const signature = await walletRef.current.signAndSendTransaction(
         txn,
         origin,
         getAllAppConnections()

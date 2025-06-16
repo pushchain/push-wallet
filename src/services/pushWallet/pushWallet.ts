@@ -57,7 +57,7 @@ export class PushWallet {
     const handler = chainSignerRegistry[chain]
     if (!handler) throw new Error(`Unsupported chain: ${chain}`)
 
-    const { address, signMessage, signTransaction, signTypedData } = await handler(masterNode)
+    const { address, signMessage, signAndSendTransaction, signTypedData } = await handler(masterNode)
 
     const signerSkeleton = PushChain.utils.signer.construct(
       {
@@ -66,7 +66,7 @@ export class PushWallet {
       },
       {
         signMessage: signMessage,
-        signTransaction: signTransaction,
+        signAndSendTransaction: signAndSendTransaction,
         signTypedData: signTypedData
       }
     );
@@ -508,14 +508,14 @@ export class PushWallet {
     )
   }
 
-  public signTransaction = async (
+  public signAndSendTransaction = async (
     data: string | Uint8Array,
     origin: string,
     appConnections: PushWalletAppConnectionData[]
   ): Promise<Uint8Array> => {
     const appFound = appConnections.find((each) => each.origin === origin)
     if (!appFound) throw Error('App not Connected')
-    return await this.universalSigner.signTransaction(
+    return await this.universalSigner.signAndSendTransaction(
       typeof data === 'string' ? stringToBytes(data) : data
     )
   }
