@@ -6,7 +6,8 @@ export enum ChainType {
   BINANCE = "bscTestnet",
   ARBITRUM = "arbitrumSepolia",
   AVALANCHE = "avalancheFuji",
-  WALLET_CONNECT = "walletConnect"
+  WALLET_CONNECT = "walletConnect",
+  PUSH_WALLET = "pushWalletDonut"
 }
 export interface WalletInfo {
   address: string;
@@ -26,7 +27,7 @@ export interface IWalletProvider {
 
 export type WalletCategoriesType = {
   chain: ChainType;
-  wallet: 'ethereum' | 'solana' | 'walletConnect';
+  wallet: 'ethereum' | 'solana' | 'walletConnect' | 'pushWallet';
   label: string;
   icon: ReactNode;
   isMobile: boolean;
