@@ -3,14 +3,14 @@ import { bytesToHex } from '@noble/hashes/utils'
 import { HDKey } from 'viem/accounts'
 import nacl from 'tweetnacl'
 import bs58 from 'bs58'
-import { hexToBytes, parseTransaction, TypedData, TypedDataDomain } from 'viem'
-import { PublicKey, Transaction } from '@solana/web3.js';
+import { createWalletClient, defineChain, hexToBytes, http, parseTransaction, TypedData, TypedDataDomain } from 'viem'
+import { clusterApiUrl, Connection, PublicKey, Transaction } from '@solana/web3.js';
 import { CHAIN } from '@pushchain/core/src/lib/constants/enums'
 
 export type ChainSignerHandler = (masterNode: HDKey) => Promise<{
   address: string
   signMessage: (data: Uint8Array) => Promise<Uint8Array>
-  signTransaction: (data: Uint8Array) => Promise<Uint8Array>
+  signAndSendTransaction?: (tx: Uint8Array) => Promise<Uint8Array>
   signTypedData?: ({ domain, types, primaryType, message }: {
     domain: TypedDataDomain;
     types: TypedData;
@@ -18,6 +18,28 @@ export type ChainSignerHandler = (masterNode: HDKey) => Promise<{
     message: Record<string, unknown>;
   }) => Promise<Uint8Array> | undefined
 }>
+
+export const VIEM_PUSH_TESTNET_DONUT = defineChain({
+  id: 42101,
+  name: 'Push Testnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'PC',
+    symbol: '$PC',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://evm.rpc-testnet-donut-node1.push.org/'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'Push Testnet Explorer',
+      url: 'https://explorer.testnet.push.org/',
+    },
+  },
+});
+
 
 export const chainSignerRegistry: Partial<Record<CHAIN, ChainSignerHandler>> = {
   [CHAIN.ETHEREUM_MAINNET]: async (masterNode) => {
@@ -29,10 +51,16 @@ export const chainSignerRegistry: Partial<Record<CHAIN, ChainSignerHandler>> = {
         const sig = await account.signMessage({ message: { raw: data } })
         return hexToBytes(sig)
       },
-      signTransaction: async (tx) => {
-        const transaction = parseTransaction(`0x${bytesToHex(tx)}`);
-        const sig = await account.signTransaction(transaction);
-        return hexToBytes(sig);
+      signAndSendTransaction: async (unsignedTx) => {
+        const walletClient = createWalletClient({
+          account,
+          chain: VIEM_PUSH_TESTNET_DONUT,
+          transport: http(),
+        })
+        const hex = `0x${bytesToHex(unsignedTx)}` as `0x${string}`;
+        const tx = parseTransaction(hex);
+        const txHash = await walletClient.sendTransaction(tx as never);
+        return hexToBytes(txHash);
       },
       signTypedData: async (typedData) => {
         const sig = await account.signTypedData(typedData);
@@ -47,7 +75,9 @@ export const chainSignerRegistry: Partial<Record<CHAIN, ChainSignerHandler>> = {
     return {
       address: bs58.encode(keypair.publicKey),
       signMessage: async (data) => nacl.sign.detached(data, keypair.secretKey),
-      signTransaction: async (serializedTx) => {
+      signAndSendTransaction: async (serializedTx) => {
+        const connection = new Connection(clusterApiUrl('testnet'), 'confirmed');
+
         const tx = Transaction.from(serializedTx);
         const message = tx.serializeMessage();
 
@@ -55,7 +85,12 @@ export const chainSignerRegistry: Partial<Record<CHAIN, ChainSignerHandler>> = {
         const publicKey = new PublicKey(keypair.publicKey);
         tx.addSignature(publicKey, Buffer.from(signature));
 
-        return tx.serialize();
+        const txid = await connection.sendRawTransaction(tx.serialize(), {
+          skipPreflight: false,
+          preflightCommitment: 'confirmed',
+        });
+
+        return new Uint8Array(Buffer.from(txid, 'hex'))
       },
     }
   },

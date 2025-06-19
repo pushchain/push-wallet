@@ -9,7 +9,6 @@ import api from '../../services/api' // Axios instance
 import { PushWalletAppConnectionData } from '../../common'
 import { PushChain } from '@pushchain/core'
 import { chainSignerRegistry } from './signerRegistry'
-import { EncryptedText } from '@pushchain/devnet/src/lib/generated/txData/init_did'
 import { UniversalSigner } from '@pushchain/core/src/lib/universal/universal.types'
 import { CHAIN } from '@pushchain/core/src/lib/constants/enums'
 
@@ -23,7 +22,7 @@ export class PushWallet {
    */
   public walletToEncDerivedKey: {
     [key: string]: {
-      encDerivedPrivKey: EncryptedText
+      encDerivedPrivKey: any
       signature: Uint8Array
     }
   } = {}
@@ -58,7 +57,7 @@ export class PushWallet {
     const handler = chainSignerRegistry[chain]
     if (!handler) throw new Error(`Unsupported chain: ${chain}`)
 
-    const { address, signMessage, signTransaction, signTypedData } = await handler(masterNode)
+    const { address, signMessage, signAndSendTransaction, signTypedData } = await handler(masterNode)
 
     const signerSkeleton = PushChain.utils.signer.construct(
       {
@@ -67,7 +66,7 @@ export class PushWallet {
       },
       {
         signMessage: signMessage,
-        signTransaction: signTransaction,
+        signAndSendTransaction: signAndSendTransaction,
         signTypedData: signTypedData
       }
     );
@@ -509,14 +508,14 @@ export class PushWallet {
     )
   }
 
-  public signTransaction = async (
+  public signAndSendTransaction = async (
     data: string | Uint8Array,
     origin: string,
     appConnections: PushWalletAppConnectionData[]
   ): Promise<Uint8Array> => {
     const appFound = appConnections.find((each) => each.origin === origin)
     if (!appFound) throw Error('App not Connected')
-    return await this.universalSigner.signTransaction(
+    return await this.universalSigner.signAndSendTransaction(
       typeof data === 'string' ? stringToBytes(data) : data
     )
   }
