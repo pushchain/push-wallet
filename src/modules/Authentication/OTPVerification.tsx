@@ -198,14 +198,14 @@ const StyledOTPInput = styled.input`
   padding: var(--spacing-xs, 12px);
   font-size: 18px;
   text-align: center;
-  border: 1.5px solid var(pw-int-border-primary-color, #313338);
+  border: 1.5px solid var(--pw-int-bg-disabled-color);
   border-radius: 8px;
-  background: var(--pw-int-bg-secondary-color, #313338);
+  background: var(--pw-int-bg-disabled-color);
   color: var(--pw-int-text-primary-color);
   font-family: var(--pw-int-font-family);
   
   &:focus {
-    border-color: var(--pw-int-brand-primary-color, #CF59E2);
+    border-color: var(--pw-int-brand-primary-color);
     outline: none;
   }
   

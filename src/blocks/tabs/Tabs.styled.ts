@@ -86,7 +86,7 @@ export const StyledLineTab = styled(Tab)`
   cursor: pointer;
   margin-bottom: -1px;
   background-color: transparent;
-  color: var(--text-secondary);
+  color: var(--pw-int-text-secondary-color);
   transition: background-color 0.3s, color 0.3s;
   border-bottom: var(--border-md) solid transparent;
 

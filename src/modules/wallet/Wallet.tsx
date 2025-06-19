@@ -249,7 +249,7 @@ const Wallet: FC = () => {
   const handleResetAndRedirectUser = () => {
     sessionStorage.removeItem("jwt");
     dispatch({ type: "RESET_WALLET" });
-    localStorage.clear();
+    localStorage.removeItem('appConnections');
     const url = persistQuery(APP_ROUTES.AUTH);
     navigate(url);
   };
