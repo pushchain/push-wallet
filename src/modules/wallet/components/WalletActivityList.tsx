@@ -26,20 +26,6 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
         //   rpcUrl: import.meta.env.VITE_APP_RPC_URL,
         // });
 
-        const universalAccount = PushChain.utils.account.fromChainAgnostic(address)
-
-        const viemClient = await PushChain.viem.createPublicClient({
-          chain: PushChain.CONSTANTS.VIEM_PUSH_TESTNET_DONUT,
-          transport: PushChain.viem.http(),
-        })
-
-        const res = await viemClient.getLogs({
-          address: universalAccount.address as `0x${string}`,
-          
-        })
-
-        console.log(res);
-
         // const response = await PushChain.viem.(universalAccount, {
         //   startTime: Math.floor(Date.now()),
         //   order: ORDER.DESC,

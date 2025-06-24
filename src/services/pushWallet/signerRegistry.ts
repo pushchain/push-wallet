@@ -2,10 +2,10 @@ import { privateKeyToAccount } from 'viem/accounts'
 import { bytesToHex } from '@noble/hashes/utils'
 import { HDKey } from 'viem/accounts'
 import nacl from 'tweetnacl'
-import bs58 from 'bs58'
 import { createWalletClient, defineChain, hexToBytes, http, parseTransaction, TypedData, TypedDataDomain } from 'viem'
 import { clusterApiUrl, Connection, PublicKey, Transaction } from '@solana/web3.js';
 import { CHAIN } from '@pushchain/core/src/lib/constants/enums'
+import { bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 
 export type ChainSignerHandler = (masterNode: HDKey) => Promise<{
   address: string
@@ -83,14 +83,14 @@ export const chainSignerRegistry: Partial<Record<CHAIN, ChainSignerHandler>> = {
 
         const signature = nacl.sign.detached(message, keypair.secretKey);
         const publicKey = new PublicKey(keypair.publicKey);
-        tx.addSignature(publicKey, Buffer.from(signature));
+        tx.addSignature(publicKey, bs58.decode(bs58.encode(signature)));
 
         const txid = await connection.sendRawTransaction(tx.serialize(), {
           skipPreflight: false,
           preflightCommitment: 'confirmed',
         });
 
-        return new Uint8Array(Buffer.from(txid, 'hex'))
+        return bs58.decode(txid);
       },
     }
   },
