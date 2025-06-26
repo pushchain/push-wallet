@@ -7,6 +7,7 @@ import { useSendTokenContext } from "../../../../context/SendTokenContext";
 import WalletHeader from "../WalletHeader";
 import { useTokenManager } from "../../../../hooks/useTokenManager";
 import { TokenLogoComponent } from "common";
+import TokensListItem from "../TokensListItem";
 
 type SelectTokenProps = {
   handleTokenSelection: (token: TokenFormat) => void;
@@ -95,38 +96,18 @@ const SelectToken: FC<SelectTokenProps> = ({ handleTokenSelection }) => {
           </Box>
         ) : (
           <Box display="flex" flexDirection="column" gap="spacing-xxs">
-            {tokens.map((token: TokenFormat) => (
-              <Box
-                display="flex"
-                padding="spacing-xs"
-                justifyContent="space-between"
-                alignSelf="stretch"
-                alignItems="center"
-                borderRadius="radius-sm"
-                border="border-sm solid pw-int-border-secondary-color"
-                key={token.address}
-                onClick={() => handleTokenSelection(token)}
-                cursor="pointer"
-              >
-                <Box display="flex" gap="spacing-xxs" alignItems="center">
-                  <TokenLogoComponent tokenSymbol={token.symbol} />
-                  <Box display="flex" flexDirection="column">
-                    <Text
-                      variant="bm-semibold"
-                      color="pw-int-text-primary-color"
-                    >
-                      {token.name}
-                    </Text>
-                    <Text
-                      variant="bs-regular"
-                      color="pw-int-text-secondary-color"
-                    >
-                      {0} {token.symbol}
-                    </Text>
-                  </Box>
-                </Box>
-              </Box>
-            ))}
+            <Box
+              display='flex'
+              flexDirection='column'
+              gap='spacing-xs'
+              overflow='scroll'
+              height='240px'
+              padding='spacing-none spacing-xs spacing-none spacing-none'
+            >
+              {tokens.map((token: TokenFormat) => (
+                <TokensListItem token={token} key={token.address} handleSelectToken={handleTokenSelection} />
+              ))}
+            </Box>
           </Box>
         )}
       </Box>

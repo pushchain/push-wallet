@@ -1,5 +1,10 @@
 import { createContext, ReactNode, useContext, useState } from "react";
-import { ChainType, IWalletProvider, WalletInfo } from "../types/wallet.types";
+import {
+  ChainType,
+  ITypedData,
+  IWalletProvider,
+  WalletInfo,
+} from "../types/wallet.types";
 
 type WalletContextType = {
   currentWallet: WalletInfo | null;
@@ -9,7 +14,9 @@ type WalletContextType = {
     chainType?: ChainType
   ) => Promise<string | null>;
   disconnect: () => Promise<void>;
-  sendTransaction: (to: string, value: bigint) => Promise<string>;
+  signTransactionRequest: (data: Uint8Array) => Promise<Uint8Array>;
+  signMessageRequest: (data: Uint8Array) => Promise<Uint8Array>;
+  signTypedDataRequest: (data: Uint8Array) => Promise<Uint8Array>;
 };
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
@@ -57,20 +64,52 @@ export const WalletContextProvider = ({
     }
   };
 
-  const sendTransaction = async (
-    to: string,
-    value: bigint
-  ): Promise<string> => {
+  const signTransactionRequest = async (
+    data: Uint8Array
+  ): Promise<Uint8Array> => {
     if (!currentProvider) {
       throw new Error("No wallet connected");
     }
 
     try {
-      const txHash = await currentProvider.sendTransaction(to, value);
-      return txHash;
+      const signature = await currentProvider.signAndSendTransaction(data);
+      console.log("receipt in wallet context", signature);
+      return signature;
     } catch (error) {
-      console.error("Transaction failed:", error);
-      throw error;
+      console.log("Error in generating signature", error);
+      throw new Error("Signature request failed");
+    }
+  };
+
+  const signMessageRequest = async (data: Uint8Array): Promise<Uint8Array> => {
+    if (!currentProvider) {
+      throw new Error("No wallet connected");
+    }
+
+    try {
+      const signature = await currentProvider.signMessage(data);
+      console.log("receipt in wallet context", signature);
+      return signature;
+    } catch (error) {
+      console.log("Error in generating signature", error);
+      throw new Error("Signature request failed");
+    }
+  };
+
+  const signTypedDataRequest = async (
+    data: ITypedData
+  ): Promise<Uint8Array> => {
+    if (!currentProvider) {
+      throw new Error("No wallet connected");
+    }
+
+    try {
+      const signature = await currentProvider.signTypedData(data);
+      console.log("receipt in wallet context", signature);
+      return signature;
+    } catch (error) {
+      console.log("Error in generating signature", error);
+      throw new Error("Signature request failed");
     }
   };
 
@@ -81,7 +120,9 @@ export const WalletContextProvider = ({
         connecting,
         connect,
         disconnect,
-        sendTransaction,
+        signTransactionRequest,
+        signMessageRequest,
+        signTypedDataRequest,
       }}
     >
       {children}

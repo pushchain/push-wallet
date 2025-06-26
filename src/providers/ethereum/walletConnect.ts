@@ -1,9 +1,9 @@
 import { EthereumProvider } from '@walletconnect/ethereum-provider';
 import { getAddress } from 'ethers';
-import { ChainType } from '../../types/wallet.types';
+import { ChainType, ITypedData } from '../../types/wallet.types';
 import { BaseWalletProvider } from '../BaseWalletProvider';
 import * as chains from 'viem/chains';
-import { toHex } from 'viem';
+import { parseTransaction, toHex } from 'viem';
 
 export class WalletConnectProvider extends BaseWalletProvider {
     private provider: InstanceType<typeof EthereumProvider> | null = null;
@@ -25,38 +25,65 @@ export class WalletConnectProvider extends BaseWalletProvider {
         return this.provider;
     };
 
-    initProvider = async (chainId: number) => {
+    private async initProvider(chainId: number) {
+        console.log('Provder >>', this.provider);
+
+        if (this.provider) {
+            return;
+        }
+
         this.provider = await EthereumProvider.init({
-            projectId: process.env.VITE_APP_REOWN_PROJECT_ID || "575a3e339ad56f54669c32264c133172",
+            projectId: '575a3e339ad56f54669c32264c133172',
             chains: [chainId],
             methods: ['eth_sendTransaction', 'personal_sign', 'eth_signTypedData'],
             showQrModal: true,
         });
 
         await this.provider.enable();
-    };
+    }
 
     async connect(): Promise<{ caipAddress: string }> {
-        const chain = chains['mainnet'] as chains.Chain;
-        const chainId = chain.id;
+        try {
+            const chain = chains['sepolia'] as chains.Chain;
+            const chainId = chain.id;
 
-        await this.initProvider(chainId);
+            await this.initProvider(chainId);
 
-        const accounts = await this.provider!.request({
-            method: 'eth_requestAccounts',
-        });
+            const accounts = (await this.provider!.request({
+                method: 'eth_requestAccounts',
+            })) as string[];
 
-        const rawAddress = accounts[0];
-        const checksumAddress = getAddress(rawAddress);
+            if (!accounts || accounts.length === 0) {
+                throw new Error('No connected account');
+            }
 
-        const caipAddress = this.formatAddress(checksumAddress, ChainType.ETHEREUM, chainId);
-        return caipAddress;
+            const rawAddress = accounts[0];
+            const checksumAddress = getAddress(rawAddress);
+
+            const caipAddress = this.formatAddress(
+                checksumAddress,
+                ChainType.ETHEREUM,
+                chainId
+            );
+            return caipAddress;
+        } catch (error) {
+            console.error('Failed to connect to MetaMask:', error);
+            throw error;
+        }
     }
 
     getChainId = async (): Promise<number> => {
         const provider = this.getProvider();
-        const hexChainId = await provider.request({ method: 'eth_chainId' });
-        return parseInt(hexChainId.toString(), 16);
+        if (!provider) {
+            throw new Error('Provider is undefined');
+        }
+        const hexChainId = (await provider.request({
+            method: 'eth_chainId',
+            params: [],
+        }));
+
+        const chainId = parseInt(hexChainId.toString(), 16);
+        return chainId;
     };
 
     switchNetwork = async (chainType: ChainType) => {
@@ -92,6 +119,103 @@ export class WalletConnectProvider extends BaseWalletProvider {
                 console.error('Error switching network:', err);
                 throw err;
             }
+        }
+    };
+
+    signAndSendTransaction = async (txn: Uint8Array): Promise<Uint8Array> => {
+        try {
+            const provider = this.getProvider();
+            if (!provider) {
+                throw new Error('Provider is undefined');
+            }
+            const accounts = (await provider.request({
+                method: 'eth_accounts',
+            })) as string[];
+
+            if (!accounts || accounts.length === 0) {
+                throw new Error('No connected account');
+            }
+
+            const hex = ('0x' + Buffer.from(txn).toString('hex')) as `0x${string}`;
+            const parsed = parseTransaction(hex);
+
+            const txParams = {
+                from: accounts[0],
+                to: parsed.to,
+                value: parsed.value ? '0x' + parsed.value.toString(16) : undefined,
+                data: parsed.data,
+                gas: parsed.gas ? '0x' + parsed.gas.toString(16) : undefined,
+                maxPriorityFeePerGas: parsed.maxPriorityFeePerGas
+                    ? '0x' + parsed.maxPriorityFeePerGas.toString(16)
+                    : undefined,
+                maxFeePerGas: parsed.maxFeePerGas
+                    ? '0x' + parsed.maxFeePerGas.toString(16)
+                    : undefined,
+            };
+
+            const signature = await provider.request({
+                method: 'eth_sendTransaction',
+                params: [txParams],
+            });
+
+            return new Uint8Array(Buffer.from((signature as string).slice(2), 'hex'));
+        } catch (error) {
+            console.error('MetaMask signing error:', error);
+            throw error;
+        }
+    };
+
+    signMessage = async (message: Uint8Array): Promise<Uint8Array> => {
+        try {
+            const provider = this.getProvider();
+            if (!provider) {
+                throw new Error('Provider is undefined');
+            }
+            const accounts = (await provider.request({
+                method: 'eth_accounts',
+            })) as string[];
+
+            if (!accounts || accounts.length === 0) {
+                throw new Error('No connected account');
+            }
+
+            const hexMessage = '0x' + Buffer.from(message).toString('hex');
+
+            const signature = await provider.request({
+                method: 'personal_sign',
+                params: [hexMessage, accounts[0]],
+            });
+
+            return new Uint8Array(Buffer.from((signature as string).slice(2), 'hex'));
+        } catch (error) {
+            console.error('MetaMask signing error:', error);
+            throw error;
+        }
+    };
+
+    signTypedData = async (typedData: ITypedData): Promise<Uint8Array> => {
+        try {
+            const provider = this.getProvider();
+            if (!provider) {
+                throw new Error('Provider is undefined');
+            }
+            const accounts = (await provider.request({
+                method: 'eth_accounts',
+            })) as string[];
+
+            if (!accounts || accounts.length === 0) {
+                throw new Error('No connected account');
+            }
+
+            const signature = await provider.request({
+                method: 'eth_signTypedData_v4',
+                params: [accounts[0], typedData],
+            });
+
+            return new Uint8Array(Buffer.from((signature as string).slice(2), 'hex'));
+        } catch (error) {
+            console.error('MetaMask signing error:', error);
+            throw error;
         }
     };
 

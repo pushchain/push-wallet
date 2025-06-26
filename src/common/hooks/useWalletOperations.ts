@@ -1,16 +1,15 @@
-import { createPublicClient, createWalletClient, http, formatUnits, parseUnits, type Address, setupKzg } from 'viem';
+import { createPublicClient, http, formatUnits, type Address, erc20Abi } from 'viem';
 import { useState } from 'react';
 import { pushTestnetChain } from '../../utils/chainDetails';
-// import { useGlobalState } from 'src/context/GlobalContext';
 
 export const useWalletBalance = () => {
     const [balance, setBalance] = useState<string>('0');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchBalance = async (address: string) => {
+    const fetchNativeBalance = async (address: string) => {
         try {
-            console.log("Called ");
+            console.log("Called ", address);
 
             setIsLoading(true);
             setError(null);
@@ -23,6 +22,8 @@ export const useWalletBalance = () => {
                 address: address as Address,
             });
 
+            console.log("balance fetched ", balance);
+
             setBalance(formatUnits(balance, 18));
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch balance');
@@ -31,55 +32,27 @@ export const useWalletBalance = () => {
         }
     };
 
-    return { balance, isLoading, error, fetchBalance };
+    const fetchTokenBalance = async (tokenAddress: `0x${string}`, walletAddress: `0x${string}`) => {
+        try {
+            const publicClient = createPublicClient({
+                chain: pushTestnetChain,
+                transport: http(),
+            });
+
+            const balance = await publicClient.readContract({
+                address: tokenAddress,
+                abi: erc20Abi,
+                functionName: 'balanceOf',
+                args: [walletAddress],
+            });
+
+            console.log(`Balance: ${balance.toString()}`);
+            return balance;
+        } catch (error) {
+            console.error('Error fetching token balance:', error);
+        }
+    }
+
+
+    return { balance, isLoading, error, fetchNativeBalance, fetchTokenBalance };
 };
-
-// export const useSendNativeToken = () => {
-//     const [isLoading, setIsLoading] = useState(false);
-//     const [error, setError] = useState<string | null>(null);
-//     const [txHash, setTxHash] = useState<string | null>(null);
-
-//     const { state } = useGlobalState();
-
-//     const sendNativeToken = async (
-//         fromAddress: string,
-//         toAddress: string,
-//         amount: string,
-//         privateKey: string
-//     ) => {
-//         try {
-//             setIsLoading(true);
-//             setError(null);
-//             setTxHash(null);
-
-//             const walletClient = createWalletClient({
-//                 account: state.externalWallet,
-//                 chain: pushTestnetChain,
-//                 transport: http(`https://evm.pn1.dev.push.org`),
-//             });
-
-//             const publicClient = createPublicClient({
-//                 chain: pushTestnetChain,
-//                 transport: http(`https://evm.pn1.dev.push.org`),
-//             });
-
-//             // Convert amount to wei
-//             const amountInWei = parseUnits(amount, 18);
-
-
-
-//             setTxHash(hash);
-
-//             // Wait for transaction to be mined
-//             const receipt = await publicClient.waitForTransactionReceipt({ hash });
-//             return receipt;
-//         } catch (err) {
-//             setError(err instanceof Error ? err.message : 'Failed to send transaction');
-//             throw err;
-//         } finally {
-//             setIsLoading(false);
-//         }
-//     };
-
-//     return { isLoading, error, txHash, sendNativeToken };
-// }; 

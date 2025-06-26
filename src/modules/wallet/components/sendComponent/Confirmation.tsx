@@ -1,130 +1,172 @@
-import { Box, Button, ExternalLink, Text, TickCircleFilled } from 'blocks';
-import React from 'react';
-import { css } from 'styled-components';
-import { centerMaskWalletAddress, EXPLORER_URL } from 'common';
-import { useWalletDashboard } from '../../../../context/WalletDashboardContext';
-import { useSendTokenContext } from '../../../../context/SendTokenContext';
-import WalletHeader from '../WalletHeader';
+import { Box, Button, ExternalLink, Text, TickCircleFilled } from "blocks";
+import React from "react";
+import { css } from "styled-components";
+import { centerMaskWalletAddress, EXPLORER_URL } from "common";
+import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
+import { useSendTokenContext } from "../../../../context/SendTokenContext";
+import WalletHeader from "../WalletHeader";
 
 const Confirmation = () => {
+  const { tokenSelected, receiverAddress, amount, txhash, setTxhash } =
+    useSendTokenContext();
+  const { setActiveState, selectedWallet, selectedNetwork } =
+    useWalletDashboard();
 
-    const { tokenSelected, receiverAddress, amount, txhash, setTxhash } = useSendTokenContext();
-    const { setActiveState, selectedWallet, selectedNetwork } = useWalletDashboard();
+  const handleBackToHome = () => {
+    setTxhash(null);
+    setActiveState("walletDashboard");
+  };
 
-    const handleBackToHome = () => {
-        setTxhash(null);
-        setActiveState('walletDashboard');
-    }
+  const handleExplorerButton = () => {
+    window.open(`${EXPLORER_URL}/tx/${txhash}`, "_blank");
+  };
 
+  return (
+    <>
+      <WalletHeader selectedWallet={selectedWallet} />
 
-    const handleExplorerButton = () => {
-        window.open(`${EXPLORER_URL}/tx/${txhash}`, '_blank')
-    }
-
-    return (
-        <>
-
-            <WalletHeader selectedWallet={selectedWallet} />
-
-
+      <Box
+        display="flex"
+        flexDirection="column"
+        css={css`
+          flex: 1;
+        `}
+      >
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          gap="spacing-md"
+        >
+          <Text
+            variant="h3-semibold"
+            color="pw-int-text-primary-color"
+            textAlign="center"
+          >
+            {" "}
+            Sent{" "}
+          </Text>
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            width="100%"
+          >
             <Box
-                display='flex'
-                flexDirection='column'
-                css={css`flex:1`}
+              display="flex"
+              gap="spacing-xxs"
+              alignSelf="stretch"
+              justifyContent="center"
             >
-                <Box
-                    display='flex'
-                    flexDirection='column'
-                    justifyContent='center'
-                    alignItems='center'
-                    gap='spacing-md'
-                >
-                    <Text variant='h3-semibold' color='pw-int-text-primary-color' textAlign='center'> Sent </Text>
-                    <Box display='flex' flexDirection='column' justifyContent='center' alignItems='center' width='100%'>
-                        <Box display='flex' gap='spacing-xxs' alignSelf='stretch' justifyContent='center'>
-                            <TickCircleFilled size={48} color='pw-int-success-primary-color' />
-                            <Text variant='h2-semibold' color='pw-int-text-primary-color'>{amount} {tokenSelected.symbol}</Text>
-                        </Box>
-                        <Text color='pw-int-text-secondary-color' variant='bs-regular'>$12.45</Text>
-                    </Box>
-
-                    <Box display='flex' flexDirection='column' width='100%'>
-                        <Box
-                            display='flex'
-                            justifyContent='space-between'
-                            padding='spacing-sm'
-                            alignItems='center'
-                            alignSelf='stretch'
-                            css={css`
-                        border-bottom: 1px solid var(--stroke-secondary, #313338);
-                        `}
-                        >
-                            <Text color='pw-int-text-tertiary-color' variant='bs-regular'>Status</Text>
-                            <Text variant='bs-regular'>Success</Text>
-                        </Box>
-                        <Box
-                            display='flex'
-                            justifyContent='space-between'
-                            padding='spacing-sm'
-                            alignItems='center'
-                            alignSelf='stretch'
-                            css={css`
-                        border-bottom: 1px solid var(--pw-int-border-secondary-color, #313338);
-                        `}
-                        >
-                            <Text color='pw-int-text-tertiary-color' variant='bs-regular'>Date</Text>
-                            <Text variant='bs-regular'>May 27, 2025 — 2:28 PM</Text>
-                        </Box>
-                        <Box
-                            display='flex'
-                            justifyContent='space-between'
-                            padding='spacing-sm'
-                            alignItems='center'
-                            alignSelf='stretch'
-                            css={css`
-                        border-bottom: 1px solid var(--pw-int-border-secondary-color, #313338);
-                        `}
-                        >
-                            <Text color='pw-int-text-tertiary-color' variant='bs-regular'>Network</Text>
-                            <Text variant='bs-regular'>{selectedNetwork}</Text>
-                        </Box>
-                        <Box
-                            display='flex'
-                            justifyContent='space-between'
-                            padding='spacing-sm'
-                            alignItems='center'
-                            alignSelf='stretch'
-                            css={css`
-                        border-bottom: 1px solid var(--pw-int-border-secondary-color, #313338);
-                        `}
-                        >
-                            <Text color='pw-int-text-tertiary-color' variant='bs-regular'>To</Text>
-                            <Text variant='bs-regular'>{centerMaskWalletAddress(receiverAddress, 5)}</Text>
-                        </Box>
-                    </Box>
-                </Box>
-                <Box
-                    display='flex'
-                    flexDirection='column'
-                    justifyContent='end'
-                    css={css`flex:1`}
-                    gap='spacing-xs'
-                    alignItems='center'
-                >
-                    <Box display='flex' gap='spacing-xxxs' onClick={handleExplorerButton}>
-                        <ExternalLink color='pw-int-icon-brand-color' />
-                        <Text color='pw-int-text-link-color'>View on Explorer</Text>
-                    </Box>
-                    <Button
-                        onClick={handleBackToHome}
-                        block
-                    >
-                        Back to Home
-                    </Button>
-                </Box>
+              <TickCircleFilled
+                size={48}
+                color="pw-int-success-primary-color"
+              />
+              <Text variant="h2-semibold" color="pw-int-text-primary-color">
+                {amount} {tokenSelected.symbol}
+              </Text>
             </Box>
-        </>
-    );
+            <Text color="pw-int-text-secondary-color" variant="bs-regular">
+              $12.45
+            </Text>
+          </Box>
+
+          <Box display="flex" flexDirection="column" width="100%">
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              padding="spacing-sm"
+              alignItems="center"
+              alignSelf="stretch"
+              css={css`
+                border-bottom: 1px solid var(--stroke-secondary, #313338);
+              `}
+            >
+              <Text color="pw-int-text-tertiary-color" variant="bs-regular">
+                Status
+              </Text>
+              <Text variant="bs-regular">Success</Text>
+            </Box>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              padding="spacing-sm"
+              alignItems="center"
+              alignSelf="stretch"
+              css={css`
+                border-bottom: 1px solid
+                  var(--pw-int-border-secondary-color, #313338);
+              `}
+            >
+              <Text color="pw-int-text-tertiary-color" variant="bs-regular">
+                Date
+              </Text>
+              <Text variant="bs-regular">May 27, 2025 — 2:28 PM</Text>
+            </Box>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              padding="spacing-sm"
+              alignItems="center"
+              alignSelf="stretch"
+              css={css`
+                border-bottom: 1px solid
+                  var(--pw-int-border-secondary-color, #313338);
+              `}
+            >
+              <Text color="pw-int-text-tertiary-color" variant="bs-regular">
+                Network
+              </Text>
+              <Text variant="bs-regular">{selectedNetwork}</Text>
+            </Box>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              padding="spacing-sm"
+              alignItems="center"
+              alignSelf="stretch"
+              css={css`
+                border-bottom: 1px solid
+                  var(--pw-int-border-secondary-color, #313338);
+              `}
+            >
+              <Text color="pw-int-text-tertiary-color" variant="bs-regular">
+                To
+              </Text>
+              <Text variant="bs-regular">
+                {centerMaskWalletAddress(receiverAddress, 5)}
+              </Text>
+            </Box>
+          </Box>
+        </Box>
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="end"
+          css={css`
+            flex: 1;
+          `}
+          gap="spacing-xs"
+          alignItems="center"
+        >
+          <Box
+            cursor="pointer"
+            display="flex"
+            gap="spacing-xxxs"
+            onClick={handleExplorerButton}
+          >
+            <ExternalLink color="pw-int-icon-brand-color" />
+            <Text color="pw-int-text-link-color">View on Explorer</Text>
+          </Box>
+          <Button onClick={handleBackToHome} block>
+            Back to Home
+          </Button>
+        </Box>
+      </Box>
+    </>
+  );
 };
 
 export default Confirmation;

@@ -1,8 +1,8 @@
 import { MetaMaskSDK } from "@metamask/sdk";
-import { ChainType } from "../../types/wallet.types";
+import { ChainType, ITypedData } from "../../types/wallet.types";
 import { BaseWalletProvider } from "../BaseWalletProvider";
-import { toHex } from "viem";
-import { getAddress } from 'ethers';
+import { parseTransaction, toHex } from "viem";
+import { BrowserProvider, getAddress } from 'ethers';
 import { Chain } from 'viem';
 import { chains } from "./chains";
 
@@ -15,11 +15,11 @@ export class MetamaskProvider extends BaseWalletProvider {
       ChainType.ARBITRUM,
       ChainType.AVALANCHE,
       ChainType.BINANCE,
-      ChainType.PUSH_TESTNET
+      ChainType.PUSH_WALLET
     ]);
     this.sdk = new MetaMaskSDK({
       dappMetadata: {
-        name: "My Dapp",
+        name: "Push Wallet",
         url: window.location.href,
       },
       logging: {
@@ -38,6 +38,33 @@ export class MetamaskProvider extends BaseWalletProvider {
     if (isMobile && provider?.isMetaMask) return true;
 
     return false;
+  };
+
+  getProvider = () => {
+    return this.sdk.getProvider();
+  };
+
+  getSigner = async () => {
+    const sdkProvider = this.sdk.getProvider();
+    if (!sdkProvider) {
+      throw new Error('Provider is undefined');
+    }
+    const browserProvider = new BrowserProvider(sdkProvider);
+    return await browserProvider.getSigner();
+  };
+
+  getChainId = async (): Promise<number> => {
+    const provider = this.getProvider();
+    if (!provider) {
+      throw new Error('Provider is undefined');
+    }
+    const hexChainId = await provider.request({
+      method: 'eth_chainId',
+      params: [],
+    });
+
+    const chainId = parseInt(hexChainId.toString(), 16);
+    return chainId;
   };
 
   async connect(chainType: ChainType): Promise<{ caipAddress: string }> {
@@ -60,27 +87,13 @@ export class MetamaskProvider extends BaseWalletProvider {
     }
   }
 
-  getProvider = () => {
-    return this.sdk.getProvider();
-  };
-
-  getChainId = async (): Promise<number> => {
-    const provider = this.getProvider();
-    if (!provider) {
-      throw new Error('Provider is undefined');
-    }
-    const hexChainId = await provider.request({
-      method: 'eth_chainId',
-      params: [],
-    });
-
-    const chainId = parseInt(hexChainId.toString(), 16);
-    return chainId;
-  };
-
   switchNetwork = async (chainName: ChainType) => {
+    console.log("chainName", chainName);
     const network = chains[chainName] as Chain
     const provider = this.getProvider();
+
+    console.log("network", network);
+
     const hexNetworkId = toHex(network.id);
 
     try {
@@ -141,72 +154,75 @@ export class MetamaskProvider extends BaseWalletProvider {
     }
   };
 
-  async sendTransaction(to: string, value: bigint): Promise<string> {
+  signAndSendTransaction = async (txn: Uint8Array): Promise<Uint8Array> => {
     try {
       const provider = this.getProvider();
-      if (!provider) throw new Error("Provider is undefined");
-
-      const accounts = await provider.request({
+      if (!provider) {
+        throw new Error('Provider is undefined');
+      }
+      const accounts = (await provider.request({
         method: 'eth_accounts',
-      }) as string[];
+      })) as string[];
 
       if (!accounts || accounts.length === 0) {
-        throw new Error("No connected accounts");
+        throw new Error('No connected account');
       }
 
-      const from = accounts[0];
+      const hex = ('0x' + Buffer.from(txn).toString('hex')) as `0x${string}`;
+      const parsed = parseTransaction(hex);
 
       const txParams = {
-        from,
-        to,
-        value: `0x${value.toString(16)}`,
-        gas: `0x${(21000n).toString(16)}`,
-        maxFeePerGas: `0x${(100000n * 1_000_000_000n).toString(16)}`,
-        maxPriorityFeePerGas: `0x${(100n * 1_000_000_000n).toString(16)}`,
+        from: accounts[0],
+        to: parsed.to,
+        value: parsed.value ? '0x' + parsed.value.toString(16) : undefined,
+        data: parsed.data,
+        gas: parsed.gas ? '0x' + parsed.gas.toString(16) : undefined,
+        maxPriorityFeePerGas: parsed.maxPriorityFeePerGas
+          ? '0x' + parsed.maxPriorityFeePerGas.toString(16)
+          : undefined,
+        maxFeePerGas: parsed.maxFeePerGas
+          ? '0x' + parsed.maxFeePerGas.toString(16)
+          : undefined,
       };
 
-      const txHash = await provider.request({
+      const signature = await provider.request({
         method: 'eth_sendTransaction',
         params: [txParams],
-      }) as string;
-
-      console.log("Transaction sent, hash:", txHash);
-
-      const receipt = await this.waitForTransactionReceipt(provider, txHash);
-
-      if (!receipt || !receipt.status) {
-        throw new Error("Transaction failed or was reverted");
-      }
-
-      console.log("Transaction confirmed:", receipt);
-      return txHash;
-    } catch (error) {
-      console.error('Transaction failed:', error);
-      throw error;
-    }
-  }
-
-  private async waitForTransactionReceipt(
-    provider: any,
-    txHash: string,
-    retries = 30,
-    delay = 2000
-  ): Promise<any> {
-    for (let i = 0; i < retries; i++) {
-      const receipt = await provider.request({
-        method: 'eth_getTransactionReceipt',
-        params: [txHash],
       });
 
-      if (receipt && receipt.blockNumber) {
-        return receipt;
+      return new Uint8Array(Buffer.from((signature as string).slice(2), 'hex'));
+    } catch (error) {
+      console.error('MetaMask signing error:', error);
+      throw error;
+    }
+  };
+
+  signTypedData = async (typedData: ITypedData): Promise<Uint8Array> => {
+    try {
+      const provider = this.getProvider();
+      if (!provider) {
+        throw new Error('Provider is undefined');
+      }
+      const accounts = (await provider.request({
+        method: 'eth_accounts',
+      })) as string[];
+
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No connected account');
       }
 
-      await new Promise(resolve => setTimeout(resolve, delay));
-    }
+      const signature = await provider.request({
+        method: 'eth_signTypedData_v4',
+        params: [accounts[0], typedData],
+      });
 
-    throw new Error('Transaction not confirmed in time');
-  }
+      return new Uint8Array(Buffer.from((signature as string).slice(2), 'hex'));
+    } catch (error) {
+      console.error('MetaMask signing error:', error);
+      throw error;
+    }
+  };
+
 
   disconnect = async () => {
     const provider = this.getProvider();
@@ -218,7 +234,5 @@ export class MetamaskProvider extends BaseWalletProvider {
         },
       ],
     });
-
-    //TODO: reload the dapp after disconnecting the wallet
   };
 }

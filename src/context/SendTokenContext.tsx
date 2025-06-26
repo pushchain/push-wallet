@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { SendTokenState, TokenFormat } from "../types";
-import { useGlobalState } from "./GlobalContext";
 import { useWallet } from "./WalletContext";
-import { formatUnits, parseUnits } from "viem";
+import { parseUnits } from "viem";
+import { PushChain } from "@pushchain/core";
+import { PUSH_NETWORK } from "@pushchain/core/src/lib/constants/enums";
 
 interface SendTokenContextType {
   sendState: SendTokenState;
@@ -28,27 +29,77 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [sendState, setSendState] = useState<SendTokenState>("selectToken");
   const [tokenSelected, setTokenSelected] = useState<TokenFormat | null>(null);
-  const [receiverAddress, setReceiverAddress] = useState<string | null>(null);
-  const [amount, setAmount] = useState<number | null>(null);
+  const [receiverAddress, setReceiverAddress] = useState<string>('');
+  const [amount, setAmount] = useState<number>(0);
 
   const [sendingTransaction, setSendingTransaction] = useState<boolean>(false);
   const [txhash, setTxhash] = useState<string | null>(null);
 
-  const { sendTransaction } = useWallet();
+  const {
+    currentWallet,
+    signMessageRequest,
+    signTransactionRequest,
+    signTypedDataRequest,
+  } = useWallet();
 
   const handleSendTransaction = async () => {
-    const value = parseUnits(amount.toString(), tokenSelected.decimals);
-    const res = await sendTransaction(receiverAddress, value);
-    console.log("Res", res);
+    try {
+      setSendingTransaction(true);
+      const value = parseUnits(amount.toString(), tokenSelected.decimals);
 
-    // setSendingTransaction(true);
-    // console.log("Sending transaction");
+      const universalAccount = PushChain.utils.account.fromChainAgnostic(
+        currentWallet.address
+      );
 
-    // setTimeout(() => {
-    //     setSendingTransaction(false);
-    //     setSendState('confirmation')
-    //     setTxhash('0x885e40c0a7984167dc6a61bbc31feeae29a91ee3cf0f60c8c1a6da40a0284fd2')
-    // }, 3000);
+      console.log("universal Account", universalAccount);
+
+      const CHAINS = PushChain.CONSTANTS.CHAIN;
+
+      const isSolana = [
+        CHAINS.SOLANA_DEVNET,
+        CHAINS.SOLANA_MAINNET,
+        CHAINS.SOLANA_TESTNET,
+      ].includes(universalAccount.chain);
+
+      const signerSkeleton = PushChain.utils.signer.construct(
+        universalAccount,
+        {
+          signMessage: signMessageRequest,
+          signAndSendTransaction: signTransactionRequest,
+        }
+      );
+
+      console.log("signerSkeleton", signerSkeleton);
+
+      const universalSigner = await PushChain.utils.signer.toUniversal(
+        signerSkeleton
+      );
+
+      console.log("universalSigner", universalSigner);
+
+      const pushChainClient = await PushChain.initialize(universalSigner, {
+        network: PUSH_NETWORK.TESTNET_DONUT,
+      });
+
+      console.log("receiverAddress", receiverAddress, value);
+
+      const receipt = await pushChainClient.universal.sendTransaction({
+        to: receiverAddress as `0x${string}`,
+        value: value,
+        data: "0x",
+      });
+      // const receipt = await sendTransaction(receiverAddress, value);
+      console.log("Transaction confirmed", receipt);
+
+      if (receipt.transactionHash) {
+        setSendState("confirmation");
+        setTxhash(receipt.transactionHash);
+      }
+    } catch (error) {
+      console.log("Error in sending transaction", error);
+    } finally {
+      setSendingTransaction(false);
+    }
   };
 
   const value = {

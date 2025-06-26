@@ -5,6 +5,9 @@ import { css } from "styled-components";
 import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
 import { useSendTokenContext } from "../../../../context/SendTokenContext";
 import WalletHeader from "../WalletHeader";
+import { useGlobalState } from "../../../../context/GlobalContext";
+import { convertCaipToObject } from "../../Wallet.utils";
+import { useTokenBalance } from "../../../../hooks/useTokenBalance";
 
 const SelectRecipient = () => {
   const {
@@ -18,6 +21,19 @@ const SelectRecipient = () => {
   } = useSendTokenContext();
 
   const { setActiveState, selectedWallet } = useWalletDashboard();
+
+  const { state } = useGlobalState();
+
+  const parsedWallet =
+    selectedWallet?.address || state?.externalWallet?.address;
+
+  const { result } = convertCaipToObject(parsedWallet);
+
+  const {
+    data: tokenBalance,
+    isLoading: loadingTokenBalance
+  } = useTokenBalance(tokenSelected.address, result.address, tokenSelected.decimals);
+
 
   return (
     <>
@@ -60,7 +76,7 @@ const SelectRecipient = () => {
                 {tokenSelected.name}
               </Text>
               <Text variant="bs-regular" color="pw-int-text-secondary-color">
-                {0} {tokenSelected.symbol}
+                {loadingTokenBalance ? ('0') : Number(tokenBalance).toLocaleString()} {" "} {tokenSelected.symbol}
               </Text>
             </Box>
           </Box>
@@ -126,7 +142,8 @@ const SelectRecipient = () => {
               alignItems="center"
               backgroundColor="pw-int-bg-secondary-color"
               borderRadius="radius-md"
-              onClick={() => setAmount(Number(0))}
+              onClick={() => setAmount(Number(tokenBalance))}
+              cursor="pointer"
             >
               <Text variant="bs-semibold" color="pw-int-text-primary-color">
                 Max
@@ -153,7 +170,7 @@ const SelectRecipient = () => {
                 variant="bs-regular"
                 color="pw-int-text-tertiary-color"
               >
-                Balance: 124.53
+                Balance: {tokenBalance} {tokenSelected.symbol}
               </Text>
             </Box>
           </Box>

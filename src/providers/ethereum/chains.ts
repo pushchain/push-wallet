@@ -3,5 +3,5 @@ import * as viemChains from "viem/chains"
 
 export const chains = {
     ...viemChains,
-    pushTestnet: pushTestnetChain
+    pushWalletDonut: pushTestnetChain
 }

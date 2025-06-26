@@ -31,7 +31,7 @@ export const getWalletlist = (wallet: PushWallet) => {
 
   if (wallet) {
     const universalSigner = wallet?.universalSigner
-    const account = PushChain.utils.account.toChainAgnostic(universalSigner.account.address, {chain: universalSigner.account.chain});
+    const account = PushChain.utils.account.toChainAgnostic(universalSigner.account.address, { chain: universalSigner.account.chain });
     const walletObj = {
       name: "Push Account",
       address: wallet.universalSigner.account.address,
@@ -65,9 +65,21 @@ export function formatWalletCategory(input: string): string {
   }
 }
 
-export const getFixedTime = (timestamp: number): string => {
+export const getFixedTime = (timestamp: number | string): string => {
+  let timeValue: number;
+
+  if (typeof timestamp === 'string') {
+    // Parse ISO string to milliseconds
+    timeValue = Date.parse(timestamp);
+    if (isNaN(timeValue)) {
+      return 'Invalid date';
+    }
+  } else {
+    timeValue = timestamp;
+  }
+
   const now = Date.now();
-  const diffInSeconds = Math.floor((now - timestamp) / 1000);
+  const diffInSeconds = Math.floor((now - timeValue) / 1000);
 
   if (diffInSeconds < 60) {
     return `${diffInSeconds}s ago`;

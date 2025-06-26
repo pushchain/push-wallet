@@ -12,13 +12,17 @@ import { getAppParamValue, WALLET_TO_APP_ACTION, WALLETS_LOGO } from "common";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import { APP_ROUTES } from "../../../constants";
+import { PushChain } from "@pushchain/core";
 
 interface WalletButtonProps {
   provider: IWalletProvider;
   walletCategory: WalletCategoriesType;
 }
 
-const WalletSelector: FC<WalletButtonProps> = ({ provider, walletCategory }) => {
+const WalletSelector: FC<WalletButtonProps> = ({
+  provider,
+  walletCategory,
+}) => {
   const { connect } = useWallet();
 
   const navigate = useNavigate();
@@ -28,14 +32,13 @@ const WalletSelector: FC<WalletButtonProps> = ({ provider, walletCategory }) => 
   const isOpenedInIframe = !!getAppParamValue();
 
   const handleConnect = async (chainType?: ChainType) => {
-
     if (isOpenedInIframe) {
       window.parent?.postMessage(
         {
           type: WALLET_TO_APP_ACTION.CONNECT_WALLET,
           data: {
             chain: chainType, // evm or solana
-            provider: provider.name, // metamask phantom 
+            provider: provider.name, // metamask phantom
           },
         },
         getAppParamValue()
@@ -55,7 +58,13 @@ const WalletSelector: FC<WalletButtonProps> = ({ provider, walletCategory }) => 
           providerName: provider.name,
         };
 
+        console.log("@@@@@@@ walletInfo", payload);
+
         if (result) {
+          const universalAccount =
+            PushChain.utils.account.fromChainAgnostic(result);
+          console.log("universalAccount >>>", universalAccount);
+
           dispatch({
             type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
             payload: "success",
@@ -74,7 +83,9 @@ const WalletSelector: FC<WalletButtonProps> = ({ provider, walletCategory }) => 
   };
 
   const handleClick = () => {
-    const chainToConnect = provider.supportedChains.find((curr) => curr === walletCategory.chain);
+    const chainToConnect = provider.supportedChains.find(
+      (curr) => curr === walletCategory.chain
+    );
     handleConnect(chainToConnect);
   };
 
@@ -82,10 +93,10 @@ const WalletSelector: FC<WalletButtonProps> = ({ provider, walletCategory }) => 
     <Box
       cursor="pointer"
       css={css`
-          :hover {
-            border: var(--border-sm, 1px) solid var(--pw-int-brand-primary-color);
-          }
-        `}
+        :hover {
+          border: var(--border-sm, 1px) solid var(--pw-int-brand-primary-color);
+        }
+      `}
       display="flex"
       padding="spacing-xs"
       borderRadius="radius-xs"
@@ -103,8 +114,8 @@ const WalletSelector: FC<WalletButtonProps> = ({ provider, walletCategory }) => 
         alignItems="center"
         justifyContent="center"
         css={css`
-            flex-shrink: 0;
-          `}
+          flex-shrink: 0;
+        `}
       >
         {WALLETS_LOGO[provider.name.toLowerCase()] || (
           <FallBackWalletIcon walletKey={provider.name} />
@@ -121,7 +132,11 @@ export default WalletSelector;
 
 const FallBackWalletIcon = ({ walletKey }: { walletKey: string }) => {
   return (
-    <Text color="pw-int-text-tertiary-color" variant="bes-bold" textAlign="center">
+    <Text
+      color="pw-int-text-tertiary-color"
+      variant="bes-bold"
+      textAlign="center"
+    >
       {walletKey.slice(0, 2).toUpperCase()}
     </Text>
   );

@@ -51,7 +51,7 @@ import { TokenType } from "../types";
 
 export const walletCategories: WalletCategoriesType[] = [
   {
-    chain: ChainType.PUSH_TESTNET,
+    chain: ChainType.PUSH_WALLET,
     wallet: "ethereum",
     label: "Connect Push Testnet",
     icon: <PushAlpha width={24} height={24} />,
@@ -98,7 +98,7 @@ export const walletCategories: WalletCategoriesType[] = [
     label: "Connect Avalanche Wallet",
     icon: <Avalanche width={24} height={24} />,
     isMobile: false,
-  }
+  },
 ];
 
 export const CHAIN_MONOTONE_LOGO: {
@@ -118,9 +118,9 @@ export const CHAIN_MONOTONE_LOGO: {
   1101: PolygonMonotone,
   43114: AvalancheMonotone,
   43113: AvalancheMonotone,
-  '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp': SolanaMonotone, // mainnet
-  '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z': SolanaMonotone, // testnet
-  'EtWTRABZaYq6iMfeYKouRu166VU2xqa1': SolanaMonotone, // devnet
+  "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": SolanaMonotone, // mainnet
+  "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z": SolanaMonotone, // testnet
+  EtWTRABZaYq6iMfeYKouRu166VU2xqa1: SolanaMonotone, // devnet
   devnet: PushMonotone,
 };
 
@@ -141,16 +141,16 @@ export const CHAIN_LOGO: {
   1101: Polygon,
   43114: Avalanche,
   43113: Avalanche,
-  '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp': Solana, // mainnet
-  '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z': Solana, // testnet
-  'EtWTRABZaYq6iMfeYKouRu166VU2xqa1': Solana, // devnet
+  "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": Solana, // mainnet
+  "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z": Solana, // testnet
+  EtWTRABZaYq6iMfeYKouRu166VU2xqa1: Solana, // devnet
 };
 
 export const TOKEN_LOGO = {
-  'pETH': Ethereum,
-  'pPOL': Polygon,
-  'PC': PushAlpha
-}
+  pETH: Ethereum,
+  pPOL: Polygon,
+  PC: PushAlpha,
+};
 
 export const WALLETS_LOGO = {
   coinbasesolana: <CoinbaseIcon />,
@@ -191,43 +191,60 @@ export const WALLETS_LOGO = {
   sequence: <SequenceIcon />,
 };
 
-
 export const tokens: TokenType[] = [
   {
     id: 1,
-    name: 'Push Chain Donut',
-    symbol: 'PCZ',
+    name: "Push Chain Donut",
+    symbol: "PCZ",
     amount: 124.53,
     amountInUsd: 124.53,
-    amountChange: '+24.54',
-    contractAddress: '0xf418588522d5dd018b425E472991E52EB',
+    amountChange: "+24.54",
+    contractAddress: "0xf418588522d5dd018b425E472991E52EB",
   },
   {
     id: 2,
-    name: 'Ethereum',
-    symbol: 'pETH',
+    name: "Ethereum",
+    symbol: "pETH",
     amount: 1.49,
     amountInUsd: 3225.21,
-    amountChange: '-125.37',
-    contractAddress: '0x6D2a0194bD791CADd7a3F5c9464cE9fC24a49e71',
+    amountChange: "-125.37",
+    contractAddress: "0x6D2a0194bD791CADd7a3F5c9464cE9fC24a49e71",
   },
   {
     id: 3,
-    name: 'Polygon',
-    symbol: 'pPOL',
+    name: "Polygon",
+    symbol: "pPOL",
     amount: 256,
-    amountInUsd: 44800.20,
-    amountChange: '+8500.00',
-    contractAddress: '0x6D2a0194bD791CADd7a3F5c9464cE9fC24a49a3',
-  }
-]
-
-export const ERC20ABI = [
-  { name: 'name', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'string' }] },
-  { name: 'symbol', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'string' }] },
-  { name: 'decimals', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint8' }] },
+    amountInUsd: 44800.2,
+    amountChange: "+8500.00",
+    contractAddress: "0x6D2a0194bD791CADd7a3F5c9464cE9fC24a49a3",
+  },
 ];
 
+export const ERC20ABI = [
+  {
+    name: "name",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "string" }],
+  },
+  {
+    name: "symbol",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "string" }],
+  },
+  {
+    name: "decimals",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint8" }],
+  },
+];
 
-export const EXPLORER_URL = `https://explorer.dev.push.org`
-export const FAUCET_URL = 'https://faucet.push.org';
+export const EXPLORER_URL = `https://donut.push.network/`;
+export const FAUCET_URL = "https://faucet.push.org";
+

@@ -1,79 +1,35 @@
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 
 import { Box, Text, Spinner } from "../../../blocks";
 import { WalletActivityListItem } from "./WalletActivityListItem";
-import { PushChain } from "@pushchain/core";
+import { useGetWalletActivities } from "../../../hooks/useGetWalletActivities";
+import { convertCaipToObject } from "../Wallet.utils";
 
 export type WalletActivityListProps = {
   address: string;
 };
 
 const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
-  const [activities, setActivities] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const fetchActivities = useCallback(
-    async (pageNumber: number) => {
-      if (isLoading) return;
-      setIsLoading(true);
-      try {
-        // const pushChain = await PushChain.initialize(null, {
-        //   network: config.APP_ENV,
-        //   rpcUrl: import.meta.env.VITE_APP_RPC_URL,
-        // });
+  const { result } = convertCaipToObject(address);
 
-        const universalAccount = PushChain.utils.account.fromChainAgnostic(address)
+  const { data: activitiesData, isLoading: loadingActivities, refetch: refetchActivities } = useGetWalletActivities({ address: result.address });
 
-        const viemClient = await PushChain.viem.createPublicClient({
-          chain: PushChain.CONSTANTS.VIEM_PUSH_TESTNET_DONUT,
-          transport: PushChain.viem.http(),
-        })
-
-        const res = await viemClient.getLogs({
-          address: universalAccount.address as `0x${string}`,
-          
-        })
-
-        console.log(res);
-
-        // const response = await PushChain.viem.(universalAccount, {
-        //   startTime: Math.floor(Date.now()),
-        //   order: ORDER.DESC,
-        //   page: pageNumber,
-        //   limit: 20,
-        // })
-
-        // const transactions = response.blocks
-        //   .map((tx) => tx.transactions)
-        //   .flat();
-
-        // const filteredTransactions = transactions.filter(transaction => !transaction.category.includes('CHESS'));
-
-        // setActivities((prev) => [...prev, ...filteredTransactions]);
-
-        // setHasMore(response.totalPages > pageNumber);
-      } catch (error) {
-        console.error("Error fetching activities:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [isLoading, hasMore, address]
-  );
+  console.log("activitiesData", activitiesData, loadingActivities);
 
   const handleScroll = () => {
-    if (!containerRef.current || isLoading || !hasMore) return;
+    if (!containerRef.current || loadingActivities || !hasMore) return;
 
     const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
 
     if (scrollTop + clientHeight >= scrollHeight - 20) {
       setPage((prevPage) => {
         const nextPage = prevPage + 1;
-        fetchActivities(nextPage);
+        refetchActivities()
         return nextPage;
       });
     }
@@ -81,10 +37,9 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
 
   useEffect(() => {
     if (address) {
-      setActivities([]);
       setHasMore(true);
       setPage(1);
-      fetchActivities(1);
+      refetchActivities();
     }
   }, [address]);
 
@@ -98,15 +53,18 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
       ref={containerRef}
       customScrollbar
     >
-      {activities.map((transaction, index) => (
-        <WalletActivityListItem
-          key={`${transaction.hash}-${index}`}
-          transaction={transaction}
-          address={address}
-        />
-      ))}
+      {!loadingActivities && activitiesData.map((transaction, index) => {
+        const { result } = convertCaipToObject(address);
+        return (
+          <WalletActivityListItem
+            key={`${transaction.hash}-${index}`}
+            transaction={transaction}
+            address={result.address}
+          />
+        )
+      })}
 
-      {isLoading && (
+      {loadingActivities && (
         <Box
           margin="spacing-xs"
           display="flex"
@@ -117,7 +75,7 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
         </Box>
       )}
 
-      {!activities.length && !isLoading && (
+      {!loadingActivities && activitiesData === undefined && (
         <Box
           margin="spacing-xxxl spacing-none spacing-none spacing-none"
           display="flex"

@@ -3392,9 +3392,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pushchain/core@npm:^0.1.16":
-  version: 0.1.17
-  resolution: "@pushchain/core@npm:0.1.17"
+"@pushchain/core@npm:0.1.23":
+  version: 0.1.23
+  resolution: "@pushchain/core@npm:0.1.23"
   dependencies:
     "@bufbuild/protobuf": "npm:^2.0.0"
     "@coral-xyz/anchor": "npm:^0.31.0"
@@ -3410,7 +3410,7 @@ __metadata:
     tslib: "npm:^2.3.0"
     tweetnacl: "npm:^1.0.3"
     viem: "npm:2.27.2"
-  checksum: 10/b86d36ec3fccd42d856bfa8ab0c30865e1a925456f99e07980ce952bf76d149e70bfd5b1c5bd5eccaecb242e047fc1da1082af7c7839b8714bde5f1abf8d3d69
+  checksum: 10/896a4bfdbeaad2ff327554a0fe0d659a48e9cf46da8100e156139c2e1936e0b60985aba05a8874d4125aa8ec3a9f898f7d33b7211bd529b97f9955dec659b5f1
   languageName: node
   linkType: hard
 
@@ -5646,10 +5646,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.80.7":
-  version: 5.80.7
-  resolution: "@tanstack/query-core@npm:5.80.7"
-  checksum: 10/3693c38c2a95207b5027ff5c25b84b335fc2ab20cc247934cbd442cad5ccc9fef15dc5f0b8fd57e50031dd3eddbbd8a90518b79361fc0fe556a1388436715410
+"@tanstack/query-core@npm:5.81.2":
+  version: 5.81.2
+  resolution: "@tanstack/query-core@npm:5.81.2"
+  checksum: 10/6045477b63ab1e9779224488507ee3899fa511e979ed39909a9fe0fa42cfdc84a43c931a20c9bab7abebf13733d1228a1b89ab605e0f1e3ca3edacba19a1378a
   languageName: node
   linkType: hard
 
@@ -5672,14 +5672,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^5.44.0":
-  version: 5.80.7
-  resolution: "@tanstack/react-query@npm:5.80.7"
+"@tanstack/react-query@npm:^5.81.2":
+  version: 5.81.2
+  resolution: "@tanstack/react-query@npm:5.81.2"
   dependencies:
-    "@tanstack/query-core": "npm:5.80.7"
+    "@tanstack/query-core": "npm:5.81.2"
   peerDependencies:
     react: ^18 || ^19
-  checksum: 10/f3de036e7dfa03bd4cb619edc7057ab86fbbf2823a8a76e59409517e03a78c1bd9dbb4f56bf9183ede1a32abd16a4f4120d6f3beb8debd0211373ffe47c5706d
+  checksum: 10/2bab43d904bf4aaf4ddb0e8db1925156aee1783da484d6c17c238054d1e27ff2cbfb1012ccb2ccef578bd3e5d096546648ec06b0bd1ad734c3c48a041d4b6020
   languageName: node
   linkType: hard
 
@@ -13442,7 +13442,7 @@ __metadata:
     "@fortawesome/react-fontawesome": "npm:^0.2.2"
     "@metamask/sdk": "npm:^0.32.0"
     "@noble/hashes": "npm:^1.0.0"
-    "@pushchain/core": "npm:^0.1.16"
+    "@pushchain/core": "npm:0.1.23"
     "@radix-ui/react-dialog": "npm:^1.1.1"
     "@radix-ui/react-dropdown-menu": "npm:^2.1.1"
     "@radix-ui/react-switch": "npm:^1.1.0"
@@ -13453,7 +13453,7 @@ __metadata:
     "@scure/bip39": "npm:^1.3.0"
     "@solana/web3.js": "npm:^1.98.2"
     "@table-library/react-table-library": "npm:^4.1.7"
-    "@tanstack/react-query": "npm:^5.44.0"
+    "@tanstack/react-query": "npm:^5.81.2"
     "@tanstack/react-query-devtools": "npm:^5.44.0"
     "@types/hdkey": "npm:^2.0.3"
     "@types/react": "npm:^18.3.3"

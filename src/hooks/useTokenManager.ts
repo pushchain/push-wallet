@@ -7,7 +7,7 @@ import { viemClient } from '../utils/viemClient';
 const DEFAULT_TOKEN = {
     name: 'Push Chain',
     symbol: 'PC',
-    address: '0x999f186cda2b78dd59ffebe5aa994eea0b025dcb',
+    address: '',
     decimals: 18,
 };
 
