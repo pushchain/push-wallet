@@ -7,5 +7,8 @@ export const surfaceSemantics = {
   'tertiary-color': { light: colorBrands['neutral-200'], dark: colorBrands['neutral-800'] },
   'disabled-color': { light: colorBrands['neutral-200'], dark: colorBrands['neutral-800'] },
   'primary-inverse': { light: colorPrimitives['black-100'], dark: colorPrimitives['white-100'] },
-  'transparent': { light: colorPrimitives['transparent'], dark: colorPrimitives['transparent'] }
+  'transparent': { light: colorPrimitives['transparent'], dark: colorPrimitives['transparent'] },
+  'danger-subtle': { light: colorBrands['danger-100'], dark: colorBrands['danger-900'] },
+  'danger-bold': { light: colorBrands['danger-500'], dark: colorBrands['danger-200'] },
+
 };

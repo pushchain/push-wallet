@@ -11,14 +11,13 @@ import { PushWallet } from "../../services/pushWallet/pushWallet";
 import { APP_ROUTES, ENV } from "../../constants";
 import secrets from "secrets.js-grempe";
 import { useGlobalState } from "../../context/GlobalContext";
-// import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { getWalletlist } from "./Wallet.utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
 import { CreateNewWallet } from "../../common/components/CreateNewWallet";
 import WalletDashboard from "./components/WalletDashboard";
 import AddTokens from "./components/AddTokens";
-import { Box } from "blocks";
+import { Box, } from "blocks";
 import { Receive } from "./components/Receive";
 import { Send } from "./components/sendComponent/Send";
 import { WalletDashboardProvider } from "../../context/WalletDashboardContext";
@@ -312,6 +311,8 @@ const Wallet: FC<WalletProps> = () => {
           gap="spacing-sm"
           position="relative"
         >
+
+
           <WalletDashboardProvider
             selectedWallet={selectedWallet}
             setSelectedWallet={setSelectedWallet}
@@ -327,6 +328,7 @@ const Wallet: FC<WalletProps> = () => {
             {activeState === 'receive' && <Receive />}
             {activeState === 'send' && <Send />}
           </WalletDashboardProvider>
+
         </Box>
       </BoxLayout>
     </ContentLayout>

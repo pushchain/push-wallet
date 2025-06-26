@@ -6,7 +6,7 @@ import {
   WalletInfo,
 } from "../types/wallet.types";
 
-type WalletContextType = {
+type ExternalWalletContextType = {
   currentWallet: WalletInfo | null;
   connecting: boolean;
   connect: (
@@ -19,9 +19,9 @@ type WalletContextType = {
   signTypedDataRequest: (data: Uint8Array) => Promise<Uint8Array>;
 };
 
-const WalletContext = createContext<WalletContextType | undefined>(undefined);
+const ExternalWalletContext = createContext<ExternalWalletContextType | undefined>(undefined);
 
-export const WalletContextProvider = ({
+export const ExternalWalletContextProvider = ({
   children,
 }: {
   children: ReactNode;
@@ -114,7 +114,7 @@ export const WalletContextProvider = ({
   };
 
   return (
-    <WalletContext.Provider
+    <ExternalWalletContext.Provider
       value={{
         currentWallet,
         connecting,
@@ -126,12 +126,12 @@ export const WalletContextProvider = ({
       }}
     >
       {children}
-    </WalletContext.Provider>
+    </ExternalWalletContext.Provider>
   );
 };
 
-export function useWallet() {
-  const context = useContext(WalletContext);
+export function useExternalWallet() {
+  const context = useContext(ExternalWalletContext);
   if (context === undefined) {
     throw new Error("useWallet must be used within a WalletProvider");
   }

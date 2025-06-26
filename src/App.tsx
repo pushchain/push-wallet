@@ -6,7 +6,7 @@ import { blocksTheme, getBlocksCSSVariables } from "./blocks";
 import { getAppBasePath } from "../basePath";
 import { useDarkMode, RouterContainer } from "./common";
 import { EventEmitterProvider } from "./context/EventEmitterContext";
-import { WalletContextProvider } from "./context/WalletContext";
+import { ExternalWalletContextProvider } from "./context/ExternalWalletContext";
 import { useAppState } from "./context/AppContext";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -38,18 +38,18 @@ export default function App() {
   const queryClient = new QueryClient();
 
   return (
-    <ThemeProvider theme={{...(isDarkMode ? themeConfig.dark : themeConfig.light), themeOverrides: state.themeOverrides}}>
+    <ThemeProvider theme={{ ...(isDarkMode ? themeConfig.dark : themeConfig.light), themeOverrides: state.themeOverrides }}>
       <GlobalStyle />
       <QueryClientProvider client={queryClient}>
-      <Router basename={getAppBasePath()}>
-        <WalletContextProvider>
-          <GlobalProvider>
-            <EventEmitterProvider>
-              <RouterContainer />
-            </EventEmitterProvider>
-          </GlobalProvider>
-        </WalletContextProvider>
-      </Router>
+        <Router basename={getAppBasePath()}>
+          <ExternalWalletContextProvider>
+            <GlobalProvider>
+              <EventEmitterProvider>
+                <RouterContainer />
+              </EventEmitterProvider>
+            </GlobalProvider>
+          </ExternalWalletContextProvider>
+        </Router>
       </QueryClientProvider>
     </ThemeProvider>
   );

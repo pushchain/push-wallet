@@ -7,7 +7,7 @@ import {
   WalletInfo,
 } from "../../../types/wallet.types";
 import { css } from "styled-components";
-import { useWallet } from "../../../context/WalletContext";
+import { useExternalWallet } from "../../../context/ExternalWalletContext";
 import { getAppParamValue, WALLET_TO_APP_ACTION, WALLETS_LOGO } from "common";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +23,7 @@ const WalletSelector: FC<WalletButtonProps> = ({
   provider,
   walletCategory,
 }) => {
-  const { connect } = useWallet();
+  const { connect } = useExternalWallet();
 
   const navigate = useNavigate();
 

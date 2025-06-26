@@ -118,3 +118,9 @@ export const rejectAllPushWalletConnectionRequests =
 
     return getAllAppConnections();
   };
+
+
+export const truncateToDecimals = (num, decimals) => {
+  const factor = Math.pow(10, decimals);
+  return Math.floor(num * factor) / factor;
+}

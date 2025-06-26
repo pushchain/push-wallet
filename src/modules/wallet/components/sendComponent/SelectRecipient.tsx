@@ -1,6 +1,6 @@
 import { Box, Button, Text, TextInput } from "blocks";
 import React from "react";
-import { TokenLogoComponent } from "common";
+import { TokenLogoComponent, truncateToDecimals } from "common";
 import { css } from "styled-components";
 import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
 import { useSendTokenContext } from "../../../../context/SendTokenContext";
@@ -33,7 +33,6 @@ const SelectRecipient = () => {
     data: tokenBalance,
     isLoading: loadingTokenBalance
   } = useTokenBalance(tokenSelected.address, result.address, tokenSelected.decimals);
-
 
   return (
     <>
@@ -170,7 +169,7 @@ const SelectRecipient = () => {
                 variant="bs-regular"
                 color="pw-int-text-tertiary-color"
               >
-                Balance: {tokenBalance} {tokenSelected.symbol}
+                Balance: {truncateToDecimals(Number(tokenBalance), 3)} {tokenSelected.symbol}
               </Text>
             </Box>
           </Box>

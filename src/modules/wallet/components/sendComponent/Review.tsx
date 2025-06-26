@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, SendNotification, Text } from "blocks";
+import { Box, Button, SendNotification, Text, WarningCircleFilled } from "blocks";
 import { centerMaskWalletAddress } from "common";
 import { css } from "styled-components";
 import { useSendTokenContext } from "../../../../context/SendTokenContext";
@@ -14,6 +14,7 @@ const Review = () => {
     handleSendTransaction,
     sendingTransaction,
     setSendState,
+    txError,
   } = useSendTokenContext();
 
   const { selectedWallet, selectedNetwork } = useWalletDashboard();
@@ -39,6 +40,19 @@ const Review = () => {
           alignItems="center"
           gap="spacing-md"
         >
+
+          {txError && <Box
+            display='flex'
+            backgroundColor="pw-int-bg-danger-bold"
+            alignItems='center'
+            padding="spacing-xs"
+            borderRadius="radius-sm"
+            gap="spacing-xxs"
+          >
+            <WarningCircleFilled color="pw-int-icon-danger-subtle-color" size={20} />
+            <Text variant="h5-semibold" color="pw-int-text-danger-subtle-color">{txError}</Text>
+          </Box>}
+
           <Text
             variant="h3-semibold"
             color="pw-int-text-primary-color"

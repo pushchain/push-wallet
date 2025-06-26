@@ -12,7 +12,7 @@ import {
   PushWalletAppConnectionData,
 } from "../common";
 import { APP_ROUTES } from "../constants";
-import { useWallet } from "./WalletContext";
+import { useExternalWallet } from "./ExternalWalletContext";
 import { WalletConfig, WalletInfo } from "../types/wallet.types";
 
 // Define the shape of the global state
@@ -150,7 +150,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
 
   const params = new URLSearchParams(location.search);
 
-  const { currentWallet } = useWallet();
+  const { currentWallet } = useExternalWallet();
 
   const stateParam = params.get("state");
 

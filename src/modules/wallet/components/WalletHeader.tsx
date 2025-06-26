@@ -23,7 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { APP_ROUTES } from "../../../constants";
 import { useEventEmitterContext } from "../../../context/EventEmitterContext";
 import { useGlobalState } from "../../../context/GlobalContext";
-import { useWallet } from "../../../context/WalletContext";
+import { useExternalWallet } from "../../../context/ExternalWalletContext";
 import { css } from "styled-components";
 import BlockiesSvg from "blockies-react-svg";
 import { FC, useState } from "react";
@@ -44,7 +44,7 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
         selectedWallet?.address || state?.externalWallet?.address;
     const walletName = selectedWallet?.name ?? "External Wallet";
 
-    const { disconnect } = useWallet();
+    const { disconnect } = useExternalWallet();
     const navigate = useNavigate();
     const persistQuery = usePersistedQuery();
     const { handleLogOutEvent } = useEventEmitterContext();

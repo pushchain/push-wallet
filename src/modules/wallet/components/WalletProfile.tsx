@@ -54,8 +54,6 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
     isLoading: isBalanceLoading,
   } = useWalletOperations(result.address);
 
-  console.log("Balance in wallet profile", balance);
-
   return (
     <Box
       display="flex"

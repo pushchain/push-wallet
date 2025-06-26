@@ -12,6 +12,20 @@ const Confirmation = () => {
   const { setActiveState, selectedWallet, selectedNetwork } =
     useWalletDashboard();
 
+  // Get current date and time formatted as 'May 27, 2025 — 2:28 PM'
+  const now = new Date();
+  const datePart = now.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+  const timePart = now.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+  const formattedDateTime = `${datePart} — ${timePart}`;
+
   const handleBackToHome = () => {
     setTxhash(null);
     setActiveState("walletDashboard");
@@ -103,7 +117,7 @@ const Confirmation = () => {
               <Text color="pw-int-text-tertiary-color" variant="bs-regular">
                 Date
               </Text>
-              <Text variant="bs-regular">May 27, 2025 — 2:28 PM</Text>
+              <Text variant="bs-regular">{formattedDateTime}</Text>
             </Box>
             <Box
               display="flex"

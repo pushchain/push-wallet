@@ -12,8 +12,6 @@ export const fetchTokenBalance = async ({
     tokenAddress,
     decimals
 }: fetchTokenBalanceProps) => {
-    console.log("tokenAddress in token helper >>", tokenAddress);
-
     const publicClient = createPublicClient({
         chain: pushTestnetChain,
         transport: http(),
@@ -22,7 +20,6 @@ export const fetchTokenBalance = async ({
     try {
 
         if (!tokenAddress) {
-            // Native token
             const nativeBalance = await publicClient.getBalance({ address: walletAddress });
             return formatUnits(nativeBalance, decimals);
         }
@@ -34,7 +31,6 @@ export const fetchTokenBalance = async ({
             args: [walletAddress],
         });
 
-        console.log(`Balance: ${balance.toString()}`);
         return formatUnits(balance as bigint, decimals);
     } catch (error) {
         console.error('Error fetching token balance:', error);

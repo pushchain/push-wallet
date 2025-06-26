@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { SendTokenState, TokenFormat } from "../types";
-import { useWallet } from "./WalletContext";
+import { useExternalWallet } from "./ExternalWalletContext";
 import { parseUnits } from "viem";
 import { PushChain } from "@pushchain/core";
 import { PUSH_NETWORK } from "@pushchain/core/src/lib/constants/enums";
@@ -18,6 +18,7 @@ interface SendTokenContextType {
   handleSendTransaction: () => void;
   txhash: string | null;
   setTxhash: (txHash: string | null) => void;
+  txError: string;
 }
 
 const SendTokenContext = createContext<SendTokenContextType | undefined>(
@@ -35,16 +36,19 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
   const [sendingTransaction, setSendingTransaction] = useState<boolean>(false);
   const [txhash, setTxhash] = useState<string | null>(null);
 
+  const [txError, setTxError] = useState<string>('');
+
   const {
     currentWallet,
     signMessageRequest,
     signTransactionRequest,
     signTypedDataRequest,
-  } = useWallet();
+  } = useExternalWallet();
 
   const handleSendTransaction = async () => {
     try {
       setSendingTransaction(true);
+      setTxError('')
       const value = parseUnits(amount.toString(), tokenSelected.decimals);
 
       const universalAccount = PushChain.utils.account.fromChainAgnostic(
@@ -96,7 +100,8 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
         setTxhash(receipt.transactionHash);
       }
     } catch (error) {
-      console.log("Error in sending transaction", error);
+      console.log("Error in sending transaction", error, error.message);
+      setTxError(error.message)
     } finally {
       setSendingTransaction(false);
     }
@@ -115,6 +120,7 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
     handleSendTransaction,
     txhash,
     setTxhash,
+    txError
   };
 
   return (

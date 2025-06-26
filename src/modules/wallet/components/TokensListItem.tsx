@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { Box, Text } from "blocks";
 import { TokenFormat } from "../../../types";
-import { TokenLogoComponent } from "common";
+import { TokenLogoComponent, truncateToDecimals } from "common";
 import { useWalletDashboard } from "../../../context/WalletDashboardContext";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { convertCaipToObject } from "../Wallet.utils";
@@ -45,7 +45,7 @@ const TokensListItem: FC<TokenListItemProps> = ({ token, handleSelectToken }) =>
             {token.name}
           </Text>
           <Text variant="bs-regular" color="pw-int-text-secondary-color">
-            {loadingTokenBalance ? ('0') : Number(tokenBalance).toLocaleString()} {" "} {token.symbol}
+            {loadingTokenBalance ? ('0') : truncateToDecimals(Number(tokenBalance), 3)} {" "} {token.symbol}
           </Text>
         </Box>
       </Box>

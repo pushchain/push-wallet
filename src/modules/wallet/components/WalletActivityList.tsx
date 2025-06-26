@@ -19,8 +19,6 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
 
   const { data: activitiesData, isLoading: loadingActivities, refetch: refetchActivities } = useGetWalletActivities({ address: result.address });
 
-  console.log("activitiesData", activitiesData, loadingActivities);
-
   const handleScroll = () => {
     if (!containerRef.current || loadingActivities || !hasMore) return;
 
