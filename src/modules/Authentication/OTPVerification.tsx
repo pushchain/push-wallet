@@ -198,9 +198,9 @@ const StyledOTPInput = styled.input`
   padding: var(--spacing-xs, 12px);
   font-size: 18px;
   text-align: center;
-  border: 1.5px solid var(pw-int-border-primary-color, #313338);
+  border: var(--border-sm) solid var(--pw-int-border-tertiary-color);
   border-radius: 8px;
-  background: var(--pw-int-bg-secondary-color, #313338);
+  background: var(--pw-int-bg-secondary-color);
   color: var(--pw-int-text-primary-color);
   font-family: var(--pw-int-font-family);
   

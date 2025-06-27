@@ -245,6 +245,6 @@ export const ERC20ABI = [
   },
 ];
 
-export const EXPLORER_URL = `https://donut.push.network/`;
+export const EXPLORER_URL = `https://donut.push.network`;
 export const FAUCET_URL = "https://faucet.push.org";
 

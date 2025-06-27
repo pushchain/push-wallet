@@ -498,11 +498,15 @@ export class PushWallet {
    */
   public signMessage = async (
     data: string | Uint8Array,
-    origin: string,
-    appConnections: PushWalletAppConnectionData[]
+    origin?: string,
+    appConnections?: PushWalletAppConnectionData[]
   ): Promise<Uint8Array> => {
-    const appFound = appConnections.find((each) => each.origin === origin)
-    if (!appFound) throw Error('App not Connected')
+
+    if (origin && appConnections) {
+      const appFound = appConnections.find((each) => each.origin === origin)
+      if (!appFound) throw Error('App not Connected')
+    }
+
     return await this.universalSigner.signMessage(
       typeof data === 'string' ? stringToBytes(data) : data
     )
@@ -510,11 +514,13 @@ export class PushWallet {
 
   public signAndSendTransaction = async (
     data: string | Uint8Array,
-    origin: string,
-    appConnections: PushWalletAppConnectionData[]
+    origin?: string,
+    appConnections?: PushWalletAppConnectionData[]
   ): Promise<Uint8Array> => {
-    const appFound = appConnections.find((each) => each.origin === origin)
-    if (!appFound) throw Error('App not Connected')
+    if (origin && appConnections) {
+      const appFound = appConnections.find((each) => each.origin === origin)
+      if (!appFound) throw Error('App not Connected')
+    }
     return await this.universalSigner.signAndSendTransaction(
       typeof data === 'string' ? stringToBytes(data) : data
     )
@@ -528,11 +534,15 @@ export class PushWallet {
       primaryType: string;
       message: Record<string, unknown>;
     },
-    origin: string,
-    appConnections: PushWalletAppConnectionData[]
+    origin?: string,
+    appConnections?: PushWalletAppConnectionData[]
   ): Promise<Uint8Array> => {
-    const appFound = appConnections.find((each) => each.origin === origin)
-    if (!appFound) throw Error('App not Connected')
+
+    if (origin && appConnections) {
+      const appFound = appConnections.find((each) => each.origin === origin)
+      if (!appFound) throw Error('App not Connected')
+    }
+
     return await this.universalSigner.signTypedData(data)
   }
 }

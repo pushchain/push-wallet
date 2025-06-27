@@ -71,6 +71,11 @@ const Wallet: FC<WalletProps> = () => {
       localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
+
+      setSelectedWallet(
+        getWalletlist(instance)[0]
+      );
+
     } catch (err) {
       console.error("Error creating wallet:", err);
       throw err;
@@ -90,6 +95,11 @@ const Wallet: FC<WalletProps> = () => {
       );
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
+
+      setSelectedWallet(
+        getWalletlist(instance)[0]
+      );
+
     } catch (err) {
       console.error("Error reconstructing wallet:", err);
       setError("Failed to reconstruct wallet. Please try again.");
@@ -311,8 +321,6 @@ const Wallet: FC<WalletProps> = () => {
           gap="spacing-sm"
           position="relative"
         >
-
-
           <WalletDashboardProvider
             selectedWallet={selectedWallet}
             setSelectedWallet={setSelectedWallet}

@@ -15,7 +15,7 @@ export const fetchWalletActivities = async ({
     limit = 10,
     filter = 'to | from',
 }: FetchWalletActivitiesParams) => {
-    const url = `${EXPLORER_URL}api/v2/addresses/${address}/transactions`;
+    const url = `${EXPLORER_URL}/api/v2/addresses/${address}/transactions`;
 
     const response = await axios.get(url, {
         params: {

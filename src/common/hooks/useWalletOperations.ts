@@ -9,8 +9,6 @@ export const useWalletBalance = () => {
 
     const fetchNativeBalance = async (address: string) => {
         try {
-            console.log("Called ", address);
-
             setIsLoading(true);
             setError(null);
             const publicClient = createPublicClient({
@@ -21,8 +19,6 @@ export const useWalletBalance = () => {
             const balance = await publicClient.getBalance({
                 address: address as Address,
             });
-
-            console.log("balance fetched ", balance);
 
             setBalance(formatUnits(balance, 18));
         } catch (err) {
@@ -46,7 +42,6 @@ export const useWalletBalance = () => {
                 args: [walletAddress],
             });
 
-            console.log(`Balance: ${balance.toString()}`);
             return balance;
         } catch (error) {
             console.error('Error fetching token balance:', error);

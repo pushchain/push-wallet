@@ -94,7 +94,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
             handleNewConnectionRequest(event.origin);
             break;
           case APP_TO_WALLET_ACTION.WALLET_CONFIG:
-            console.log("Wallet COnfig >>>", event.data)
             handleWalletConfigs(event.data.data);
             break;
           case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
@@ -227,11 +226,11 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const handleSignTypedData = async (typedData: {
-      domain: TypedDataDomain;
-      types: TypedData;
-      primaryType: string;
-      message: Record<string, unknown>;
-    }, origin: string) => {
+    domain: TypedDataDomain;
+    types: TypedData;
+    primaryType: string;
+    message: Record<string, unknown>;
+  }, origin: string) => {
     try {
       dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "loading" });
 
@@ -342,7 +341,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       appMetadata: data.appMetadata,
     }
 
-    appDispatch({ type: "SET_THEME_OVERRIDES", payload: {...data.themeOverrides} });
+    appDispatch({ type: "SET_THEME_OVERRIDES", payload: { ...data.themeOverrides } });
     dispatch({ type: "WALLET_CONFIG", payload: walletConfig });
   }
 

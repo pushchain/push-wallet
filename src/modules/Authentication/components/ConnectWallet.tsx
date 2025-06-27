@@ -39,8 +39,6 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     return filtered;
   }, [walletConfig?.loginDefaults?.wallet?.chains, isMobile]);
 
-  console.log(isMobile, window.innerWidth, window.outerWidth);
-
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory(null);
     else setConnectMethod("authentication");

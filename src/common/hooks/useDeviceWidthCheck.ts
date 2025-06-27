@@ -15,6 +15,5 @@ export function useDeviceWidthCheck(deviceWidth: number) {
         };
     }, []);
 
-    // if (log) console.log(deviceWidth, width, width <= deviceWidth);
     return width <= deviceWidth;
 }

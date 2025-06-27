@@ -16,7 +16,7 @@ type ExternalWalletContextType = {
   disconnect: () => Promise<void>;
   signTransactionRequest: (data: Uint8Array) => Promise<Uint8Array>;
   signMessageRequest: (data: Uint8Array) => Promise<Uint8Array>;
-  signTypedDataRequest: (data: Uint8Array) => Promise<Uint8Array>;
+  signTypedDataRequest: (data: ITypedData) => Promise<Uint8Array>;
 };
 
 const ExternalWalletContext = createContext<ExternalWalletContextType | undefined>(undefined);
@@ -73,7 +73,6 @@ export const ExternalWalletContextProvider = ({
 
     try {
       const signature = await currentProvider.signAndSendTransaction(data);
-      console.log("receipt in wallet context", signature);
       return signature;
     } catch (error) {
       console.log("Error in generating signature", error);
@@ -88,7 +87,6 @@ export const ExternalWalletContextProvider = ({
 
     try {
       const signature = await currentProvider.signMessage(data);
-      console.log("receipt in wallet context", signature);
       return signature;
     } catch (error) {
       console.log("Error in generating signature", error);
@@ -105,7 +103,6 @@ export const ExternalWalletContextProvider = ({
 
     try {
       const signature = await currentProvider.signTypedData(data);
-      console.log("receipt in wallet context", signature);
       return signature;
     } catch (error) {
       console.log("Error in generating signature", error);

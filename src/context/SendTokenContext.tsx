@@ -4,6 +4,8 @@ import { useExternalWallet } from "./ExternalWalletContext";
 import { parseUnits } from "viem";
 import { PushChain } from "@pushchain/core";
 import { PUSH_NETWORK } from "@pushchain/core/src/lib/constants/enums";
+import { useGlobalState } from "./GlobalContext";
+import { useWalletDashboard } from "./WalletDashboardContext";
 
 interface SendTokenContextType {
   sendState: SendTokenState;
@@ -28,6 +30,12 @@ const SendTokenContext = createContext<SendTokenContextType | undefined>(
 export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+
+  const { state } = useGlobalState();
+  const {
+    selectedWallet,
+  } = useWalletDashboard();
+
   const [sendState, setSendState] = useState<SendTokenState>("selectToken");
   const [tokenSelected, setTokenSelected] = useState<TokenFormat | null>(null);
   const [receiverAddress, setReceiverAddress] = useState<string>('');
@@ -45,6 +53,9 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
     signTypedDataRequest,
   } = useExternalWallet();
 
+  const parsedWallet =
+    selectedWallet?.address || currentWallet?.address;
+
   const handleSendTransaction = async () => {
     try {
       setSendingTransaction(true);
@@ -52,10 +63,8 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
       const value = parseUnits(amount.toString(), tokenSelected.decimals);
 
       const universalAccount = PushChain.utils.account.fromChainAgnostic(
-        currentWallet.address
+        parsedWallet
       );
-
-      console.log("universal Account", universalAccount);
 
       const CHAINS = PushChain.CONSTANTS.CHAIN;
 
@@ -68,31 +77,25 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
       const signerSkeleton = PushChain.utils.signer.construct(
         universalAccount,
         {
-          signMessage: signMessageRequest,
-          signAndSendTransaction: signTransactionRequest,
+          signMessage: state.wallet ? state.wallet.signMessage : signMessageRequest,
+          signAndSendTransaction: state.wallet ? state.wallet.signAndSendTransaction : signTransactionRequest,
+          signTypedData: isSolana ? undefined : state.wallet ? state.wallet.signTypedData : signTypedDataRequest,
         }
       );
-
-      console.log("signerSkeleton", signerSkeleton);
 
       const universalSigner = await PushChain.utils.signer.toUniversal(
         signerSkeleton
       );
 
-      console.log("universalSigner", universalSigner);
-
       const pushChainClient = await PushChain.initialize(universalSigner, {
         network: PUSH_NETWORK.TESTNET_DONUT,
       });
-
-      console.log("receiverAddress", receiverAddress, value);
 
       const receipt = await pushChainClient.universal.sendTransaction({
         to: receiverAddress as `0x${string}`,
         value: value,
         data: "0x",
       });
-      // const receipt = await sendTransaction(receiverAddress, value);
       console.log("Transaction confirmed", receipt);
 
       if (receipt.transactionHash) {

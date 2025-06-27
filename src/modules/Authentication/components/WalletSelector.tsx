@@ -12,7 +12,6 @@ import { getAppParamValue, WALLET_TO_APP_ACTION, WALLETS_LOGO } from "common";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import { APP_ROUTES } from "../../../constants";
-import { PushChain } from "@pushchain/core";
 
 interface WalletButtonProps {
   provider: IWalletProvider;
@@ -58,13 +57,7 @@ const WalletSelector: FC<WalletButtonProps> = ({
           providerName: provider.name,
         };
 
-        console.log("@@@@@@@ walletInfo", payload);
-
         if (result) {
-          const universalAccount =
-            PushChain.utils.account.fromChainAgnostic(result);
-          console.log("universalAccount >>>", universalAccount);
-
           dispatch({
             type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
             payload: "success",
