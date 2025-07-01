@@ -100,9 +100,10 @@ const SelectToken: FC<SelectTokenProps> = ({ handleTokenSelection }) => {
               display='flex'
               flexDirection='column'
               gap='spacing-xs'
-              overflow='scroll'
+              overflow="hidden scroll"
               height='240px'
               padding='spacing-none spacing-xs spacing-none spacing-none'
+              customScrollbar
             >
               {tokens.map((token: TokenFormat) => (
                 <TokensListItem token={token} key={token.address} handleSelectToken={handleTokenSelection} />

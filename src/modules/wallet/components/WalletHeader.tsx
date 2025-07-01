@@ -172,7 +172,7 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
                                 <Copy
                                     color="pw-int-icon-tertiary-color"
                                     size={14}
-                                    onClick={() => handleCopy(parsedWallet, setCopied)}
+                                    onClick={() => handleCopy(result.address, setCopied)}
                                 />
                             )}
                         </Tooltip>
@@ -193,7 +193,7 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
                             {/* <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} /> */}
                             <MenuItem
                                 label="Log Out"
-                                icon={<Logout />}
+                                icon={<Logout size={24} color="pw-int-icon-primary-color" />}
                                 onClick={() => {
                                     handleLogOut();
                                 }}

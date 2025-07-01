@@ -47,6 +47,7 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
       flexDirection="column"
       height="292px"
       overflow="hidden scroll"
+      padding='spacing-none spacing-xs spacing-none spacing-none'
       onScroll={hasMore ? handleScroll : undefined}
       ref={containerRef}
       customScrollbar

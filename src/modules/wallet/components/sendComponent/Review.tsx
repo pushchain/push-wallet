@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Button, SendNotification, Text, WarningCircleFilled } from "blocks";
-import { centerMaskWalletAddress } from "common";
+import { centerMaskWalletAddress, truncateWords } from "common";
 import { css } from "styled-components";
 import { useSendTokenContext } from "../../../../context/SendTokenContext";
 import WalletHeader from "../WalletHeader";
@@ -50,7 +50,9 @@ const Review = () => {
             gap="spacing-xxs"
           >
             <WarningCircleFilled color="pw-int-icon-danger-subtle-color" size={20} />
-            <Text variant="h5-semibold" color="pw-int-text-danger-subtle-color">{txError}</Text>
+            <Text wrap variant="h5-semibold" color="pw-int-text-danger-subtle-color">
+              {truncateWords(txError, 6)}
+            </Text>
           </Box>}
 
           <Text

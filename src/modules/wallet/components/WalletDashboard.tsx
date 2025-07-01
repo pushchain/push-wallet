@@ -22,6 +22,7 @@ const WalletDashboard: FC = () => {
         <>
             <PushWalletAppConnection selectedWallet={selectedWallet} />
             <WalletProfile selectedWallet={selectedWallet} />
+
             <WalletTabs
                 walletList={getWalletlist(
                     state.wallet

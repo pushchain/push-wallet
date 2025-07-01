@@ -40,6 +40,7 @@ const AddTokens: FC = () => {
     };
 
     const handleAddToken = async () => {
+
         if (!token) {
             handleSearch();
         }

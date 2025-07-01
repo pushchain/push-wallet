@@ -124,3 +124,10 @@ export const truncateToDecimals = (num, decimals) => {
   const factor = Math.pow(10, decimals);
   return Math.floor(num * factor) / factor;
 }
+
+export const truncateWords = (str: string, numWords: number = 50): string => {
+  if (!str) return '';
+  const words = str.split(' ');
+  if (words.length <= numWords) return str;
+  return words.slice(0, numWords).join(' ') + '…';
+};

@@ -36,12 +36,12 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
         let displayAddress = '';
         const additionalRecipients = 0;
         if (address === transaction.from.hash) {
-            const recipients = transaction.from.hash;
+            const recipients = transaction.to.hash;
             displayAddress = recipients;
         }
 
         if (address === transaction.to.hash) {
-            const recipients = transaction.to.hash;
+            const recipients = transaction.from.hash;
             displayAddress = recipients;
         }
 

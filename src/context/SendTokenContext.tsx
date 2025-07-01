@@ -54,9 +54,11 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
   } = useExternalWallet();
 
   const parsedWallet =
-    selectedWallet?.address || currentWallet?.address;
+    selectedWallet?.fullAddress || currentWallet?.address;
 
   const handleSendTransaction = async () => {
+    console.log("parsedWallet", parsedWallet, selectedWallet);
+
     try {
       setSendingTransaction(true);
       setTxError('')
@@ -65,6 +67,8 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
       const universalAccount = PushChain.utils.account.fromChainAgnostic(
         parsedWallet
       );
+
+      console.log("universalAccount", universalAccount);
 
       const CHAINS = PushChain.CONSTANTS.CHAIN;
 
@@ -83,13 +87,19 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
         }
       );
 
+      console.log("signerSkeleton", signerSkeleton);
+
       const universalSigner = await PushChain.utils.signer.toUniversal(
         signerSkeleton
       );
 
+      console.log("universalSigner", universalSigner);
+
       const pushChainClient = await PushChain.initialize(universalSigner, {
         network: PUSH_NETWORK.TESTNET_DONUT,
       });
+
+      console.log("pushChainClient", pushChainClient);
 
       const receipt = await pushChainClient.universal.sendTransaction({
         to: receiverAddress as `0x${string}`,

@@ -141,7 +141,7 @@ const SelectRecipient = () => {
               alignItems="center"
               backgroundColor="pw-int-bg-secondary-color"
               borderRadius="radius-md"
-              onClick={() => setAmount(Number(tokenBalance))}
+              onClick={() => setAmount(Number(truncateToDecimals(Number(tokenBalance), 3)))}
               cursor="pointer"
             >
               <Text variant="bs-semibold" color="pw-int-text-primary-color">
@@ -161,7 +161,7 @@ const SelectRecipient = () => {
             </Box>
             <Box
               css={css`
-                flex: 1;
+                flex: 2;
               `}
             >
               <Text
