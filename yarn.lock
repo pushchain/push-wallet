@@ -3392,9 +3392,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pushchain/core@npm:^0.1.29":
-  version: 0.1.30
-  resolution: "@pushchain/core@npm:0.1.30"
+"@pushchain/core@npm:^0.1.32":
+  version: 0.1.32
+  resolution: "@pushchain/core@npm:0.1.32"
   dependencies:
     "@bufbuild/protobuf": "npm:^2.0.0"
     "@coral-xyz/anchor": "npm:^0.31.0"
@@ -3410,7 +3410,7 @@ __metadata:
     tslib: "npm:^2.3.0"
     tweetnacl: "npm:^1.0.3"
     viem: "npm:2.27.2"
-  checksum: 10/1e8740dc038d9b7e0071c2ff3717858fa60ff1f0a1dbcc063efa756efbfd56c972743d705600ebb0c18e6ab95d4f5919ab62a705cbcb7adb7766e9edcc367c08
+  checksum: 10/558a1f4e6f56059f9492ec3f942efd5bd21b50ba43e980e012f200efa6257de6175ed8d4c21efee18a633c03f4165438d5b1643d470b17e83aef61a32f56bd66
   languageName: node
   linkType: hard
 
@@ -13425,7 +13425,7 @@ __metadata:
     "@fortawesome/react-fontawesome": "npm:^0.2.2"
     "@metamask/sdk": "npm:^0.32.0"
     "@noble/hashes": "npm:^1.0.0"
-    "@pushchain/core": "npm:^0.1.29"
+    "@pushchain/core": "npm:^0.1.32"
     "@radix-ui/react-dialog": "npm:^1.1.1"
     "@radix-ui/react-dropdown-menu": "npm:^2.1.1"
     "@radix-ui/react-switch": "npm:^1.1.0"
