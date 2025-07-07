@@ -86,7 +86,9 @@ const Wallet: FC = () => {
     try {
       setCreateAccountLoading(true);
       const mnemonicHex = secrets.combine([share1, share2]);
-      const mnemonic = bytesToHex(stringToBytes(mnemonicHex));
+      const bytes = new Uint8Array(mnemonicHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+      const mnemonic = new TextDecoder().decode(bytes);
+
       const instance = await PushWallet.logInWithMnemonic(
         mnemonic,
         import.meta.env.VITE_APP_ENV as ENV
