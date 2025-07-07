@@ -187,7 +187,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
               ) : (
                 <Copy
                   color="pw-int-icon-tertiary-color"
-                  onClick={() => handleCopy(parsedWallet, setCopied)}
+                  onClick={() => handleCopy(result.address, setCopied)}
                 />
               )}
             </Tooltip>
