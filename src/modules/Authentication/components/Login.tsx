@@ -78,8 +78,6 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
   const showGoogleLogin = isOpenedInIframe ? walletConfig?.loginDefaults.google : true
   const showWalletLogin = isOpenedInIframe ? walletConfig?.loginDefaults.wallet.enabled : true
 
-  console.log(walletConfig);
-
   return (
     <Box
       alignItems="center"
