@@ -87,7 +87,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
           )}
         </Box>
 
-        <Box display="flex" gap="spacing-xxxs">
+        {/* <Box display="flex" gap="spacing-xxxs">
           <Text color="pw-int-text-secondary-color">+$276.29</Text>
           <Box
             padding="spacing-none spacing-xxxs"
@@ -96,7 +96,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
           >
             <Text color="pw-int-text-primary-color">+0.97%</Text>
           </Box>
-        </Box>
+        </Box> */}
       </Box>
       <Box display="flex" flexDirection="row" justifyContent="space-between">
         {buttonConfigs.map(({ icon: Icon, label, onClick }) => (

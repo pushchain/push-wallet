@@ -89,8 +89,8 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
             {activeState === "walletDashboard" && (
                 <Dropdown
                     css={css`
-            z-index: 3;
-          `}
+                        z-index: 3;
+                    `}
                     overlay={
                         <Menu>
                             <MenuItem
@@ -100,13 +100,13 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
                                     setSelectedNetwork("Push Testnet Donut");
                                 }}
                             />
-                            <MenuItem
+                            {/* <MenuItem
                                 label="Push Testnet Sushi"
                                 icon={<PushAlpha width={24} height={24} />}
                                 onClick={() => {
                                     setSelectedNetwork("Push Testnet Sushi");
                                 }}
-                            />
+                            /> */}
                         </Menu>
                     }
                 >

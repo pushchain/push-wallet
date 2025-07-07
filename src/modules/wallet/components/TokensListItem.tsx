@@ -45,12 +45,15 @@ const TokensListItem: FC<TokenListItemProps> = ({ token, handleSelectToken }) =>
             {token.name}
           </Text>
           <Text variant="bs-regular" color="pw-int-text-secondary-color">
-            {loadingTokenBalance ? ('0') : truncateToDecimals(Number(tokenBalance), 3)} {" "} {token.symbol}
+            {loadingTokenBalance
+              ? '0'
+              : Number(truncateToDecimals(Number(tokenBalance), 3)).toLocaleString()
+            } {token.symbol}
           </Text>
         </Box>
       </Box>
 
-      <Box
+      {/* <Box
         display="flex"
         flexDirection="column"
         justifyContent="end"
@@ -69,7 +72,7 @@ const TokensListItem: FC<TokenListItemProps> = ({ token, handleSelectToken }) =>
         >
           +{Number("1984").toLocaleString()}
         </Text>
-      </Box>
+      </Box> */}
     </Box>
   );
 };
