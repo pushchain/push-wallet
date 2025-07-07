@@ -57,7 +57,9 @@ const Wallet: FC = () => {
         import.meta.env.VITE_APP_ENV as ENV
       );
 
-      const mnemonicHex = Buffer.from(instance.mnemonic).toString("hex");
+      const mnemonicHex = bytesToHex(stringToBytes(instance.mnemonic)).replace(/^0x/, "");
+      console.log("mnemonic Hex", mnemonicHex);
+
       const shares = secrets.share(mnemonicHex, 3, 2);
 
       // First create the passkeys for storing shard 3
