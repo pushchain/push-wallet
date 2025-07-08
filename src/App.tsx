@@ -12,7 +12,7 @@ import { useAppState } from "./context/AppContext";
 const GlobalStyle = createGlobalStyle`
   :root{
     /* Font Family */
-      --pw-int-font-family: 'Arial, sans-serif';
+      --pw-int-font-family: "Arial", sans-serif;
     /* New blocks theme css variables*/
     ${(props) => {
     // @ts-expect-error: The getBlocksCSSVariables function is not typed, so we need to suppress the error here.
