@@ -161,20 +161,22 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
                             {centerMaskWalletAddress(result.address, 5)}
                         </Text>
 
-                        <Tooltip title={copied ? "Copy" : "Copied"}>
-                            {copied ? (
-                                <TickCircleFilled
-                                    autoSize
-                                    size={14}
-                                    color="pw-int-icon-success-bold-color"
-                                />
-                            ) : (
-                                <Copy
-                                    color="pw-int-icon-tertiary-color"
-                                    size={14}
-                                    onClick={() => handleCopy(result.address, setCopied)}
-                                />
-                            )}
+                        <Tooltip title={copied ? "Copied" : "Copy"} trigger="click">
+                            <Box cursor="pointer">
+                                {copied ? (
+                                    <TickCircleFilled
+                                        autoSize
+                                        size={14}
+                                        color="pw-int-icon-success-bold-color"
+                                    />
+                                ) : (
+                                    <Copy
+                                        color="pw-int-icon-tertiary-color"
+                                        size={14}
+                                        onClick={() => handleCopy(result.address, setCopied)}
+                                    />
+                                )}
+                            </Box>
                         </Tooltip>
                     </Box>
                 </Box>

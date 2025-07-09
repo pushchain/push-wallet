@@ -54,6 +54,8 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
     isLoading: isBalanceLoading,
   } = useWalletOperations(result.address);
 
+  console.log("balance", balance);
+
   return (
     <Box
       display="flex"
@@ -82,7 +84,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
               variant="h2-semibold"
               textAlign="center"
             >
-              {Number(Number(balance).toFixed(3)).toLocaleString()} PC
+              {Number(Number(balance ?? 0).toFixed(3)).toLocaleString()} PC
             </Text>
           )}
         </Box>

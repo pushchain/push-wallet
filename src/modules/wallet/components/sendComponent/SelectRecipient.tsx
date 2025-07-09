@@ -75,7 +75,7 @@ const SelectRecipient = () => {
                 {tokenSelected.name}
               </Text>
               <Text variant="bs-regular" color="pw-int-text-secondary-color">
-                {loadingTokenBalance ? ('0') : Number(tokenBalance).toLocaleString()} {" "} {tokenSelected.symbol}
+                {loadingTokenBalance ? ('0') : Number(truncateToDecimals(Number(tokenBalance ?? '0'), 3)).toLocaleString()} {" "} {tokenSelected.symbol}
               </Text>
             </Box>
           </Box>
@@ -120,7 +120,8 @@ const SelectRecipient = () => {
             <TextInput
               value={amount}
               type="number"
-              onChange={(e) => setAmount(Number(e.target.value))}
+              placeholder="0"
+              onChange={(e) => setAmount(e.target.value)}
               css={css`
                 color: white;
                 & input {
@@ -141,7 +142,7 @@ const SelectRecipient = () => {
               alignItems="center"
               backgroundColor="pw-int-bg-secondary-color"
               borderRadius="radius-md"
-              onClick={() => setAmount(Number(truncateToDecimals(Number(tokenBalance), 3)))}
+              onClick={() => setAmount(truncateToDecimals(Number(tokenBalance), 3).toString())}
               cursor="pointer"
             >
               <Text variant="bs-semibold" color="pw-int-text-primary-color">
@@ -150,7 +151,7 @@ const SelectRecipient = () => {
             </Box>
           </Box>
           <Box display="flex" width="100%">
-            <Box
+            {/* <Box
               css={css`
                 flex: 1;
               `}
@@ -158,7 +159,7 @@ const SelectRecipient = () => {
               <Text variant="bs-regular" color="pw-int-text-tertiary-color">
                 ~$12.45
               </Text>
-            </Box>
+            </Box> */}
             <Box
               css={css`
                 flex: 2;
@@ -195,14 +196,14 @@ const SelectRecipient = () => {
           </Button>
           <Button
             onClick={() => {
-              if (receiverAddress && amount) {
+              if (receiverAddress && amount && !isNaN(Number(amount)) && Number(amount) > 0) {
                 setSendState("review");
               }
             }}
             css={css`
               flex: 2;
             `}
-            disabled={!receiverAddress || !amount}
+            disabled={!receiverAddress || !amount || isNaN(Number(amount)) || Number(amount) <= 0}
           >
             Next
           </Button>

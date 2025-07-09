@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { Info } from 'blocks';
 import { DrawerWrapper, ErrorContent, getAppParamValue, LoadingContent, PushWalletAppConnection } from 'common';
 import { WalletProfile } from './WalletProfile';
@@ -18,15 +18,15 @@ const WalletDashboard: FC = () => {
         setActiveState
     } = useWalletDashboard();
 
+    const walletList = useMemo(() => getWalletlist(state.wallet), [state.wallet]);
+
     return (
         <>
             <PushWalletAppConnection selectedWallet={selectedWallet} />
             <WalletProfile selectedWallet={selectedWallet} />
 
             <WalletTabs
-                walletList={getWalletlist(
-                    state.wallet
-                )}
+                walletList={walletList}
                 selectedWallet={selectedWallet}
                 setSelectedWallet={setSelectedWallet}
                 setActiveState={setActiveState}

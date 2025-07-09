@@ -47,7 +47,7 @@ const TokensListItem: FC<TokenListItemProps> = ({ token, handleSelectToken }) =>
           <Text variant="bs-regular" color="pw-int-text-secondary-color">
             {loadingTokenBalance
               ? '0'
-              : Number(truncateToDecimals(Number(tokenBalance), 3)).toLocaleString()
+              : Number(truncateToDecimals(Number(tokenBalance ?? '0'), 3)).toLocaleString()
             } {token.symbol}
           </Text>
         </Box>

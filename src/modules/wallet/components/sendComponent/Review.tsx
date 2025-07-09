@@ -78,12 +78,12 @@ const Review = () => {
             >
               <SendNotification size={48} color="pw-int-icon-brand-color" />
               <Text variant="h2-semibold" color="pw-int-text-primary-color">
-                {amount} {tokenSelected.symbol}
+                {Number(amount) || amount} {tokenSelected.symbol}
               </Text>
             </Box>
-            <Text color="pw-int-text-secondary-color" variant="bs-regular">
+            {/* <Text color="pw-int-text-secondary-color" variant="bs-regular">
               $12.45
-            </Text>
+            </Text> */}
           </Box>
 
           <Box display="flex" flexDirection="column" width="100%">
@@ -120,7 +120,7 @@ const Review = () => {
               </Text>
               <Text variant="bs-regular">{selectedNetwork}</Text>
             </Box>
-            <Box
+            {/* <Box
               display="flex"
               justifyContent="space-between"
               padding="spacing-sm"
@@ -135,7 +135,7 @@ const Review = () => {
                 Network Fee
               </Text>
               <Text variant="bs-regular">0.00002</Text>
-            </Box>
+            </Box> */}
           </Box>
         </Box>
         <Box

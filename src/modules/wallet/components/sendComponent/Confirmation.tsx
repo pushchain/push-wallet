@@ -1,4 +1,4 @@
-import { Box, Button, ExternalLink, Text, TickCircleFilled } from "blocks";
+import { Box, Button, Cross, ExternalLink, Text, TickCircleFilled } from "blocks";
 import React from "react";
 import { css } from "styled-components";
 import { centerMaskWalletAddress, EXPLORER_URL } from "common";
@@ -74,17 +74,20 @@ const Confirmation = () => {
               alignSelf="stretch"
               justifyContent="center"
             >
-              <TickCircleFilled
+              {txhash ? <TickCircleFilled
                 size={48}
                 color="pw-int-success-primary-color"
-              />
+              /> : <Cross
+                size={48}
+                color="pw-int-icon-danger-bold-color"
+              />}
               <Text variant="h2-semibold" color="pw-int-text-primary-color">
-                {amount} {tokenSelected.symbol}
+                {Number(amount) || amount} {tokenSelected.symbol}
               </Text>
             </Box>
-            <Text color="pw-int-text-secondary-color" variant="bs-regular">
+            {/* <Text color="pw-int-text-secondary-color" variant="bs-regular">
               $12.45
-            </Text>
+            </Text> */}
           </Box>
 
           <Box display="flex" flexDirection="column" width="100%">
@@ -101,7 +104,7 @@ const Confirmation = () => {
               <Text color="pw-int-text-tertiary-color" variant="bs-regular">
                 Status
               </Text>
-              <Text variant="bs-regular">Success</Text>
+              <Text variant="bs-regular">{txhash ? 'Success' : 'Failed'}</Text>
             </Box>
             <Box
               display="flex"

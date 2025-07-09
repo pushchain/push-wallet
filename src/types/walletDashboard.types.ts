@@ -1,15 +1,6 @@
 
 export type ActiveStates = 'walletDashboard' | 'send' | 'receive' | 'addTokens'
 export type PushNetworks = 'Push Testnet Donut' | 'Push Testnet Sushi';
-export type TokenType = {
-    id: number;
-    name: string;
-    symbol: string;
-    amount: number;
-    amountInUsd: number;
-    amountChange: string;
-    contractAddress: string;
-}
 
 export type TokenFormat = {
     name: string;

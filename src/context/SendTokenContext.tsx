@@ -14,8 +14,8 @@ interface SendTokenContextType {
   setTokenSelected: (token: TokenFormat | null) => void;
   receiverAddress: string | null;
   setReceiverAddress: (address: string | null) => void;
-  amount: number | null;
-  setAmount: (amount: number | null) => void;
+  amount: string;
+  setAmount: (amount: string) => void;
   sendingTransaction: boolean;
   handleSendTransaction: () => void;
   txhash: string | null;
@@ -39,7 +39,7 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
   const [sendState, setSendState] = useState<SendTokenState>("selectToken");
   const [tokenSelected, setTokenSelected] = useState<TokenFormat | null>(null);
   const [receiverAddress, setReceiverAddress] = useState<string>('');
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<string>('');
 
   const [sendingTransaction, setSendingTransaction] = useState<boolean>(false);
   const [txhash, setTxhash] = useState<string | null>(null);
@@ -57,18 +57,16 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
     selectedWallet?.fullAddress || currentWallet?.address;
 
   const handleSendTransaction = async () => {
-    console.log("parsedWallet", parsedWallet, selectedWallet);
 
     try {
       setSendingTransaction(true);
       setTxError('')
-      const value = parseUnits(amount.toString(), tokenSelected.decimals);
+      const value = parseUnits((amount || '0').toString(), tokenSelected.decimals);
 
       const universalAccount = PushChain.utils.account.fromChainAgnostic(
         parsedWallet
       );
 
-      console.log("universalAccount", universalAccount);
 
       const CHAINS = PushChain.CONSTANTS.CHAIN;
 
@@ -87,33 +85,27 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
         }
       );
 
-      console.log("signerSkeleton", signerSkeleton);
-
       const universalSigner = await PushChain.utils.signer.toUniversal(
         signerSkeleton
       );
-
-      console.log("universalSigner", universalSigner);
 
       const pushChainClient = await PushChain.initialize(universalSigner, {
         network: PUSH_NETWORK.TESTNET_DONUT,
       });
 
-      console.log("pushChainClient", pushChainClient);
 
       const receipt = await pushChainClient.universal.sendTransaction({
         to: receiverAddress as `0x${string}`,
         value: value,
         data: "0x",
       });
-      console.log("Transaction confirmed", receipt);
 
       if (receipt.transactionHash) {
         setSendState("confirmation");
         setTxhash(receipt.transactionHash);
       }
     } catch (error) {
-      console.log("Error in sending transaction", error, error.message);
+      console.error("Error in sending transaction", error);
       setTxError(error.message)
     } finally {
       setSendingTransaction(false);

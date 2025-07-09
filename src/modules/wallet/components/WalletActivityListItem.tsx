@@ -1,10 +1,10 @@
-import { Box, DefaultChainMonotone, EthereumMonotone, ExternalLinkIcon, InternalLink, PushMonotone, Text } from '../../../blocks';
+import { Box, DefaultChainMonotone, ExternalLinkIcon, InternalLink, PushMonotone, Text } from '../../../blocks';
 import { css } from 'styled-components';
-import { convertCaipToObject, formatWalletCategory, getFixedTime } from '../Wallet.utils';
+import { convertCaipToObject, getFixedTime } from '../Wallet.utils';
 import { centerMaskWalletAddress, CHAIN_MONOTONE_LOGO } from '../../../common';
 
 import { FC } from 'react';
-import { formatUnits, parseUnits } from 'viem';
+import { formatUnits } from 'viem';
 
 type WalletActivityListItemProps = {
     transaction: any
@@ -18,7 +18,7 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
 
     function getChainIcon(chainId) {
         if (chainId == null) {
-            return <EthereumMonotone size={20} />
+            return <PushMonotone size={20} />
         }
         if (chainId === 'devnet') {
             return <PushMonotone size={20} />;
