@@ -5,6 +5,7 @@ import { css } from "styled-components";
 import { useSendTokenContext } from "../../../../context/SendTokenContext";
 import WalletHeader from "../WalletHeader";
 import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
+import { fetchGasPriceInGwei } from '../../../../utils/viemClient';
 
 const Review = () => {
   const {
@@ -18,6 +19,30 @@ const Review = () => {
   } = useSendTokenContext();
 
   const { selectedWallet, selectedNetwork } = useWalletDashboard();
+  const [networkFee, setNetworkFee] = React.useState<string | null>(null);
+  const [feeLoading, setFeeLoading] = React.useState<boolean>(true);
+  const [feeError, setFeeError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let mounted = true;
+    setFeeLoading(true);
+    fetchGasPriceInGwei()
+      .then((fee) => {
+        if (mounted) {
+          setNetworkFee(fee);
+          setFeeLoading(false);
+        }
+      })
+      .catch(() => {
+        if (mounted) {
+          setFeeError('Failed to fetch network fee');
+          setFeeLoading(false);
+        }
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <>
@@ -121,7 +146,7 @@ const Review = () => {
               </Text>
               <Text variant="bs-regular">{selectedNetwork}</Text>
             </Box>
-            {/* <Box
+            <Box
               display="flex"
               justifyContent="space-between"
               padding="spacing-sm"
@@ -135,8 +160,10 @@ const Review = () => {
               <Text color="pw-int-text-tertiary-color" variant="bs-regular">
                 Network Fee
               </Text>
-              <Text variant="bs-regular">0.00002</Text>
-            </Box> */}
+              <Text variant="bs-regular">
+                {feeLoading ? 'Loading...' : feeError ? feeError : `${networkFee} Gwei`}
+              </Text>
+            </Box>
           </Box>
         </Box>
         <Box
