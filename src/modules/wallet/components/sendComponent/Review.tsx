@@ -112,7 +112,8 @@ const Review = () => {
               alignItems="center"
               alignSelf="stretch"
               css={css`
-                border-bottom: 1px solid var(--stroke-secondary, #313338);
+                border-bottom: 1px solid
+                  var(--pw-int-border-secondary-color, #313338);
               `}
             >
               <Text color="pw-int-text-tertiary-color" variant="bs-regular">

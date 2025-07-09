@@ -100,9 +100,9 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
         data: "0x",
       });
 
-      if (receipt.transactionHash) {
+      if (receipt.hash) {
         setSendState("confirmation");
-        setTxhash(receipt.transactionHash);
+        setTxhash(receipt.hash);
       }
     } catch (error) {
       console.error("Error in sending transaction", error);

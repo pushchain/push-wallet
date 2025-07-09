@@ -1,7 +1,7 @@
 import { useLocalStorage } from "usehooks-ts";
 
 export const useDarkMode = () => {
-  const [isDarkMode, setMode] = useLocalStorage("pushWalletThemeMode", true);
+  const [isDarkMode, setMode] = useLocalStorage("pushWalletThemeMode", false);
 
   return {
     isDarkMode,

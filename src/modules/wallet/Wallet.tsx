@@ -22,6 +22,7 @@ import { Receive } from "./components/Receive";
 import { Send } from "./components/sendComponent/Send";
 import { WalletDashboardProvider } from "../../context/WalletDashboardContext";
 import { ActiveStates, PushNetworks, WalletListType } from "src/types";
+import { bytesToHex, stringToBytes } from "viem";
 
 export type WalletProps = Record<string, never>;
 
@@ -56,7 +57,7 @@ const Wallet: FC<WalletProps> = () => {
         import.meta.env.VITE_APP_ENV as ENV
       );
 
-      const mnemonicHex = Buffer.from(instance.mnemonic).toString("hex");
+      const mnemonicHex = bytesToHex(stringToBytes(instance.mnemonic)).replace(/^0x/, "");
       const shares = secrets.share(mnemonicHex, 3, 2);
 
       // First create the passkeys for storing shard 3
@@ -88,7 +89,8 @@ const Wallet: FC<WalletProps> = () => {
     try {
       setCreateAccountLoading(true);
       const mnemonicHex = secrets.combine([share1, share2]);
-      const mnemonic = Buffer.from(mnemonicHex, "hex").toString();
+      const bytes = new Uint8Array(mnemonicHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+      const mnemonic = new TextDecoder().decode(bytes);
       const instance = await PushWallet.logInWithMnemonic(
         mnemonic,
         import.meta.env.VITE_APP_ENV as ENV
@@ -257,7 +259,7 @@ const Wallet: FC<WalletProps> = () => {
   const handleResetAndRedirectUser = () => {
     sessionStorage.removeItem("jwt");
     dispatch({ type: "RESET_WALLET" });
-    localStorage.clear();
+    localStorage.removeItem('appConnections');
     const url = persistQuery(APP_ROUTES.AUTH);
     navigate(url);
   };

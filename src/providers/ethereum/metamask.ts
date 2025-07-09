@@ -1,10 +1,20 @@
 import { MetaMaskSDK } from "@metamask/sdk";
 import { ChainType, ITypedData } from "../../types/wallet.types";
 import { BaseWalletProvider } from "../BaseWalletProvider";
-import { hexToBytes, parseTransaction, toHex } from "viem";
-import { BrowserProvider, getAddress } from 'ethers';
+import { hexToBytes, parseTransaction } from "viem";
+import { BrowserProvider } from 'ethers';
 import { Chain } from 'viem';
 import { chains } from "./chains";
+import { toHex } from "viem";
+import { getAddress } from 'ethers';
+
+declare global {
+  interface Window {
+    ethereum?: {
+      isMetaMask: boolean;
+    };
+  }
+}
 
 export class MetamaskProvider extends BaseWalletProvider {
   private sdk: MetaMaskSDK;
@@ -88,7 +98,7 @@ export class MetamaskProvider extends BaseWalletProvider {
   }
 
   switchNetwork = async (chainName: ChainType) => {
-    const network = chains[chainName] as Chain
+    const network = chains[chainName] as Chain;
     const provider = this.getProvider();
 
     const hexNetworkId = toHex(network.id);

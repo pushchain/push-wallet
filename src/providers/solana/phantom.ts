@@ -66,6 +66,7 @@ export class PhantomProvider extends BaseWalletProvider {
     const accounts = await provider.connect();
 
     const chainId = await this.getChainId(ChainType.SOLANA);
+    console.log(chainId);
 
     const caipAddress = this.formatAddress(
       accounts.publicKey.toString(),

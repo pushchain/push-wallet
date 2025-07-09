@@ -55,7 +55,7 @@ const StyledTextInput = styled.div<{
         width: 24px;
         height: 24px;
 
-        color: var(--pw-int-${error ? 'error-primary-color' : 'icon-secondary-color'});
+        color: var(--pw-int-${error ? 'error-primary-color' : 'icon-primary-color'});
       }
       & input {
         color: var(--pw-int-${error ? 'error-primary-color' : 'text-primary-color'});
@@ -104,7 +104,7 @@ const LabelContainer = styled.div`
 `;
 
 const InputText = styled.span<{ color: string; variant: TextVariants }>`
-  color: var(----pw-int-${({ color }) => color});
+  color: var(--pw-int-${({ color }) => color});
   font-family: var(--pw-int-font-family);
   ${({ variant }) =>
     `
@@ -192,7 +192,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               value={value}
             />
           </InputContainer>
-         {trailingIcon}
+          {trailingIcon}
         </StyledTextInput>
         {description && (
           <InputText
@@ -200,8 +200,8 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               success || error
                 ? 'text-primary-color'
                 : disabled
-                ? 'text-disabled-color'
-                : 'text-primary-color'
+                  ? 'text-disabled-color'
+                  : 'text-primary-color'
             }
             variant="c-regular"
           >

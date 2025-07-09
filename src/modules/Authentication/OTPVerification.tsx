@@ -201,11 +201,14 @@ const StyledOTPInput = styled.input`
   border: var(--border-sm) solid var(--pw-int-border-tertiary-color);
   border-radius: 8px;
   background: var(--pw-int-bg-secondary-color);
+  // border: 1.5px solid var(--pw-int-bg-disabled-color);
+  // border-radius: 8px;
+  // background: var(--pw-int-bg-disabled-color);
   color: var(--pw-int-text-primary-color);
   font-family: var(--pw-int-font-family);
   
   &:focus {
-    border-color: var(--pw-int-brand-primary-color, #CF59E2);
+    border-color: var(--pw-int-brand-primary-color);
     outline: none;
   }
   

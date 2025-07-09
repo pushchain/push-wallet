@@ -44,7 +44,7 @@ export type UniversalAccount = {
 
 export type WalletCategoriesType = {
   chain: ChainType;
-  wallet: 'ethereum' | 'solana' | 'walletConnect';
+  wallet: 'ethereum' | 'solana' | 'walletConnect' | 'pushWallet';
   label: string;
   icon: ReactNode;
   isMobile: boolean;

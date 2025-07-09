@@ -88,17 +88,6 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
             </Text>
           )}
         </Box>
-
-        {/* <Box display="flex" gap="spacing-xxxs">
-          <Text color="pw-int-text-secondary-color">+$276.29</Text>
-          <Box
-            padding="spacing-none spacing-xxxs"
-            borderRadius="radius-xs"
-            backgroundColor="pw-int-success-primary-subtle-color"
-          >
-            <Text color="pw-int-text-primary-color">+0.97%</Text>
-          </Box>
-        </Box> */}
       </Box>
       <Box display="flex" flexDirection="row" justifyContent="space-between">
         {buttonConfigs.map(({ icon: Icon, label, onClick }) => (
@@ -115,14 +104,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
             borderRadius="radius-xs"
             border="border-sm solid pw-int-border-primary-color"
             cursor="pointer"
-            css={css`
-              background: linear-gradient(
-                  0deg,
-                  rgba(255, 255, 255, 0.05) 0%,
-                  rgba(255, 255, 255, 0.05) 100%
-                ),
-                var(--surface-tertiary, #313338);
-            `}
+            backgroundColor="pw-int-bg-primary-color"
             onClick={() => onClick(setActiveState)}
           >
             <Icon color="pw-int-icon-brand-color" size={24} />

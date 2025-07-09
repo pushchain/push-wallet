@@ -23,9 +23,6 @@ const WalletSkeletonScreen: FC<WalletSkeletonScreenProps> = ({ content }) => {
           gap="spacing-xs"
           margin="spacing-sm spacing-none spacing-none spacing-none"
         >
-          <Box width="100%" display="flex" alignItems="start">
-            <PushLogo height={48} width={48} />
-          </Box>
           <Box
             alignItems="center"
             flexDirection="column"

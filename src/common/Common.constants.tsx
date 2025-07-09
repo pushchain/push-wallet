@@ -51,8 +51,8 @@ import { ChainType, WalletCategoriesType } from "../types/wallet.types";
 export const walletCategories: WalletCategoriesType[] = [
   {
     chain: ChainType.PUSH_WALLET,
-    wallet: "ethereum",
-    label: "Connect Push Testnet",
+    wallet: "pushWallet",
+    label: "Connect Push Wallet",
     icon: <PushAlpha width={24} height={24} />,
     isMobile: false,
   },
@@ -77,27 +77,27 @@ export const walletCategories: WalletCategoriesType[] = [
     icon: <Solana width={24} height={24} />,
     isMobile: false,
   },
-  {
-    chain: ChainType.ARBITRUM,
-    wallet: "ethereum",
-    label: "Connect Arbitrum Wallet",
-    icon: <Arbitrum width={24} height={24} />,
-    isMobile: false,
-  },
-  {
-    chain: ChainType.BINANCE,
-    wallet: "ethereum",
-    label: "Connect Binance Wallet",
-    icon: <BNB width={24} height={24} />,
-    isMobile: false,
-  },
-  {
-    chain: ChainType.AVALANCHE,
-    wallet: "ethereum",
-    label: "Connect Avalanche Wallet",
-    icon: <Avalanche width={24} height={24} />,
-    isMobile: false,
-  },
+  // {
+  //   chain: ChainType.ARBITRUM,
+  //   wallet: "ethereum",
+  //   label: "Connect Arbitrum Wallet",
+  //   icon: <Arbitrum width={24} height={24} />,
+  //   isMobile: false,
+  // },
+  // {
+  //   chain: ChainType.BINANCE,
+  //   wallet: "ethereum",
+  //   label: "Connect Binance Wallet",
+  //   icon: <BNB width={24} height={24} />,
+  //   isMobile: false,
+  // },
+  // {
+  //   chain: ChainType.AVALANCHE,
+  //   wallet: "ethereum",
+  //   label: "Connect Avalanche Wallet",
+  //   icon: <Avalanche width={24} height={24} />,
+  //   isMobile: false,
+  // },
 ];
 
 export const CHAIN_MONOTONE_LOGO: {

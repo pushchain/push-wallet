@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
+    "@coral-xyz/anchor": "^0.31.1",
     "@dynamic-labs/algorand": "^3.3.0",
     "@dynamic-labs/bitcoin": "^3.3.0",
     "@dynamic-labs/cosmos": "^3.3.0",
@@ -33,7 +34,7 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@metamask/sdk": "^0.32.0",
     "@noble/hashes": "^1.0.0",
-    "@pushchain/core": "0.1.23",
+    "@pushchain/core": "^0.1.32",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^2.1.1",
     "@radix-ui/react-switch": "^1.1.0",

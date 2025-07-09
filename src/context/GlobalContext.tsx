@@ -99,6 +99,7 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
       return {
         ...state,
         ...initialState,
+        walletConfig: state.walletConfig,
       };
     case "SET_THEME":
       return { ...state, theme: action.payload };

@@ -14,7 +14,7 @@ const AddTokens: FC = () => {
 
     const [loadingTokenDetails, setLoadingTokens] = useState<boolean>(false);
 
-    const { addToken, tokens, fetchTokenDetails } = useTokenManager();
+    const { addToken, fetchTokenDetails } = useTokenManager();
 
     const handleSearch = async () => {
         if (!tokenAddress) return;
