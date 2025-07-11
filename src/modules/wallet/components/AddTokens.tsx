@@ -78,7 +78,7 @@ const AddTokens: FC = () => {
                         display="flex"
                         flexDirection="column"
                         gap="spacing-xxs"
-                        width="-webkit-fill-available"
+                        width="100%"
                     >
                         <Box
                             borderRadius="radius-xs"

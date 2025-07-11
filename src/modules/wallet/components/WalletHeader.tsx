@@ -73,7 +73,7 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
             display="flex"
             justifyContent={activeState === "walletDashboard" ? "space-between" : "flex-start"}
             alignItems="center"
-            width="-webkit-fill-available"
+            width="100%"
             gap="spacing-xxs"
         >
             {handleBackButton && (

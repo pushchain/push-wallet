@@ -61,7 +61,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
       display="flex"
       flexDirection="column"
       gap="spacing-md"
-      width="-webkit-fill-available"
+      width="100%"
     >
       <WalletHeader selectedWallet={selectedWallet} />
 
