@@ -14,7 +14,7 @@ export const StyledFillTabList = styled(TabList)`
   display: flex;
   width: fit-content;
   @media${deviceMediaQ.mobileL} {
-    width: -webkit-fill-available;
+    width: 100%;
   }
   padding: var(--spacing-xxxs);
   background-color: var(--pw-int-bg-secondary-color);

@@ -98,12 +98,12 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
       display="flex"
       flexDirection="column"
       gap="spacing-sm"
-      width="-webkit-fill-available"
+      width="100%"
     >
       <Box
         display="flex"
         justifyContent="end"
-        width="-webkit-fill-available"
+        width="100%"
       >
         <Box display="flex" gap="spacing-xxs">
           {/* <HoverableSVG icon={<Lock size={24} color="pw-int-icon-primary-color" />} /> */}

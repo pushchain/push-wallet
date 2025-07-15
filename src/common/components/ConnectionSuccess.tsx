@@ -9,7 +9,7 @@ const ConnectionSuccess = ({ onClose }) => {
       alignItems="center"
       padding="spacing-xs"
       gap="spacing-sm"
-      width="-webkit-fill-available"
+      width="100%"
       borderRadius="radius-md"
       backgroundColor="pw-int-bg-primary-color"
       css={css`
