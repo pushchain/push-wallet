@@ -72,9 +72,8 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
         backgroundColor="pw-int-bg-secondary-color"
         borderRadius="radius-md"
         css={css`
-          overflow: auto; /* ✅ enable scroll here */
-          max-height: 80vh; /* ✅ or whatever height you want */
-          padding: 24px;
+          overflow: auto;
+          max-height: 100vh;
           width: 100%;
         `}
       >
