@@ -12,17 +12,16 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
   const { isDarkMode } = useDarkMode();
   return (
     <Box
-      alignItems="center"
-      display="flex"
-      flexDirection="column"
-      justifyContent="center"
       position="relative"
       width={{ initial: "auto", ml: "90%" }}
       css={css`
-        position: relative;
         padding: var(--pw-int-modal-border);
         overflow: hidden;
         border-radius: var(--pw-int-modal-border-radius);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
 
         &::before {
           content: "";
@@ -71,12 +70,13 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
     >
       <Box
         backgroundColor="pw-int-bg-secondary-color"
-        alignItems="center"
-        display="flex"
-        flexDirection="column"
         borderRadius="radius-md"
-        justifyContent="center"
-        width={{ initial: "auto", ml: "100%" }}
+        css={css`
+          overflow: auto; /* ✅ enable scroll here */
+          max-height: 80vh; /* ✅ or whatever height you want */
+          padding: 24px;
+          width: 100%;
+        `}
       >
         {children}
       </Box>
