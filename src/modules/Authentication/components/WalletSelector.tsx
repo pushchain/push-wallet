@@ -4,7 +4,7 @@ import {
   ChainType,
   IWalletProvider,
   WalletCategoriesType,
-  WalletInfo,
+  ExternalWalletType,
 } from "../../../types/wallet.types";
 import { css } from "styled-components";
 import { useExternalWallet } from "../../../context/ExternalWalletContext";
@@ -53,8 +53,8 @@ const WalletSelector: FC<WalletButtonProps> = ({
 
         console.log(result);
 
-        const payload: WalletInfo = {
-          address: result,
+        const payload: ExternalWalletType = {
+          originAddress: result,
           chainType: chainType,
           providerName: provider.name,
         };

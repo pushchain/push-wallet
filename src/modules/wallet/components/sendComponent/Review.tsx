@@ -9,6 +9,7 @@ import { fetchGasPriceInGwei } from '../../../../utils/viemClient';
 
 const Review = () => {
   const {
+    walletAddress,
     tokenSelected,
     receiverAddress,
     amount,
@@ -18,7 +19,7 @@ const Review = () => {
     txError,
   } = useSendTokenContext();
 
-  const { selectedWallet, selectedNetwork } = useWalletDashboard();
+  const { selectedNetwork } = useWalletDashboard();
   const [networkFee, setNetworkFee] = React.useState<string | null>(null);
   const [feeLoading, setFeeLoading] = React.useState<boolean>(true);
   const [feeError, setFeeError] = React.useState<string | null>(null);
@@ -47,7 +48,7 @@ const Review = () => {
   return (
     <>
       <WalletHeader
-        selectedWallet={selectedWallet}
+        walletAddress={walletAddress}
         handleBackButton={() => setSendState("selectRecipient")}
       />
 

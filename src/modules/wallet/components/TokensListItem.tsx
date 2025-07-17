@@ -2,10 +2,8 @@ import React, { FC } from "react";
 import { Box, Text } from "blocks";
 import { TokenFormat } from "../../../types";
 import { TokenLogoComponent, truncateToDecimals } from "common";
-import { useWalletDashboard } from "../../../context/WalletDashboardContext";
-import { useGlobalState } from "../../../context/GlobalContext";
-import { convertCaipToObject } from "../Wallet.utils";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
+import { usePushChain } from "../../../hooks/usePushChain";
 
 type TokenListItemProps = {
   token: TokenFormat;
@@ -13,18 +11,13 @@ type TokenListItemProps = {
 };
 
 const TokensListItem: FC<TokenListItemProps> = ({ token, handleSelectToken }) => {
-  const { state } = useGlobalState();
-  const { selectedWallet } = useWalletDashboard();
 
-  const parsedWallet =
-    selectedWallet?.address || state?.externalWallet?.address;
-
-  const { result } = convertCaipToObject(parsedWallet);
+  const { executorAddress } = usePushChain();
 
   const {
     data: tokenBalance,
     isLoading: loadingTokenBalance
-  } = useTokenBalance(token.address, result.address, token.decimals);
+  } = useTokenBalance(token.address, executorAddress, token.decimals);
 
   return (
     <Box

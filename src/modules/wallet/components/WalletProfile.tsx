@@ -8,16 +8,12 @@ import {
   Text,
 } from "../../../blocks";
 import WalletHeader from "./WalletHeader";
-import { css } from "styled-components";
-import { WalletListType } from "../../../types";
 import { useWalletDashboard } from "../../../context/WalletDashboardContext";
-import { useGlobalState } from "../../../context/GlobalContext";
-import { convertCaipToObject } from "../Wallet.utils";
 import { useWalletOperations } from "../../../hooks/useWalletOperations";
 import { FAUCET_URL } from "common";
 
 export type WalletProfileProps = {
-  selectedWallet: WalletListType;
+  walletAddress: string;
 };
 
 const buttonConfigs = [
@@ -40,21 +36,14 @@ const buttonConfigs = [
   },
 ];
 
-const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
+const WalletProfile: FC<WalletProfileProps> = ({ walletAddress }) => {
   const { setActiveState } = useWalletDashboard();
-  const { state } = useGlobalState();
 
-  const parsedWallet =
-    selectedWallet?.address || state?.externalWallet?.address;
-
-  const { result } = convertCaipToObject(parsedWallet);
 
   const {
     data: balance,
     isLoading: isBalanceLoading,
-  } = useWalletOperations(result.address);
-
-  console.log("balance", balance);
+  } = useWalletOperations(walletAddress);
 
   return (
     <Box
@@ -63,7 +52,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ selectedWallet }) => {
       gap="spacing-md"
       width="100%"
     >
-      <WalletHeader selectedWallet={selectedWallet} />
+      <WalletHeader walletAddress={walletAddress} />
 
       <Box
         position="relative"

@@ -2,24 +2,19 @@ import { Box, Button, Copy, PushAlpha, Text, TickCircleFilled } from 'blocks';
 import React, { useState, useEffect } from 'react';
 import WalletHeader from './WalletHeader';
 import styled, { css } from 'styled-components';
-import { useGlobalState } from '../../../context/GlobalContext';
-import { convertCaipToObject } from '../Wallet.utils';
 import { useWalletDashboard } from '../../../context/WalletDashboardContext';
 import { QRCodeSVG } from 'qrcode.react';
+import { usePushChain } from '../../../hooks/usePushChain';
 
 const Receive = () => {
-    const { state } = useGlobalState();
-    const { selectedWallet, setActiveState } = useWalletDashboard();
+    const { setActiveState } = useWalletDashboard();
     const [isCopied, setIsCopied] = useState(false);
 
-    const parsedWallet =
-        selectedWallet?.address || state?.externalWallet?.address;
-
-    const { result } = convertCaipToObject(parsedWallet);
+    const { executorAddress } = usePushChain();
 
     const handleCopyAddress = () => {
-        if (result?.address) {
-            navigator.clipboard.writeText(result.address);
+        if (executorAddress) {
+            navigator.clipboard.writeText(executorAddress);
             setIsCopied(true);
         }
     };
@@ -36,6 +31,8 @@ const Receive = () => {
         };
     }, [isCopied]);
 
+
+
     return (
         <Box
             flexDirection="column"
@@ -44,7 +41,7 @@ const Receive = () => {
             gap="spacing-md"
             position="relative"
         >
-            <WalletHeader selectedWallet={selectedWallet} handleBackButton={() => setActiveState('walletDashboard')} />
+            <WalletHeader walletAddress={executorAddress} handleBackButton={() => setActiveState('walletDashboard')} />
 
             <Box
                 display='flex'
@@ -63,7 +60,7 @@ const Receive = () => {
                     position='relative'
                 >
                     <QRCodeSVG
-                        value={result?.address}
+                        value={executorAddress}
                         size={164}
                     />
 
@@ -89,7 +86,7 @@ const Receive = () => {
                         backgroundColor='pw-int-bg-primary-color'
                         border='border-sm solid pw-int-border-tertiary-color'
                     >
-                        <Text variant='bs-semibold' wrap>{result?.address}</Text>
+                        <Text variant='bs-semibold' wrap>{executorAddress}</Text>
                     </Box>
 
                     <Box

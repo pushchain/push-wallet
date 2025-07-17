@@ -1,34 +1,9 @@
 import { PushWallet } from "src/services/pushWallet/pushWallet";
-import { ChainType } from "../../types/wallet.types";
+import { ChainType, WalletType } from "../../types/wallet.types";
 import { PushChain } from "@pushchain/core";
 
 export const getWalletlist = (wallet: PushWallet) => {
   const walletList = [];
-  // if (attachedAccounts?.length) {
-  //   attachedAccounts?.forEach((account, index) => {
-  //     let walletObj = {};
-  //     if (account.includes("push")) {
-  //       walletObj = {
-  //         name: "Push Account",
-  //         address: wallet?.signerAccount,
-  //         fullAddress: wallet?.signerAccount,
-  //         isSelected: false,
-  //         type: "push",
-  //       };
-  //     } else {
-  //       walletObj = {
-  //         name: `Account ${index + 1}`,
-  //         address: account.split(':')[2],
-  //         fullAddress: account,
-  //         isSelected: false,
-  //         //TODO:change the type as per backend later
-  //         type: "metamask",
-  //       };
-  //     }
-  //     walletList.push(walletObj);
-  //   });
-  // }
-
   if (wallet) {
     const universalSigner = wallet?.universalSigner
     const account = PushChain.utils.account.toChainAgnostic(universalSigner.account.address, { chain: universalSigner.account.chain });
@@ -117,23 +92,8 @@ export const getFixedTime = (timestamp: number | string): string => {
 export const convertCaipToObject = (
   addressinCAIP: string
 ): {
-  result: {
-    chainId: string | null;
-    chain: string | null;
-    address: string | null;
-  };
+  result: WalletType
 } => {
-  // Check if the input is a valid non-empty string
-  if (!addressinCAIP || typeof addressinCAIP !== 'string') {
-    return {
-      result: {
-        chain: null,
-        chainId: null,
-        address: null,
-      },
-    };
-  }
-
   const addressComponent = addressinCAIP.split(':');
 
   // Handle cases where there are exactly three components (chain, chainId, address)

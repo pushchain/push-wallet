@@ -1,13 +1,14 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 import {
   ChainType,
+  ExternalWalletType,
   ITypedData,
   IWalletProvider,
-  WalletInfo,
 } from "../types/wallet.types";
+import { PushChain } from "@pushchain/core";
 
 type ExternalWalletContextType = {
-  currentWallet: WalletInfo | null;
+  externalWallet: ExternalWalletType | null;
   connecting: boolean;
   connect: (
     provider: IWalletProvider,
@@ -26,7 +27,7 @@ export const ExternalWalletContextProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [currentWallet, setCurrentWallet] = useState<WalletInfo | null>(null);
+  const [externalWallet, setExternalWallet] = useState<ExternalWalletType | null>(null);
   const [currentProvider, setCurrentProvider] =
     useState<IWalletProvider | null>(null);
   const [connecting, setConnecting] = useState(false);
@@ -36,12 +37,12 @@ export const ExternalWalletContextProvider = ({
       setConnecting(true);
       const { caipAddress } = await provider.connect(chainType);
 
-      const walletDetails: WalletInfo = {
-        address: caipAddress,
+      const walletDetails: ExternalWalletType = {
+        originAddress: caipAddress,
         chainType,
         providerName: provider.name,
       };
-      setCurrentWallet(walletDetails);
+      setExternalWallet(walletDetails);
       setCurrentProvider(provider);
       return caipAddress;
     } catch (error) {
@@ -55,7 +56,7 @@ export const ExternalWalletContextProvider = ({
     if (currentProvider) {
       try {
         await currentProvider.disconnect();
-        setCurrentWallet(null);
+        setExternalWallet(null);
         setCurrentProvider(null);
       } catch (error) {
         console.error("Failed to disconnect:", error);
@@ -113,7 +114,7 @@ export const ExternalWalletContextProvider = ({
   return (
     <ExternalWalletContext.Provider
       value={{
-        currentWallet,
+        externalWallet,
         connecting,
         connect,
         disconnect,

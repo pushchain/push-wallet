@@ -14,9 +14,9 @@ type SelectTokenProps = {
 };
 const SelectToken: FC<SelectTokenProps> = ({ handleTokenSelection }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const { setActiveState, selectedWallet } = useWalletDashboard();
+  const { setActiveState } = useWalletDashboard();
 
-  const { tokenSelected, setTokenSelected } = useSendTokenContext();
+  const { walletAddress, tokenSelected, setTokenSelected } = useSendTokenContext();
 
   const { tokens } = useTokenManager();
 
@@ -42,7 +42,7 @@ const SelectToken: FC<SelectTokenProps> = ({ handleTokenSelection }) => {
   return (
     <>
       <WalletHeader
-        selectedWallet={selectedWallet}
+        walletAddress={walletAddress}
         handleBackButton={() => setActiveState("walletDashboard")}
       />
 

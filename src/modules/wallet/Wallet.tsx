@@ -29,11 +29,10 @@ export type WalletProps = Record<string, never>;
 const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
   const [createAccountLoading, setCreateAccountLoading] = useState(true);
-  const [error, setError] = useState("");
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const externalOrigin = params.get("app");
-  // const { primaryWallet } = useDynamicContext();
+
   const [showConnectionSuccess, setConnectionSuccess] =
     useState<boolean>(false);
 
@@ -104,7 +103,6 @@ const Wallet: FC<WalletProps> = () => {
 
     } catch (err) {
       console.error("Error reconstructing wallet:", err);
-      setError("Failed to reconstruct wallet. Please try again.");
       throw err;
     } finally {
       setCreateAccountLoading(false);
@@ -194,7 +192,6 @@ const Wallet: FC<WalletProps> = () => {
       }
     } catch (err) {
       console.error("Error fetching user profile:", err);
-      setError("Failed to fetch user profile. Please try again.");
       handleResetAndRedirectUser();
       throw err;
     } finally {
@@ -210,31 +207,8 @@ const Wallet: FC<WalletProps> = () => {
 
           await fetchUserProfile(state.jwt);
         }
-        // else if (!primaryWallet) {
-        //   navigate(APP_ROUTES.AUTH);
-        // }
-
-        /* We don't need to fetch push user as of now when user continues with wallet
-         This function fetches the already created push wallet */
-
-        // let pushWallet;
-        // const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
-
-        // pushWallet = await PushWallet.loginWithWallet(
-        //   signer,
-        //   config.APP_ENV as ENV
-        // );
-
-        // if (pushWallet)
-        //   dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
-        // else {
-        //   console.log(
-        //     "Could not find user in wallet.tsx file after push wallet"
-        //   );
-        // }
       } catch (err) {
         console.error("Error initializing profile:", err);
-        setError("Failed to initialize profile");
         handleResetAndRedirectUser();
       } finally {
         setCreateAccountLoading(false);
@@ -283,9 +257,6 @@ const Wallet: FC<WalletProps> = () => {
   if (createAccountLoading)
     return (
       <WalletSkeletonScreen content={<PushWalletLoadingContent />} />
-      // <Button onClick={async () => {
-      //   await fetchUserProfile(state.jwt);
-      // }}>Create passkey</Button>
     );
 
   if (showReconstructionErrorModal)
@@ -338,7 +309,6 @@ const Wallet: FC<WalletProps> = () => {
             {activeState === 'receive' && <Receive />}
             {activeState === 'send' && <Send />}
           </WalletDashboardProvider>
-
         </Box>
       </BoxLayout>
     </ContentLayout>

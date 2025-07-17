@@ -9,6 +9,7 @@ import { ActiveStates, WalletListType } from "../../../types";
 
 export type WalletTabsProps = {
   walletList: WalletListType[];
+  walletAddress: string;
   selectedWallet: WalletListType;
   setSelectedWallet: React.Dispatch<React.SetStateAction<WalletListType>>;
   setActiveState: (activeStates: ActiveStates) => void;
@@ -16,6 +17,7 @@ export type WalletTabsProps = {
 
 const WalletTabs: FC<WalletTabsProps> = ({
   walletList,
+  walletAddress,
   selectedWallet,
   setSelectedWallet,
   setActiveState
@@ -40,7 +42,7 @@ const WalletTabs: FC<WalletTabsProps> = ({
             children: (
               <WalletActivityList
                 address={
-                  selectedWallet?.fullAddress || state?.externalWallet?.address
+                  walletAddress
                 }
               />
             ),

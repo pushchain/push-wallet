@@ -3,7 +3,6 @@ import { FC, useEffect, useRef, useState } from "react";
 import { Box, Text, Spinner } from "../../../blocks";
 import { WalletActivityListItem } from "./WalletActivityListItem";
 import { useGetWalletActivities } from "../../../hooks/useGetWalletActivities";
-import { convertCaipToObject } from "../Wallet.utils";
 
 export type WalletActivityListProps = {
   address: string;
@@ -15,9 +14,7 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const { result } = convertCaipToObject(address);
-
-  const { data: activitiesData, isLoading: loadingActivities, refetch: refetchActivities } = useGetWalletActivities({ address: result.address });
+  const { data: activitiesData, isLoading: loadingActivities, refetch: refetchActivities } = useGetWalletActivities({ address: address });
 
   const handleScroll = () => {
     if (!containerRef.current || loadingActivities || !hasMore) return;
@@ -53,12 +50,11 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
       customScrollbar
     >
       {!loadingActivities && activitiesData.map((transaction, index) => {
-        const { result } = convertCaipToObject(address);
         return (
           <WalletActivityListItem
             key={`${transaction.hash}-${index}`}
             transaction={transaction}
-            address={result.address}
+            address={address}
           />
         )
       })}

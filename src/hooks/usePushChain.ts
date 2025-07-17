@@ -1,49 +1,55 @@
-/**
- * returns:
- * pushChain instance
- * universalAccount
- */
-
-// hooks/usePushChainClient.ts (use uid?:string in the future as prop)
-
-import { usePushWalletContext } from './usePushWallet';
 import { useEffect, useState } from 'react';
 import { PushChain } from '@pushchain/core';
+import { useExternalWallet } from '../context/ExternalWalletContext';
+import { useGlobalState } from '../context/GlobalContext';
+import { PUSH_NETWORK } from '@pushchain/core/src/lib/constants/enums';
+import { getWalletlist } from '../modules/wallet/Wallet.utils';
 
-export const usePushChainClient = (uid?: string) => {
-    const {
-        universalAccount,
-        handleSignMessage,
-        handleSignAndSendTransaction,
-        handleSignTypedData,
-        config,
-    } = usePushWalletContext(uid);
+export const usePushChain = () => {
+    const { state } = useGlobalState();
+
     const [pushChain, setPushChain] = useState<PushChain | null>(null);
     const [error, setError] = useState<Error | null>(null);
+    const [executorAddress, setExecutorAddress] = useState(null);
+
+    // getting push wallet (if created by social login)
+    const pushWallet = getWalletlist(state.wallet)[0];
+
+    const parsedWallet = pushWallet?.fullAddress || state?.externalWallet?.originAddress;
+
+    const {
+        signMessageRequest,
+        signTransactionRequest,
+        signTypedDataRequest,
+    } = useExternalWallet();
 
     // initialise Push Chain instance here and export that
     useEffect(() => {
         const initializePushChain = async () => {
-            if (!universalAccount) {
+            if (!parsedWallet) {
                 setPushChain(null);
                 return;
             }
 
-            const CHAINS = PushChain.CONSTANTS.CHAIN;
-
-            const isSolana = [
-                CHAINS.SOLANA_DEVNET,
-                CHAINS.SOLANA_MAINNET,
-                CHAINS.SOLANA_TESTNET,
-            ].includes(universalAccount.chain);
-
             try {
+                const universalAccount = PushChain.utils.account.fromChainAgnostic(
+                    parsedWallet
+                );
+
+                const CHAINS = PushChain.CONSTANTS.CHAIN;
+
+                const isSolana = [
+                    CHAINS.SOLANA_DEVNET,
+                    CHAINS.SOLANA_MAINNET,
+                    CHAINS.SOLANA_TESTNET,
+                ].includes(universalAccount.chain);
+
                 const signerSkeleton = PushChain.utils.signer.construct(
                     universalAccount,
                     {
-                        signMessage: handleSignMessage,
-                        signAndSendTransaction: handleSignAndSendTransaction,
-                        signTypedData: isSolana ? undefined : handleSignTypedData,
+                        signMessage: state.wallet ? state.wallet.signMessage : signMessageRequest,
+                        signAndSendTransaction: state.wallet ? state.wallet.signAndSendTransaction : signTransactionRequest,
+                        signTypedData: isSolana ? undefined : state.wallet ? state.wallet.signTypedData : signTypedDataRequest,
                     }
                 );
 
@@ -51,15 +57,18 @@ export const usePushChainClient = (uid?: string) => {
                     signerSkeleton
                 );
 
+
                 const pushChainClient = await PushChain.initialize(universalSigner, {
-                    network: config.network,
-                    rpcUrls: config.chain?.rpcUrls,
-                    blockExplorers: config.chain?.blockExplorers,
-                    printTraces: config.chain?.printTraces,
+                    network: PUSH_NETWORK.TESTNET_DONUT,
+                    progressHook: async (progress: any) => {
+                        console.log("Progress hook", progress);
+                    },
                 });
 
-                setPushChain(pushChainClient);
-                setError(null);
+                const executorAddress = pushChainClient.universal.account;
+                setExecutorAddress(executorAddress);
+                setPushChain(pushChainClient)
+
             } catch (err) {
                 console.log('Error occured when initialising Push chain', err);
                 setError(
@@ -72,9 +81,10 @@ export const usePushChainClient = (uid?: string) => {
         };
 
         initializePushChain();
-    }, [universalAccount, config]);
+    }, [parsedWallet]);
 
     return {
+        executorAddress: executorAddress,
         pushChainClient: pushChain,
         error,
         isLoading: !pushChain && !error,

@@ -1,12 +1,13 @@
 import React, { FC, useMemo } from 'react';
 import { Info } from 'blocks';
-import { DrawerWrapper, ErrorContent, getAppParamValue, LoadingContent, PushWalletAppConnection } from 'common';
+import { DrawerWrapper, ErrorContent, getAppParamValue, LoadingContent, PushWalletAppConnection, PushWalletLoadingContent, WalletSkeletonScreen } from 'common';
 import { WalletProfile } from './WalletProfile';
 import { WalletTabs } from './WalletTabs';
 import { getWalletlist } from '../Wallet.utils';
 import { ConnectionSuccess } from '../../../common/components/ConnectionSuccess';
 import { useGlobalState } from '../../../context/GlobalContext';
 import { useWalletDashboard } from '../../../context/WalletDashboardContext';
+import { usePushChain } from '../../../hooks/usePushChain';
 
 const WalletDashboard: FC = () => {
     const { state, dispatch } = useGlobalState();
@@ -18,15 +19,23 @@ const WalletDashboard: FC = () => {
         setActiveState
     } = useWalletDashboard();
 
+    const { executorAddress, isLoading } = usePushChain();
+
     const walletList = useMemo(() => getWalletlist(state.wallet), [state.wallet]);
+
+    if (isLoading)
+        return (
+            <WalletSkeletonScreen content={<PushWalletLoadingContent />} />
+        );
 
     return (
         <>
             <PushWalletAppConnection selectedWallet={selectedWallet} />
-            <WalletProfile selectedWallet={selectedWallet} />
+            <WalletProfile walletAddress={executorAddress} />
 
             <WalletTabs
                 walletList={walletList}
+                walletAddress={executorAddress}
                 selectedWallet={selectedWallet}
                 setSelectedWallet={setSelectedWallet}
                 setActiveState={setActiveState}

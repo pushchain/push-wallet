@@ -1,17 +1,14 @@
 import {
     Back,
     Box,
-    CaretDown,
     Copy,
     Dropdown,
     Logout,
     Menu,
     MenuItem,
-    PushAlpha,
     Settings,
     Text,
     TickCircleFilled,
-    Tooltip,
 } from "blocks";
 import {
     centerMaskWalletAddress,
@@ -27,22 +24,16 @@ import { useExternalWallet } from "../../../context/ExternalWalletContext";
 import { css } from "styled-components";
 import BlockiesSvg from "blockies-react-svg";
 import { FC, useState } from "react";
-import { convertCaipToObject } from "../Wallet.utils";
 import { useWalletDashboard } from "../../../context/WalletDashboardContext";
-import { WalletListType } from "../../../types";
 
 type WalletHeaderProps = {
-    selectedWallet: WalletListType;
+    walletAddress: string;
     handleBackButton?: () => void;
 };
 
-const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton }) => {
-    const { state, dispatch } = useGlobalState();
-    const { activeState, setSelectedNetwork } = useWalletDashboard();
-
-    const parsedWallet =
-        selectedWallet?.address || state?.externalWallet?.address;
-    const walletName = selectedWallet?.name ?? "External Wallet";
+const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }) => {
+    const { dispatch } = useGlobalState();
+    const { activeState } = useWalletDashboard();
 
     const { disconnect } = useExternalWallet();
     const navigate = useNavigate();
@@ -66,7 +57,6 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
         }
     };
 
-    const { result } = convertCaipToObject(parsedWallet);
 
     return (
         <Box
@@ -84,45 +74,6 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
                         onClick={handleBackButton}
                     />
                 </Box>
-            )}
-
-            {activeState === "walletDashboard" && (
-                <Dropdown
-                    css={css`
-                        z-index: 3;
-                    `}
-                    overlay={
-                        <Menu>
-                            <MenuItem
-                                label="Push Testnet Donut"
-                                icon={<PushAlpha width={24} height={24} />}
-                                onClick={() => {
-                                    setSelectedNetwork("Push Testnet Donut");
-                                }}
-                            />
-                            {/* <MenuItem
-                                label="Push Testnet Sushi"
-                                icon={<PushAlpha width={24} height={24} />}
-                                onClick={() => {
-                                    setSelectedNetwork("Push Testnet Sushi");
-                                }}
-                            /> */}
-                        </Menu>
-                    }
-                >
-                    <Box
-                        cursor="pointer"
-                        display="flex"
-                        alignItems="center"
-                        gap="spacing-xxxs"
-                        padding="spacing-xxxs"
-                        borderRadius="radius-sm"
-                        backgroundColor="pw-int-bg-tertiary-color"
-                    >
-                        <PushAlpha width={24} height={24} />
-                        <CaretDown width={24} height={24} color="pw-int-icon-primary-color" />
-                    </Box>
-                </Dropdown>
             )}
 
             {activeState === 'receive' && (
@@ -145,12 +96,12 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
                         overflow="hidden"
                         alignSelf="center"
                     >
-                        <BlockiesSvg address={parsedWallet} />
+                        <BlockiesSvg address={walletAddress} />
                     </Box>
                 </Box>
 
                 <Box display="flex" flexDirection="column" alignItems="flex-start">
-                    <Text variant="bes-semibold">{walletName}</Text>
+                    <Text variant="bes-semibold">Push Chain Wallet</Text>
                     <Box
                         display="flex"
                         gap="spacing-xxxs"
@@ -158,26 +109,21 @@ const WalletHeader: FC<WalletHeaderProps> = ({ selectedWallet, handleBackButton 
                         alignItems="center"
                     >
                         <Text variant="os-regular" color="pw-int-text-tertiary-color">
-                            {centerMaskWalletAddress(result.address, 5)}
+                            {centerMaskWalletAddress(walletAddress, 5)}
                         </Text>
-
-                        <Tooltip title={copied ? "Copied" : "Copy"} trigger="click">
-                            <Box cursor="pointer">
-                                {copied ? (
-                                    <TickCircleFilled
-                                        autoSize
-                                        size={14}
-                                        color="pw-int-icon-success-bold-color"
-                                    />
-                                ) : (
-                                    <Copy
-                                        color="pw-int-icon-tertiary-color"
-                                        size={14}
-                                        onClick={() => handleCopy(result.address, setCopied)}
-                                    />
-                                )}
-                            </Box>
-                        </Tooltip>
+                        {copied ? (
+                            <TickCircleFilled
+                                autoSize
+                                size={14}
+                                color="pw-int-icon-success-bold-color"
+                            />
+                        ) : (
+                            <Copy
+                                color="pw-int-icon-tertiary-color"
+                                size={14}
+                                onClick={() => handleCopy(walletAddress, setCopied)}
+                            />
+                        )}
                     </Box>
                 </Box>
             </Box>}

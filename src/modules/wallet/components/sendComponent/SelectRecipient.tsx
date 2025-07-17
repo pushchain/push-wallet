@@ -5,12 +5,11 @@ import { css } from "styled-components";
 import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
 import { useSendTokenContext } from "../../../../context/SendTokenContext";
 import WalletHeader from "../WalletHeader";
-import { useGlobalState } from "../../../../context/GlobalContext";
-import { convertCaipToObject } from "../../Wallet.utils";
 import { useTokenBalance } from "../../../../hooks/useTokenBalance";
 
 const SelectRecipient = () => {
   const {
+    walletAddress,
     tokenSelected,
     receiverAddress,
     setReceiverAddress,
@@ -20,24 +19,17 @@ const SelectRecipient = () => {
     setTokenSelected,
   } = useSendTokenContext();
 
-  const { setActiveState, selectedWallet } = useWalletDashboard();
-
-  const { state } = useGlobalState();
-
-  const parsedWallet =
-    selectedWallet?.address || state?.externalWallet?.address;
-
-  const { result } = convertCaipToObject(parsedWallet);
+  const { setActiveState } = useWalletDashboard();
 
   const {
     data: tokenBalance,
     isLoading: loadingTokenBalance
-  } = useTokenBalance(tokenSelected.address, result.address, tokenSelected.decimals);
+  } = useTokenBalance(tokenSelected.address, walletAddress, tokenSelected.decimals);
 
   return (
     <>
       <WalletHeader
-        selectedWallet={selectedWallet}
+        walletAddress={walletAddress}
         handleBackButton={() => {
           setTokenSelected(null);
           setSendState("selectToken");

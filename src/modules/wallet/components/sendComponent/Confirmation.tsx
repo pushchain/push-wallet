@@ -7,9 +7,9 @@ import { useSendTokenContext } from "../../../../context/SendTokenContext";
 import WalletHeader from "../WalletHeader";
 
 const Confirmation = () => {
-  const { tokenSelected, receiverAddress, amount, txhash, setTxhash } =
+  const { walletAddress, tokenSelected, receiverAddress, amount, txhash, setTxhash } =
     useSendTokenContext();
-  const { setActiveState, selectedWallet, selectedNetwork } =
+  const { setActiveState, selectedNetwork } =
     useWalletDashboard();
 
   // Get current date and time formatted as 'May 27, 2025 — 2:28 PM'
@@ -37,7 +37,7 @@ const Confirmation = () => {
 
   return (
     <>
-      <WalletHeader selectedWallet={selectedWallet} />
+      <WalletHeader walletAddress={walletAddress} />
 
       <Box
         display="flex"

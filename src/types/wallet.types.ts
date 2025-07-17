@@ -11,8 +11,15 @@ export enum ChainType {
   WALLET_CONNECT = "walletConnect",
   PUSH_WALLET = 'pushWalletDonut',
 }
-export interface WalletInfo {
+
+export type WalletType = {
+  chainId: string | null;
+  chain: string | null;
   address: string;
+}
+
+export interface ExternalWalletType {
+  originAddress: string;
   chainType: ChainType;
   providerName: string;
 }

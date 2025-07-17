@@ -5,16 +5,18 @@ import WalletHeader from './WalletHeader';
 import { useWalletDashboard } from '../../../context/WalletDashboardContext';
 import { useTokenManager } from '../../../hooks/useTokenManager';
 import { TokenFormat } from '../../../types';
+import { usePushChain } from '../../../hooks/usePushChain';
 
 const AddTokens: FC = () => {
-    const { selectedWallet, setActiveState } = useWalletDashboard();
-
     const [tokenAddress, setTokenAddress] = useState<string | null>(null);
     const [token, setToken] = useState<TokenFormat | null>(null);
-
     const [loadingTokenDetails, setLoadingTokens] = useState<boolean>(false);
 
     const { addToken, fetchTokenDetails } = useTokenManager();
+    const { setActiveState } = useWalletDashboard();
+
+
+    const { executorAddress } = usePushChain();
 
     const handleSearch = async () => {
         if (!tokenAddress) return;
@@ -65,7 +67,7 @@ const AddTokens: FC = () => {
             gap="spacing-md"
             position="relative"
         >
-            <WalletHeader selectedWallet={selectedWallet} handleBackButton={() => setActiveState('walletDashboard')} />
+            <WalletHeader walletAddress={executorAddress} handleBackButton={() => setActiveState('walletDashboard')} />
             <Box display='flex' flexDirection='column' justifyContent='space-between' css={css`flex:1`}>
                 <Box
                     display="flex"
