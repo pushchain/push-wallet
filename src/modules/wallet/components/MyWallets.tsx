@@ -1,16 +1,16 @@
 import { FC } from "react";
 import { Box } from "../../../blocks";
-import { WalletList } from "./WalletList";
+import { WalletList } from "./dashboard/WalletList";
 import { WalletListType } from "../Wallet.types";
 
 export type MyWalletsProps = {
-  walletList:WalletListType[];
+  walletList: WalletListType[];
   selectedWallet: WalletListType;
-  setSelectedWallet:React.Dispatch<React.SetStateAction<WalletListType>>
+  setSelectedWallet: React.Dispatch<React.SetStateAction<WalletListType>>
 };
 
-const MyWallets: FC<MyWalletsProps> = ({walletList,setSelectedWallet,selectedWallet}) => {
-  
+const MyWallets: FC<MyWalletsProps> = ({ walletList, setSelectedWallet, selectedWallet }) => {
+
   return (
     <Box
       display="flex"
@@ -20,7 +20,7 @@ const MyWallets: FC<MyWalletsProps> = ({walletList,setSelectedWallet,selectedWal
       overflow="hidden scroll"
       customScrollbar
     >
-      <WalletList walletList={walletList} setSelectedWallet={setSelectedWallet} selectedWallet={selectedWallet}/>
+      <WalletList walletList={walletList} setSelectedWallet={setSelectedWallet} selectedWallet={selectedWallet} />
       {/* <Box display="flex" gap="spacing-sm" alignItems="center">
         <Separator />
         <Text

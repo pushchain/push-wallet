@@ -17,14 +17,14 @@ import {
     usePersistedQuery,
 } from "common";
 import { useNavigate } from "react-router-dom";
-import { APP_ROUTES } from "../../../constants";
-import { useEventEmitterContext } from "../../../context/EventEmitterContext";
-import { useGlobalState } from "../../../context/GlobalContext";
-import { useExternalWallet } from "../../../context/ExternalWalletContext";
+import { APP_ROUTES } from "../../../../constants";
+import { useEventEmitterContext } from "../../../../context/EventEmitterContext";
+import { useGlobalState } from "../../../../context/GlobalContext";
+import { useExternalWallet } from "../../../../context/ExternalWalletContext";
 import { css } from "styled-components";
 import BlockiesSvg from "blockies-react-svg";
 import { FC, useState } from "react";
-import { useWalletDashboard } from "../../../context/WalletDashboardContext";
+import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
 
 type WalletHeaderProps = {
     walletAddress: string;

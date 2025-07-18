@@ -1,7 +1,7 @@
-import { Box, DefaultChainMonotone, ExternalLinkIcon, InternalLink, PushMonotone, Text } from '../../../blocks';
+import { Box, DefaultChainMonotone, ExternalLinkIcon, InternalLink, PushMonotone, Text } from '../../../../blocks';
 import { css } from 'styled-components';
-import { convertCaipToObject, getFixedTime } from '../Wallet.utils';
-import { centerMaskWalletAddress, CHAIN_MONOTONE_LOGO } from '../../../common';
+import { convertCaipToObject, getFixedTime } from '../../Wallet.utils';
+import { centerMaskWalletAddress, CHAIN_MONOTONE_LOGO } from '../../../../common';
 
 import { FC } from 'react';
 import { formatUnits } from 'viem';

@@ -2,14 +2,14 @@ import { FC } from "react";
 import {
   Box,
   Download,
-  Faucet,
+  IconLeading,
   SendNotification,
   Spinner,
   Text,
-} from "../../../blocks";
+} from "../../../../blocks";
 import WalletHeader from "./WalletHeader";
-import { useWalletDashboard } from "../../../context/WalletDashboardContext";
-import { useWalletOperations } from "../../../hooks/useWalletOperations";
+import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
+import { useWalletOperations } from "../../../../hooks/useWalletOperations";
 import { FAUCET_URL } from "common";
 
 export type WalletProfileProps = {
@@ -30,7 +30,7 @@ const buttonConfigs = [
       setActiveState("send"),
   },
   {
-    icon: Faucet,
+    icon: IconLeading,
     label: "Faucet",
     onClick: () => window.open(FAUCET_URL, "_blank"),
   },

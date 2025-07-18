@@ -3,11 +3,11 @@ import { Info } from 'blocks';
 import { DrawerWrapper, ErrorContent, getAppParamValue, LoadingContent, PushWalletAppConnection, PushWalletLoadingContent, WalletSkeletonScreen } from 'common';
 import { WalletProfile } from './WalletProfile';
 import { WalletTabs } from './WalletTabs';
-import { getWalletlist } from '../Wallet.utils';
-import { ConnectionSuccess } from '../../../common/components/ConnectionSuccess';
-import { useGlobalState } from '../../../context/GlobalContext';
-import { useWalletDashboard } from '../../../context/WalletDashboardContext';
-import { usePushChain } from '../../../hooks/usePushChain';
+import { getWalletlist } from '../../Wallet.utils';
+import { ConnectionSuccess } from '../../../../common/components/ConnectionSuccess';
+import { useGlobalState } from '../../../../context/GlobalContext';
+import { useWalletDashboard } from '../../../../context/WalletDashboardContext';
+import { usePushChain } from '../../../../hooks/usePushChain';
 
 const WalletDashboard: FC = () => {
     const { state, dispatch } = useGlobalState();

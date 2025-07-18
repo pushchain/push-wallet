@@ -1,6 +1,6 @@
-import { FC } from 'react';
-import { IconWrapper } from '../IconWrapper';
-import { IconProps } from '../Icons.types';
+import { FC } from "react";
+import { IconWrapper } from "../IconWrapper";
+import { IconProps } from "../Icons.types";
 
 const Copy: FC<IconProps> = (allProps) => {
   const { svgProps: props, ...restProps } = allProps;
@@ -9,39 +9,27 @@ const Copy: FC<IconProps> = (allProps) => {
       componentName="Copy"
       icon={
         <svg
+          xmlns="http://www.w3.org/2000/svg"
           width="inherit"
           height="inherit"
-          viewBox="0 0 32 32"
+          viewBox="0 0 12 12"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
           {...props}
         >
-          <g clip-path="url(#clip0_3114_35098)">
-            <path
-              d="M21 21H24C25.6569 21 27 19.6569 27 18V8C27 6.34315 25.6569 5 24 5H14C12.3431 5 11 6.34315 11 8V11"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M18 11H8C6.34315 11 5 12.3431 5 14V24C5 25.6569 6.34315 27 8 27H18C19.6569 27 21 25.6569 21 24V14C21 12.3431 19.6569 11 18 11Z"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </g>
-          <defs>
-            <clipPath id="clip0_3114_35098">
-              <rect
-                width="24"
-                height="24"
-                fill="white"
-                transform="translate(4 4)"
-              />
-            </clipPath>
-          </defs>
+          <rect
+            x="0.5"
+            y="4.16663"
+            width="7.33333"
+            height="7.33337"
+            rx="0.7"
+            fill="#8C93A0"
+          />
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M4.86699 0.5C4.48039 0.5 4.16699 0.8134 4.16699 1.2V2.90652H8.07454C8.62683 2.90652 9.07454 3.35424 9.07454 3.90652V7.83337H10.8003C11.1869 7.83337 11.5003 7.51997 11.5003 7.13337V1.2C11.5003 0.813401 11.1869 0.5 10.8003 0.5H4.86699Z"
+            fill="#8C93A0"
+          />
         </svg>
       }
       {...restProps}

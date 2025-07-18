@@ -4,10 +4,10 @@ import { css } from "styled-components";
 import { TokenFormat } from "../../../../types";
 import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
 import { useSendTokenContext } from "../../../../context/SendTokenContext";
-import WalletHeader from "../WalletHeader";
+import WalletHeader from "../dashboard/WalletHeader";
 import { useTokenManager } from "../../../../hooks/useTokenManager";
 import { TokenLogoComponent } from "common";
-import TokensListItem from "../TokensListItem";
+import { TokensListItem } from "../TokensListItem";
 
 type SelectTokenProps = {
   handleTokenSelection: (token: TokenFormat) => void;

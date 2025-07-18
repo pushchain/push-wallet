@@ -1,6 +1,6 @@
 import { Box, Button, Copy, PushAlpha, Text, TickCircleFilled } from 'blocks';
 import React, { useState, useEffect } from 'react';
-import WalletHeader from './WalletHeader';
+import WalletHeader from './dashboard/WalletHeader';
 import styled, { css } from 'styled-components';
 import { useWalletDashboard } from '../../../context/WalletDashboardContext';
 import { QRCodeSVG } from 'qrcode.react';

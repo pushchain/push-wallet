@@ -1,7 +1,7 @@
 import { Box, Button, Spinner, Text, TextInput } from 'blocks';
 import React, { FC, useState } from 'react';
 import { css } from 'styled-components';
-import WalletHeader from './WalletHeader';
+import WalletHeader from './dashboard/WalletHeader';
 import { useWalletDashboard } from '../../../context/WalletDashboardContext';
 import { useTokenManager } from '../../../hooks/useTokenManager';
 import { TokenFormat } from '../../../types';

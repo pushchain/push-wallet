@@ -90,6 +90,8 @@ export { default as GovernanceFilled } from "./components/GovernanceFilled";
 export { default as Group } from "./components/Group";
 export { default as GroupFilled } from "./components/GroupFilled";
 
+export { default as IconLeading } from "./components/IconLeading";
+
 export { default as InboxBell } from "./components/InboxBell";
 export { default as EmptyInbox } from "./components/EmptyInbox";
 export { default as InboxBellFilled } from "./components/InboxBellFilled";

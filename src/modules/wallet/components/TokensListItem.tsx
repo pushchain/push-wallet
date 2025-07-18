@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { Box, Text } from "blocks";
 import { TokenFormat } from "../../../types";
 import { TokenLogoComponent, truncateToDecimals } from "common";
@@ -70,4 +70,4 @@ const TokensListItem: FC<TokenListItemProps> = ({ token, handleSelectToken }) =>
   );
 };
 
-export default TokensListItem;
+export { TokensListItem };

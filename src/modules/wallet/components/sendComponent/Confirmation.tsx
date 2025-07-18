@@ -4,7 +4,7 @@ import { css } from "styled-components";
 import { centerMaskWalletAddress, EXPLORER_URL } from "common";
 import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
 import { useSendTokenContext } from "../../../../context/SendTokenContext";
-import WalletHeader from "../WalletHeader";
+import WalletHeader from "../dashboard/WalletHeader";
 
 const Confirmation = () => {
   const { walletAddress, tokenSelected, receiverAddress, amount, txhash, setTxhash } =

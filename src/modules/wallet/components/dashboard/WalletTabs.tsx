@@ -1,11 +1,11 @@
 import { FC, useState } from "react";
-import { Box, Tabs } from "../../../blocks";
+import { Box, Tabs } from "../../../../blocks";
 import { WalletActivityList } from "./WalletActivityList";
 
-import { MyWallets } from "./MyWallets";
-import { useGlobalState } from "../../../context/GlobalContext";
-import { TokensList } from "./TokensList";
-import { ActiveStates, WalletListType } from "../../../types";
+import { MyWallets } from "../MyWallets";
+import { useGlobalState } from "../../../../context/GlobalContext";
+import { TokensList } from "../TokensList";
+import { ActiveStates, WalletListType } from "../../../../types";
 
 export type WalletTabsProps = {
   walletList: WalletListType[];

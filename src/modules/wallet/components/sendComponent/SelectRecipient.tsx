@@ -4,7 +4,7 @@ import { TokenLogoComponent, truncateToDecimals } from "common";
 import { css } from "styled-components";
 import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
 import { useSendTokenContext } from "../../../../context/SendTokenContext";
-import WalletHeader from "../WalletHeader";
+import WalletHeader from "../dashboard/WalletHeader";
 import { useTokenBalance } from "../../../../hooks/useTokenBalance";
 
 const SelectRecipient = () => {

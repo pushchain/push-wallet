@@ -1,8 +1,8 @@
 import { FC, useEffect, useRef, useState } from "react";
 
-import { Box, Text, Spinner } from "../../../blocks";
+import { Box, Text, Spinner } from "../../../../blocks";
+import { useGetWalletActivities } from "../../../../hooks/useGetWalletActivities";
 import { WalletActivityListItem } from "./WalletActivityListItem";
-import { useGetWalletActivities } from "../../../hooks/useGetWalletActivities";
 
 export type WalletActivityListProps = {
   address: string;

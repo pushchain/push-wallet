@@ -3,7 +3,7 @@ import { Box, Button, SendNotification, Text, WarningCircleFilled } from "blocks
 import { centerMaskWalletAddress, truncateWords } from "common";
 import { css } from "styled-components";
 import { useSendTokenContext } from "../../../../context/SendTokenContext";
-import WalletHeader from "../WalletHeader";
+import WalletHeader from "../dashboard/WalletHeader";
 import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
 import { fetchGasPriceInGwei } from '../../../../utils/viemClient';
 

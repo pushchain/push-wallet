@@ -15,7 +15,7 @@ import { getWalletlist } from "./Wallet.utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
 import { CreateNewWallet } from "../../common/components/CreateNewWallet";
-import WalletDashboard from "./components/WalletDashboard";
+import WalletDashboard from "./components/dashboard/WalletDashboard";
 import AddTokens from "./components/AddTokens";
 import { Box, } from "blocks";
 import { Receive } from "./components/Receive";

@@ -1,7 +1,7 @@
 import { MetaMaskSDK } from "@metamask/sdk";
 import { ChainType, ITypedData } from "../../types/wallet.types";
 import { BaseWalletProvider } from "../BaseWalletProvider";
-import { hexToBytes, parseTransaction } from "viem";
+import { bytesToHex, hexToBytes, parseTransaction } from "viem";
 import { BrowserProvider } from 'ethers';
 import { Chain } from 'viem';
 import { chains } from "./chains";
@@ -147,14 +147,14 @@ export class MetamaskProvider extends BaseWalletProvider {
         throw new Error('No connected account');
       }
 
-      const hexMessage = '0x' + Buffer.from(message).toString('hex');
+      const hexMessage = bytesToHex(message);
 
       const signature = await provider.request({
         method: 'personal_sign',
         params: [hexMessage, accounts[0]],
       });
 
-      return new Uint8Array(Buffer.from((signature as string).slice(2), 'hex'));
+      return hexToBytes(signature as `0x${string}`);
     } catch (error) {
       console.error('MetaMask signing error:', error);
       throw error;
@@ -175,7 +175,7 @@ export class MetamaskProvider extends BaseWalletProvider {
         throw new Error('No connected account');
       }
 
-      const hex = ('0x' + Buffer.from(txn).toString('hex')) as `0x${string}`;
+      const hex = bytesToHex(txn);
       const parsed = parseTransaction(hex);
 
       const txParams = {
@@ -197,7 +197,7 @@ export class MetamaskProvider extends BaseWalletProvider {
         params: [txParams],
       });
 
-      return new Uint8Array(Buffer.from((signature as string).slice(2), 'hex'));
+      return hexToBytes(signature as `0x${string}`);
     } catch (error) {
       console.error('MetaMask signing error:', error);
       throw error;
@@ -206,15 +206,6 @@ export class MetamaskProvider extends BaseWalletProvider {
 
   signTypedData = async (typedData: ITypedData): Promise<Uint8Array> => {
     try {
-      const bigintReplacer = (_key: string, value: any) => {
-        return typeof value === 'bigint'
-          ? value.toString() // convert BigInt to string
-          : value;
-      };
-      // typedData.domain = {
-      //   verifyingContract: typedData.domain.verifyingContract,
-      //   version: typedData.domain.version,
-      // };
       const provider = this.getProvider();
       if (!provider) {
         throw new Error('Provider is undefined');
@@ -227,10 +218,18 @@ export class MetamaskProvider extends BaseWalletProvider {
         throw new Error('No connected account');
       }
 
+      typedData.types = {
+        EIP712Domain: [
+          { name: 'version', type: 'string' },
+          { name: 'chainId', type: 'uint256' },
+          { name: 'verifyingContract', type: 'address' },
+        ],
+        UniversalPayload: typedData.types['UniversalPayload'],
+      }
 
       const signature = await provider.request({
         method: 'eth_signTypedData_v4',
-        params: [accounts[0], typedData],
+        params: [accounts[0], JSON.stringify(typedData)],
       });
 
       return hexToBytes(signature as `0x${string}`);
@@ -243,8 +242,11 @@ export class MetamaskProvider extends BaseWalletProvider {
 
   disconnect = async () => {
     const provider = this.getProvider();
+    if (!provider) {
+      throw new Error('Provider is undefined');
+    }
     await provider.request({
-      method: "wallet_revokePermissions",
+      method: 'wallet_revokePermissions',
       params: [
         {
           eth_accounts: {},
