@@ -35,7 +35,7 @@ export default function App() {
   const { state } = useAppState();
 
   return (
-    <ThemeProvider theme={{...(isDarkMode ? themeConfig.dark : themeConfig.light), themeOverrides: state.themeOverrides}}>
+    <ThemeProvider theme={{ ...(isDarkMode ? themeConfig.dark : themeConfig.light), themeOverrides: state.themeOverrides }}>
       <GlobalStyle />
       <Router basename={getAppBasePath()}>
         <WalletContextProvider>

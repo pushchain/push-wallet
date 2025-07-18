@@ -27,7 +27,9 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     let filtered = walletCategories;
 
     // Filter by device type (mobile/desktop)
-    filtered = filtered.filter((wallet) => wallet.isMobile === isMobile);
+    filtered = isMobile
+      ? filtered.filter((wallet) => wallet.isMobile === isMobile)
+      : filtered;
 
     // Filter by configured chains
     if (walletConfig?.loginDefaults?.wallet?.chains?.length) {
