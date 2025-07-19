@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { Info } from 'blocks';
-import { DrawerWrapper, ErrorContent, getAppParamValue, LoadingContent, PushWalletAppConnection, PushWalletLoadingContent, WalletSkeletonScreen } from 'common';
+import { DrawerWrapper, ErrorContent, getAppParamValue, LoadingContent, LoadingScreen, PushWalletAppConnection, PushWalletLoadingContent } from 'common';
 import { WalletProfile } from './WalletProfile';
 import { WalletTabs } from './WalletTabs';
 import { getWalletlist } from '../../Wallet.utils';
@@ -25,7 +25,7 @@ const WalletDashboard: FC = () => {
 
     if (isLoading)
         return (
-            <WalletSkeletonScreen content={<PushWalletLoadingContent />} />
+            <LoadingScreen content={<PushWalletLoadingContent />} />
         );
 
     return (

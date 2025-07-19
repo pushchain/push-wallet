@@ -125,6 +125,10 @@ export const truncateToDecimals = (num, decimals) => {
   return Math.floor(num * factor) / factor;
 }
 
+export const modifyAddress = (balance, number) => {
+  return Number(truncateToDecimals(Number(balance ?? '0'), number)).toLocaleString()
+}
+
 export const truncateWords = (str: string, numWords: number = 50): string => {
   if (!str) return '';
   const words = str.split(' ');

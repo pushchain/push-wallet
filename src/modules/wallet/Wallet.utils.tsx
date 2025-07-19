@@ -1,6 +1,9 @@
 import { PushWallet } from "src/services/pushWallet/pushWallet";
 import { ChainType, WalletType } from "../../types/wallet.types";
 import { PushChain } from "@pushchain/core";
+import { createPublicClient, http } from 'viem';
+import { mainnet, sepolia } from 'viem/chains';
+import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 
 export const getWalletlist = (wallet: PushWallet) => {
   const walletList = [];
@@ -160,3 +163,42 @@ export function toCAIPFormat(
 
   return `${namespace}:${formattedChainId}:${formattedAddress}`;
 }
+
+const EVM_CHAIN_CONFIGS = {
+  1: mainnet,
+  11155111: sepolia,
+};
+
+export async function getNativeTokenBalance(token, walletDetail): Promise<{ balance: string, loading: boolean }> {
+  if (!token || !walletDetail || token.address !== '') {
+    return { balance: '0', loading: false };
+  }
+
+  try {
+    if (walletDetail.chain?.toLowerCase() === 'solana') {
+      // Solana
+      const network = 'devnet'; // or 'devnet', 'testnet' as needed
+      const connection = new Connection(clusterApiUrl(network));
+      const publicKey = new PublicKey(walletDetail.address);
+      const lamports = await connection.getBalance(publicKey);
+      const sol = lamports / 1e9;
+      return {
+        balance: sol.toLocaleString(undefined, { maximumFractionDigits: 6 }),
+        loading: false
+      };
+    } else {
+      // EVM
+      const chainId = Number(walletDetail.chainId) || 1;
+      const chain = EVM_CHAIN_CONFIGS[chainId] || mainnet;
+      const client = createPublicClient({ chain, transport: http() });
+      const wei = await client.getBalance({ address: walletDetail.address });
+      const eth = Number(wei) / 1e18;
+      return {
+        balance: eth.toLocaleString(undefined, { maximumFractionDigits: 6 }),
+        loading: false
+      };
+    }
+  } catch (err) {
+    return { balance: '0', loading: false };
+  }
+} 

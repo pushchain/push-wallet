@@ -1,12 +1,37 @@
 import { Box, DefaultChainMonotone, Faucet, PushAlpha, Text } from 'blocks';
-import { CHAIN_LOGO } from 'common';
+import { CHAIN_LOGO, modifyAddress } from 'common';
 import { css } from 'styled-components';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getNativeTokenBalance } from '../Wallet.utils';
 
 const OriginChainTokenListItem = ({
     token,
     walletDetail
 }) => {
+
+    const [balance, setBalance] = useState('0');
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchBalance = async () => {
+            try {
+                setIsLoading(true);
+                const res = await getNativeTokenBalance(token, walletDetail);
+                setBalance(res.balance || '0');
+            } catch (error) {
+                console.error("Error fetching balance:", error);
+                setBalance('0');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (token && walletDetail) {
+            fetchBalance();
+        }
+    }, [token, walletDetail]);
+
+    const [faucetHovered, setFaucetHovered] = useState(false);
 
     function getChainIcon(chainId) {
         if (chainId == null || chainId === 'devnet') {
@@ -19,12 +44,6 @@ const OriginChainTokenListItem = ({
             return <PushAlpha width={36} height={36} />;
         }
     }
-
-    // TODO: fetch balance of the native token
-
-    // Removed unused chainBoxHovered state
-    const [faucetHovered, setFaucetHovered] = useState(false);
-
 
     return (
         <Box
@@ -63,7 +82,9 @@ const OriginChainTokenListItem = ({
                         display='flex'
                         gap="spacing-xxxs"
                     >
-                        <Text variant='h6-regular' color='pw-int-text-secondary-color'>0 ETH</Text>
+                        <Text variant='h6-regular' color='pw-int-text-secondary-color'>
+                            {isLoading ? '0' : `${modifyAddress(balance, 3)} ${token.symbol}`}
+                        </Text>
                         <Box
                             display='flex'
                             alignItems='center'

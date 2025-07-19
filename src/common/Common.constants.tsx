@@ -64,18 +64,18 @@ export const walletCategories: WalletCategoriesType[] = [
     isMobile: false,
   },
   {
-    chain: ChainType.WALLET_CONNECT,
-    wallet: "walletConnect",
-    label: "Connect using Wallet Connect",
-    icon: <WalletConnectIcon width={24} height={24} />,
-    isMobile: true,
-  },
-  {
     chain: ChainType.SOLANA,
     wallet: "solana",
     label: "Connect Solana Wallet",
     icon: <Solana width={24} height={24} />,
     isMobile: false,
+  },
+  {
+    chain: ChainType.WALLET_CONNECT,
+    wallet: "walletConnect",
+    label: "Connect using Wallet Connect",
+    icon: <WalletConnectIcon width={24} height={24} />,
+    isMobile: true,
   },
   // {
   //   chain: ChainType.ARBITRUM,

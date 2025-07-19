@@ -73,6 +73,7 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
         borderRadius="radius-md"
         css={css`
           overflow: auto;
+          max-height: 100vh;
           width: 100%;
         `}
       >

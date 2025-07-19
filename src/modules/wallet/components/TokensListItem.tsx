@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Box, Text } from "blocks";
 import { TokenFormat } from "../../../types";
-import { TokenLogoComponent, truncateToDecimals } from "common";
+import { modifyAddress, TokenLogoComponent } from "common";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
 import { usePushChain } from "../../../hooks/usePushChain";
 
@@ -40,7 +40,7 @@ const TokensListItem: FC<TokenListItemProps> = ({ token, handleSelectToken }) =>
           <Text variant="bs-regular" color="pw-int-text-secondary-color">
             {loadingTokenBalance
               ? '0'
-              : Number(truncateToDecimals(Number(tokenBalance ?? '0'), 3)).toLocaleString()
+              : modifyAddress(tokenBalance, 3)
             } {token.symbol}
           </Text>
         </Box>

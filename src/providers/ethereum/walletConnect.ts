@@ -35,8 +35,21 @@ export class WalletConnectProvider extends BaseWalletProvider {
         this.provider = await EthereumProvider.init({
             projectId: '575a3e339ad56f54669c32264c133172',
             chains: [chainId],
-            methods: ['eth_sendTransaction', 'personal_sign', 'eth_signTypedData'],
+            methods: [
+                'eth_sendTransaction',
+                'personal_sign',
+                'eth_signTypedData_v4',
+                'eth_requestAccounts',
+                'eth_chainId',
+                'eth_accounts',
+                'wallet_switchEthereumChain',
+                'wallet_addEthereumChain'
+            ],
             showQrModal: true,
+            rpcMap: {
+                '11155111': 'https://sepolia.gateway.tenderly.co/',
+            },
+            optionalChains: [],
         });
 
         await this.provider.enable();
@@ -224,5 +237,6 @@ export class WalletConnectProvider extends BaseWalletProvider {
         if (provider && typeof provider.disconnect === 'function') {
             await provider.disconnect();
         }
+        this.provider = null;
     };
 }

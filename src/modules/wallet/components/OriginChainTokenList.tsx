@@ -1,4 +1,4 @@
-import { Box, Copy, DefaultChainMonotone, EthereumMonotone, PushMonotone, SolanaMonotone, Text, TickCircleFilled } from 'blocks';
+import { Box, Copy, DefaultChainMonotone, PushMonotone, Text, TickCircleFilled } from 'blocks';
 import { centerMaskWalletAddress, CHAIN_MONOTONE_LOGO, handleCopy } from 'common';
 import React, { useMemo, useState } from 'react';
 import { OriginChainTokenListItem } from './OriginChainTokenListItem';
@@ -8,8 +8,7 @@ import { css } from 'styled-components';
 const ETHEREUM_TOKENS = [
     {
         name: 'Ethereum',
-        symbol: 'ETH',
-        icon: EthereumMonotone,
+        symbol: 'Sepolia ETH',
         address: '',
         decimals: 18,
     },
@@ -19,8 +18,7 @@ const SOLANA_TOKENS = [
     {
         name: 'Solana',
         symbol: 'SOL',
-        icon: SolanaMonotone,
-        address: '', // native
+        address: '',
         decimals: 9,
     },
 ];
@@ -45,7 +43,7 @@ const OriginChainTokenList = ({
         return [];
     }, [result.chain]);
 
-    function getChainIcon(chainId) {
+    function getMonotoneChainIcon(chainId) {
         if (chainId == null || chainId === 'devnet') {
             return <PushMonotone size={20} />
         }
@@ -108,12 +106,12 @@ const OriginChainTokenList = ({
                             Origin Chain
                         </Text>
                     )}
-                    {getChainIcon(result.chainId)}
+                    {getMonotoneChainIcon(result.chainId)}
                 </Box>
             </Box>
 
-            {tokens && tokens.map((token) => (
-                <OriginChainTokenListItem token={token} walletDetail={result} />
+            {tokens && tokens.map((token, id) => (
+                <OriginChainTokenListItem token={token} walletDetail={result} key={id} />
             ))}
 
         </Box>
