@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { TokensListItem } from './TokensListItem';
 import { Box, Text, YieldFarming } from 'blocks';
 import { ActiveStates, TokenFormat } from '../../../types';
@@ -19,10 +19,10 @@ const TokensList: FC<TokensListProps> = ({
     const { state } = useGlobalState();
     const { executorAddress } = usePushChain();
 
-    const pushWallet = getWalletlist(state.wallet)[0];
+    const pushWallet = useMemo(() => getWalletlist(state.wallet)[0], [state.wallet]);
     const parsedWallet = pushWallet?.fullAddress || state?.externalWallet?.originAddress;
 
-    const { result } = convertCaipToObject(parsedWallet);
+    const { result } = useMemo(() => convertCaipToObject(parsedWallet), [parsedWallet]);
 
     return (
 

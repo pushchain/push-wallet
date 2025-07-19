@@ -1,6 +1,6 @@
 import { Box, Copy, DefaultChainMonotone, PushMonotone, Text, TickCircleFilled } from 'blocks';
 import { centerMaskWalletAddress, CHAIN_MONOTONE_LOGO, handleCopy } from 'common';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { OriginChainTokenListItem } from './OriginChainTokenListItem';
 import { convertCaipToObject } from '../Wallet.utils';
 import { css } from 'styled-components';
@@ -30,7 +30,6 @@ const OriginChainTokenList = ({
 }) => {
 
     const [copied, setCopied] = useState(false);
-    const [chainBoxHovered, setChainBoxHovered] = useState(false);
 
     const { result } = convertCaipToObject(originWalletAddress);
 
@@ -42,18 +41,6 @@ const OriginChainTokenList = ({
         }
         return [];
     }, [result.chain]);
-
-    function getMonotoneChainIcon(chainId) {
-        if (chainId == null || chainId === 'devnet') {
-            return <PushMonotone size={20} />
-        }
-        const IconComponent = CHAIN_MONOTONE_LOGO?.[chainId];
-        if (IconComponent) {
-            return <IconComponent size={20} color="pw-int-icon-tertiary-color" />;
-        } else {
-            return <DefaultChainMonotone size={20} />;
-        }
-    }
 
     return (
         <Box
@@ -90,24 +77,9 @@ const OriginChainTokenList = ({
                         />
                     )}
                 </Box>
-                <Box
-                    display="flex"
-                    alignItems="center"
-                    onMouseEnter={() => setChainBoxHovered(true)}
-                    onMouseLeave={() => setChainBoxHovered(false)}
-                >
-                    {chainBoxHovered && (
-                        <Text
-                            variant="os-regular"
-                            color="pw-int-text-tertiary-color"
-                            textTransform='capitalize'
-                            css={css`margin-right: 8px;`}
-                        >
-                            Origin Chain
-                        </Text>
-                    )}
-                    {getMonotoneChainIcon(result.chainId)}
-                </Box>
+
+                <OriginChain result={result} />
+
             </Box>
 
             {tokens && tokens.map((token, id) => (
@@ -119,3 +91,43 @@ const OriginChainTokenList = ({
 };
 
 export default OriginChainTokenList;
+
+const OriginChain = ({ result }) => {
+    const [chainBoxHovered, setChainBoxHovered] = useState(false);
+
+    const getMonotoneChainIcon = useCallback((chainId) => {
+        if (chainId == null || chainId === 'devnet') {
+            return <PushMonotone size={20} />
+        }
+        const IconComponent = CHAIN_MONOTONE_LOGO?.[chainId];
+        if (IconComponent) {
+            return <IconComponent size={20} color="pw-int-icon-tertiary-color" />;
+        } else {
+            return <DefaultChainMonotone size={20} />;
+        }
+    }, []);
+
+    const handleMouseEnter = useCallback(() => setChainBoxHovered(true), []);
+    const handleMouseLeave = useCallback(() => setChainBoxHovered(false), []);
+
+    return (
+        <Box
+            display="flex"
+            alignItems="center"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
+            {chainBoxHovered && (
+                <Text
+                    variant="os-regular"
+                    color="pw-int-text-tertiary-color"
+                    textTransform='capitalize'
+                    css={css`margin-right: 8px;`}
+                >
+                    Origin Chain
+                </Text>
+            )}
+            {getMonotoneChainIcon(result.chainId)}
+        </Box>
+    )
+}
