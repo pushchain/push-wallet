@@ -22,7 +22,7 @@ import {
 } from "../common";
 import { requestToConnectPushWallet } from "../common";
 import { APP_ROUTES } from "../constants";
-import { AppMetadata, ChainType, CONSTANTS, IWalletProvider, LoginMethodConfig, WalletConfig, WalletInfo } from "../types/wallet.types";
+import { AppMetadata, ChainType, CONSTANTS, ExternalWalletType, IWalletProvider, LoginMethodConfig, WalletConfig } from "../types/wallet.types";
 import { useAppState } from "./AppContext";
 import { TypedData, TypedDataDomain } from "viem";
 
@@ -145,8 +145,8 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     chainType: ChainType;
   }) => {
     if (data.status === 'successful') {
-      const walletPayload: WalletInfo = {
-        address: data.address,
+      const walletPayload: ExternalWalletType = {
+        originAddress: data.address,
         chainType: data.chainType,
         providerName: data.providerName,
       };

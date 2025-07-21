@@ -77,7 +77,7 @@ const OriginChainTokenListItem = ({
                     display='flex'
                     flexDirection='column'
                 >
-                    <Text variant='h5-semibold' color='pw-int-text-primary-color'>Ethereum</Text>
+                    <Text variant='h5-semibold' color='pw-int-text-primary-color'>{token.name}</Text>
                     <Box
                         display='flex'
                         gap="spacing-xxxs"

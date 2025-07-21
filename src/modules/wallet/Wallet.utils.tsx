@@ -156,7 +156,7 @@ export function toCAIPFormat(
     namespace = 'solana';
 
     // TODO: Find a method to get the solana chain id in caip format
-    formattedChainId = '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp'; //mainnet
+    formattedChainId = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1'; //devnet
   } else {
     throw new Error("Unsupported chain. Use 'ethereum' or 'solana'.");
   }
