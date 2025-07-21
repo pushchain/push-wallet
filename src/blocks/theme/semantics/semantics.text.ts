@@ -8,6 +8,14 @@ export const textColorSemantics = {
   'link-color': { light: colorBrands['primary-600'], dark: colorBrands['primary-400'] },
   'disabled-color': { light: colorBrands['neutral-400'], dark: colorBrands['neutral-600'] },
   'primary-inverse': { light: colorPrimitives['white-100'], dark: colorPrimitives['black-100'] },
+
+  'success-subtle-color': { light: colorBrands['success-100'], dark: colorBrands['success-700'] },
+  'success-bold-color': { light: colorBrands['success-500'], dark: colorBrands['success-300'] },
+
+  'danger-subtle-color': { light: colorBrands['danger-100'], dark: colorBrands['danger-700'] },
+  'danger-bold-color': { light: colorBrands['danger-700'], dark: colorBrands['danger-300'] },
+
+
 };
 
 export const textSemantics = {

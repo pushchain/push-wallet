@@ -1,10 +1,12 @@
 import { MetaMaskSDK } from "@metamask/sdk";
-import { ChainType } from "../../types/wallet.types";
+import { ChainType, ITypedData } from "../../types/wallet.types";
 import { BaseWalletProvider } from "../BaseWalletProvider";
+import { bytesToHex, hexToBytes, parseTransaction } from "viem";
+import { BrowserProvider } from 'ethers';
+import { Chain } from 'viem';
+import { chains } from "./chains";
 import { toHex } from "viem";
 import { getAddress } from 'ethers';
-import { chains } from "./chains";
-import { Chain } from 'viem';
 
 declare global {
   interface Window {
@@ -27,7 +29,7 @@ export class MetamaskProvider extends BaseWalletProvider {
     ]);
     this.sdk = new MetaMaskSDK({
       dappMetadata: {
-        name: "My Dapp",
+        name: "Push Wallet",
         url: window.location.href,
       },
       logging: {
@@ -46,6 +48,33 @@ export class MetamaskProvider extends BaseWalletProvider {
     if (isMobile && provider?.isMetaMask) return true;
 
     return false;
+  };
+
+  getProvider = () => {
+    return this.sdk.getProvider();
+  };
+
+  getSigner = async () => {
+    const sdkProvider = this.sdk.getProvider();
+    if (!sdkProvider) {
+      throw new Error('Provider is undefined');
+    }
+    const browserProvider = new BrowserProvider(sdkProvider);
+    return await browserProvider.getSigner();
+  };
+
+  getChainId = async (): Promise<number> => {
+    const provider = this.getProvider();
+    if (!provider) {
+      throw new Error('Provider is undefined');
+    }
+    const hexChainId = await provider.request({
+      method: 'eth_chainId',
+      params: [],
+    });
+
+    const chainId = parseInt(hexChainId.toString(), 16);
+    return chainId;
   };
 
   async connect(chainType: ChainType): Promise<{ caipAddress: string }> {
@@ -68,27 +97,10 @@ export class MetamaskProvider extends BaseWalletProvider {
     }
   }
 
-  getProvider = () => {
-    return this.sdk.getProvider();
-  };
-
-  getChainId = async (): Promise<number> => {
-    const provider = this.getProvider();
-    if (!provider) {
-      throw new Error('Provider is undefined');
-    }
-    const hexChainId = await provider.request({
-      method: 'eth_chainId',
-      params: [],
-    });
-
-    const chainId = parseInt(hexChainId.toString(), 16);
-    return chainId;
-  };
-
   switchNetwork = async (chainName: ChainType) => {
     const network = chains[chainName] as Chain;
     const provider = this.getProvider();
+
     const hexNetworkId = toHex(network.id);
 
     try {
@@ -121,17 +133,125 @@ export class MetamaskProvider extends BaseWalletProvider {
 
   }
 
+  signMessage = async (message: Uint8Array): Promise<Uint8Array> => {
+    try {
+      const provider = this.getProvider();
+      if (!provider) {
+        throw new Error('Provider is undefined');
+      }
+      const accounts = (await provider.request({
+        method: 'eth_accounts',
+      })) as string[];
+
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No connected account');
+      }
+
+      const hexMessage = bytesToHex(message);
+
+      const signature = await provider.request({
+        method: 'personal_sign',
+        params: [hexMessage, accounts[0]],
+      });
+
+      return hexToBytes(signature as `0x${string}`);
+    } catch (error) {
+      console.error('MetaMask signing error:', error);
+      throw error;
+    }
+  };
+
+  signAndSendTransaction = async (txn: Uint8Array): Promise<Uint8Array> => {
+    try {
+      const provider = this.getProvider();
+      if (!provider) {
+        throw new Error('Provider is undefined');
+      }
+      const accounts = (await provider.request({
+        method: 'eth_accounts',
+      })) as string[];
+
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No connected account');
+      }
+
+      const hex = bytesToHex(txn);
+      const parsed = parseTransaction(hex);
+
+      const txParams = {
+        from: accounts[0],
+        to: parsed.to,
+        value: parsed.value ? '0x' + parsed.value.toString(16) : undefined,
+        data: parsed.data,
+        gas: parsed.gas ? '0x' + parsed.gas.toString(16) : undefined,
+        maxPriorityFeePerGas: parsed.maxPriorityFeePerGas
+          ? '0x' + parsed.maxPriorityFeePerGas.toString(16)
+          : undefined,
+        maxFeePerGas: parsed.maxFeePerGas
+          ? '0x' + parsed.maxFeePerGas.toString(16)
+          : undefined,
+      };
+
+      const signature = await provider.request({
+        method: 'eth_sendTransaction',
+        params: [txParams],
+      });
+
+      return hexToBytes(signature as `0x${string}`);
+    } catch (error) {
+      console.error('MetaMask signing error:', error);
+      throw error;
+    }
+  };
+
+  signTypedData = async (typedData: ITypedData): Promise<Uint8Array> => {
+    try {
+      const provider = this.getProvider();
+      if (!provider) {
+        throw new Error('Provider is undefined');
+      }
+      const accounts = (await provider.request({
+        method: 'eth_accounts',
+      })) as string[];
+
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No connected account');
+      }
+
+      typedData.types = {
+        EIP712Domain: [
+          { name: 'version', type: 'string' },
+          { name: 'chainId', type: 'uint256' },
+          { name: 'verifyingContract', type: 'address' },
+        ],
+        UniversalPayload: typedData.types['UniversalPayload'],
+      }
+
+      const signature = await provider.request({
+        method: 'eth_signTypedData_v4',
+        params: [accounts[0], JSON.stringify(typedData)],
+      });
+
+      return hexToBytes(signature as `0x${string}`);
+    } catch (error) {
+      console.error('MetaMask signing error:', error);
+      throw error;
+    }
+  };
+
+
   disconnect = async () => {
     const provider = this.getProvider();
+    if (!provider) {
+      throw new Error('Provider is undefined');
+    }
     await provider.request({
-      method: "wallet_revokePermissions",
+      method: 'wallet_revokePermissions',
       params: [
         {
           eth_accounts: {},
         },
       ],
     });
-
-    //TODO: reload the dapp after disconnecting the wallet
   };
 }

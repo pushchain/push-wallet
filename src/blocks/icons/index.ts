@@ -60,6 +60,7 @@ export { default as Dash } from "./components/Dash";
 
 export { default as Dashboard } from "./components/Dashboard";
 export { default as DefaultChainMonotone } from "./components/DefaultChainMonotone";
+export { default as Download } from "./components/Download";
 
 export { default as EditProfile } from "./components/EditProfile";
 
@@ -74,6 +75,7 @@ export { default as ErrorFilled } from "./components/ErrorFilled";
 export { default as ExternalLink } from "./components/ExternalLink";
 export { default as ExternalLinkIcon } from "./components/ExternalLinkIcon";
 
+export { default as Faucet } from "./components/Faucet";
 export { default as Front } from "./components/Front";
 
 export { default as Gif } from "./components/Gif";
@@ -87,6 +89,8 @@ export { default as GovernanceFilled } from "./components/GovernanceFilled";
 
 export { default as Group } from "./components/Group";
 export { default as GroupFilled } from "./components/GroupFilled";
+
+export { default as IconLeading } from "./components/IconLeading";
 
 export { default as InboxBell } from "./components/InboxBell";
 export { default as EmptyInbox } from "./components/EmptyInbox";

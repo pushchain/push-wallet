@@ -117,9 +117,9 @@ export const CHAIN_MONOTONE_LOGO: {
   1101: PolygonMonotone,
   43114: AvalancheMonotone,
   43113: AvalancheMonotone,
-  '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp': SolanaMonotone, // mainnet
-  '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z': SolanaMonotone, // testnet
-  'EtWTRABZaYq6iMfeYKouRu166VU2xqa1': SolanaMonotone, // devnet
+  "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": SolanaMonotone, // mainnet
+  "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z": SolanaMonotone, // testnet
+  EtWTRABZaYq6iMfeYKouRu166VU2xqa1: SolanaMonotone, // devnet
   devnet: PushMonotone,
 };
 
@@ -140,9 +140,15 @@ export const CHAIN_LOGO: {
   1101: Polygon,
   43114: Avalanche,
   43113: Avalanche,
-  '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp': Solana, // mainnet
-  '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z': Solana, // testnet
-  'EtWTRABZaYq6iMfeYKouRu166VU2xqa1': Solana, // devnet
+  "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": Solana, // mainnet
+  "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z": Solana, // testnet
+  EtWTRABZaYq6iMfeYKouRu166VU2xqa1: Solana, // devnet
+};
+
+export const TOKEN_LOGO = {
+  pETH: Ethereum,
+  pPOL: Polygon,
+  PC: PushAlpha,
 };
 
 export const WALLETS_LOGO = {
@@ -183,3 +189,31 @@ export const WALLETS_LOGO = {
   backpack: <BackpackIcon />,
   sequence: <SequenceIcon />,
 };
+
+export const ERC20ABI = [
+  {
+    name: "name",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "string" }],
+  },
+  {
+    name: "symbol",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "string" }],
+  },
+  {
+    name: "decimals",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint8" }],
+  },
+];
+
+export const EXPLORER_URL = `https://donut.push.network`;
+export const FAUCET_URL = "https://faucet.push.org";
+

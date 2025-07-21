@@ -19,7 +19,7 @@ const StyledMenuItem = styled(RadixDropdown.Item) <MenuItemComponentProps>`
   [role='img'] {
     width: 24px;
     height: 24px;
-    color: var(--pw-int-${({ type }) => (type ? type === 'error' ? 'error-primary-color' : 'success-primary-color' : 'text-primary-color')});
+    color: var(--pw-int-${({ type }) => (type ? type === 'error' ? 'error-primary-color' : 'success-primary-color' : 'icon-primary-color')});
   }
 
   &:hover {

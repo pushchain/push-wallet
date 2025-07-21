@@ -1,41 +1,38 @@
 import { FC, useEffect, useState } from "react";
-import { Box, Info } from "../../blocks";
 import {
   BoxLayout,
   ContentLayout,
   PushWalletLoadingContent,
   WalletSkeletonScreen,
   WalletReconstructionErrorContent,
-  DrawerWrapper,
-  LoadingContent,
-  ErrorContent,
-  getAppParamValue,
 } from "../../common";
-import { WalletProfile } from "./components/WalletProfile";
-import { WalletTabs } from "./components/WalletTabs";
 import api from "../../services/api";
 import { PushWallet } from "../../services/pushWallet/pushWallet";
 import { APP_ROUTES, ENV } from "../../constants";
 import secrets from "secrets.js-grempe";
 import { useGlobalState } from "../../context/GlobalContext";
-// import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { getWalletlist } from "./Wallet.utils";
-import { WalletListType } from "./Wallet.types";
-import { PushWalletAppConnection } from "../../common";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePersistedQuery } from "../../common/hooks/usePersistedQuery";
-import { ConnectionSuccess } from "../../common/components/ConnectionSuccess";
 import { CreateNewWallet } from "../../common/components/CreateNewWallet";
+import WalletDashboard from "./components/dashboard/WalletDashboard";
+import AddTokens from "./components/AddTokens";
+import { Box, } from "blocks";
+import { Receive } from "./components/Receive";
+import { Send } from "./components/sendComponent/Send";
+import { WalletDashboardProvider } from "../../context/WalletDashboardContext";
+import { ActiveStates, PushNetworks, WalletListType } from "src/types";
 import { bytesToHex, stringToBytes } from "viem";
 
-const Wallet: FC = () => {
+export type WalletProps = Record<string, never>;
+
+const Wallet: FC<WalletProps> = () => {
   const { state, dispatch } = useGlobalState();
   const [createAccountLoading, setCreateAccountLoading] = useState(true);
-  const [error, setError] = useState("");
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const externalOrigin = params.get("app");
-  // const { primaryWallet } = useDynamicContext();
+
   const [showConnectionSuccess, setConnectionSuccess] =
     useState<boolean>(false);
 
@@ -49,6 +46,8 @@ const Wallet: FC = () => {
 
   const navigate = useNavigate();
   const persistQuery = usePersistedQuery();
+  const [activeState, setActiveState] = useState<ActiveStates>('walletDashboard');
+  const [selectedNetwork, setSelectedNetwork] = useState<PushNetworks>('Push Testnet Donut');
 
   const createWalletAndGenerateMnemonic = async (userId: string) => {
     try {
@@ -72,6 +71,11 @@ const Wallet: FC = () => {
       localStorage.setItem(`mnemonicShare2:${userId}`, shares[1]);
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
+
+      setSelectedWallet(
+        getWalletlist(instance)[0]
+      );
+
     } catch (err) {
       console.error("Error creating wallet:", err);
       throw err;
@@ -92,9 +96,13 @@ const Wallet: FC = () => {
       );
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
+
+      setSelectedWallet(
+        getWalletlist(instance)[0]
+      );
+
     } catch (err) {
       console.error("Error reconstructing wallet:", err);
-      setError("Failed to reconstruct wallet. Please try again.");
       throw err;
     } finally {
       setCreateAccountLoading(false);
@@ -184,15 +192,12 @@ const Wallet: FC = () => {
       }
     } catch (err) {
       console.error("Error fetching user profile:", err);
-      setError("Failed to fetch user profile. Please try again.");
       handleResetAndRedirectUser();
       throw err;
     } finally {
       setCreateAccountLoading(false);
     }
   };
-
-
 
   useEffect(() => {
     const initializeProfile = async () => {
@@ -202,31 +207,8 @@ const Wallet: FC = () => {
 
           await fetchUserProfile(state.jwt);
         }
-        // else if (!primaryWallet) {
-        //   navigate(APP_ROUTES.AUTH);
-        // }
-
-        /* We don't need to fetch push user as of now when user continues with wallet
-         This function fetches the already created push wallet */
-
-        // let pushWallet;
-        // const signer = await PushSigner.initialize(primaryWallet, "DYNAMIC");
-
-        // pushWallet = await PushWallet.loginWithWallet(
-        //   signer,
-        //   config.APP_ENV as ENV
-        // );
-
-        // if (pushWallet)
-        //   dispatch({ type: "INITIALIZE_WALLET", payload: pushWallet });
-        // else {
-        //   console.log(
-        //     "Could not find user in wallet.tsx file after push wallet"
-        //   );
-        // }
       } catch (err) {
         console.error("Error initializing profile:", err);
-        setError("Failed to initialize profile");
         handleResetAndRedirectUser();
       } finally {
         setCreateAccountLoading(false);
@@ -275,9 +257,6 @@ const Wallet: FC = () => {
   if (createAccountLoading)
     return (
       <WalletSkeletonScreen content={<PushWalletLoadingContent />} />
-      // <Button onClick={async () => {
-      //   await fetchUserProfile(state.jwt);
-      // }}>Create passkey</Button>
     );
 
   if (showReconstructionErrorModal)
@@ -310,55 +289,26 @@ const Wallet: FC = () => {
           flexDirection="column"
           display="flex"
           width={{ initial: "376px", ml: "100%" }}
+          height={{ initial: "auto", ml: "100%" }}
           padding="spacing-md"
           gap="spacing-sm"
           position="relative"
         >
-          <PushWalletAppConnection selectedWallet={selectedWallet} />
-          <WalletProfile selectedWallet={selectedWallet} />
-          <WalletTabs
-            walletList={getWalletlist(
-              state.wallet
-            )}
+          <WalletDashboardProvider
             selectedWallet={selectedWallet}
             setSelectedWallet={setSelectedWallet}
-          />
-          {/* {!state?.wallet && primaryWallet && (
-            <CreateAccount
-              isLoading={createAccountLoading}
-              setIsLoading={setCreateAccountLoading}
-            />
-          )} */}
-          {state.messageSignState === "loading" && (
-            <DrawerWrapper>
-              <LoadingContent
-                title={"Processing Transaction"}
-                subTitle={"Your transaction is being verified"}
-              />
-            </DrawerWrapper>
-          )}
-
-          {state.messageSignState === "rejected" && (
-            <DrawerWrapper>
-              <ErrorContent
-                icon={<Info size={32} color="pw-int-error-primary-subtle-color" />}
-                title="Could not verify"
-                subTitle="Please try again"
-                onClose={() =>
-                  dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" })
-                }
-              />
-            </DrawerWrapper>
-          )}
-          {showConnectionSuccess && getAppParamValue() && (
-            <DrawerWrapper>
-              <ConnectionSuccess
-                onClose={() => {
-                  setConnectionSuccess(false);
-                }}
-              />
-            </DrawerWrapper>
-          )}
+            showConnectionSuccess={showConnectionSuccess}
+            setConnectionSuccess={setConnectionSuccess}
+            activeState={activeState}
+            setActiveState={setActiveState}
+            selectedNetwork={selectedNetwork}
+            setSelectedNetwork={setSelectedNetwork}
+          >
+            {activeState === 'walletDashboard' && <WalletDashboard />}
+            {activeState === 'addTokens' && <AddTokens />}
+            {activeState === 'receive' && <Receive />}
+            {activeState === 'send' && <Send />}
+          </WalletDashboardProvider>
         </Box>
       </BoxLayout>
     </ContentLayout>

@@ -6,13 +6,14 @@ import { blocksTheme, getBlocksCSSVariables } from "./blocks";
 import { getAppBasePath } from "../basePath";
 import { useDarkMode, RouterContainer } from "./common";
 import { EventEmitterProvider } from "./context/EventEmitterContext";
-import { WalletContextProvider } from "./context/WalletContext";
+import { ExternalWalletContextProvider } from "./context/ExternalWalletContext";
 import { useAppState } from "./context/AppContext";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const GlobalStyle = createGlobalStyle`
   :root{
     /* Font Family */
-      --pw-int-font-family: "Arial", sans-serif;
+      --pw-int-font-family: 'FK Grotesk Neu';
     /* New blocks theme css variables*/
     ${(props) => {
     // @ts-expect-error: The getBlocksCSSVariables function is not typed, so we need to suppress the error here.
@@ -34,18 +35,22 @@ export default function App() {
 
   const { state } = useAppState();
 
+  const queryClient = new QueryClient();
+
   return (
     <ThemeProvider theme={{ ...(isDarkMode ? themeConfig.dark : themeConfig.light), themeOverrides: state.themeOverrides }}>
       <GlobalStyle />
-      <Router basename={getAppBasePath()}>
-        <WalletContextProvider>
-          <GlobalProvider>
-            <EventEmitterProvider>
-              <RouterContainer />
-            </EventEmitterProvider>
-          </GlobalProvider>
-        </WalletContextProvider>
-      </Router>
+      <QueryClientProvider client={queryClient}>
+        <Router basename={getAppBasePath()}>
+          <ExternalWalletContextProvider>
+            <GlobalProvider>
+              <EventEmitterProvider>
+                <RouterContainer />
+              </EventEmitterProvider>
+            </GlobalProvider>
+          </ExternalWalletContextProvider>
+        </Router>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

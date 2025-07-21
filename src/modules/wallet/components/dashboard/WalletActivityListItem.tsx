@@ -1,9 +1,10 @@
-import { Box, DefaultChainMonotone, ExternalLinkIcon, InternalLink, PushMonotone, Text } from '../../../blocks';
+import { Box, DefaultChainMonotone, ExternalLinkIcon, InternalLink, PushMonotone, Text } from '../../../../blocks';
 import { css } from 'styled-components';
-import { convertCaipToObject, formatWalletCategory, getFixedTime } from '../Wallet.utils';
-import { centerMaskWalletAddress, CHAIN_MONOTONE_LOGO } from '../../../common';
+import { convertCaipToObject, getFixedTime } from '../../Wallet.utils';
+import { centerMaskWalletAddress, CHAIN_MONOTONE_LOGO } from '../../../../common';
 
 import { FC } from 'react';
+import { formatUnits } from 'viem';
 
 type WalletActivityListItemProps = {
     transaction: any
@@ -14,7 +15,11 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
     transaction,
     address
 }) => {
+
     function getChainIcon(chainId) {
+        if (chainId == null) {
+            return <PushMonotone size={20} />
+        }
         if (chainId === 'devnet') {
             return <PushMonotone size={20} />;
         }
@@ -22,7 +27,6 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
         if (IconComponent) {
             return <IconComponent size={20} color="pw-int-icon-tertiary-color" />;
         } else {
-            //TODO: give a fallback icon here
             return <DefaultChainMonotone size={20} />;
         }
     }
@@ -30,16 +34,15 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
     function fetchChainFromAddress(transaction: any) {
 
         let displayAddress = '';
-        let additionalRecipients = 0;
-        if (address === transaction.from) {
-            // Address is the sender
-            const recipients = transaction.recipients;
-            displayAddress = recipients[0]; // Show first recipient
-            additionalRecipients = recipients.length - 1; // Count additional recipients
-        } else if (transaction.recipients.some(recipient => recipient === address)) {
-            // Address is in recipients
-            displayAddress = transaction.from; // Show sender address
+        const additionalRecipients = 0;
+        if (address === transaction.from.hash) {
+            const recipients = transaction.to.hash;
+            displayAddress = recipients;
+        }
 
+        if (address === transaction.to.hash) {
+            const recipients = transaction.from.hash;
+            displayAddress = recipients;
         }
 
         const { result } = convertCaipToObject(displayAddress);
@@ -65,14 +68,14 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
                   `}
                         >
 
-                            {result.chainId && getChainIcon(result.chainId)}
+                            {getChainIcon(result.chainId)}
                         </Text>
                     </Box>
                     <Text color="pw-int-text-secondary-color" variant="bes-semibold">
                         {centerMaskWalletAddress(result.address)}
                     </Text>
                     <Text color="pw-int-text-tertiary-color" variant="bes-semibold">
-                        {additionalRecipients >= 0 && ` +${additionalRecipients} more`}
+                        {additionalRecipients > 0 && ` +${additionalRecipients} more`}
                     </Text>
                 </Box>
             )
@@ -102,18 +105,19 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
                     width="32px"
                     height="32px"
                 >
-                    {address === transaction.from ? <ExternalLinkIcon size={16} color="pw-int-icon-primary-color" /> : transaction.recipients.some(recipient => recipient === address) && <InternalLink size={16} color="pw-int-icon-primary-color" />}
-
+                    {address === transaction.from.hash && <ExternalLinkIcon size={16} color="pw-int-icon-brand-color" />}
+                    {address === transaction.to.hash && <InternalLink size={16} color="pw-int-icon-success-bold-color" />}
                 </Box>
                 <Box display="flex" flexDirection="column" gap='spacing-xxxs'>
                     <Text variant="bm-regular">
-                        {address === transaction.from ? 'Send' : transaction.recipients.some(recipient => recipient === address) ? 'Receive' : null}
+                        {address === transaction.from.hash && 'Send'}
+                        {address === transaction.to.hash && 'Receive'}
                     </Text>
                     {fetchChainFromAddress(transaction)}
                 </Box>
             </Box>
             <Box display="flex" flexDirection="column" gap="spacing-xxxs">
-                <Text variant="bes-regular">{formatWalletCategory(transaction.category)}</Text>
+                <Text variant="bes-regular">{formatUnits(transaction.value, 18)} PC</Text>
                 <Text variant="c-semibold" color='pw-int-icon-tertiary-color'>{getFixedTime(transaction.timestamp)}</Text>
             </Box>
 

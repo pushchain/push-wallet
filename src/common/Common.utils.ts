@@ -1,9 +1,9 @@
 import { PushWalletAppConnectionData } from "./Common.types";
 
-export const centerMaskWalletAddress = (address: string) => {
+export const centerMaskWalletAddress = (address: string, length?: number) => {
   if (address) {
-    const start = address.substring(0, 7);
-    const end = address.substring(address.length - 7);
+    const start = address.substring(0, length ?? 7);
+    const end = address.substring(address.length - (length ?? 7));
     return start + "..." + end;
   }
   return "";
@@ -72,9 +72,9 @@ export const acceptPushWalletConnectionRequest = (
     const updatedAppConnections = previousAppConnections.map((each) =>
       each.origin === appFound.origin
         ? {
-            ...appFound,
-            appConnectionStatus: "connected",
-          }
+          ...appFound,
+          appConnectionStatus: "connected",
+        }
         : each
     );
 
@@ -118,3 +118,20 @@ export const rejectAllPushWalletConnectionRequests =
 
     return getAllAppConnections();
   };
+
+
+export const truncateToDecimals = (num, decimals) => {
+  const factor = Math.pow(10, decimals);
+  return Math.floor(num * factor) / factor;
+}
+
+export const modifyAddress = (balance, number) => {
+  return Number(truncateToDecimals(Number(balance ?? '0'), number)).toLocaleString()
+}
+
+export const truncateWords = (str: string, numWords: number = 50): string => {
+  if (!str) return '';
+  const words = str.split(' ');
+  if (words.length <= numWords) return str;
+  return words.slice(0, numWords).join(' ') + '…';
+};

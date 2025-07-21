@@ -1,4 +1,6 @@
+import { CHAIN } from "@pushchain/core/src/lib/constants/enums";
 import { ReactNode } from "react";
+import { TypedData, TypedDataDomain } from 'viem';
 
 export enum ChainType {
   ETHEREUM = "sepolia",
@@ -7,12 +9,26 @@ export enum ChainType {
   ARBITRUM = "arbitrumSepolia",
   AVALANCHE = "avalancheFuji",
   WALLET_CONNECT = "walletConnect",
-  PUSH_WALLET = "pushWalletDonut"
+  PUSH_WALLET = 'pushWalletDonut',
 }
-export interface WalletInfo {
+
+export type WalletType = {
+  chainId: string | null;
+  chain: string | null;
   address: string;
+}
+
+export interface ExternalWalletType {
+  originAddress: string;
   chainType: ChainType;
   providerName: string;
+}
+
+export interface ITypedData {
+  domain: TypedDataDomain;
+  types: TypedData;
+  primaryType: string;
+  message: Record<string, unknown>;
 }
 
 export interface IWalletProvider {
@@ -20,10 +36,18 @@ export interface IWalletProvider {
   icon: string;
   supportedChains: ChainType[];
   connect(chainType?: ChainType): Promise<{ caipAddress: string }>;
+  signMessage(message: Uint8Array): Promise<Uint8Array>;
+  signAndSendTransaction(txn: Uint8Array): Promise<Uint8Array>;
+  signTypedData(typedData: ITypedData): Promise<Uint8Array>;
   disconnect(): Promise<void>;
   getChainId(): Promise<unknown>;
-  switchNetwork(chainName: ChainType): Promise<void>;
+  switchNetwork?(chainName: ChainType): Promise<void>;
 }
+
+export type UniversalAccount = {
+  chain: CHAIN;
+  address: string;
+};
 
 export type WalletCategoriesType = {
   chain: ChainType;
@@ -57,4 +81,33 @@ export type AppMetadata = {
 export interface WalletConfig {
   loginDefaults: LoginMethodConfig,
   appMetadata: AppMetadata,
+}
+
+export interface EthereumLog {
+  address: string;
+  topics: string[];
+  data: string;
+  blockNumber: string;
+  transactionHash: string;
+  transactionIndex: string;
+  blockHash: string;
+  logIndex: string;
+  removed: boolean;
+}
+
+export interface EthereumTransactionReceipt {
+  blockHash: string;
+  blockNumber: string;
+  contractAddress: string | null;
+  cumulativeGasUsed: string;
+  effectiveGasPrice: string;
+  from: string;
+  gasUsed: string;
+  logs: EthereumLog[];
+  logsBloom: string;
+  status: string;
+  to: string;
+  transactionHash: string;
+  transactionIndex: string;
+  type: string;
 }

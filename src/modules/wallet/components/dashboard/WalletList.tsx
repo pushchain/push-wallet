@@ -8,10 +8,10 @@ import {
   MenuItem,
   PushLogo,
   Text,
-} from "../../../blocks";
-import { centerMaskWalletAddress, handleCopy } from "../../../common";
-import { WalletListType } from "../Wallet.types";
+} from "../../../../blocks";
+import { centerMaskWalletAddress, handleCopy } from "../../../../common";
 import BlockiesSvg from "blockies-react-svg";
+import { WalletListType } from "src/types";
 
 export type WalletListProps = {
   walletList: WalletListType[];
@@ -45,7 +45,7 @@ const WalletList: FC<WalletListProps> = ({
           border={`border-sm solid ${wallet?.address === selectedWallet?.address
             ? "pw-int-border-brand-medium"
             : "pw-int-border-secondary-color"
-          }`}
+            }`}
         >
           <Box display="flex" gap="spacing-xxs">
             {/* Add support for different icons */}
