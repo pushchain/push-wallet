@@ -23,6 +23,8 @@ export enum WALLET_TO_APP_ACTION {
   ERROR = "error",
 
   CONNECT_WALLET = "connectWallet",
+
+  PUSH_SEND_TRANSACTION = 'pushSendTransaction',
 }
 
 export enum APP_TO_WALLET_ACTION {
@@ -33,7 +35,9 @@ export enum APP_TO_WALLET_ACTION {
   LOG_OUT = "logOut",
 
   CONNECTION_STATUS = "connectionStatus",
-  WALLET_CONFIG = "walletConfig"
+  WALLET_CONFIG = "walletConfig",
+
+  PUSH_SEND_TRANSACTION_RESPONSE = 'pushSendTransactionResponse',
 }
 
 export enum WALLET_TO_WALLET_ACTION {

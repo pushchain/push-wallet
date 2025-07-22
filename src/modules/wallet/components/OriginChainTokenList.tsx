@@ -8,7 +8,7 @@ import { css } from 'styled-components';
 const ETHEREUM_TOKENS = [
     {
         name: 'Ethereum',
-        symbol: 'Sepolia ETH',
+        symbol: 'SepoliaETH',
         address: '',
         decimals: 18,
     },

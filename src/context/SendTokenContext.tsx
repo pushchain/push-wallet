@@ -1,7 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { SendTokenState, TokenFormat } from "../types";
 import { parseUnits } from "viem";
 import { usePushChain } from "../hooks/usePushChain";
+import { APP_TO_WALLET_ACTION, getAppParamValue, WALLET_TO_APP_ACTION } from "common";
+import { useEventEmitterContext } from "./EventEmitterContext";
+import { ExecuteParams } from "@pushchain/core/src/lib/orchestrator/orchestrator.types";
 
 interface SendTokenContextType {
   walletAddress: string;
@@ -38,7 +41,10 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
 
   const [txError, setTxError] = useState<string>('');
 
+  const { sendMessageToMainTab } = useEventEmitterContext();
   const { pushChainClient, executorAddress } = usePushChain();
+
+  const isOpenedInIframe = !!getAppParamValue();
 
   const handleSendTransaction = async () => {
 
@@ -47,24 +53,60 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
       setTxError('')
       const value = parseUnits((amount || '0').toString(), tokenSelected.decimals);
 
-
-      const receipt = await pushChainClient.universal.sendTransaction({
+      const payload: ExecuteParams = {
         to: receiverAddress as `0x${string}`,
         value: value,
         data: "0x",
-      });
+      }
+
+      if (isOpenedInIframe) {
+        sendMessageToMainTab({
+          type: WALLET_TO_APP_ACTION.PUSH_SEND_TRANSACTION,
+          data: { ...payload, value: value.toString() },
+        });
+
+        return;
+      }
+
+      const receipt = await pushChainClient.universal.sendTransaction(payload);
 
       if (receipt.hash) {
         setSendState("confirmation");
         setTxhash(receipt.hash);
       }
+      setSendingTransaction(false);
     } catch (error) {
       console.error("Error in sending transaction", error);
       setTxError(error.message)
-    } finally {
       setSendingTransaction(false);
     }
   };
+
+  useEffect(() => {
+    const pushMessageHandler = (event: MessageEvent) => {
+      if (
+        event.origin === getAppParamValue() ||
+        event.origin === window.location.origin
+      ) {
+        switch (event.data.type) {
+          case APP_TO_WALLET_ACTION.PUSH_SEND_TRANSACTION_RESPONSE:
+            if (event.data.data) {
+              setSendState("confirmation");
+              setTxhash(event.data.data);
+            }
+            break;
+          default:
+            console.warn("Unknown message type:", event.data);
+        }
+      }
+    };
+
+    window.addEventListener("message", pushMessageHandler);
+
+    return () => {
+      window.removeEventListener("message", pushMessageHandler);
+    };
+  }, []);
 
   const value = {
     walletAddress: executorAddress,

@@ -34,6 +34,7 @@ export type EventEmitterState = {
   handleAppConnectionRejected: (origin: string) => void;
   handleRejectAllAppConnections: () => void;
   handleRetryAppConnection: () => void;
+  sendMessageToMainTab: (data: unknown) => void;
 };
 
 // Create context
@@ -44,6 +45,7 @@ const WalletContext = createContext<EventEmitterState>({
   handleAppConnectionRejected: () => { },
   handleRejectAllAppConnections: () => { },
   handleRetryAppConnection: () => { },
+  sendMessageToMainTab: () => { }
 });
 
 // Custom hook to use the WalletContext
@@ -396,6 +398,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         handleAppConnectionRejected,
         handleRejectAllAppConnections,
         handleRetryAppConnection,
+        sendMessageToMainTab,
       }}
     >
       {children}
