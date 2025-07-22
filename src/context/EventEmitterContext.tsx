@@ -35,6 +35,8 @@ export type EventEmitterState = {
   handleRejectAllAppConnections: () => void;
   handleRetryAppConnection: () => void;
   sendMessageToMainTab: (data: unknown) => void;
+  txhash: string | null;
+  setTxhash: React.Dispatch<React.SetStateAction<string>>;
 };
 
 // Create context
@@ -45,7 +47,9 @@ const WalletContext = createContext<EventEmitterState>({
   handleAppConnectionRejected: () => { },
   handleRejectAllAppConnections: () => { },
   handleRetryAppConnection: () => { },
-  sendMessageToMainTab: () => { }
+  sendMessageToMainTab: () => { },
+  txhash: null,
+  setTxhash: () => { },
 });
 
 // Custom hook to use the WalletContext
@@ -66,6 +70,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   const { enable, disable } = useDarkMode();
 
   const [isLoggedEmitterCalled, setLoginEmitterStatus] = useState(false);
+  const [txhash, setTxhash] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -115,6 +120,11 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
             break;
           case WALLET_TO_WALLET_ACTION.AUTH_STATE_PARAM:
             handleAuthStateParam(event.data.state);
+            break;
+          case APP_TO_WALLET_ACTION.PUSH_SEND_TRANSACTION_RESPONSE:
+            if (event.data.data) {
+              setTxhash(event.data.data);
+            }
             break;
           default:
             console.warn("Unknown message type:", event.data);
@@ -399,6 +409,8 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         handleRejectAllAppConnections,
         handleRetryAppConnection,
         sendMessageToMainTab,
+        txhash,
+        setTxhash
       }}
     >
       {children}

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { SendTokenState, TokenFormat } from "../types";
 import { parseUnits } from "viem";
 import { usePushChain } from "../hooks/usePushChain";
-import { APP_TO_WALLET_ACTION, getAppParamValue, WALLET_TO_APP_ACTION } from "common";
+import { getAppParamValue, WALLET_TO_APP_ACTION } from "common";
 import { useEventEmitterContext } from "./EventEmitterContext";
 import { ExecuteParams } from "@pushchain/core/src/lib/orchestrator/orchestrator.types";
 
@@ -19,8 +19,6 @@ interface SendTokenContextType {
   sendingTransaction: boolean;
   handleSendTransaction: () => void;
   txhash: string | null;
-  setTxhash: (txHash: string | null) => void;
-  txError: string;
 }
 
 const SendTokenContext = createContext<SendTokenContextType | undefined>(
@@ -37,11 +35,10 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
   const [amount, setAmount] = useState<string>('');
 
   const [sendingTransaction, setSendingTransaction] = useState<boolean>(false);
-  const [txhash, setTxhash] = useState<string | null>(null);
 
   const [txError, setTxError] = useState<string>('');
 
-  const { sendMessageToMainTab } = useEventEmitterContext();
+  const { sendMessageToMainTab, setTxhash, txhash } = useEventEmitterContext();
   const { pushChainClient, executorAddress } = usePushChain();
 
   const isOpenedInIframe = !!getAppParamValue();
@@ -83,30 +80,8 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   useEffect(() => {
-    const pushMessageHandler = (event: MessageEvent) => {
-      if (
-        event.origin === getAppParamValue() ||
-        event.origin === window.location.origin
-      ) {
-        switch (event.data.type) {
-          case APP_TO_WALLET_ACTION.PUSH_SEND_TRANSACTION_RESPONSE:
-            if (event.data.data) {
-              setSendState("confirmation");
-              setTxhash(event.data.data);
-            }
-            break;
-          default:
-            console.warn("Unknown message type:", event.data);
-        }
-      }
-    };
-
-    window.addEventListener("message", pushMessageHandler);
-
-    return () => {
-      window.removeEventListener("message", pushMessageHandler);
-    };
-  }, []);
+    if (txhash && sendState !== 'confirmation') setSendState("confirmation");
+  }, [txhash])
 
   const value = {
     walletAddress: executorAddress,
