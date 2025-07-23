@@ -48,6 +48,7 @@ export { default as CircleFilled } from "./components/CircleFilled";
 export { default as CloudUpload } from "./components/CloudUpload";
 
 export { default as Copy } from "./components/Copy";
+export { default as CopyFilled } from "./components/CopyFilled";
 
 export { default as Cross } from "./components/Cross";
 export { default as CrossFilled } from "./components/CrossFilled";
@@ -141,6 +142,8 @@ export { default as Pin } from "./components/Pin";
 
 export { default as PolygonMonotone } from "./components/PolygonMonotone";
 
+export { default as PushChainMonotone } from "./components/PushChainMonotone";
+export { default as PushChainFilled } from "./components/PushChainFilled";
 export { default as PushMonotone } from "./components/PushMonotone";
 
 export { default as PublicChat } from "./components/PublicChat";

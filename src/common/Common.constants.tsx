@@ -42,6 +42,7 @@ import {
   Polygon,
   PolygonMonotone,
   PushAlpha,
+  PushChainLogo,
   PushMonotone,
   Solana,
   SolanaMonotone,
@@ -148,7 +149,7 @@ export const CHAIN_LOGO: {
 export const TOKEN_LOGO = {
   pETH: Ethereum,
   pPOL: Polygon,
-  PC: PushAlpha,
+  PC: PushChainLogo,
 };
 
 export const WALLETS_LOGO = {

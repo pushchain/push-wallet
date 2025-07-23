@@ -37,7 +37,6 @@ const TokensList: FC<TokensListProps> = ({
                 gap='spacing-xs'
                 overflow="hidden scroll"
                 height='240px'
-                padding='spacing-none spacing-xs spacing-none spacing-none'
                 customScrollbar
             >
                 {executorAddress !== result.address && <OriginChainTokenList originWalletAddress={parsedWallet} />}

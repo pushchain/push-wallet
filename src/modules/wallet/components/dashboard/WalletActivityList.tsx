@@ -14,7 +14,9 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const { data: activitiesData, isLoading: loadingActivities, refetch: refetchActivities } = useGetWalletActivities({ address: address });
+  const { data: activitiesData, isLoading: loadingActivities, refetch: refetchActivities } = useGetWalletActivities({ address: '0x4ff6af3875b3aa16d430427287787b7d4184818f' });
+
+  console.log("activitiesData", activitiesData);
 
   const handleScroll = () => {
     if (!containerRef.current || loadingActivities || !hasMore) return;

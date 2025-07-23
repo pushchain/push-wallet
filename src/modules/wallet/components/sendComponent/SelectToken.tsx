@@ -6,7 +6,6 @@ import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
 import { useSendTokenContext } from "../../../../context/SendTokenContext";
 import WalletHeader from "../dashboard/WalletHeader";
 import { useTokenManager } from "../../../../hooks/useTokenManager";
-import { TokenLogoComponent } from "common";
 import { TokensListItem } from "../TokensListItem";
 
 type SelectTokenProps = {
@@ -29,6 +28,8 @@ const SelectToken: FC<SelectTokenProps> = ({ handleTokenSelection }) => {
         token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         token.symbol.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    console.log("result", result);
 
     setTokenSelected(result);
   };
@@ -71,29 +72,9 @@ const SelectToken: FC<SelectTokenProps> = ({ handleTokenSelection }) => {
         </Box>
 
         {tokenSelected ? (
-          <Box
-            display="flex"
-            padding="spacing-xs"
-            justifyContent="space-between"
-            alignSelf="stretch"
-            alignItems="center"
-            borderRadius="radius-sm"
-            border="border-sm solid pw-int-border-secondary-color"
-            onClick={() => handleTokenSelection(tokenSelected)}
-            cursor="pointer"
-          >
-            <Box display="flex" gap="spacing-xxs" alignItems="center">
-              <TokenLogoComponent tokenSymbol={tokenSelected.symbol} />
-              <Box display="flex" flexDirection="column">
-                <Text variant="bm-semibold" color="pw-int-text-primary-color">
-                  {tokenSelected.name}
-                </Text>
-                <Text variant="bs-regular" color="pw-int-text-secondary-color">
-                  {0} {tokenSelected.symbol}
-                </Text>
-              </Box>
-            </Box>
-          </Box>
+          <>
+            <TokensListItem token={tokenSelected} handleSelectToken={handleTokenSelection} />
+          </>
         ) : (
           <Box display="flex" flexDirection="column" gap="spacing-xxs">
             <Box
