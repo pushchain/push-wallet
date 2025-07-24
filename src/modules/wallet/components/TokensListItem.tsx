@@ -4,6 +4,7 @@ import { TokenFormat } from "../../../types";
 import { modifyAddress, TokenLogoComponent } from "common";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
 import { usePushChain } from "../../../hooks/usePushChain";
+import { formatTokenValue } from "../Wallet.utils";
 
 type TokenListItemProps = {
   token: TokenFormat;
@@ -40,7 +41,7 @@ const TokensListItem: FC<TokenListItemProps> = ({ token, handleSelectToken }) =>
           <Text variant="bs-regular" color="pw-int-text-secondary-color">
             {loadingTokenBalance
               ? '0'
-              : modifyAddress(tokenBalance, 3)
+              : formatTokenValue(tokenBalance, 3)
             } {token.symbol}
           </Text>
         </Box>

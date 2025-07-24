@@ -61,6 +61,7 @@ export { default as Dash } from "./components/Dash";
 
 export { default as Dashboard } from "./components/Dashboard";
 export { default as DefaultChainMonotone } from "./components/DefaultChainMonotone";
+export { default as Doc } from "./components/Doc";
 export { default as Download } from "./components/Download";
 
 export { default as EditProfile } from "./components/EditProfile";

@@ -1,13 +1,16 @@
-import { Box, DefaultChainMonotone, ExternalLinkIcon, InternalLink, PushMonotone, Text } from '../../../../blocks';
+import { Box, DefaultChainMonotone, Doc, ExternalLinkIcon, InternalLink, PushChainMonotone, Text } from '../../../../blocks';
 import { css } from 'styled-components';
-import { convertCaipToObject, getFixedTime } from '../../Wallet.utils';
+import { convertCaipToObject, formatTokenValue, getFixedTime } from '../../Wallet.utils';
 import { centerMaskWalletAddress, CHAIN_MONOTONE_LOGO } from '../../../../common';
 
 import { FC } from 'react';
 import { formatUnits } from 'viem';
+import useUEAOrigin from '../../../../hooks/useUEAOrigin';
+import { TransactionType } from '../../Wallet.types';
+import { WalletActivitiesResponse } from '../../../../types/walletactivities.types';
 
 type WalletActivityListItemProps = {
-    transaction: any
+    transaction: WalletActivitiesResponse
     address: string
 }
 
@@ -16,12 +19,25 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
     address
 }) => {
 
+    // This tells us the to part
+    const dataTo = transaction.to ? transaction.to : transaction.created_contract;
+    const { ueaOrigin, isLoading: isLoadingOrigin } = useUEAOrigin(dataTo?.hash);
+
+    let txTypes: Array<TransactionType>;
+    if (isLoadingOrigin && dataTo?.hash != null) {
+        txTypes = [];
+    } else if (ueaOrigin?.isUEA && dataTo?.hash != null) {
+        txTypes = ['universal_tx'];
+    } else {
+        txTypes = transaction.transaction_types;
+    }
+
     function getChainIcon(chainId) {
         if (chainId == null) {
-            return <PushMonotone size={20} />
+            return <PushChainMonotone size={10} />
         }
         if (chainId === 'devnet') {
-            return <PushMonotone size={20} />;
+            return <PushChainMonotone size={10} />;
         }
         const IconComponent = CHAIN_MONOTONE_LOGO?.[chainId];
         if (IconComponent) {
@@ -31,16 +47,15 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
         }
     }
 
-    function fetchChainFromAddress(transaction: any) {
+    function fetchChainFromAddress(transaction: WalletActivitiesResponse) {
 
         let displayAddress = '';
-        const additionalRecipients = 0;
         if (address === transaction.from.hash) {
-            const recipients = transaction.to.hash;
-            displayAddress = recipients;
+            const dataTo = transaction.to ? transaction.to.hash : transaction.created_contract.hash;
+            displayAddress = dataTo;
         }
 
-        if (address === transaction.to.hash) {
+        if (address === transaction.to?.hash) {
             const recipients = transaction.from.hash;
             displayAddress = recipients;
         }
@@ -51,31 +66,19 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
             return (
                 <Box display="flex" gap="spacing-xxs" alignItems='center'>
                     <Box
-                        height="16px"
-                        width="16px"
+                        height="18px"
+                        width="18px"
                         backgroundColor="pw-int-bg-tertiary-color"
                         borderRadius="radius-xxxs"
                         display="flex"
                         alignItems="center"
                         justifyContent="center"
                     >
-                        <Text
-                            color="pw-int-text-tertiary-color"
-                            variant="os-bold"
-                            css={css`
-                    font-size: 8px;
-                    padding-top: 1px;
-                  `}
-                        >
-
-                            {getChainIcon(result.chainId)}
-                        </Text>
+                        {getChainIcon(result.chainId)}
                     </Box>
+
                     <Text color="pw-int-text-secondary-color" variant="bes-semibold">
                         {centerMaskWalletAddress(result.address)}
-                    </Text>
-                    <Text color="pw-int-text-tertiary-color" variant="bes-semibold">
-                        {additionalRecipients > 0 && ` +${additionalRecipients} more`}
                     </Text>
                 </Box>
             )
@@ -105,20 +108,24 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
                     width="32px"
                     height="32px"
                 >
-                    {address === transaction.from.hash && <ExternalLinkIcon size={16} color="pw-int-icon-brand-color" />}
-                    {address === transaction.to.hash && <InternalLink size={16} color="pw-int-icon-success-bold-color" />}
+                    {address === transaction.from.hash && transaction.to && (
+                        <ExternalLinkIcon size={16} color="pw-int-icon-brand-color" />
+                    )}
+                    {address === transaction.to?.hash && (
+                        <InternalLink size={16} color="pw-int-icon-success-bold-color" />
+                    )}
+                    {transaction.to == null && transaction.created_contract && (
+                        <Doc size={16} color="pw-int-icon-tertiary-color" />
+                    )}
                 </Box>
                 <Box display="flex" flexDirection="column" gap='spacing-xxxs'>
-                    <Text variant="bm-regular">
-                        {address === transaction.from.hash && 'Send'}
-                        {address === transaction.to.hash && 'Receive'}
-                    </Text>
+                    {showTxType(txTypes, address, transaction)}
                     {fetchChainFromAddress(transaction)}
                 </Box>
             </Box>
             <Box display="flex" flexDirection="column" gap="spacing-xxxs">
-                <Text variant="bes-regular">{formatUnits(transaction.value, 18)} PC</Text>
-                <Text variant="c-semibold" color='pw-int-icon-tertiary-color'>{getFixedTime(transaction.timestamp)}</Text>
+                <Text variant="bes-regular" textAlign='right'>{formatTokenValue(formatUnits(transaction.value, 18), 2)} PC</Text>
+                <Text variant="c-semibold" color='pw-int-icon-tertiary-color' textAlign='right'>{getFixedTime(transaction.timestamp)}</Text>
             </Box>
 
         </Box>
@@ -126,3 +133,62 @@ const WalletActivityListItem: FC<WalletActivityListItemProps> = ({
 };
 
 export { WalletActivityListItem };
+
+
+const showTxType = (
+    types: Array<TransactionType>,
+    address?: string,
+    transaction?: WalletActivitiesResponse
+) => {
+    const TYPES_ORDER: Array<TransactionType> = [
+        'blob_transaction',
+        'token_creation',
+        'contract_creation',
+        'token_transfer',
+        'contract_call',
+        'coin_transfer',
+        'universal_tx'
+    ];
+
+    let label;
+
+    const typeToShow = types.sort((t1, t2) => TYPES_ORDER.indexOf(t1) - TYPES_ORDER.indexOf(t2))[0];
+
+    switch (typeToShow) {
+        case 'universal_tx':
+            label = 'Universal Transaction';
+            break;
+        case 'contract_call':
+            label = 'Contract Call';
+            break;
+        case 'blob_transaction':
+            label = 'Blob txn';
+            break;
+        case 'contract_creation':
+            label = 'Contract Creation';
+            break;
+        case 'token_transfer':
+            label = 'Token Transfer';
+            break;
+        case 'token_creation':
+            label = 'Token Creation';
+            break;
+        case 'coin_transfer':
+            if (address && transaction) {
+                if (address === transaction.from?.hash) {
+                    label = 'Send';
+                } else if (address === transaction.to?.hash) {
+                    label = 'Receive';
+                } else {
+                    label = 'Coin Transfer';
+                }
+            } else {
+                label = 'Coin Transfer';
+            }
+            break;
+        default:
+            label = 'Transaction';
+    }
+
+    return <Text variant="bm-regular">{label}</Text>
+}

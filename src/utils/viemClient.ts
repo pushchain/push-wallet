@@ -3,8 +3,7 @@ import { pushTestnetChain } from "./chainDetails";
 
 export const viemClient = createPublicClient({
     chain: pushTestnetChain,
-    transport: http
-        (),
+    transport: http('https://evm.rpc-testnet-donut-node1.push.org/'),
 });
 
 

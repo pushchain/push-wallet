@@ -63,7 +63,6 @@ export default OriginChainTokenList;
 
 const OriginChainWalletHeader = ({ result }) => {
     const [copied, setCopied] = useState(false);
-    const [chainBoxHovered, setChainBoxHovered] = useState(false);
 
     const getMonotoneChainIcon = useCallback((chainId) => {
         if (chainId == null || chainId === 'devnet') {
@@ -76,9 +75,6 @@ const OriginChainWalletHeader = ({ result }) => {
             return <DefaultChainMonotone size={20} />;
         }
     }, []);
-
-    const handleMouseEnter = useCallback(() => setChainBoxHovered(true), []);
-    const handleMouseLeave = useCallback(() => setChainBoxHovered(false), []);
 
     return (
         <Box className='flex' justifyContent="space-between">
@@ -113,19 +109,16 @@ const OriginChainWalletHeader = ({ result }) => {
             <Box
                 display="flex"
                 alignItems="center"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
             >
-                {chainBoxHovered && (
-                    <Text
-                        variant="os-regular"
-                        color="pw-int-text-tertiary-color"
-                        textTransform='capitalize'
-                        css={css`margin-right: 8px;`}
-                    >
-                        Origin Chain
-                    </Text>
-                )}
+                <Text
+                    variant="os-regular"
+                    color="pw-int-text-tertiary-color"
+                    textTransform='capitalize'
+                    css={css`margin-right: 8px;`}
+                >
+                    Origin Chain Funds
+                </Text>
+
                 {getMonotoneChainIcon(result.chainId)}
             </Box>
         </Box>

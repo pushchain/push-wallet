@@ -47,21 +47,21 @@ const WalletTabs: FC<WalletTabsProps> = ({
               />
             ),
           },
-          ...(state.wallet
-            ? [
-              {
-                label: "My Wallets",
-                key: "wallets",
-                children: (
-                  <MyWallets
-                    walletList={walletList}
-                    setSelectedWallet={setSelectedWallet}
-                    selectedWallet={selectedWallet}
-                  />
-                ),
-              },
-            ]
-            : []),
+          // ...(state.wallet
+          //   ? [
+          //     {
+          //       label: "My Wallets",
+          //       key: "wallets",
+          //       children: (
+          //         <MyWallets
+          //           walletList={walletList}
+          //           setSelectedWallet={setSelectedWallet}
+          //           selectedWallet={selectedWallet}
+          //         />
+          //       ),
+          //     },
+          //   ]
+          //   : []),
         ]}
         activeKey={activeTab}
         onChange={(activeKey: 'tokens' | 'activity' | 'rewards' | 'wallets') => setActiveTab(activeKey)}

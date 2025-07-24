@@ -43,6 +43,7 @@ import {
   PolygonMonotone,
   PushAlpha,
   PushChainLogo,
+  PushChainMonotone,
   PushMonotone,
   Solana,
   SolanaMonotone,
@@ -121,7 +122,7 @@ export const CHAIN_MONOTONE_LOGO: {
   "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": SolanaMonotone, // mainnet
   "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z": SolanaMonotone, // testnet
   EtWTRABZaYq6iMfeYKouRu166VU2xqa1: SolanaMonotone, // devnet
-  devnet: PushMonotone,
+  devnet: PushChainMonotone,
 };
 
 export const CHAIN_LOGO: {
