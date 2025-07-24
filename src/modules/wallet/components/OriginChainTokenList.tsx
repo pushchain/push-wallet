@@ -119,7 +119,7 @@ const OriginChainWalletHeader = ({ result }) => {
                     Origin Chain Funds
                 </Text>
 
-                {getMonotoneChainIcon(result.chainId)}
+                {/* {getMonotoneChainIcon(result.chainId)} */}
             </Box>
         </Box>
 
