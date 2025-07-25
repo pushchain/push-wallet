@@ -8,6 +8,7 @@ import { TokenFormat } from '../../../types';
 import { usePushChain } from '../../../hooks/usePushChain';
 import { TokensListItem } from './TokensListItem';
 import { truncateWords } from 'common';
+import { isAddress } from 'viem';
 
 const AddTokens: FC = () => {
     const [tokenAddress, setTokenAddress] = useState<string | null>(null);
@@ -21,18 +22,23 @@ const AddTokens: FC = () => {
     const { executorAddress } = usePushChain();
 
     const handleSearch = async () => {
+        setError('');
         if (!tokenAddress) return;
-
+        if (!isAddress(tokenAddress)) {
+            setError('Invalid EVM address');
+            return;
+        }
         setLoadingTokens(true)
         try {
             const tokenDetails = await fetchTokenDetails(tokenAddress as `0x${string}`);
-
             if (tokenDetails) {
                 setToken(tokenDetails)
+            } else {
+                setError('No token found at this address');
             }
         } catch (error) {
             console.warn("Error in fetching token details", error);
-            setError(error.message)
+            setError(error.message || 'No token found');
         } finally {
             setLoadingTokens(false);
         }
@@ -45,17 +51,15 @@ const AddTokens: FC = () => {
     };
 
     const handleAddToken = async () => {
-
         if (!token) {
             handleSearch();
+            return;
         }
-
         const res = await addToken(token);
-
         if (res.error) {
-            console.log("Error in adding tokens >>", res.error)
+            setError(res.error);
+            return;
         }
-
         if (res.success) {
             console.log("Successfully added tokens");
             setActiveState('walletDashboard')
@@ -86,7 +90,6 @@ const AddTokens: FC = () => {
                 </Text>
             </Box>}
 
-
             <Box display='flex' flexDirection='column' justifyContent='space-between' css={css`flex:1`}>
                 <Box
                     display="flex"
@@ -109,8 +112,12 @@ const AddTokens: FC = () => {
                             onKeyDown={handleKeyPress}
                         >
                             <TextInput
-                                value={tokenAddress}
-                                onChange={(e) => setTokenAddress(e.target.value)}
+                                value={tokenAddress || ''}
+                                onChange={(e) => {
+                                    setTokenAddress(e.target.value);
+                                    setToken(null);
+                                    setError('');
+                                }}
                                 placeholder="Enter Token Address"
                                 label='Token Contract address'
                                 description='Add the contract address of the token you want to add'
@@ -119,7 +126,6 @@ const AddTokens: FC = () => {
                             `}
                             />
                         </Box>
-
                     </Box>
 
                     {loadingTokenDetails && (
@@ -132,11 +138,30 @@ const AddTokens: FC = () => {
                 </Box>
                 <Box display='flex' gap='spacing-xs'>
                     <Button variant='outline' css={css`flex:1`} onClick={() => setActiveState('walletDashboard')}>Cancel</Button>
-                    <Button onClick={handleAddToken} css={css`flex:2`}>Add</Button>
+                    {!token ? (
+                        <Button
+                            onClick={handleSearch}
+                            css={css`flex:2`}
+                            disabled={
+                                loadingTokenDetails ||
+                                !tokenAddress ||
+                                !isAddress(tokenAddress) ||
+                                !!error
+                            }
+                        >
+                            {loadingTokenDetails ? 'Searching...' : 'Search'}
+                        </Button>
+                    ) : (
+                        <Button
+                            onClick={handleAddToken}
+                            css={css`flex:2`}
+                            disabled={loadingTokenDetails}
+                        >
+                            Add
+                        </Button>
+                    )}
                 </Box>
-
             </Box>
-
         </Box>
     );
 };
