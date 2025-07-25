@@ -1,4 +1,4 @@
-import { Box, Button, Spinner, Text, TextInput } from 'blocks';
+import { Box, Button, Spinner, Text, TextInput, WarningCircleFilled } from 'blocks';
 import React, { FC, useState } from 'react';
 import { css } from 'styled-components';
 import WalletHeader from './dashboard/WalletHeader';
@@ -7,11 +7,13 @@ import { useTokenManager } from '../../../hooks/useTokenManager';
 import { TokenFormat } from '../../../types';
 import { usePushChain } from '../../../hooks/usePushChain';
 import { TokensListItem } from './TokensListItem';
+import { truncateWords } from 'common';
 
 const AddTokens: FC = () => {
     const [tokenAddress, setTokenAddress] = useState<string | null>(null);
     const [token, setToken] = useState<TokenFormat | null>(null);
     const [loadingTokenDetails, setLoadingTokens] = useState<boolean>(false);
+    const [error, setError] = useState('');
 
     const { addToken, fetchTokenDetails } = useTokenManager();
     const { setActiveState } = useWalletDashboard();
@@ -29,7 +31,8 @@ const AddTokens: FC = () => {
                 setToken(tokenDetails)
             }
         } catch (error) {
-            console.log("Error in fetching token details", error);
+            console.warn("Error in fetching token details", error);
+            setError(error.message)
         } finally {
             setLoadingTokens(false);
         }
@@ -68,6 +71,22 @@ const AddTokens: FC = () => {
             position="relative"
         >
             <WalletHeader walletAddress={executorAddress} handleBackButton={() => setActiveState('walletDashboard')} />
+
+            {error && <Box
+                display='flex'
+                backgroundColor="pw-int-bg-danger-bold"
+                alignItems='center'
+                padding="spacing-xs"
+                borderRadius="radius-sm"
+                gap="spacing-xxs"
+            >
+                <WarningCircleFilled color="pw-int-icon-danger-subtle-color" size={20} />
+                <Text wrap variant="h5-semibold" color="pw-int-text-danger-subtle-color">
+                    {truncateWords(error, 10)}
+                </Text>
+            </Box>}
+
+
             <Box display='flex' flexDirection='column' justifyContent='space-between' css={css`flex:1`}>
                 <Box
                     display="flex"

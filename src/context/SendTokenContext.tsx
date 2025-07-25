@@ -19,6 +19,7 @@ interface SendTokenContextType {
   sendingTransaction: boolean;
   handleSendTransaction: () => void;
   txhash: string | null;
+  txError: string
 }
 
 const SendTokenContext = createContext<SendTokenContextType | undefined>(

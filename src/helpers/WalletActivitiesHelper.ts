@@ -44,7 +44,5 @@ export const fetchWalletActivities = async ({
         },
     });
 
-    console.log("Response >>>", response);
-
     return response.data;
 };
