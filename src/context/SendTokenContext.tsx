@@ -46,6 +46,8 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
   const sendToken = async (token: TokenFormat) => {
     try {
 
+      setSendingTransaction(true);
+      setTxError('')
       const value = parseUnits((amount || '0').toString(), token.decimals);
 
       const encodedData = encodeFunctionData({
