@@ -46,8 +46,11 @@ const TokenLogoComponent = ({ tokenSymbol }: { tokenSymbol: string }) => {
                 padding="spacing-xxs"
                 borderRadius="radius-sm"
                 backgroundColor="pw-int-bg-tertiary-color"
+                width="36px"
+                height="36px"
+                justifyContent="center"
             >
-                <Text variant='bl-regular' color='pw-int-text-secondary-color'>{tokenSymbol}</Text>
+                <Text variant='bl-regular' color='pw-int-text-secondary-color'>{tokenSymbol.charAt(0)}</Text>
             </Box>
         )
     }

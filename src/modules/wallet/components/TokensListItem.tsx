@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Box, Text } from "blocks";
 import { TokenFormat } from "../../../types";
-import { modifyAddress, TokenLogoComponent } from "common";
+import { TokenLogoComponent } from "common";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
 import { usePushChain } from "../../../hooks/usePushChain";
 import { formatTokenValue } from "../Wallet.utils";

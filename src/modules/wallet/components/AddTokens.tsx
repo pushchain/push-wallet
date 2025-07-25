@@ -6,6 +6,7 @@ import { useWalletDashboard } from '../../../context/WalletDashboardContext';
 import { useTokenManager } from '../../../hooks/useTokenManager';
 import { TokenFormat } from '../../../types';
 import { usePushChain } from '../../../hooks/usePushChain';
+import { TokensListItem } from './TokensListItem';
 
 const AddTokens: FC = () => {
     const [tokenAddress, setTokenAddress] = useState<string | null>(null);
@@ -14,7 +15,6 @@ const AddTokens: FC = () => {
 
     const { addToken, fetchTokenDetails } = useTokenManager();
     const { setActiveState } = useWalletDashboard();
-
 
     const { executorAddress } = usePushChain();
 
@@ -108,27 +108,7 @@ const AddTokens: FC = () => {
                     )}
 
                     {token && (
-                        <Box
-                            display='flex'
-                            padding="spacing-xs"
-                            backgroundColor="pw-int-bg-secondary-color"
-                            borderRadius="radius-sm"
-                            flexDirection='row'
-                            alignItems='center'
-                            gap='spacing-xxs'
-                        >
-                            <Box
-                                cursor="pointer"
-                                display="flex"
-                                alignItems="center"
-                                padding="spacing-xxs"
-                                borderRadius="radius-sm"
-                                backgroundColor="pw-int-bg-tertiary-color"
-                            >
-                                <Text variant='bl-regular' color='pw-int-text-secondary-color'>{token.symbol}</Text>
-                            </Box>
-                            <Text color="pw-int-text-primary-color" variant='bm-semibold'>{token.name}</Text>
-                        </Box>
+                        <TokensListItem token={token} />
                     )}
                 </Box>
                 <Box display='flex' gap='spacing-xs'>
