@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { SendTokenState, TokenFormat } from "../types";
-import { parseUnits } from "viem";
+import { encodeFunctionData, erc20Abi, parseUnits } from "viem";
 import { usePushChain } from "../hooks/usePushChain";
 import { getAppParamValue, WALLET_TO_APP_ACTION } from "common";
 import { useEventEmitterContext } from "./EventEmitterContext";
@@ -43,8 +43,48 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
 
   const isOpenedInIframe = !!getAppParamValue();
 
-  const handleSendTransaction = async () => {
+  const sendToken = async (token: TokenFormat) => {
+    try {
 
+      const value = parseUnits((amount || '0').toString(), token.decimals);
+
+      const encodedData = encodeFunctionData({
+        abi: erc20Abi,
+        functionName: 'transfer',
+        args: [receiverAddress as `0x${string}`, value]
+      })
+
+      const payload: ExecuteParams = {
+        to: token.address as `0x${string}`,
+        value: BigInt(0),
+        data: encodedData,
+      }
+
+      if (isOpenedInIframe) {
+        sendMessageToMainTab({
+          type: WALLET_TO_APP_ACTION.PUSH_SEND_TRANSACTION,
+          data: { ...payload },
+        });
+
+        return;
+      }
+
+      const receipt = await pushChainClient.universal.sendTransaction(payload);
+
+      if (receipt.hash) {
+        setSendState("confirmation");
+        setTxhash(receipt.hash);
+      }
+      setSendingTransaction(false);
+
+    } catch (error) {
+      console.error("Error in sending transaction", error);
+      setTxError(error.message)
+      setSendingTransaction(false);
+    }
+  }
+
+  const sendNativeToken = async () => {
     try {
       setSendingTransaction(true);
       setTxError('')
@@ -72,11 +112,22 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
         setTxhash(receipt.hash);
       }
       setSendingTransaction(false);
+
     } catch (error) {
       console.error("Error in sending transaction", error);
       setTxError(error.message)
       setSendingTransaction(false);
     }
+  }
+
+  const handleSendTransaction = async () => {
+    // if token address is present so it is ERC20 token
+    if (tokenSelected.address) {
+      sendToken(tokenSelected);
+    } else {
+      sendNativeToken();
+    }
+
   };
 
   useEffect(() => {
