@@ -96,7 +96,7 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
           `}
           onClick={handleClose}
         >
-          <Cross size={24} />
+          <Cross size={24} color='pw-int-icon-primary-color' />
         </Box>
         {children}
       </Box>
