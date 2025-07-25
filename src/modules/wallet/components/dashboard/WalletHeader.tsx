@@ -2,6 +2,7 @@ import {
     Back,
     Box,
     Copy,
+    CopyFilled,
     Dropdown,
     Logout,
     Menu,
@@ -62,12 +63,12 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
         <Box
             display="flex"
             justifyContent={activeState === "walletDashboard" ? "space-between" : "flex-start"}
-            alignItems="center"
-            width="100%"
+            alignItems="flex-start"
+            width="90%"
             gap="spacing-xxs"
         >
             {handleBackButton && (
-                <Box cursor="pointer">
+                <Box cursor="pointer" display='flex'>
                     <Back
                         size={24}
                         color="pw-int-icon-primary-color"
@@ -77,7 +78,10 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
             )}
 
             {activeState === 'receive' && (
-                <Box>
+                <Box
+                    textAlign='center'
+                    css={css`flex:1`}
+                >
                     <Text variant="h3-semibold">Receive Address</Text>
                 </Box>
             )}
@@ -111,19 +115,25 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                         <Text variant="os-regular" color="pw-int-text-tertiary-color">
                             {centerMaskWalletAddress(walletAddress, 5)}
                         </Text>
-                        {copied ? (
-                            <TickCircleFilled
-                                autoSize
-                                size={14}
-                                color="pw-int-icon-success-bold-color"
-                            />
-                        ) : (
-                            <Copy
-                                color="pw-int-icon-tertiary-color"
-                                size={14}
-                                onClick={() => handleCopy(walletAddress, setCopied)}
-                            />
-                        )}
+                        <Box
+                            cursor="pointer"
+                        >
+
+                            {copied ? (
+                                <TickCircleFilled
+                                    autoSize
+                                    size={14}
+                                    color="pw-int-icon-success-bold-color"
+                                />
+                            ) : (
+                                <CopyFilled
+                                    color="pw-int-icon-tertiary-color"
+                                    size={14}
+                                    onClick={() => handleCopy(walletAddress, setCopied)}
+                                />
+                            )}
+
+                        </Box>
                     </Box>
                 </Box>
             </Box>}

@@ -11,6 +11,7 @@ import WalletHeader from "./WalletHeader";
 import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
 import { useWalletOperations } from "../../../../hooks/useWalletOperations";
 import { FAUCET_URL } from "common";
+import { formatTokenValue } from "../../Wallet.utils";
 
 export type WalletProfileProps = {
   walletAddress: string;
@@ -73,7 +74,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ walletAddress }) => {
               variant="h2-semibold"
               textAlign="center"
             >
-              {Number(Number(balance ?? 0).toFixed(3)).toLocaleString()} PC
+              {formatTokenValue((Number(balance ?? 0).toFixed(3)), 2)} PC
             </Text>
           )}
         </Box>

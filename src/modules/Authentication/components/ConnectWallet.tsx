@@ -123,7 +123,7 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
       {externalWalletAuthState === "rejected" && (
         <DrawerWrapper>
           <ErrorContent
-            icon={<Info size={32} color="pw-int-error-primary-subtle-color" />}
+            icon={<Info size={32} color="pw-int-icon-danger-bold-color" />}
             title="Could not Connect"
             subTitle="Please try connecting again"
             onClose={() =>

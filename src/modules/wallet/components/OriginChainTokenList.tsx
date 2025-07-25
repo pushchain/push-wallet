@@ -1,4 +1,4 @@
-import { Box, Copy, DefaultChainMonotone, PushMonotone, Text, TickCircleFilled } from 'blocks';
+import { Box, CopyFilled, DefaultChainMonotone, PushMonotone, Text, TickCircleFilled } from 'blocks';
 import { centerMaskWalletAddress, CHAIN_MONOTONE_LOGO, handleCopy } from 'common';
 import React, { useMemo, useState, useCallback } from 'react';
 import { OriginChainTokenListItem } from './OriginChainTokenListItem';
@@ -29,8 +29,6 @@ const OriginChainTokenList = ({
     originWalletAddress: string
 }) => {
 
-    const [copied, setCopied] = useState(false);
-
     const { result } = convertCaipToObject(originWalletAddress);
 
     const tokens = useMemo(() => {
@@ -51,36 +49,7 @@ const OriginChainTokenList = ({
             padding="spacing-xs"
             gap='spacing-xs'
         >
-            <Box className='flex' justifyContent="space-between">
-
-                <Box
-                    display="flex"
-                    gap="spacing-xxxs"
-                    justifyContent="center"
-                    alignItems="center"
-                >
-                    <DefaultChainMonotone />
-                    <Text variant="os-regular" color="pw-int-text-tertiary-color">
-                        {centerMaskWalletAddress(result.address, 5)}
-                    </Text>
-                    {copied ? (
-                        <TickCircleFilled
-                            autoSize
-                            size={14}
-                            color="pw-int-icon-success-bold-color"
-                        />
-                    ) : (
-                        <Copy
-                            color="pw-int-icon-tertiary-color"
-                            size={14}
-                            onClick={() => handleCopy(result.address, setCopied)}
-                        />
-                    )}
-                </Box>
-
-                <OriginChain result={result} />
-
-            </Box>
+            <OriginChainWalletHeader result={result} />
 
             {tokens && tokens.map((token, id) => (
                 <OriginChainTokenListItem token={token} walletDetail={result} key={id} />
@@ -92,8 +61,8 @@ const OriginChainTokenList = ({
 
 export default OriginChainTokenList;
 
-const OriginChain = ({ result }) => {
-    const [chainBoxHovered, setChainBoxHovered] = useState(false);
+const OriginChainWalletHeader = ({ result }) => {
+    const [copied, setCopied] = useState(false);
 
     const getMonotoneChainIcon = useCallback((chainId) => {
         if (chainId == null || chainId === 'devnet') {
@@ -107,27 +76,52 @@ const OriginChain = ({ result }) => {
         }
     }, []);
 
-    const handleMouseEnter = useCallback(() => setChainBoxHovered(true), []);
-    const handleMouseLeave = useCallback(() => setChainBoxHovered(false), []);
-
     return (
-        <Box
-            display="flex"
-            alignItems="center"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-        >
-            {chainBoxHovered && (
+        <Box className='flex' justifyContent="space-between">
+            <Box
+                display="flex"
+                gap="spacing-xxxs"
+                justifyContent="center"
+                alignItems="center"
+            >
+                <DefaultChainMonotone />
+                <Text variant="os-regular" color="pw-int-text-tertiary-color">
+                    {centerMaskWalletAddress(result.address, 5)}
+                </Text>
+                <Box
+                    cursor='pointer'
+                >
+                    {copied ? (
+                        <TickCircleFilled
+                            autoSize
+                            size={14}
+                            color="pw-int-icon-success-bold-color"
+                        />
+                    ) : (
+                        <CopyFilled
+                            color="pw-int-icon-tertiary-color"
+                            size={14}
+                            onClick={() => handleCopy(result.address, setCopied)}
+                        />
+                    )}
+                </Box>
+            </Box>
+            <Box
+                display="flex"
+                alignItems="center"
+            >
                 <Text
                     variant="os-regular"
                     color="pw-int-text-tertiary-color"
                     textTransform='capitalize'
                     css={css`margin-right: 8px;`}
                 >
-                    Origin Chain
+                    Origin Chain Funds
                 </Text>
-            )}
-            {getMonotoneChainIcon(result.chainId)}
+
+                {/* {getMonotoneChainIcon(result.chainId)} */}
+            </Box>
         </Box>
+
     )
 }

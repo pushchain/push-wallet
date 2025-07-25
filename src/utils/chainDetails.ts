@@ -15,6 +15,6 @@ export const pushTestnetChain = defineChain({
         },
     },
     blockExplorers: {
-        default: { name: 'Explorer', url: 'https://explorer.testnet.push.org' },
+        default: { name: 'Explorer', url: 'https://donut.push.network/' },
     },
 })

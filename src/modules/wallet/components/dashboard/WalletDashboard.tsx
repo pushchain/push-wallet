@@ -58,7 +58,7 @@ const WalletDashboard: FC = () => {
             {state.messageSignState === "rejected" && (
                 <DrawerWrapper>
                     <ErrorContent
-                        icon={<Info size={32} color="pw-int-icon-danger-subtle-color" />}
+                        icon={<Info size={32} color="pw-int-icon-danger-bold-color" />}
                         title="Could not verify"
                         subTitle="Please try again"
                         onClose={() =>

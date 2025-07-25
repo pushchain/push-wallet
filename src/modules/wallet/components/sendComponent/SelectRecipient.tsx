@@ -188,14 +188,20 @@ const SelectRecipient = () => {
           </Button>
           <Button
             onClick={() => {
-              if (receiverAddress && amount && !isNaN(Number(amount)) && Number(amount) > 0) {
+              if (receiverAddress && amount && !isNaN(Number(amount)) && Number(amount) > 0 && Number(amount) <= Number(tokenBalance)) {
                 setSendState("review");
               }
             }}
             css={css`
               flex: 2;
             `}
-            disabled={!receiverAddress || !amount || isNaN(Number(amount)) || Number(amount) <= 0}
+            disabled={
+              !receiverAddress ||
+              !amount ||
+              isNaN(Number(amount)) ||
+              Number(amount) <= 0 ||
+              Number(amount) > Number(tokenBalance)
+            }
           >
             Next
           </Button>

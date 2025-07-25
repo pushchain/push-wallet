@@ -201,4 +201,13 @@ export async function getNativeTokenBalance(token, walletDetail): Promise<{ bala
   } catch (err) {
     return { balance: '0', loading: false };
   }
-} 
+}
+
+export function formatTokenValue(value: string | number | bigint, decimalPlaces: number = 3): string {
+  const num = typeof value === 'bigint' ? Number(value) : Number(value);
+  if (isNaN(num)) return String(value);
+  if (Math.abs(num) >= 100000) {
+    return num.toExponential(2);
+  }
+  return num.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: decimalPlaces });
+}

@@ -25,6 +25,8 @@ export enum WALLET_TO_APP_ACTION {
   CONNECT_WALLET = "connectWallet",
 
   PUSH_SEND_TRANSACTION = 'pushSendTransaction',
+
+  CLOSE_IFRAME = 'closeIFrame',
 }
 
 export enum APP_TO_WALLET_ACTION {
