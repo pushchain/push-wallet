@@ -5,7 +5,6 @@ import {
   ITypedData,
   IWalletProvider,
 } from "../types/wallet.types";
-import { PushChain } from "@pushchain/core";
 
 type ExternalWalletContextType = {
   externalWallet: ExternalWalletType | null;

@@ -1,7 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { SendTokenState, TokenFormat } from "../types";
 import { parseUnits } from "viem";
 import { usePushChain } from "../hooks/usePushChain";
+import { getAppParamValue, WALLET_TO_APP_ACTION } from "common";
+import { useEventEmitterContext } from "./EventEmitterContext";
+import { ExecuteParams } from "@pushchain/core/src/lib/orchestrator/orchestrator.types";
 
 interface SendTokenContextType {
   walletAddress: string;
@@ -16,8 +19,6 @@ interface SendTokenContextType {
   sendingTransaction: boolean;
   handleSendTransaction: () => void;
   txhash: string | null;
-  setTxhash: (txHash: string | null) => void;
-  txError: string;
 }
 
 const SendTokenContext = createContext<SendTokenContextType | undefined>(
@@ -34,11 +35,13 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
   const [amount, setAmount] = useState<string>('');
 
   const [sendingTransaction, setSendingTransaction] = useState<boolean>(false);
-  const [txhash, setTxhash] = useState<string | null>(null);
 
   const [txError, setTxError] = useState<string>('');
 
+  const { sendMessageToMainTab, setTxhash, txhash } = useEventEmitterContext();
   const { pushChainClient, executorAddress } = usePushChain();
+
+  const isOpenedInIframe = !!getAppParamValue();
 
   const handleSendTransaction = async () => {
 
@@ -47,24 +50,38 @@ export const SendTokenProvider: React.FC<{ children: ReactNode }> = ({
       setTxError('')
       const value = parseUnits((amount || '0').toString(), tokenSelected.decimals);
 
-
-      const receipt = await pushChainClient.universal.sendTransaction({
+      const payload: ExecuteParams = {
         to: receiverAddress as `0x${string}`,
         value: value,
         data: "0x",
-      });
+      }
+
+      if (isOpenedInIframe) {
+        sendMessageToMainTab({
+          type: WALLET_TO_APP_ACTION.PUSH_SEND_TRANSACTION,
+          data: { ...payload, value: value.toString() },
+        });
+
+        return;
+      }
+
+      const receipt = await pushChainClient.universal.sendTransaction(payload);
 
       if (receipt.hash) {
         setSendState("confirmation");
         setTxhash(receipt.hash);
       }
+      setSendingTransaction(false);
     } catch (error) {
       console.error("Error in sending transaction", error);
       setTxError(error.message)
-    } finally {
       setSendingTransaction(false);
     }
   };
+
+  useEffect(() => {
+    if (txhash && sendState !== 'confirmation') setSendState("confirmation");
+  }, [txhash])
 
   const value = {
     walletAddress: executorAddress,
