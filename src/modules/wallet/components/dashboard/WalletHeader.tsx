@@ -63,12 +63,12 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
         <Box
             display="flex"
             justifyContent={activeState === "walletDashboard" ? "space-between" : "flex-start"}
-            alignItems="center"
-            width="100%"
+            alignItems="flex-start"
+            width="90%"
             gap="spacing-xxs"
         >
             {handleBackButton && (
-                <Box cursor="pointer">
+                <Box cursor="pointer" display='flex'>
                     <Back
                         size={24}
                         color="pw-int-icon-primary-color"
