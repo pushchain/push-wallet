@@ -68,7 +68,7 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
             gap="spacing-xxs"
         >
             {handleBackButton && (
-                <Box cursor="pointer" display='flex'>
+                <Box cursor="pointer" display='flex' alignItems='center' height='100%'>
                     <Back
                         size={24}
                         color="pw-int-icon-primary-color"
@@ -159,7 +159,9 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                         </Menu>
                     }
                 >
-                    <Box cursor="pointer">
+                    <Box 
+                        cursor="pointer"
+                    >
                         <Settings size={24} color="pw-int-icon-primary-color" />
                     </Box>
                 </Dropdown>
