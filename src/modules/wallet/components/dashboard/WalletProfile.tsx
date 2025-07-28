@@ -74,7 +74,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ walletAddress }) => {
               variant="h2-semibold"
               textAlign="center"
             >
-              {formatTokenValue((Number(balance ?? 0).toFixed(3)), 2)} PC
+              {formatTokenValue((Number(balance ?? 0)), (Number(balance ?? 0) < 1 ? 6 : 2))} PC
             </Text>
           )}
         </Box>

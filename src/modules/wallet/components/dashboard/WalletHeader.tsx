@@ -1,9 +1,10 @@
 import {
     Back,
     Box,
-    Copy,
     CopyFilled,
     Dropdown,
+    ExternalLink,
+    ExternalLinkIcon,
     Logout,
     Menu,
     MenuItem,
@@ -13,6 +14,7 @@ import {
 } from "blocks";
 import {
     centerMaskWalletAddress,
+    EXPLORER_URL,
     getAppParamValue,
     handleCopy,
     usePersistedQuery,
@@ -117,6 +119,7 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                         </Text>
                         <Box
                             cursor="pointer"
+                            display='flex'
                         >
 
                             {copied ? (
@@ -132,7 +135,17 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                                     onClick={() => handleCopy(walletAddress, setCopied)}
                                 />
                             )}
-
+                        </Box>
+                        <Box
+                            cursor="pointer"
+                            display='flex'
+                        >
+                            <ExternalLinkIcon
+                                autoSize
+                                size={16}
+                                color="pw-int-icon-tertiary-color"
+                                onClick={() => window.open(`${EXPLORER_URL}/address/${walletAddress}`, "_blank")}
+                            />
                         </Box>
                     </Box>
                 </Box>
