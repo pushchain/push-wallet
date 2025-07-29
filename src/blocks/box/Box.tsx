@@ -16,7 +16,7 @@ const StyledBox = styled.div.withConfig({
   shouldForwardProp: (prop, defaultValidatorFn) =>
     !boxRestrictedCSSPropKeys.includes(prop as keyof BoxCSSProps) &&
     defaultValidatorFn(prop),
-})<BoxProps>`
+}) <BoxProps>`
   /* Responsive props */
   ${(props) => getBoxResponsiveCSS(props)}
 
@@ -35,6 +35,8 @@ const StyledBox = styled.div.withConfig({
   ${(props) =>
     props.customScrollbar &&
     `
+    margin:0 -20px 0 0;
+    padding:0 8px 0 0;
     &::-webkit-scrollbar-track {
       background-color: none;
       border-radius: 9px;
