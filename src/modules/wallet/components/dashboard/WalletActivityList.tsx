@@ -4,6 +4,7 @@ import { Box, Text, Spinner } from "../../../../blocks";
 import { useGetWalletActivities } from "../../../../hooks/useGetWalletActivities";
 import { WalletActivityListItem } from "./WalletActivityListItem";
 import { WalletActivitiesResponse } from "src/types/walletactivities.types";
+import { css } from "styled-components";
 
 export type WalletActivityListProps = {
   address: string;
@@ -108,6 +109,10 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
       onScroll={handleScroll}
       ref={containerRef}
       customScrollbar
+      css={css`
+        padding-right: 6px;
+        margin-right: -8px;
+      `}
     >
       {/* Render all transactions */}
       {allTransactions.map((transaction: WalletActivitiesResponse, index: number) => {

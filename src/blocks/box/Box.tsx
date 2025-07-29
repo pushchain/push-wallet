@@ -35,8 +35,7 @@ const StyledBox = styled.div.withConfig({
   ${(props) =>
     props.customScrollbar &&
     `
-    margin:0 -20px 0 0;
-    padding:0 8px 0 0;
+    margin:0 -2px 0 0;
     &::-webkit-scrollbar-track {
       background-color: none;
       border-radius: 9px;
@@ -44,7 +43,7 @@ const StyledBox = styled.div.withConfig({
 
     &::-webkit-scrollbar {
       background-color: none;
-      width: 4px;
+      width: 2px;
     }
 
     &::-webkit-scrollbar-thumb {
