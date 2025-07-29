@@ -110,6 +110,10 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
       onScroll={handleScroll}
       ref={containerRef}
       customScrollbar
+      css={css`
+        padding-right: 6px;
+        margin-right: -8px;
+      `}
     >
       {/* Render all transactions */}
       {allTransactions.map((transaction: WalletActivitiesResponse, index: number) => {

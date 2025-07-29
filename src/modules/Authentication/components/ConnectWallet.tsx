@@ -67,7 +67,7 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
             display="flex"
             gap="spacing-xxs"
             height="299px"
-            overflow="hidden auto"
+            overflow="hidden scroll"
             customScrollbar
           >
             {!selectedWalletCategory ? (

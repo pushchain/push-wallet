@@ -7,6 +7,7 @@ import OriginChainTokenList from './OriginChainTokenList';
 import { useGlobalState } from '../../../context/GlobalContext';
 import { usePushChain } from '../../../hooks/usePushChain';
 import { convertCaipToObject, getWalletlist } from '../Wallet.utils';
+import { css } from 'styled-components';
 
 type TokensListProps = {
     setActiveState: (activeStates: ActiveStates) => void;
@@ -38,6 +39,10 @@ const TokensList: FC<TokensListProps> = ({
                 overflow="hidden scroll"
                 height='240px'
                 customScrollbar
+                css={css`
+                    padding-right: 6px;
+                    margin-right: -8px;
+                `}
             >
                 {executorAddress !== result.address && <OriginChainTokenList originWalletAddress={parsedWallet} />}
                 {tokens.map((token: TokenFormat) => (

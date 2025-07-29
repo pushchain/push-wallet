@@ -83,7 +83,6 @@ const SelectToken: FC<SelectTokenProps> = ({ handleTokenSelection }) => {
               gap='spacing-xs'
               overflow="hidden scroll"
               height='240px'
-              padding='spacing-none spacing-xs spacing-none spacing-none'
               customScrollbar
             >
               {tokens.map((token: TokenFormat) => (
