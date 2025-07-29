@@ -4,6 +4,7 @@ import { Box, Text, Spinner } from "../../../../blocks";
 import { useGetWalletActivities } from "../../../../hooks/useGetWalletActivities";
 import { WalletActivityListItem } from "./WalletActivityListItem";
 import { WalletActivitiesResponse } from "src/types/walletactivities.types";
+import { EXPLORER_URL } from "common";
 import { css } from "styled-components";
 
 export type WalletActivityListProps = {
@@ -119,15 +120,22 @@ const WalletActivityList: FC<WalletActivityListProps> = ({ address }) => {
         const isLast = index === allTransactions.length - 1;
 
         return (
-          <div
+          <Box
             key={`${transaction.hash}-${index}`}
             ref={isLast ? lastTransactionElementRef : null}
+            onClick={() => window.open(`${EXPLORER_URL}/tx/${transaction.hash}`, "_blank")}
+            cursor="pointer"
+            css={css`
+                &:hover {
+                  background-color: var(--pw-int-bg-primary-color);
+                }
+            `}
           >
             <WalletActivityListItem
               transaction={transaction}
               address={address}
             />
-          </div>
+          </Box>
         );
       })}
 

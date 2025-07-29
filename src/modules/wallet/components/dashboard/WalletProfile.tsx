@@ -74,17 +74,17 @@ const WalletProfile: FC<WalletProfileProps> = ({ walletAddress }) => {
               variant="h2-semibold"
               textAlign="center"
             >
-              {formatTokenValue((Number(balance ?? 0).toFixed(3)), 2)} PC
+              {formatTokenValue((Number(balance ?? 0)), (Number(balance ?? 0) < 1 ? 6 : 2))} PC
             </Text>
           )}
         </Box>
       </Box>
-      <Box display="flex" flexDirection="row" justifyContent="space-between">
+      <Box display="flex" flexDirection="row" justifyContent="space-between" gap='spacing-xxs'>
         {buttonConfigs.map(({ icon: Icon, label, onClick }) => (
           <Box
             key={label}
             display="flex"
-            minWidth="100px"
+            width='100%'
             flexDirection="column"
             padding="spacing-xs"
             justifyContent="center"

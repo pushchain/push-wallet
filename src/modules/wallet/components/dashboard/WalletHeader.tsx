@@ -1,9 +1,10 @@
 import {
     Back,
     Box,
-    Copy,
     CopyFilled,
     Dropdown,
+    ExternalLink,
+    ExternalLinkIcon,
     Logout,
     Menu,
     MenuItem,
@@ -13,6 +14,7 @@ import {
 } from "blocks";
 import {
     centerMaskWalletAddress,
+    EXPLORER_URL,
     getAppParamValue,
     handleCopy,
     usePersistedQuery,
@@ -63,12 +65,12 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
         <Box
             display="flex"
             justifyContent={activeState === "walletDashboard" ? "space-between" : "flex-start"}
-            alignItems="center"
-            width="100%"
+            alignItems="flex-start"
+            width="90%"
             gap="spacing-xxs"
         >
             {handleBackButton && (
-                <Box cursor="pointer">
+                <Box cursor="pointer" display='flex' alignItems='center' height='100%'>
                     <Back
                         size={24}
                         color="pw-int-icon-primary-color"
@@ -112,11 +114,26 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                         justifyContent="center"
                         alignItems="center"
                     >
-                        <Text variant="os-regular" color="pw-int-text-tertiary-color">
-                            {centerMaskWalletAddress(walletAddress, 5)}
-                        </Text>
+                        <Box
+                            display='flex'
+                            cursor='pointer'
+                            onClick={() => window.open(`${EXPLORER_URL}/address/${walletAddress}`, "_blank")}
+                        >
+                            <Text
+                                variant="os-regular"
+                                color="pw-int-text-tertiary-color"
+                                css={css`
+                                    &:hover {
+                                        color: var(--pw-int-brand-primary-color);
+                                    }    
+                                `}
+                            >
+                                {centerMaskWalletAddress(walletAddress, 5)}
+                            </Text>
+                        </Box>
                         <Box
                             cursor="pointer"
+                            display='flex'
                         >
 
                             {copied ? (
@@ -130,10 +147,22 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                                     color="pw-int-icon-tertiary-color"
                                     size={14}
                                     onClick={() => handleCopy(walletAddress, setCopied)}
+                                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--pw-int-icon-brand-color)')}
+                                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--pw-int-icon-tertiary-color)')}
                                 />
                             )}
-
                         </Box>
+                        {/* <Box
+                            cursor="pointer"
+                            display='flex'
+                        >
+                            <ExternalLinkIcon
+                                autoSize
+                                size={16}
+                                color="pw-int-icon-tertiary-color"
+                                onClick={() => window.open(`${EXPLORER_URL}/address/${walletAddress}`, "_blank")}
+                            />
+                        </Box> */}
                     </Box>
                 </Box>
             </Box>}
@@ -159,7 +188,9 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                         </Menu>
                     }
                 >
-                    <Box cursor="pointer">
+                    <Box 
+                        cursor="pointer"
+                    >
                         <Settings size={24} color="pw-int-icon-primary-color" />
                     </Box>
                 </Dropdown>

@@ -2,8 +2,6 @@ import { FC, useState } from "react";
 import { Box, Tabs } from "../../../../blocks";
 import { WalletActivityList } from "./WalletActivityList";
 
-import { MyWallets } from "../MyWallets";
-import { useGlobalState } from "../../../../context/GlobalContext";
 import { TokensList } from "../TokensList";
 import { ActiveStates, WalletListType } from "../../../../types";
 
@@ -16,14 +14,10 @@ export type WalletTabsProps = {
 };
 
 const WalletTabs: FC<WalletTabsProps> = ({
-  walletList,
   walletAddress,
-  selectedWallet,
-  setSelectedWallet,
   setActiveState
 }) => {
   const [activeTab, setActiveTab] = useState<'tokens' | 'activity' | 'rewards' | 'wallets'>('tokens');
-  const { state } = useGlobalState();
 
   return (
     <Box height="340px">
