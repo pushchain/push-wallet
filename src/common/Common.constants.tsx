@@ -122,6 +122,7 @@ export const CHAIN_MONOTONE_LOGO: {
   "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z": SolanaMonotone, // testnet
   EtWTRABZaYq6iMfeYKouRu166VU2xqa1: SolanaMonotone, // devnet
   devnet: PushChainMonotone,
+  42101: PushChainMonotone,
 };
 
 export const CHAIN_LOGO: {
