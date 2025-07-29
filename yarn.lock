@@ -4756,6 +4756,7 @@ __metadata:
 "@rollup/rollup-linux-powerpc64le-gnu@npm:4.45.1":
   version: 4.45.1
   resolution: "@rollup/rollup-linux-powerpc64le-gnu@npm:4.45.1"
+  checksum: 10/a5cb47fb768e4d8d20d9a5fdf752cc7938618fab2a489f4d2bb8df01ba2fa7029807e7ca2450fd13918e91bb0a16aa24ab41cf09c2f4b690d2bfd4d2992a78e5
   conditions: os=linux & cpu=ppc64 & libc=glibc
   languageName: node
   linkType: hard
