@@ -28,6 +28,16 @@ export const getAppParamValue = () => {
   return searchParams.get("app");
 };
 
+export const isUIKitVersion = (v: string) => {
+  const searchParams = new URLSearchParams(window.location.search);
+
+  const app = searchParams.get("app");
+
+  const version = searchParams.get("version");
+
+  return !!app && (version === v);
+};
+
 export const getAllAppConnections = (): PushWalletAppConnectionData[] =>
   localStorage.getItem("appConnections")
     ? JSON.parse(localStorage.getItem("appConnections"))

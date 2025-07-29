@@ -3,8 +3,6 @@ import {
     Box,
     CopyFilled,
     Dropdown,
-    ExternalLink,
-    ExternalLinkIcon,
     Logout,
     Menu,
     MenuItem,
@@ -17,6 +15,7 @@ import {
     EXPLORER_URL,
     getAppParamValue,
     handleCopy,
+    isUIKitVersion,
     usePersistedQuery,
 } from "common";
 import { useNavigate } from "react-router-dom";
@@ -46,6 +45,8 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
 
     const isOpenedInIframe = !!getAppParamValue();
 
+    const showCloseButton = isUIKitVersion('1');
+
     const handleLogOut = () => {
         dispatch({ type: "RESET_WALLET" });
 
@@ -60,13 +61,12 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
         }
     };
 
-
     return (
         <Box
             display="flex"
             justifyContent={activeState === "walletDashboard" ? "space-between" : "flex-start"}
             alignItems="flex-start"
-            width="90%"
+            width={showCloseButton ? "90%" : "100%"}
             gap="spacing-xxs"
         >
             {handleBackButton && (

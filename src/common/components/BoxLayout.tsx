@@ -1,9 +1,9 @@
 import { FC, ReactNode } from "react";
-import { Box, Cross, CrossFilled } from "../../blocks";
+import { Box, Cross } from "../../blocks";
 import React from "react";
 import { css } from "styled-components";
 import { useDarkMode } from "../hooks";
-import { WALLET_TO_APP_ACTION } from "common";
+import { isUIKitVersion, WALLET_TO_APP_ACTION } from "common";
 
 type BoxLayoutProps = {
   children: ReactNode;
@@ -11,6 +11,8 @@ type BoxLayoutProps = {
 
 const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
   const { isDarkMode } = useDarkMode();
+
+  const showCloseButton = isUIKitVersion('1');
 
   const handleClose = () => {
     window.parent.postMessage(
@@ -86,18 +88,20 @@ const BoxLayout: FC<BoxLayoutProps> = ({ children }) => {
           width: 100%;
         `}
       >
-        <Box
-          position="absolute"
-          cursor="pointer"
-          css={css`
-            top: var(--spacing-md);
-            right: var(--spacing-md);
-            z-index: 99;
-          `}
-          onClick={handleClose}
-        >
-          <Cross size={24} color='pw-int-icon-primary-color' />
-        </Box>
+        {showCloseButton && (
+          <Box
+            position="absolute"
+            cursor="pointer"
+            css={css`
+              top: var(--spacing-md);
+              right: var(--spacing-md);
+              z-index: 99;
+            `}
+            onClick={handleClose}
+          >
+            <Cross size={24} color='pw-int-icon-primary-color' />
+          </Box>
+        )}
         {children}
       </Box>
     </Box>
