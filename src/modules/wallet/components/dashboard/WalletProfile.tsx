@@ -79,12 +79,12 @@ const WalletProfile: FC<WalletProfileProps> = ({ walletAddress }) => {
           )}
         </Box>
       </Box>
-      <Box display="flex" flexDirection="row" justifyContent="space-between">
+      <Box display="flex" flexDirection="row" justifyContent="space-between" gap='spacing-xxs'>
         {buttonConfigs.map(({ icon: Icon, label, onClick }) => (
           <Box
             key={label}
             display="flex"
-            minWidth="100px"
+            width='100%'
             flexDirection="column"
             padding="spacing-xs"
             justifyContent="center"

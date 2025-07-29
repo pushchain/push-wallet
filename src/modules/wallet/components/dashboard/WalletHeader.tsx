@@ -114,9 +114,23 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                         justifyContent="center"
                         alignItems="center"
                     >
-                        <Text variant="os-regular" color="pw-int-text-tertiary-color">
-                            {centerMaskWalletAddress(walletAddress, 5)}
-                        </Text>
+                        <Box
+                            display='flex'
+                            cursor='pointer'
+                            onClick={() => window.open(`${EXPLORER_URL}/address/${walletAddress}`, "_blank")}
+                        >
+                            <Text
+                                variant="os-regular"
+                                color="pw-int-text-tertiary-color"
+                                css={css`
+                                    &:hover {
+                                        color: var(--pw-int-brand-primary-color);
+                                    }    
+                                `}
+                            >
+                                {centerMaskWalletAddress(walletAddress, 5)}
+                            </Text>
+                        </Box>
                         <Box
                             cursor="pointer"
                             display='flex'
@@ -133,10 +147,12 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                                     color="pw-int-icon-tertiary-color"
                                     size={14}
                                     onClick={() => handleCopy(walletAddress, setCopied)}
+                                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--pw-int-icon-brand-color)')}
+                                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--pw-int-icon-tertiary-color)')}
                                 />
                             )}
                         </Box>
-                        <Box
+                        {/* <Box
                             cursor="pointer"
                             display='flex'
                         >
@@ -146,7 +162,7 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                                 color="pw-int-icon-tertiary-color"
                                 onClick={() => window.open(`${EXPLORER_URL}/address/${walletAddress}`, "_blank")}
                             />
-                        </Box>
+                        </Box> */}
                     </Box>
                 </Box>
             </Box>}
