@@ -345,7 +345,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     themeOverrides: Record<string, string>,
   }) => {
 
-    console.log(data.themeOverrides);
     data.themeMode === CONSTANTS.THEME.DARK ? enable() : disable();
 
     const walletConfig: WalletConfig = {

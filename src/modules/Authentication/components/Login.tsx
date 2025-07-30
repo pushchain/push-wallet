@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Box, Button, Front, Google, Text, TextInput } from "../../../blocks";
-import { getAppParamValue, PoweredByPush } from "../../../common";
+import { getAppParamValue, getVersionParamValue, PoweredByPush } from "../../../common";
 import { SocialProvider, WalletState } from "../Authentication.types";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -41,7 +41,9 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
         if (isOpenedInIframe) {
 
           const appURL = getAppParamValue();
+          const version = getVersionParamValue();
           sessionStorage.setItem('App_Connections', appURL);
+          sessionStorage.setItem('UI_kit_version', version);
 
           window.location.href = getOTPEmailAuthRoute(
             values.email,
@@ -77,8 +79,6 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
   const showEmailLogin = isOpenedInIframe ? walletConfig?.loginDefaults.email : true
   const showGoogleLogin = isOpenedInIframe ? walletConfig?.loginDefaults.google : true
   const showWalletLogin = isOpenedInIframe ? walletConfig?.loginDefaults.wallet.enabled : true
-
-  console.log(walletConfig);
 
   return (
     <Box

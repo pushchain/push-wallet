@@ -277,6 +277,7 @@ const Wallet: FC<WalletProps> = () => {
         content={
           <CreateNewWallet
             onSuccess={handleCreateNewWallet}
+            onError={handleResetAndRedirectUser}
           />
         }
       />

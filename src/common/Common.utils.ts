@@ -28,6 +28,12 @@ export const getAppParamValue = () => {
   return searchParams.get("app");
 };
 
+export const getVersionParamValue = () => {
+  const searchParams = new URLSearchParams(window.location.search);
+
+  return searchParams.get("version");
+};
+
 export const isUIKitVersion = (v: string) => {
   const searchParams = new URLSearchParams(window.location.search);
 

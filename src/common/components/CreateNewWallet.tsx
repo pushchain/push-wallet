@@ -3,11 +3,13 @@ import React, { FC } from 'react';
 import { css } from 'styled-components';
 
 type CreateNewWalletProps = {
-    onSuccess: () => void
+    onSuccess: () => void;
+    onError: () => void;
 }
 
 const CreateNewWallet: FC<CreateNewWalletProps> = ({
-    onSuccess
+    onSuccess,
+    onError
 }) => {
     return (
         <Box
@@ -21,6 +23,7 @@ const CreateNewWallet: FC<CreateNewWalletProps> = ({
                 No existing wallet found, Create new one
             </Text>
             <Box display='flex' flexDirection='column' gap='spacing-xs'>
+                <Button css={css`width:100%`} variant='outline' onClick={() => onError()}>Back to home</Button>
 
                 <Button css={css`width:100%`} variant='primary' onClick={onSuccess}>Create New Wallet</Button>
 

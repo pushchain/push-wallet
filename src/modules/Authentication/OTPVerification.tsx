@@ -25,6 +25,16 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
+    const url = new URL(window.location.href);
+    const appURL = sessionStorage.getItem('App_Connections');
+    const version = sessionStorage.getItem('UI_kit_version');
+    if (appURL) url.searchParams.set('app', appURL);
+    if (version) url.searchParams.set('version', version);
+    console.log(url.toString());
+    window.history.replaceState({}, "", url.toString());
+  }, []);
+
+  useEffect(() => {
     inputRefs.current[0]?.focus();
   }, []);
 
@@ -85,15 +95,17 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
           window.close();
         } else {
           const dAppURL = sessionStorage.getItem("App_Connections");
+          const version = sessionStorage.getItem("UI_kit_version");
           sessionStorage.removeItem("App_Connections");
+          sessionStorage.removeItem("UI_kit_version");
 
+          const queryParams: string[] = [];
+          if (dAppURL) queryParams.push(`app=${dAppURL}`);
+          if (version) queryParams.push(`version=${version}`);
+          queryParams.push(`state=${data.state}`);
+          
           // this one is to handle the iframe request in email flow.
-          if (dAppURL) {
-            window.location.href = `${window.location.origin}${APP_ROUTES.WALLET}?state=${data.state}&app=${dAppURL}`;
-          } else {
-            window.location.href = `${window.location.origin}${APP_ROUTES.WALLET}?state=${data.state}`;
-          }
-
+          window.location.href = `${window.location.origin}${APP_ROUTES.WALLET}?${queryParams.join("&")}`;
         }
       }
     } catch (err) {
