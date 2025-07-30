@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from "react";
 import { css } from "styled-components";
-import { Box, Button, Cross, Info, Text } from "../../blocks";
+import { Box, Button, Cross, Text } from "../../blocks";
 
 export type ErrorContentProps = {
   title: string;
@@ -28,16 +28,16 @@ const ErrorContent: FC<ErrorContentProps> = ({
       alignItems="center"
       padding="spacing-xs spacing-xs spacing-md spacing-xs"
       gap="spacing-sm"
-      width="-webkit-fill-available"
+      width="100%"
       borderRadius="radius-md"
-      backgroundColor="surface-primary"
+      backgroundColor="pw-int-bg-primary-color"
       css={css`
-        border-top: var(--border-xmd) solid var(--stroke-secondary);
+        border-top: var(--border-xmd) solid var(--pw-int-border-secondary-color);
       `}
     >
       {onClose && (
         <Box alignSelf="flex-end" cursor="pointer" onClick={onClose}>
-          <Cross size={16} color="icon-primary" />
+          <Cross size={16} color="pw-int-icon-primary-color" />
         </Box>
       )}
       {icon && (
@@ -45,7 +45,7 @@ const ErrorContent: FC<ErrorContentProps> = ({
           display="flex"
           justifyContent="center"
           alignItems="center"
-          backgroundColor="surface-state-danger-subtle"
+          backgroundColor="pw-int-error-primary-subtle-color"
           borderRadius="radius-sm"
           width="48px"
           height="48px"
@@ -61,10 +61,10 @@ const ErrorContent: FC<ErrorContentProps> = ({
         textAlign="center"
         gap="spacing-xxxs"
       >
-        <Text variant="h3-semibold" color="text-primary">
+        <Text variant="h3-semibold" color="pw-int-text-primary-color">
           {title}
         </Text>
-        <Text variant="bs-regular" color="text-secondary">
+        <Text variant="bs-regular" color="pw-int-text-secondary-color">
           {subTitle}
         </Text>
       </Box>
@@ -76,7 +76,7 @@ const ErrorContent: FC<ErrorContentProps> = ({
         )}
       </Box>
       {note && (
-        <Text variant="bs-regular" color="text-tertiary">
+        <Text variant="bs-regular" color="pw-int-text-tertiary-color">
           {note}
         </Text>
       )}

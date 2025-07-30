@@ -3,9 +3,9 @@ import { SpinnerSize, SpinnerVariant } from './Spinner.types';
 export const getSpinnerColor = (variant: SpinnerVariant) => {
   switch (variant) {
     case 'primary':
-      return 'components-spinner-icon-primary';
+      return '--pw-int-spinner-icon-primary';
     case 'secondary':
-      return 'components-spinner-icon-secondary';
+      return '--pw-int-spinner-icon-secondary';
     default:
       return '';
   }

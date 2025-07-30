@@ -3,11 +3,14 @@ export const usePersistedQuery = () => {
 
   const persistQuery = (path: string, state?: string) => {
     const app = params.get("app");
-    if (state) {
-      return `${path}${app ? `?app=${app}&state=${state}` : `?state=${state}`}`;
-    } else {
-      return `${path}${app ? `?app=${app}` : ""}`;
-    }
+    const version = params.get("version");
+    const queryParams: string[] = [];
+
+    if (app) queryParams.push(`app=${app}`);
+    if (version) queryParams.push(`version=${version}`);
+    if (state) queryParams.push(`state=${state}`);
+
+    return `${path}${queryParams.length ? `?${queryParams.join("&")}` : ""}`;
   };
 
   return persistQuery;

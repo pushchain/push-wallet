@@ -48,6 +48,7 @@ export { default as CircleFilled } from "./components/CircleFilled";
 export { default as CloudUpload } from "./components/CloudUpload";
 
 export { default as Copy } from "./components/Copy";
+export { default as CopyFilled } from "./components/CopyFilled";
 
 export { default as Cross } from "./components/Cross";
 export { default as CrossFilled } from "./components/CrossFilled";
@@ -60,6 +61,8 @@ export { default as Dash } from "./components/Dash";
 
 export { default as Dashboard } from "./components/Dashboard";
 export { default as DefaultChainMonotone } from "./components/DefaultChainMonotone";
+export { default as Doc } from "./components/Doc";
+export { default as Download } from "./components/Download";
 
 export { default as EditProfile } from "./components/EditProfile";
 
@@ -74,6 +77,7 @@ export { default as ErrorFilled } from "./components/ErrorFilled";
 export { default as ExternalLink } from "./components/ExternalLink";
 export { default as ExternalLinkIcon } from "./components/ExternalLinkIcon";
 
+export { default as Faucet } from "./components/Faucet";
 export { default as Front } from "./components/Front";
 
 export { default as Gif } from "./components/Gif";
@@ -87,6 +91,8 @@ export { default as GovernanceFilled } from "./components/GovernanceFilled";
 
 export { default as Group } from "./components/Group";
 export { default as GroupFilled } from "./components/GroupFilled";
+
+export { default as IconLeading } from "./components/IconLeading";
 
 export { default as InboxBell } from "./components/InboxBell";
 export { default as EmptyInbox } from "./components/EmptyInbox";
@@ -137,6 +143,8 @@ export { default as Pin } from "./components/Pin";
 
 export { default as PolygonMonotone } from "./components/PolygonMonotone";
 
+export { default as PushChainMonotone } from "./components/PushChainMonotone";
+export { default as PushChainFilled } from "./components/PushChainFilled";
 export { default as PushMonotone } from "./components/PushMonotone";
 
 export { default as PublicChat } from "./components/PublicChat";

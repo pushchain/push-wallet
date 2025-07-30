@@ -6,7 +6,7 @@ export type DropdownTrigger = 'hover' | 'click';
 
 export type DropdownComponentProps = {
   // This will be content upon clicking on which the dropdown overlay will open
-  children: ((props: { isOpen: boolean }) => ReactElement) | ReactNode | any;
+  children: ((props: { isOpen: boolean }) => ReactElement) | ReactNode;
   // on which action to open the dropdown
   trigger?: DropdownTrigger;
   // This is used for custom css instead of style prop, check Box/Text component

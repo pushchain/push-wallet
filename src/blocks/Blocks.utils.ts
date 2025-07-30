@@ -142,9 +142,7 @@ export const getBlocksBorder = (border?: BorderValue) => {
   // If border is not given return undefined, to avoid any breakages
   if (!border) return border;
 
-  let borderValues;
-
-  borderValues = border.split(' ');
+  const borderValues = border.split(' ');
 
   borderValues[0] = `var(--${borderValues[0]})`;
 
@@ -167,7 +165,7 @@ export const getBlocksBorderRadius = (radius?: BlocksRadiusType) => {
 
 export const getTextVariantStyles = (variant: TextVariants, color: ThemeColors) => css`
   color: var(--${color});
-  font-family: var(--font-family);
+  font-family: var(--pw-int-font-family);
   font-size: ${textVariants[variant].fontSize};
   font-style: ${textVariants[variant].fontStyle};
   font-weight: ${textVariants[variant].fontWeight};

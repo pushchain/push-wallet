@@ -1,4 +1,4 @@
-import { Asterisk, CrossFilled } from '../icons';
+import { Asterisk } from '../icons';
 import { TextVariants, textVariants } from '../text';
 import React, { ReactNode, forwardRef } from 'react';
 import styled, { FlattenSimpleInterpolation, css } from 'styled-components';
@@ -37,16 +37,14 @@ const StyledTextInput = styled.div<{
   success?: boolean;
   disabled?: boolean;
 }>`
-  ${({ success, error, disabled }) => {
-    const defaultState = error ? 'danger' : success ? 'success' : disabled ? 'disabled' : 'default';
-    const focusState = error ? 'danger' : success ? 'success' : 'focus';
+  ${({ error }) => {
     return css`
       align-self: stretch;
       justify-content: space-between;
       align-items: flex-start;
       border-radius: var(--radius-xs, 12px);
-      border: 1.5px solid var(--components-inputs-stroke-${defaultState});
-      background: var(--components-inputs-background-${defaultState});
+      border: 1.5px solid var(--pw-int-${error ? 'error-primary-color' : 'border-secondary-color'});
+      background: var(--pw-int-bg-tertiary-color);
 
       display: flex;
 
@@ -57,19 +55,19 @@ const StyledTextInput = styled.div<{
         width: 24px;
         height: 24px;
 
-        color: var(--components-inputs-icon-${defaultState});
+        color: var(--pw-int-${error ? 'error-primary-color' : 'icon-primary-color'});
       }
       & input {
-        color: var(--components-inputs-text-${defaultState});
+        color: var(--pw-int-${error ? 'error-primary-color' : 'text-primary-color'});
 
-        font-family: var(--font-family);
+        font-family: var(--pw-int-font-family);
         font-size: ${textVariants['bs-regular'].fontSize};
         font-style: ${textVariants['bs-regular'].fontStyle};
         font-weight: ${textVariants['bs-regular'].fontWeight};
         line-height: ${textVariants['bs-regular'].lineHeight};
         width: 100%;
         ::placeholder {
-          color: var(--components-inputs-text-placeholder);
+          color: var(--pw-int-text-disabled-color);
         }
         border: none;
         background: transparent;
@@ -80,19 +78,19 @@ const StyledTextInput = styled.div<{
       }
 
       &:hover {
-        border: 1.5px solid var(--components-inputs-stroke-hover);
+        border: 1.5px solid var(--pw-int-border-tertiary-color);
       }
 
       &:focus-within {
-        border: 1.5px solid var(--components-inputs-stroke-${focusState});
+        border: 1.5px solid var(--pw-int-brand-primary-subtle-color);
         outline: none;
       }
 
       &:disabled {
-        border: 1.5px solid var(--components-inputs-stroke-default);
-        background: var(--components-inputs-background-disabled);
+        border: 1.5px solid var(--pw-int-border-tertiary-color);
+        background: var(--pw-int-bg-disabled-color);
         cursor: not-allowed;
-        color: var(--components-inputs-text-disabled);
+        color: var(--pw-int-text-disabled-color);
       }
     `;
   }}
@@ -106,8 +104,8 @@ const LabelContainer = styled.div`
 `;
 
 const InputText = styled.span<{ color: string; variant: TextVariants }>`
-  color: var(--${({ color }) => color});
-  font-family: var(--font-family);
+  color: var(--pw-int-${({ color }) => color});
+  font-family: var(--pw-int-font-family);
   ${({ variant }) =>
     `
   font-size: ${textVariants[variant].fontSize};
@@ -158,7 +156,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
         {label && (
           <LabelContainer>
             <InputText
-              color={disabled ? 'components-inputs-text-disabled' : 'components-inputs-text-default'}
+              color={disabled ? 'text-disabled-color' : 'text-primary-color'}
               variant="h6-bold"
             >
               <LabelTextContainer>
@@ -168,7 +166,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             </InputText>
             {totalCount && (
               <InputText
-                color={disabled ? 'components-inputs-text-disabled' : 'components-inputs-text-secondary'}
+                color={disabled ? 'text-disabled-color' : 'text-secondary-color'}
                 variant="c-regular"
               >
                 {`${(typeof value === 'string' && value?.length) || 0} / ${totalCount}`}
@@ -194,16 +192,16 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               value={value}
             />
           </InputContainer>
-         {trailingIcon}
+          {trailingIcon}
         </StyledTextInput>
         {description && (
           <InputText
             color={
               success || error
-                ? 'components-inputs-text-default'
+                ? 'text-primary-color'
                 : disabled
-                ? 'components-inputs-text-disabled'
-                : 'components-inputs-text-placeholder'
+                  ? 'text-disabled-color'
+                  : 'text-primary-color'
             }
             variant="c-regular"
           >
@@ -212,7 +210,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
         )}
         {errorMessage && (
           <InputText
-            color="components-inputs-text-danger"
+            color="error-primary-color"
             variant="c-regular"
           >
             {errorMessage}

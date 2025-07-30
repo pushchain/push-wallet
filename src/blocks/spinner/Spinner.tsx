@@ -36,7 +36,7 @@ const Container = styled.div<{ css?: FlattenSimpleInterpolation; size: SpinnerSi
       variant
         ? `
             [role='img'] {
-              color: var(--${getSpinnerColor(variant)});
+              color: var(${getSpinnerColor(variant)});
               }
           `
         : ''

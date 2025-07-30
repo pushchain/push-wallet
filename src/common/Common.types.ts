@@ -14,21 +14,32 @@ export enum WALLET_TO_APP_ACTION {
   APP_CONNECTION_SUCCESS = "appConnectionSuccess",
   APP_CONNECTION_RETRY = "appConnectionRetry",
 
-  SIGNATURE = "signature",
+  SIGN_MESSAGE = "signatureMessage",
+  SIGN_TRANSACTION = "signatureTransaction",
+  SIGN_TYPED_DATA = "signatureTypedData",
 
   IS_LOGGED_OUT = "loggedOut",
   TAB_CLOSED = "tabClosed",
   ERROR = "error",
 
   CONNECT_WALLET = "connectWallet",
+
+  PUSH_SEND_TRANSACTION = 'pushSendTransaction',
+
+  CLOSE_IFRAME = 'closeIFrame',
 }
 
 export enum APP_TO_WALLET_ACTION {
   NEW_CONNECTION_REQUEST = "newConnectionRequest",
-  SIGN_MESSAGE = "signMessage",
+  SIGN_MESSAGE = 'signMessage',
+  SIGN_TRANSACTION = 'signTransaction',
+  SIGN_TYPED_DATA = 'signTypedData',
   LOG_OUT = "logOut",
 
   CONNECTION_STATUS = "connectionStatus",
+  WALLET_CONFIG = "walletConfig",
+
+  PUSH_SEND_TRANSACTION_RESPONSE = 'pushSendTransactionResponse',
 }
 
 export enum WALLET_TO_WALLET_ACTION {

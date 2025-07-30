@@ -56,7 +56,7 @@ const CreateAccount: FC<CreateAccountProps> = ({isLoading,setIsLoading}) => {
       flexDirection="column"
       justifyContent="center"
       borderRadius="radius-sm"
-      backgroundColor="surface-secondary"
+      backgroundColor="pw-int-bg-secondary-color"
       gap="spacing-xs"
       position="absolute"
       css={css`
@@ -65,7 +65,7 @@ const CreateAccount: FC<CreateAccountProps> = ({isLoading,setIsLoading}) => {
       width="328px"
     >
   
-      <Text color="text-secondary" variant="bes-semibold">
+      <Text color="pw-int-text-secondary-color" variant="bes-semibold">
         You are browsing using an external wallet.
         <br /> Create an account & link wallet to unlock all features.
       </Text>

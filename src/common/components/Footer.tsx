@@ -1,12 +1,11 @@
-import { FC, ReactNode } from "react";
+import { FC } from "react";
 import { Box, Link, Text } from "../../blocks";
-import { css } from "styled-components";
 import React from "react";
 
 const Footer: FC = () => {
   return (
     <Box textAlign="center" width="280px">
-      <Text as="span" variant="bes-semibold" color="text-secondary">
+      <Text as="span" variant="bes-semibold" color="pw-int-text-secondary-color">
         By using Push Wallet, you agree to our{" "}
       </Text>
       <Link
@@ -15,12 +14,12 @@ const Footer: FC = () => {
         textProps={{
           as: "span",
           variant: "bes-semibold",
-          color: "text-brand-medium",
+          color: "pw-int-brand-primary-subtle-color",
         }}
       >
         Terms of Service{" "}
       </Link>
-      <Text as="span" variant="bes-semibold" color="text-secondary">
+      <Text as="span" variant="bes-semibold" color="pw-int-text-secondary-color">
         and{" "}
       </Text>
       <Link
@@ -29,7 +28,7 @@ const Footer: FC = () => {
         textProps={{
           as: "span",
           variant: "bes-semibold",
-          color: "text-brand-medium",
+          color: "pw-int-brand-primary-subtle-color",
         }}
       >
         Privacy Policy
