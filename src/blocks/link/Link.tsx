@@ -17,7 +17,7 @@ const StyledLink = styled(RouterLink)<LinkProps>`
   text-decoration: none;
 
   &:hover > * {
-    color: ${({ isText }) => (isText ? 'var(--text-brand-medium)' : '')};
+    color: ${({ isText }) => (isText ? 'var(--pw-int-text-link-color)' : '')};
   }
 
   /* Extra CSS props */

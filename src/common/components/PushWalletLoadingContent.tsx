@@ -24,10 +24,10 @@ export const PushWalletLoadingContent: FC<PushWalletLoadingContentProps> = ({
         textAlign="center"
         gap="spacing-xxxs"
       >
-        <Text variant="h3-semibold" color="text-primary">
+        <Text variant="h3-semibold" color="pw-int-text-primary-color">
           {title}
         </Text>
-        <Text variant="bs-regular" color="text-secondary">
+        <Text variant="bs-regular" color="pw-int-text-secondary-color">
           {subtitle}
         </Text>
       </Box>

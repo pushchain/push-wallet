@@ -65,7 +65,9 @@ export class PushSigner {
         throw new Error("Unsupported Namespace");
       }
       let chainId = await wallet.getNetwork();
+      console.log(chainId);
       if (namespace === "solana") {
+        console.log(chainId);
         chainId = networkToSolChainId[chainId];
       }
 
@@ -87,7 +89,7 @@ export class PushSigner {
         // hex
         if (isHex(signature)) return hexToBytes(signature.replace("0x", ""));
         // base64 - solana
-        else return Buffer.from(signature, "base64");
+        else return Uint8Array.from(atob(signature), c => c.charCodeAt(0));
       };
       return {
         account: `${namespace}:${chainId}:${address}`,

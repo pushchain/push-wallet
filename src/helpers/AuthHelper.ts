@@ -41,3 +41,10 @@ export const extractAndCleanStateFromUrl = () => {
   const state = params.get("state");
   return state;
 };
+
+
+export const trimText = (text: string, maxWords: number) => {
+  return text.split(" ").length > maxWords
+    ? text.split(" ").slice(0, maxWords).join(" ") + "..."
+    : text;
+}
