@@ -21,21 +21,21 @@ const PlusCircle: FC<IconProps> = (allProps) => {
             cy="16"
             r="11"
             stroke="currentColor"
-            stroke-width="2"
+            strokeWidth="2"
           />
           <path
             d="M16.87 11.3846L16.87 20.6154"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
           <path
             d="M21.4854 16L12.2546 16"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
       }

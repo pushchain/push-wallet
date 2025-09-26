@@ -16,7 +16,7 @@ const VideoCamera: FC<IconProps> = (allProps) => {
           xmlns="http://www.w3.org/2000/svg"
           {...props}
         >
-          <g clip-path="url(#clip0_304_22836)">
+          <g clipPath="url(#clip0_304_22836)">
             <rect
               x="3.87"
               y="8"
@@ -24,15 +24,15 @@ const VideoCamera: FC<IconProps> = (allProps) => {
               height="16"
               rx="2"
               stroke="currentColor"
-              stroke-width="2"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinejoin="round"
             />
             <path
               d="M25.87 14.5L31.87 11V22L25.87 18.5"
               stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </g>
           <defs>

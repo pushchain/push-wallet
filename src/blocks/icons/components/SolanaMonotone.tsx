@@ -16,7 +16,7 @@ const SolanaMonotone: FC<IconProps> = (allProps) => {
           fill="none"
           {...props}
         >
-          <g clip-path="url(#clip0_10481_13051)">
+          <g clipPath="url(#clip0_10481_13051)">
             <path
               d="M0.5 8C0.5 3.58172 4.08172 0 8.5 0H12.5C16.9183 0 20.5 3.58172 20.5 8V12C20.5 16.4183 16.9183 20 12.5 20H8.5C4.08172 20 0.5 16.4183 0.5 12V8Z"
               fill="var(--pw-int-bg-tertiary-color)"

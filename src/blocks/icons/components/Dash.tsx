@@ -18,8 +18,8 @@ const Dash: FC<IconProps> = (allProps) => {
           <path
             d="M4 16H28"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
+            strokeWidth="2"
+            strokeLinecap="round"
           />
         </svg>
       }

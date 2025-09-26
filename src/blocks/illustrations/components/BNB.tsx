@@ -16,7 +16,7 @@ const BNB: FC<IllustrationProps> = (allProps) => {
           xmlns="http://www.w3.org/2000/svg"
           {...props}
         >
-          <g clip-path="url(#clip0_248_8319)">
+          <g clipPath="url(#clip0_248_8319)">
             <circle
               cx="16"
               cy="16"

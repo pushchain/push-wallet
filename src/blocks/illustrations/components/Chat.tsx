@@ -19,25 +19,25 @@ const ChatIllustration: FC<IllustrationProps> = (allProps) => {
           <path
             d="M10.31 43.7705C10.31 40.5669 7.72509 37.964 4.5437 37.964C7.72509 37.964 10.31 35.3611 10.31 32.1575C10.31 35.3611 12.8948 37.964 16.0762 37.964C12.8948 37.964 10.31 40.5669 10.31 43.7705Z"
             stroke="#17181B"
-            stroke-width="1.26925"
+            strokeWidth="1.26925"
             stroke-miterlimit="10"
           />
           <path
             d="M52.4129 19.3371C52.4129 16.7886 50.3565 14.7179 47.8257 14.7179C50.3565 14.7179 52.4129 12.6472 52.4129 10.0987C52.4129 12.6472 54.4692 14.7179 57 14.7179C54.4692 14.7179 52.4129 16.7886 52.4129 19.3371Z"
             stroke="#17181B"
-            stroke-width="1.26925"
+            strokeWidth="1.26925"
             stroke-miterlimit="10"
           />
           <path
             d="M31.0367 42.292C26.8735 42.292 23.4931 38.9048 23.4931 34.7484V27.6569C23.4931 26.9214 24.0936 26.3209 24.8291 26.3209H47.2035C51.6028 26.3209 55.1857 29.9038 55.1857 34.3031C55.1857 38.7024 51.6028 42.2853 47.2035 42.2853H31.0367V42.292Z"
             stroke="#17181B"
-            stroke-width="1.26925"
+            strokeWidth="1.26925"
             stroke-miterlimit="10"
           />
           <path
             d="M33.1575 21.0634C38.6249 21.0634 43.0643 16.7363 43.0643 11.4265V2.36712C43.0643 1.42756 42.2757 0.6604 41.3098 0.6604H11.926C6.14845 0.6604 1.44315 5.23751 1.44315 10.8576C1.44315 16.4777 6.14845 21.0548 11.926 21.0548H33.1575V21.0634Z"
             stroke="#17181B"
-            stroke-width="1.26925"
+            strokeWidth="1.26925"
             stroke-miterlimit="10"
           />
           <path
@@ -58,14 +58,14 @@ const ChatIllustration: FC<IllustrationProps> = (allProps) => {
           <path
             d="M10.3101 8.27527H34.1975"
             stroke="#17181B"
-            stroke-width="1.27"
-            stroke-linecap="round"
+            strokeWidth="1.27"
+            strokeLinecap="round"
           />
           <path
             d="M10.3101 13.8986H27.8573"
             stroke="#17181B"
-            stroke-width="1.27"
-            stroke-linecap="round"
+            strokeWidth="1.27"
+            strokeLinecap="round"
           />
           <circle
             cx="12.5268"
@@ -73,13 +73,13 @@ const ChatIllustration: FC<IllustrationProps> = (allProps) => {
             r="7.3481"
             fill="#F3AEFF"
             stroke="#17181B"
-            stroke-width="1.27"
+            strokeWidth="1.27"
           />
           <path
             d="M9.97559 22.1823C10.3958 23.1763 11.3798 23.8737 12.5268 23.8737C13.6738 23.8737 14.6578 23.1763 15.078 22.1823"
             stroke="#17181B"
-            stroke-width="1.27"
-            stroke-linecap="round"
+            strokeWidth="1.27"
+            strokeLinecap="round"
           />
           <circle
             cx="10.1241"

@@ -25,8 +25,8 @@ const ReceiveNotificationFilled: FC<IconProps> = (allProps) => {
           <path
             d="M18.0909 5.09088H8.33333C6.49238 5.09088 5 6.58327 5 8.42421V24.6666C5 26.5076 6.49238 28 8.33333 28H24.5758C26.4167 28 27.9091 26.5076 27.9091 24.6666V14.9091"
             stroke="currentColor"
-            stroke-width="1.33333"
-            stroke-linecap="round"
+            strokeWidth="1.33333"
+            strokeLinecap="round"
           />
         </svg>
       }

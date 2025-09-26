@@ -16,7 +16,7 @@ const Github: FC<IconProps> = (allProps) => {
           fill="none"
           {...props}
         >
-          <g clip-path="url(#clip0_11020_25835)">
+          <g clipPath="url(#clip0_11020_25835)">
             <path
               fill-rule="evenodd"
               clip-rule="evenodd"

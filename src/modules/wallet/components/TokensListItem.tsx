@@ -20,6 +20,8 @@ const TokensListItem: FC<TokenListItemProps> = ({ token, handleSelectToken }) =>
     isLoading: loadingTokenBalance
   } = useTokenBalance(token.address, executorAddress, token.decimals);
 
+  console.log(tokenBalance);
+
   return (
     <Box
       display="flex"
@@ -39,7 +41,7 @@ const TokensListItem: FC<TokenListItemProps> = ({ token, handleSelectToken }) =>
             {token.name}
           </Text>
           <Text variant="bs-regular" color="pw-int-text-secondary-color">
-            {loadingTokenBalance
+            {loadingTokenBalance || !tokenBalance
               ? '0'
               : formatTokenValue(tokenBalance, 3)
             } {token.symbol}

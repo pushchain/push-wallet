@@ -23,22 +23,22 @@ const NotificationMobile: FC<IconProps> = (allProps) => {
           <path
             d="M19.356 24.3901C19.356 26.2436 17.8535 27.7462 16 27.7462C14.1465 27.7462 12.644 26.2436 12.644 24.3901"
             stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
+            strokeWidth="1.5"
+            strokeLinecap="round"
           />
           <path
             d="M21.873 4.25385C23.4932 5.28763 24.8073 6.73605 25.679 8.44889"
             stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
           <path
             d="M6.32111 8.44889C7.1928 6.73605 8.50689 5.28763 10.1271 4.25385"
             stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
       }

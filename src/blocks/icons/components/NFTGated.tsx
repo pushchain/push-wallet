@@ -31,8 +31,8 @@ const NFTGated: FC<IconProps> = (allProps) => {
           <path
             d="M16.87 3L28.1283 9.5V22.5L16.87 29L5.61166 22.5V9.5L16.87 3Z"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinejoin="round"
           />
         </svg>
       }

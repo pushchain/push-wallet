@@ -19,14 +19,14 @@ const ExternalLinkIcon: FC<IconProps> = (allProps) => {
                     <path
                         d="M3.86646 11.8616L12.134 4.13842"
                         stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                     />
                     <path
                         d="M5.6377 3.91724L12.1339 4.13841L11.9128 10.6346"
                         stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                     />
                 </svg>
             }

@@ -23,8 +23,8 @@ const InboxBell: FC<IconProps> = (allProps) => {
           <path
             d="M16.87 26.9999C19.0791 26.9999 20.87 25.3475 20.87 23.3091H12.87C12.87 25.3475 14.6609 26.9999 16.87 26.9999Z"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
+            strokeWidth="2"
+            strokeLinecap="round"
           />
         </svg>
       }
