@@ -41,6 +41,11 @@ export const ExternalWalletContextProvider = ({
         chainType,
         providerName: provider.name,
       };
+
+      localStorage.setItem(
+        "walletInfo",
+        JSON.stringify(walletDetails)
+      );
       setExternalWallet(walletDetails);
       setCurrentProvider(provider);
       return caipAddress;

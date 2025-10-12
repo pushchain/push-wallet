@@ -7,6 +7,8 @@ import { PrivateRoute } from "./PrivateRoute";
 import { APP_ROUTES } from "../../constants";
 import { usePersistedQuery } from "../hooks/usePersistedQuery";
 import { OAuthRedirect } from "../../modules/OAuth/OAuthRedirect";
+import { Reconnect } from "../../modules/Authentication/Reconnect";
+
 const RouterContainer: FC = () => {
   const persistQuery = usePersistedQuery();
 
@@ -35,6 +37,7 @@ const RouterContainer: FC = () => {
           />
         }
       />
+      <Route path={APP_ROUTES.RECONNECT} element={<Reconnect />} />
     </Routes>
   );
 };

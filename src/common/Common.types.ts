@@ -27,6 +27,7 @@ export enum WALLET_TO_APP_ACTION {
   PUSH_SEND_TRANSACTION = 'pushSendTransaction',
 
   CLOSE_IFRAME = 'closeIFrame',
+  SOCIAL_CONNECT_URL = 'socialConnectURL',
 }
 
 export enum APP_TO_WALLET_ACTION {
@@ -40,6 +41,8 @@ export enum APP_TO_WALLET_ACTION {
   WALLET_CONFIG = "walletConfig",
 
   PUSH_SEND_TRANSACTION_RESPONSE = 'pushSendTransactionResponse',
+  READ_ONLY_CONNECTION_STATUS = 'readOnlyConnectionStatus',
+  RECONNECT_WALLET = 'ReconnectWallet',
 }
 
 export enum WALLET_TO_WALLET_ACTION {
