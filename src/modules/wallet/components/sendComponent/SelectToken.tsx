@@ -29,8 +29,6 @@ const SelectToken: FC<SelectTokenProps> = ({ handleTokenSelection }) => {
         token.symbol.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    console.log("result", result);
-
     setTokenSelected(result);
   };
 

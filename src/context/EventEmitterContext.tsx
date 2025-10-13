@@ -181,6 +181,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   const handleIframeReconnectWallet = () => {
     const email = localStorage.getItem("pw_user_email");
+    dispatch({ type: "SET_READ_ONLY", payload: false });
     if (email) {
       const appURL = getAppParamValue();
       const version = getVersionParamValue();
@@ -223,8 +224,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       const providerReceived = walletRegistry.getProvider(walletData.providerName);
 
       const result = await connect(providerReceived, walletData.chainType);
-
-      console.log(result);
 
       if (result) {
         dispatch({

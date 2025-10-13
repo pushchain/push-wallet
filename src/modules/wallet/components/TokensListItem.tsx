@@ -20,8 +20,6 @@ const TokensListItem: FC<TokenListItemProps> = ({ token, handleSelectToken }) =>
     isLoading: loadingTokenBalance
   } = useTokenBalance(token.address, executorAddress, token.decimals);
 
-  console.log(tokenBalance);
-
   return (
     <Box
       display="flex"

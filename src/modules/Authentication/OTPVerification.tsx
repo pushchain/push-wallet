@@ -30,7 +30,6 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
     const version = sessionStorage.getItem('UI_kit_version');
     if (appURL) url.searchParams.set('app', appURL);
     if (version) url.searchParams.set('version', version);
-    console.log(url.toString());
     window.history.replaceState({}, "", url.toString());
   }, []);
 

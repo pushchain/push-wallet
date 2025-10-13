@@ -202,7 +202,7 @@ const Wallet: FC<WalletProps> = () => {
   useEffect(() => {
     const initializeProfile = async () => {
       try {
-        if (state.jwt) {
+        if (state.jwt && !state.isReadOnly) {
           setCreateAccountLoading(true);
 
           await fetchUserProfile(state.jwt);

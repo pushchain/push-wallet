@@ -57,8 +57,6 @@ const WalletSelector: FC<WalletButtonProps> = ({
           providerName: provider.name,
         };
 
-        console.log(payload);
-
         if (result) {
           dispatch({
             type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
