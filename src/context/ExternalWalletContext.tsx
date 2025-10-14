@@ -5,9 +5,11 @@ import {
   ITypedData,
   IWalletProvider,
 } from "../types/wallet.types";
+import { walletRegistry } from "../providers/WalletProviderRegistry";
 
 type ExternalWalletContextType = {
   externalWallet: ExternalWalletType | null;
+  setExternalWallet: React.Dispatch<React.SetStateAction<ExternalWalletType>>;
   connecting: boolean;
   connect: (
     provider: IWalletProvider,
@@ -46,6 +48,7 @@ export const ExternalWalletContextProvider = ({
         "walletInfo",
         JSON.stringify(walletDetails)
       );
+
       setExternalWallet(walletDetails);
       setCurrentProvider(provider);
       return caipAddress;
@@ -72,12 +75,15 @@ export const ExternalWalletContextProvider = ({
   const signTransactionRequest = async (
     data: Uint8Array
   ): Promise<Uint8Array> => {
-    if (!currentProvider) {
+    if (!externalWallet) {
       throw new Error("No wallet connected");
     }
 
     try {
-      const signature = await currentProvider.signAndSendTransaction(data);
+      const providerReceived = walletRegistry.getProvider(
+        externalWallet.providerName
+      );
+      const signature = await providerReceived.signAndSendTransaction(data);
       return signature;
     } catch (error) {
       console.log("Error in generating signature", error);
@@ -86,12 +92,15 @@ export const ExternalWalletContextProvider = ({
   };
 
   const signMessageRequest = async (data: Uint8Array): Promise<Uint8Array> => {
-    if (!currentProvider) {
+    if (!externalWallet) {
       throw new Error("No wallet connected");
     }
 
     try {
-      const signature = await currentProvider.signMessage(data);
+      const providerReceived = walletRegistry.getProvider(
+        externalWallet.providerName
+      );
+      const signature = await providerReceived.signMessage(data);
       return signature;
     } catch (error) {
       console.log("Error in generating signature", error);
@@ -102,12 +111,15 @@ export const ExternalWalletContextProvider = ({
   const signTypedDataRequest = async (
     data: ITypedData
   ): Promise<Uint8Array> => {
-    if (!currentProvider) {
+    if (!externalWallet) {
       throw new Error("No wallet connected");
     }
 
     try {
-      const signature = await currentProvider.signTypedData(data);
+      const providerReceived = walletRegistry.getProvider(
+        externalWallet.providerName
+      );
+      const signature = await providerReceived.signTypedData(data);
       return signature;
     } catch (error) {
       console.log("Error in generating signature", error);
@@ -119,6 +131,7 @@ export const ExternalWalletContextProvider = ({
     <ExternalWalletContext.Provider
       value={{
         externalWallet,
+        setExternalWallet,
         connecting,
         connect,
         disconnect,

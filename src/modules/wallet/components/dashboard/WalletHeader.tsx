@@ -53,6 +53,8 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
         disconnect();
 
         sessionStorage.removeItem("jwt");
+        localStorage.removeItem("pw_user_email");
+        localStorage.removeItem("walletInfo");
 
         navigate(persistQuery(APP_ROUTES.AUTH));
 

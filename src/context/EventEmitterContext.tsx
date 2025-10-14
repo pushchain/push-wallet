@@ -85,7 +85,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   const persistQuery = usePersistedQuery();
 
-  const { connect } = useExternalWallet();
+  const { connect, setExternalWallet } = useExternalWallet();
 
   // TODO: Right now we check the logged in wallet type. But we need to support the functionality of selected wallet type of the app.
 
@@ -100,28 +100,28 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [walletRef.current]);
 
-  // useEffect(() => {
-  //   const walletInfo = localStorage.getItem("walletInfo");
-  //   const walletData = walletInfo ? JSON.parse(walletInfo) : null;
-  //   if (!walletData) return;
-  //   dispatch({ type: "SET_READ_ONLY", payload: true });
-  //   setTimeout(() => {
-  //     if (walletData.providerName) {
-  //       handleExternalWalletConnection({
-  //         status: "successful",
-  //         address: walletData.originAddress,
-  //         providerName: walletData.providerName,
-  //         chainType: walletData.chainType,
-  //       })
-  //     } else {
-  //       handlePushWalletConnection({
-  //         status: "successful",
-  //         address: walletData.address,
-  //         chain: walletData.chain,
-  //       })
-  //     }
-  //   }, 0);
-  // }, []);
+  useEffect(() => {
+    const walletInfo = localStorage.getItem("walletInfo");
+    const walletData = walletInfo ? JSON.parse(walletInfo) : null;
+    if (!walletData) return;
+    dispatch({ type: "SET_READ_ONLY", payload: true });
+    setTimeout(() => {
+      if (walletData.providerName) {
+        handleExternalWalletConnection({
+          status: "successful",
+          address: walletData.originAddress,
+          providerName: walletData.providerName,
+          chainType: walletData.chainType,
+        })
+      } else {
+        handlePushWalletConnection({
+          status: "successful",
+          address: walletData.address,
+          chain: walletData.chain,
+        })
+      }
+    }, 0);
+  }, []);
 
   // Event listener for messages
   useEffect(() => {
@@ -284,7 +284,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         payload: "rejected",
       });
     }
-
   };
 
   const handleExternalWalletConnection = (data: {
@@ -302,6 +301,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
       dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
       dispatch({ type: "SET_EXTERNAL_WALLET", payload: walletPayload });
+      setExternalWallet(walletPayload);
       navigate(`${persistQuery(APP_ROUTES.WALLET)}`, {
         replace: true,
       });
@@ -311,7 +311,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         payload: "rejected",
       });
     }
-
   };
 
   const handleSignAndSendMessage = async (message: Uint8Array, origin: string) => {
@@ -523,6 +522,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     dispatch({ type: "RESET_WALLET" });
     sessionStorage.removeItem("jwt");
     localStorage.removeItem("pw_user_email");
+    localStorage.removeItem("walletInfo");
 
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.IS_LOGGED_OUT,

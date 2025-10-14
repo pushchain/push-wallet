@@ -27,7 +27,7 @@ export function createGuardedPushChain(
 				}
 
 				if (walletData.providerName) {
-					handleReconnectExternalWallet(walletData);
+					await handleReconnectExternalWallet(walletData);
 				} else {
 					await handleReconnectWallet();
 				}
