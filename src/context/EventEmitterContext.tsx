@@ -18,10 +18,13 @@ import {
   rejectPushWalletConnectionRequest,
   usePersistedQuery,
   WALLET_TO_APP_ACTION,
+  useDarkMode,
 } from "../common";
 import { requestToConnectPushWallet } from "../common";
 import { APP_ROUTES } from "../constants";
-import { ChainType, IWalletProvider, WalletInfo } from "../types/wallet.types";
+import { AppMetadata, ChainType, CONSTANTS, ExternalWalletType, IWalletProvider, LoginMethodConfig, WalletConfig } from "../types/wallet.types";
+import { useAppState } from "./AppContext";
+import { TypedData, TypedDataDomain } from "viem";
 
 // Define the shape of the app state
 export type EventEmitterState = {
@@ -31,6 +34,9 @@ export type EventEmitterState = {
   handleAppConnectionRejected: (origin: string) => void;
   handleRejectAllAppConnections: () => void;
   handleRetryAppConnection: () => void;
+  sendMessageToMainTab: (data: unknown) => void;
+  txhash: string | null;
+  setTxhash: React.Dispatch<React.SetStateAction<string>>;
 };
 
 // Create context
@@ -41,6 +47,9 @@ const WalletContext = createContext<EventEmitterState>({
   handleAppConnectionRejected: () => { },
   handleRejectAllAppConnections: () => { },
   handleRetryAppConnection: () => { },
+  sendMessageToMainTab: () => { },
+  txhash: null,
+  setTxhash: () => { },
 });
 
 // Custom hook to use the WalletContext
@@ -57,8 +66,11 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { dispatch, state } = useGlobalState();
+  const { dispatch: appDispatch } = useAppState();
+  const { enable, disable } = useDarkMode();
 
   const [isLoggedEmitterCalled, setLoginEmitterStatus] = useState(false);
+  const [txhash, setTxhash] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -88,8 +100,17 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
           case APP_TO_WALLET_ACTION.NEW_CONNECTION_REQUEST:
             handleNewConnectionRequest(event.origin);
             break;
+          case APP_TO_WALLET_ACTION.WALLET_CONFIG:
+            handleWalletConfigs(event.data.data);
+            break;
           case APP_TO_WALLET_ACTION.SIGN_MESSAGE:
             handleSignAndSendMessage(event.data.data, event.origin);
+            break;
+          case APP_TO_WALLET_ACTION.SIGN_TRANSACTION:
+            handleSignAndSendTransaction(event.data.data, event.origin);
+            break;
+          case APP_TO_WALLET_ACTION.SIGN_TYPED_DATA:
+            handleSignTypedData(event.data.data, event.origin);
             break;
           case APP_TO_WALLET_ACTION.LOG_OUT:
             handleLogOutEvent();
@@ -100,8 +121,13 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
           case WALLET_TO_WALLET_ACTION.AUTH_STATE_PARAM:
             handleAuthStateParam(event.data.state);
             break;
+          case APP_TO_WALLET_ACTION.PUSH_SEND_TRANSACTION_RESPONSE:
+            if (event.data.data) {
+              setTxhash(event.data.data);
+            }
+            break;
           default:
-            console.warn("Unknown message type:", event.data.type);
+            console.warn("Unknown message type:", event.data);
         }
       }
     };
@@ -114,7 +140,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   // Function to send messages to the main tab
-  const sendMessageToMainTab = (data: any) => {
+  const sendMessageToMainTab = (data: unknown) => {
     if (window.parent) {
       try {
         window.parent.postMessage(data, getAppParamValue());
@@ -131,8 +157,8 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     chainType: ChainType;
   }) => {
     if (data.status === 'successful') {
-      const walletPayload: WalletInfo = {
-        address: data.address,
+      const walletPayload: ExternalWalletType = {
+        originAddress: data.address,
         chainType: data.chainType,
         providerName: data.providerName,
       };
@@ -151,18 +177,83 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   };
 
-  const handleSignAndSendMessage = async (message: string, origin: string) => {
+  const handleSignAndSendMessage = async (message: Uint8Array, origin: string) => {
     try {
       dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "loading" });
 
-      const signature = await walletRef.current.sign(
+      const signature = await walletRef.current.signMessage(
         message,
         origin,
         getAllAppConnections()
       );
 
       sendMessageToMainTab({
-        type: WALLET_TO_APP_ACTION.SIGNATURE,
+        type: WALLET_TO_APP_ACTION.SIGN_MESSAGE,
+        data: { signature },
+      });
+
+      setTimeout(
+        () => dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" }),
+        2000
+      );
+    } catch (error) {
+      dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "rejected" });
+      sendMessageToMainTab({
+        type: WALLET_TO_APP_ACTION.ERROR,
+        data: {
+          error: error,
+        },
+      });
+    }
+  };
+
+  const handleSignAndSendTransaction = async (txn: Uint8Array, origin: string) => {
+    try {
+      dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "loading" });
+
+      const signature = await walletRef.current.signAndSendTransaction(
+        txn,
+        origin,
+        getAllAppConnections()
+      );
+
+      sendMessageToMainTab({
+        type: WALLET_TO_APP_ACTION.SIGN_TRANSACTION,
+        data: { signature },
+      });
+
+      setTimeout(
+        () => dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "idle" }),
+        2000
+      );
+    } catch (error) {
+      dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "rejected" });
+      sendMessageToMainTab({
+        type: WALLET_TO_APP_ACTION.ERROR,
+        data: {
+          error: error,
+        },
+      });
+    }
+  };
+
+  const handleSignTypedData = async (typedData: {
+    domain: TypedDataDomain;
+    types: TypedData;
+    primaryType: string;
+    message: Record<string, unknown>;
+  }, origin: string) => {
+    try {
+      dispatch({ type: "SET_MESSAGE_SIGN_STATE", payload: "loading" });
+
+      const signature = await walletRef.current.signTypedData(
+        typedData,
+        origin,
+        getAllAppConnections()
+      );
+
+      sendMessageToMainTab({
+        type: WALLET_TO_APP_ACTION.SIGN_TYPED_DATA,
         data: { signature },
       });
 
@@ -205,10 +296,12 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
       payload: appConnections,
     });
 
+    const universalSigner = walletRef?.current?.universalSigner
+
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.APP_CONNECTION_SUCCESS,
       data: {
-        account: walletRef.current.signerAccount,
+        account: universalSigner.account,
       },
     });
   };
@@ -245,6 +338,24 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     });
   };
 
+  const handleWalletConfigs = (data: {
+    loginDefaults: LoginMethodConfig,
+    themeMode: typeof CONSTANTS.THEME.LIGHT | typeof CONSTANTS.THEME.DARK,
+    appMetadata: AppMetadata,
+    themeOverrides: Record<string, string>,
+  }) => {
+
+    data.themeMode === CONSTANTS.THEME.DARK ? enable() : disable();
+
+    const walletConfig: WalletConfig = {
+      loginDefaults: data.loginDefaults,
+      appMetadata: data.appMetadata,
+    }
+
+    appDispatch({ type: "SET_THEME_OVERRIDES", payload: { ...data.themeOverrides } });
+    dispatch({ type: "WALLET_CONFIG", payload: walletConfig });
+  }
+
   const handleRetryAppConnection = () => {
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.APP_CONNECTION_RETRY,
@@ -255,10 +366,13 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const handleUserLoggedIn = () => {
+
+    const universalSigner = walletRef?.current?.universalSigner
+
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.IS_LOGGED_IN,
       data: {
-        account: walletRef?.current?.signerAccount ?? null,
+        account: universalSigner.account ?? null,
       },
     });
   };
@@ -293,6 +407,9 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         handleAppConnectionRejected,
         handleRejectAllAppConnections,
         handleRetryAppConnection,
+        sendMessageToMainTab,
+        txhash,
+        setTxhash
       }}
     >
       {children}

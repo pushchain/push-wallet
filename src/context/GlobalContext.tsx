@@ -12,18 +12,19 @@ import {
   PushWalletAppConnectionData,
 } from "../common";
 import { APP_ROUTES } from "../constants";
-import { useWallet } from "./WalletContext";
-import { WalletInfo } from "../types/wallet.types";
+import { useExternalWallet } from "./ExternalWalletContext";
+import { WalletConfig, ExternalWalletType } from "../types/wallet.types";
 
 // Define the shape of the global state
 export type GlobalState = {
   wallet: PushWallet | null;
   appConnections: PushWalletAppConnectionData[];
-  externalWallet: WalletInfo | null;
+  externalWallet: ExternalWalletType | null;
   theme: "light" | "dark";
   user: any;
   isAuthenticated: boolean;
   jwt: string | null;
+  walletConfig: WalletConfig | null;
   walletLoadState: "idle" | "success" | "loading" | "rejected";
   messageSignState: "idle" | "loading" | "rejected";
   externalWalletAppConnectionStatus: "pending" | "connected";
@@ -39,13 +40,14 @@ export type GlobalState = {
 export type GlobalAction =
   | { type: "INITIALIZE_WALLET"; payload: PushWallet }
   | { type: "SET_APP_CONNECTIONS"; payload: PushWalletAppConnectionData[] }
-  | { type: "SET_EXTERNAL_WALLET"; payload: WalletInfo }
+  | { type: "SET_EXTERNAL_WALLET"; payload: ExternalWalletType }
   | { type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE"; payload: GlobalState["externalWalletAuthState"] }
   | { type: "RESET_WALLET" }
   | { type: "SET_THEME"; payload: "light" | "dark" }
   | { type: "SET_USER"; payload: any }
   | { type: "SET_AUTHENTICATED"; payload: boolean }
   | { type: "SET_JWT"; payload: string }
+  | { type: "WALLET_CONFIG"; payload: WalletConfig }
   | { type: "SET_WALLET_LOAD_STATE"; payload: GlobalState["walletLoadState"] }
   | { type: "SET_MESSAGE_SIGN_STATE"; payload: GlobalState["messageSignState"] }
   | {
@@ -62,6 +64,7 @@ const initialState: GlobalState = {
   user: null,
   isAuthenticated: false,
   jwt: null,
+  walletConfig: null,
   walletLoadState: "idle",
   messageSignState: "idle",
   externalWalletAppConnectionStatus: "pending",
@@ -96,6 +99,7 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
       return {
         ...state,
         ...initialState,
+        walletConfig: state.walletConfig,
       };
     case "SET_THEME":
       return { ...state, theme: action.payload };
@@ -105,6 +109,8 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
       return { ...state, isAuthenticated: action.payload };
     case "SET_JWT":
       return { ...state, jwt: action.payload };
+    case "WALLET_CONFIG":
+      return { ...state, walletConfig: action.payload };
     case "SET_WALLET_LOAD_STATE":
       return { ...state, walletLoadState: action.payload };
     case "SET_MESSAGE_SIGN_STATE":
@@ -145,7 +151,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
 
   const params = new URLSearchParams(location.search);
 
-  const { currentWallet } = useWallet();
+  const { externalWallet } = useExternalWallet();
 
   const stateParam = params.get("state");
 
@@ -179,12 +185,12 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
         }
 
-        if (currentWallet) {
+        if (externalWallet) {
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
-          dispatch({ type: "SET_EXTERNAL_WALLET", payload: currentWallet });
+          dispatch({ type: "SET_EXTERNAL_WALLET", payload: externalWallet });
         }
 
-        if (!stateParam && !storedToken && !currentWallet) {
+        if (!stateParam && !storedToken && !externalWallet) {
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "rejected" });
         }
       } catch (error) {
@@ -196,7 +202,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
 
     // We don't need to do jwt token network calls on the oauth route to avoid expiring the token
     window.location.pathname !== APP_ROUTES.OAUTH_REDIRECT && fetchUser();
-  }, [stateParam, storedToken, currentWallet]);
+  }, [stateParam, storedToken, externalWallet]);
 
   return (
     <GlobalContext.Provider

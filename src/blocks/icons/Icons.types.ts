@@ -1,8 +1,8 @@
-import { IconColors } from "../theme/Theme.types";
+import { ThemeColors } from "../theme/Theme.types";
 
 export type IconProps = {
   /** Set icon fill color from design system */
-  color?: IconColors;
+  color?: ThemeColors;
   /** Set width and height of icon in pixels */
   size?: number;
   /** Whether to scale icon according to font-size. Sets width and height to 1em. */

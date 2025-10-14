@@ -69,6 +69,10 @@ export { default as NotificationImg } from './components/NotificationImg';
 
 export { default as NotificationDark } from './components/NotificationDark';
 
+export { default as Optimisim } from './components/Optimisim';
+
+export { default as PushChainLogo } from "./components/PushChainLogo";
+
 export { default as RewardsBell } from './components/RewardsBell';
 
 export { default as RewardPoints } from './components/RewardPoints';

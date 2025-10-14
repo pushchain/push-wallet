@@ -19,11 +19,11 @@ const StyledMenuItem = styled(RadixDropdown.Item) <MenuItemComponentProps>`
   [role='img'] {
     width: 24px;
     height: 24px;
-    color: var(--components-list-item-icon-${({ type }) => (type ? type : 'default')});
+    color: var(--pw-int-${({ type }) => (type ? type === 'error' ? 'error-primary-color' : 'success-primary-color' : 'icon-primary-color')});
   }
 
   &:hover {
-    background-color: var(--surface-secondary);
+    background-color: var(--pw-int-bg-secondary-color);
     outline: none !important;
   }
 
@@ -35,10 +35,10 @@ const StyledMenuItem = styled(RadixDropdown.Item) <MenuItemComponentProps>`
 `;
 
 const StyledLabel = styled.span<{ type?: MenuItemTypeVariant }>`
- color: var(--components-list-item-text-${({ type }) => (type ? type : 'default')});
+  color: var(--pw-int-${({ type }) => (type ? type === 'error' ? 'error-primary-color' : 'success-primary-color' : 'text-primary-color')});
   text-align: center;
 
-  font-family: var(--font-family);
+  font-family: var(--pw-int-font-family);
   font-size: ${textVariants['bs-regular'].fontSize};
   font-style: ${textVariants['bs-regular'].fontStyle};
   font-weight: ${textVariants['bs-regular'].fontWeight};

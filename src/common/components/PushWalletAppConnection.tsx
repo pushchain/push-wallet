@@ -1,6 +1,5 @@
 import { FC, useState } from "react";
 import { Info } from "blocks";
-import { WalletListType } from "../../modules/wallet/Wallet.types";
 import { useGlobalState } from "../../context/GlobalContext";
 import { DrawerWrapper } from "./DrawerWrapper";
 import { ConnectionSuccess } from "./ConnectionSuccess";
@@ -9,6 +8,7 @@ import { ErrorContent } from "./ErrorContent";
 import { useEventEmitterContext } from "../../context/EventEmitterContext";
 import { PushWalletAppConnectionData } from "../Common.types";
 import { getAppParamValue } from "../Common.utils";
+import { WalletListType } from "src/types";
 
 export type PushWalletAppConnectionProps = {
   selectedWallet: WalletListType;
@@ -85,7 +85,7 @@ const PushWalletAppConnection: FC<PushWalletAppConnectionProps> = ({
     return (
       <DrawerWrapper>
         <ErrorContent
-          icon={<Info size={32} color="icon-state-danger-subtle" />}
+          icon={<Info size={32} color="pw-int-icon-danger-bold-color" />}
           title="Rejected by user"
           subTitle="Try again to authenticate"
           retryText="Retry"

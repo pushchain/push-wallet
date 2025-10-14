@@ -1,32 +1,25 @@
 import { PushWallet } from "src/services/pushWallet/pushWallet";
-import { ChainType } from "../../types/wallet.types";
+import { ChainType, WalletType } from "../../types/wallet.types";
+import { PushChain } from "@pushchain/core";
+import { createPublicClient, http } from 'viem';
+import { mainnet, sepolia } from 'viem/chains';
+import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 
-export const getWalletlist = (attachedAccounts: string[], wallet: PushWallet) => {
+export const getWalletlist = (wallet: PushWallet) => {
   const walletList = [];
-  if (attachedAccounts?.length) {
-    attachedAccounts?.forEach((account, index) => {
-      let walletObj = {};
-      if (account.includes("push")) {
-        walletObj = {
-          name: "Push Account",
-          address: wallet?.signerAccount,
-          fullAddress: wallet?.signerAccount,
-          isSelected: false,
-          type: "push",
-        };
-      } else {
-        walletObj = {
-          name: `Account ${index + 1}`,
-          address: account.split(':')[2],
-          fullAddress: account,
-          isSelected: false,
-          //TODO:change the type as per backend later
-          type: "metamask",
-        };
-      }
-      walletList.push(walletObj);
-    });
+  if (wallet) {
+    const universalSigner = wallet?.universalSigner
+    const account = PushChain.utils.account.toChainAgnostic(universalSigner.account.address, { chain: universalSigner.account.chain });
+    const walletObj = {
+      name: "Push Account",
+      address: wallet.universalSigner.account.address,
+      fullAddress: account,
+      isSelected: false,
+      type: "push",
+    };
+    walletList.push(walletObj);
   }
+
   walletList.reverse();
   return walletList; // Return the wallet list instead of null
 };
@@ -50,9 +43,21 @@ export function formatWalletCategory(input: string): string {
   }
 }
 
-export const getFixedTime = (timestamp: number): string => {
+export const getFixedTime = (timestamp: number | string): string => {
+  let timeValue: number;
+
+  if (typeof timestamp === 'string') {
+    // Parse ISO string to milliseconds
+    timeValue = Date.parse(timestamp);
+    if (isNaN(timeValue)) {
+      return 'Invalid date';
+    }
+  } else {
+    timeValue = timestamp;
+  }
+
   const now = Date.now();
-  const diffInSeconds = Math.floor((now - timestamp) / 1000);
+  const diffInSeconds = Math.floor((now - timeValue) / 1000);
 
   if (diffInSeconds < 60) {
     return `${diffInSeconds}s ago`;
@@ -90,23 +95,8 @@ export const getFixedTime = (timestamp: number): string => {
 export const convertCaipToObject = (
   addressinCAIP: string
 ): {
-  result: {
-    chainId: string | null;
-    chain: string | null;
-    address: string | null;
-  };
+  result: WalletType
 } => {
-  // Check if the input is a valid non-empty string
-  if (!addressinCAIP || typeof addressinCAIP !== 'string') {
-    return {
-      result: {
-        chain: null,
-        chainId: null,
-        address: null,
-      },
-    };
-  }
-
   const addressComponent = addressinCAIP.split(':');
 
   // Handle cases where there are exactly three components (chain, chainId, address)
@@ -166,10 +156,58 @@ export function toCAIPFormat(
     namespace = 'solana';
 
     // TODO: Find a method to get the solana chain id in caip format
-    formattedChainId = '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp'; //mainnet
+    formattedChainId = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1'; //devnet
   } else {
     throw new Error("Unsupported chain. Use 'ethereum' or 'solana'.");
   }
 
   return `${namespace}:${formattedChainId}:${formattedAddress}`;
+}
+
+const EVM_CHAIN_CONFIGS = {
+  1: mainnet,
+  11155111: sepolia,
+};
+
+export async function getNativeTokenBalance(token, walletDetail): Promise<{ balance: string, loading: boolean }> {
+  if (!token || !walletDetail || token.address !== '') {
+    return { balance: '0', loading: false };
+  }
+
+  try {
+    if (walletDetail.chain?.toLowerCase() === 'solana') {
+      // Solana
+      const network = 'devnet'; // or 'devnet', 'testnet' as needed
+      const connection = new Connection(clusterApiUrl(network));
+      const publicKey = new PublicKey(walletDetail.address);
+      const lamports = await connection.getBalance(publicKey);
+      const sol = lamports / 1e9;
+      return {
+        balance: sol.toLocaleString(undefined, { maximumFractionDigits: 6 }),
+        loading: false
+      };
+    } else {
+      // EVM
+      const chainId = Number(walletDetail.chainId) || 1;
+      const chain = EVM_CHAIN_CONFIGS[chainId] || mainnet;
+      const client = createPublicClient({ chain, transport: http() });
+      const wei = await client.getBalance({ address: walletDetail.address });
+      const eth = Number(wei) / 1e18;
+      return {
+        balance: eth.toLocaleString(undefined, { maximumFractionDigits: 6 }),
+        loading: false
+      };
+    }
+  } catch (err) {
+    return { balance: '0', loading: false };
+  }
+}
+
+export function formatTokenValue(value: string | number | bigint, decimalPlaces: number = 3): string {
+  const num = typeof value === 'bigint' ? Number(value) : Number(value);
+  if (isNaN(num)) return String(value);
+  // if (Math.abs(num) >= 100000) {
+  //   return num.toExponential(2);
+  // }
+  return num.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: decimalPlaces });
 }

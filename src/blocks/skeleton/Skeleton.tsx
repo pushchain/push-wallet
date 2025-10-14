@@ -17,8 +17,8 @@ const StyledSkeleton = styled.div.withConfig({
 
   /* Animation props */
   animation: ${getSkeletonPulseAnimation(
-    'var(--components-skeleton-loader-gradient-light)',
-    'var(--components-skeleton-loader-gradient-dark)'
+    'var(--pw-int-border-secondary-color)',
+    'var(--pw-int-border-tertiary-color)'
   )}
     1s infinite alternate-reverse;
 

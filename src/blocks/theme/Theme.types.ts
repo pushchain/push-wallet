@@ -1,4 +1,5 @@
 import { colorSemantics, semanticKeys } from './colors/colors.semantics';
+import { sizeSemantics } from './sizes/sizes.semantics';
 import { blurVariables } from './variables/variables.blur';
 import { borderRadiusVariables } from './variables/variables.borderRadius';
 import { borderSizeVariables } from './variables/variables.borderSize';
@@ -24,6 +25,7 @@ export type Theme = {
   borderSize: typeof borderSizeVariables;
   opacity: typeof opacityVariables;
   spacing: typeof spacingVariables;
+  size: typeof sizeSemantics;
 };
 
 export type ThemeBorderRadius = keyof Theme['borderRadius'];
@@ -32,10 +34,65 @@ export type ThemeBorderSize = keyof Theme['borderSize'];
 
 export type ThemeSpacing = keyof Theme['spacing'];
 
-export type SurfaceColors = keyof ThemeColorsConfig<{ [semanticKeys.surface]: ColorSemantics['surface'] }>;
+export type SurfaceColors = keyof ThemeColorsConfig<{ [semanticKeys.surface]: ColorSemantics['pw-int-bg'] }>;
 
-export type TextColors = keyof ThemeColorsConfig<{ [semanticKeys.text]: ColorSemantics['text'] }>;
+export type TextColors = keyof ThemeColorsConfig<{ [semanticKeys.text]: ColorSemantics['pw-int-text'] }>;
 
-export type IconColors = keyof ThemeColorsConfig<{ [semanticKeys.icon]: ColorSemantics['icon'] }>;
+export type IconColors = keyof ThemeColorsConfig<{ [semanticKeys.icon]: ColorSemantics['pw-int-icon'] }>;
 
-export type StrokeColors = keyof ThemeColorsConfig<{ [semanticKeys.stroke]: ColorSemantics['stroke'] }>;
+export type StrokeColors = keyof ThemeColorsConfig<{ [semanticKeys.stroke]: ColorSemantics['pw-int-border'] }>;
+
+type ColorThemeTokens = {
+  // Brand Colors
+  '--pw-core-brand-primary-color': string;
+
+  // Text Colors
+  '--pw-core-text-primary-color': string;
+  '--pw-core-text-secondary-color': string;
+  '--pw-core-text-tertiary-color': string;
+  '--pw-core-text-link-color': string;
+  '--pw-core-text-disabled-color': string;
+
+  // Background Colors & Filter
+  '--pw-core-bg-primary-color': string;
+  '--pw-core-bg-secondary-color': string;
+  '--pw-core-bg-tertiary-color': string;
+  '--pw-core-bg-disabled-color': string;
+
+  // State Colors
+  '--pw-core-success-primary-color': string;
+  '--pw-core-error-primary-color': string;
+
+  // Button
+  '--pw-core-btn-primary-bg-color': string;
+  '--pw-core-btn-primary-text-color': string;
+
+  // Push Universal Account Button
+  '--pwauth-btn-connect-text-color': string;
+  '--pwauth-btn-connect-bg-color': string;
+  '--pwauth-btn-connected-text-color': string;
+  '--pwauth-btn-connected-bg-color': string;
+  '--pwauth-btn-connect-border-radius': string;
+};
+
+type ThemeTokens = ColorThemeTokens & {
+  // Typography
+  '--pw-core-font-family': string;
+  '--pw-core-text-size': string;
+
+  // Sizing & Spacing
+  '--pw-core-modal-border': string;
+  '--pw-core-modal-border-radius': string;
+  '--pw-core-modal-width': string;
+  '--pw-core-modal-padding': string;
+  '--pw-core-list-spacing': string;
+  '--pw-core-btn-border-radius': string;
+
+  // Push Universal Account Button
+  '--pwauth-btn-connect-border-radius': string;
+};
+
+export type ThemeOverrides = Partial<ThemeTokens> & {
+  light?: Partial<ColorThemeTokens>;
+  dark?: Partial<ColorThemeTokens>;
+};

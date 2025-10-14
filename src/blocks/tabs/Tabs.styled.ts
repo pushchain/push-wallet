@@ -14,10 +14,10 @@ export const StyledFillTabList = styled(TabList)`
   display: flex;
   width: fit-content;
   @media${deviceMediaQ.mobileL} {
-    width: -webkit-fill-available;
+    width: 100%;
   }
   padding: var(--spacing-xxxs);
-  background-color: var(--surface-secondary);
+  background-color: var(--pw-int-bg-secondary-color);
   border-radius: var(--radius-sm);
   gap: var(--spacing-xxs);
 `;
@@ -31,15 +31,15 @@ export const StyledFillTab = styled(Tab)`
   gap: var(--spacing-xxs);
   align-self: stretch;
   cursor: pointer;
-  color: var(--text-secondary);
-  background-color: var(--surface-transparent);
+  color: var(--pw-int-text-secondary-color);
+  background-color: transparent;
   border-radius: var(--radius-xs);
   transition: background-color 0.3s, color 0.3s;
   border-bottom: none;
 
   &[data-selected] {
-    background-color: var(--components-button-tertiary-background-inverse);
-    color: var(--text-secondary);
+    background-color: var(--pw-int-bg-secondary-color);
+    color: var(--pw-int-text-secondary-color);
   }
 
   &:focus {
@@ -47,21 +47,17 @@ export const StyledFillTab = styled(Tab)`
   }
 
   &:hover {
-    color: var(--components-button-secondary-text-default);
-  }
-
-  &:focus-visible {
-    outline: var(--border-sm) solid var(--stroke-state-focused);
+    color: var(--pw-int-text-primary-color);
   }
 
   &:active {
-    background-color: var(--surface-transparent);
-    color: var(--components-button-secondary-text-default);
+    background-color: transparent;
+    color: var(--pw-int-text-primary-color);
   }
 
   &[aria-disabled='true'] {
     cursor: not-allowed;
-    color: var(--components-button-secondary-text-disabled);
+    color: var(--pw-int-text-disabled-color);
     opacity: 1;
   }
 `;
@@ -74,10 +70,10 @@ export const StyledLineTabs = styled(ReachTabs)`
 
 export const StyledLineTabList = styled(TabList)`
   display: flex;
-  background-color: var(--surface-transparent);
+  background-color: transparent;
   gap: var(--spacing-xs);
   justify-content: flex-start;
-  border-bottom: var(--border-sm) solid var(--stroke-secondary);
+  border-bottom: var(--border-sm) solid var(--pw-int-border-secondary-color);
 `;
 
 export const StyledLineTab = styled(Tab)`
@@ -89,43 +85,36 @@ export const StyledLineTab = styled(Tab)`
   gap: var(--spacing-xxs);
   cursor: pointer;
   margin-bottom: -1px;
-  background-color: var(--surface-transparent);
-  color: var(--text-secondary);
+  background-color: transparent;
+  color: var(--pw-int-text-secondary-color);
   transition: background-color 0.3s, color 0.3s;
-  border-bottom: var(--border-md) solid var(--surface-transparent);
+  border-bottom: var(--border-md) solid transparent;
 
   &[data-selected] {
-    border-bottom: var(--border-md) solid var(--stroke-brand-medium);
-    color: var(--text-primary);
+    border-bottom: var(--border-md) solid var(--pw-int-brand-primary-subtle-color);
+    color: var(--pw-int-text-primary-color);
   }
 
   &:hover {
-    color: var(--text-primary);
-  }
-
-  &:focus-visible {
-    outline: var(--border-md) solid var(--stroke-state-focused);
-    border-bottom: var(--border-md) solid var(--surface-transparent);
-    border-radius: var(--radius-xs);
-    margin-bottom: -2px;
+    color: var(--pw-int-text-primary-color);
   }
 
   &:active {
-    background-color: var(--surface-transparent);
-    color: var(--text-primary);
+    background-color: transparent;
+    color: var(--pw-int-text-primary-color);
   }
 
   &[aria-disabled='true'] {
     cursor: not-allowed;
-    color: var(--text-state-disabled);
-    border-bottom: var(--border-md) solid var(--stroke-state-disabled);
+    color: var(--pw-int-text-disabled-color);
+    border-bottom: var(--border-md) solid var(--pw-int-text-disabled-color);
     opacity: 1;
   }
 `;
 
 export const StyledTabLabel = styled.span`
   white-space: nowrap;
-  font-family: var(--font-family);
+  font-family: var(--pw-int-font-family);
   font-size: ${textVariants['h5-semibold'].fontSize};
   font-style: ${textVariants['h5-semibold'].fontStyle};
   font-weight: ${textVariants['h5-semibold'].fontWeight};
