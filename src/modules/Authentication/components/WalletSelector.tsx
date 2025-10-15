@@ -51,8 +51,6 @@ const WalletSelector: FC<WalletButtonProps> = ({
 
         const result = await connect(provider, chainType);
 
-        console.log(result);
-
         const payload: ExternalWalletType = {
           originAddress: result,
           chainType: chainType,

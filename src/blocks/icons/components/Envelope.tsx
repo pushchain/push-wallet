@@ -18,9 +18,9 @@ const Envelope: FC<IconProps> = (allProps) => {
           <path
             d="M4 7L16 17L28 7"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
           <rect
             x="4"
@@ -28,9 +28,9 @@ const Envelope: FC<IconProps> = (allProps) => {
             width="24"
             height="18"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
       }

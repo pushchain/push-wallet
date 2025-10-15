@@ -16,13 +16,13 @@ const CaretRight: FC<IconProps> = (allProps) => {
           xmlns="http://www.w3.org/2000/svg"
           {...props}
         >
-          <g clip-path="url(#clip0_4239_16009)">
+          <g clipPath="url(#clip0_4239_16009)">
             <path
               d="M9.25146 6.41254L14.8389 12L9.25146 17.5875"
               stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </g>
           <defs>

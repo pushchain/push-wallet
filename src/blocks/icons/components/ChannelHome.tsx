@@ -19,16 +19,16 @@ const ChannelHome: FC<IconProps> = (allProps) => {
           <path
             d="M4 14L6 11.9335M28 14L26 11.9335M6 11.9335L14.5905 3.40011C15.3705 2.62534 16.6295 2.62534 17.4095 3.40011L26 11.9335M6 11.9335V24C6 25.1046 6.89543 26 8 26H24C25.1046 26 26 25.1046 26 24V11.9335"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
           <path
             d="M15.9999 18L15.9999 22"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
       }

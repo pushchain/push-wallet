@@ -21,13 +21,13 @@ const Search: FC<IconProps> = (allProps) => {
             cy="14.25"
             r="9"
             stroke="currentColor"
-            stroke-width="2"
+            strokeWidth="2"
           />
           <path
             d="M21.62 20.75L27.62 26.75"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
+            strokeWidth="2"
+            strokeLinecap="round"
           />
         </svg>
       }

@@ -29,7 +29,7 @@ const QRCode: FC<IconProps> = (allProps) => {
             height="8.90909"
             rx="1.18182"
             stroke="currentColor"
-            stroke-width="2"
+            strokeWidth="2"
           />
           <path
             fill-rule="evenodd"
@@ -44,7 +44,7 @@ const QRCode: FC<IconProps> = (allProps) => {
             height="8.90909"
             rx="1.18182"
             stroke="currentColor"
-            stroke-width="2"
+            strokeWidth="2"
           />
           <path
             fill-rule="evenodd"
@@ -59,7 +59,7 @@ const QRCode: FC<IconProps> = (allProps) => {
             height="8.90909"
             rx="1.18182"
             stroke="currentColor"
-            stroke-width="2"
+            strokeWidth="2"
           />
           <path
             fill-rule="evenodd"

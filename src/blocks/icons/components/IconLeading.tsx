@@ -19,15 +19,15 @@ const IconLeading: FC<IconProps> = (allProps) => {
                     <path
                         d="M12 22.8418C18.0751 22.8418 23 17.9169 23 11.8418C23 5.76666 18.0751 0.841797 12 0.841797C5.92487 0.841797 1 5.76666 1 11.8418C1 17.9169 5.92487 22.8418 12 22.8418Z"
                         stroke="currentColor"
-                        stroke-width="1.5"
+                        strokeWidth="1.5"
                         stroke-miterlimit="10"
                     />
                     <path
                         d="M15.6668 8.1748H8.3335V15.5081H15.6668V8.1748Z"
                         stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                     />
                 </svg>
 

@@ -28,7 +28,7 @@ const GatedGroupPoints: FC<IllustrationProps> = (allProps) => {
             r="20.874"
             fill="#45C97C"
             stroke="white"
-            stroke-width="2"
+            strokeWidth="2"
           />
           <path
             d="M12 20.4V33.6918C12 34.5672 13.0453 35.0201 13.6839 34.4213L18.2076 30.1803C18.3312 30.0645 18.4943 30 18.6637 30H27C31.9706 30 36 25.9706 36 21C36 16.0294 31.9706 12 27 12H20.4C15.7608 12 12 15.7608 12 20.4Z"

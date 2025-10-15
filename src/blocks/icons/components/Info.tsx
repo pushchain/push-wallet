@@ -25,7 +25,7 @@ const Info: FC<IconProps> = (allProps) => {
             cy="16"
             r="12"
             stroke="currentColor"
-            stroke-width="2"
+            strokeWidth="2"
           />
         </svg>
       }

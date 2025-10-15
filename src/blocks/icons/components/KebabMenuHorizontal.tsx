@@ -16,7 +16,7 @@ const KebabMenuHorizontal: FC<IconProps> = (allProps) => {
           xmlns="http://www.w3.org/2000/svg"
           {...props}
         >
-          <g clip-path="url(#clip0_372_37305)">
+          <g clipPath="url(#clip0_372_37305)">
             <path
               d="M23 16C23 17.3807 24.1193 18.5 25.5 18.5C26.8807 18.5 28 17.3807 28 16C28 14.6193 26.8807 13.5 25.5 13.5C24.1193 13.5 23 14.6193 23 16Z"
               fill="currentColor"

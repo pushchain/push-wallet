@@ -24,26 +24,26 @@ const NotificationDark: FC<IllustrationProps> = (allProps) => {
             d="M28.9999 45.3946C32.0359 45.3946 34.4971 42.7909 34.4971 39.5791H23.5027C23.5027 42.7909 25.9639 45.3946 28.9999 45.3946Z"
             fill="#CF59E2"
             stroke="#F5F6F8"
-            stroke-width="1.26925"
-            stroke-linecap="round"
+            strokeWidth="1.26925"
+            strokeLinecap="round"
           />
           <path
             d="M53.5416 31.8876C55.6002 33.1758 56.7032 34.3572 56.5486 35.2503C56.0685 38.0682 42.9438 37.8103 27.864 34.8346C12.7842 31.859 0.968528 26.3337 1.44867 23.5158C1.75918 21.6925 7.30061 21.1035 15.2603 21.7205"
             stroke="#F5F6F8"
-            stroke-width="1.26925"
+            strokeWidth="1.26925"
             stroke-miterlimit="10"
-            stroke-linecap="round"
+            strokeLinecap="round"
           />
           <path
             d="M11.9496 10.5534C11.9496 7.64214 9.60058 5.27672 6.70947 5.27672C9.60058 5.27672 11.9496 2.91129 11.9496 0C11.9496 2.91129 14.2986 5.27672 17.1897 5.27672C14.2986 5.27672 11.9496 7.64214 11.9496 10.5534Z"
             stroke="#F5F6F8"
-            stroke-width="1.26925"
+            strokeWidth="1.26925"
             stroke-miterlimit="10"
           />
           <path
             d="M49.4206 30.9355C49.4206 28.6195 47.5519 26.7378 45.252 26.7378C47.5519 26.7378 49.4206 24.856 49.4206 22.54C49.4206 24.856 51.2893 26.7378 53.5892 26.7378C51.2893 26.7378 49.4206 28.6195 49.4206 30.9355Z"
             stroke="#F5F6F8"
-            stroke-width="1.26925"
+            strokeWidth="1.26925"
             stroke-miterlimit="10"
           />
           <ellipse
@@ -53,8 +53,8 @@ const NotificationDark: FC<IllustrationProps> = (allProps) => {
             ry="3.38024"
             fill="#CF59E2"
             stroke="#F5F6F8"
-            stroke-width="1.26925"
-            stroke-linecap="round"
+            strokeWidth="1.26925"
+            strokeLinecap="round"
           />
           <ellipse
             cx="44.5889"
@@ -63,8 +63,8 @@ const NotificationDark: FC<IllustrationProps> = (allProps) => {
             ry="2.12985"
             fill="#CF59E2"
             stroke="#F5F6F8"
-            stroke-width="1.26925"
-            stroke-linecap="round"
+            strokeWidth="1.26925"
+            strokeLinecap="round"
           />
           <ellipse
             cx="38.2101"
@@ -73,8 +73,8 @@ const NotificationDark: FC<IllustrationProps> = (allProps) => {
             ry="5.11649"
             fill="#CF59E2"
             stroke="#F5F6F8"
-            stroke-width="1.26925"
-            stroke-linecap="round"
+            strokeWidth="1.26925"
+            strokeLinecap="round"
           />
         </svg>
       }

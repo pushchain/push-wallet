@@ -7,6 +7,40 @@ type fetchTokenBalanceProps = {
     decimals: number
 }
 
+export const TOKEN_LISTS = {
+    ETHEREUM: [
+        { 
+            name: 'Ethereum',
+            symbol: 'SepoliaETH',
+            address: '',
+            decimals: 18
+        },
+    ],
+    BASE: [
+        { 
+            name: 'Base', 
+            symbol: 'SepoliaETH', 
+            address: '', 
+            decimals: 18 
+        },
+    ],
+    ARBITRUM: [
+        { 
+            name: 'Arbitrum', 
+            symbol: 'SepoliaETH', 
+            address: '', 
+            decimals: 18 
+        },
+    ],
+    SOLANA: [
+        { 
+            name: 'Solana', 
+            symbol: 'SOL', 
+            address: '', 
+            decimals: 9 
+        },
+    ],
+}
 export const fetchTokenBalance = async ({
     walletAddress,
     tokenAddress,

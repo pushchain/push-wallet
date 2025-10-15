@@ -21,14 +21,14 @@ const OptOut: FC<IconProps> = (allProps) => {
             cy="16"
             r="12"
             stroke="currentColor"
-            stroke-width="2"
+            strokeWidth="2"
           />
           <path
             d="M21.87 16L11.87 16"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
       }

@@ -16,27 +16,27 @@ const PlusSquare: FC<IconProps> = (allProps) => {
           xmlns="http://www.w3.org/2000/svg"
           {...props}
         >
-          <g clip-path="url(#clip0_1291_12909)">
+          <g clipPath="url(#clip0_1291_12909)">
             <path
               d="M21 5H11C7.68629 5 5 7.68629 5 11V21C5 24.3137 7.6863 27 11 27H21C24.3137 27 27 24.3137 27 21V11C27 7.68629 24.3137 5 21 5Z"
               stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             <path
               d="M11 16H21"
               stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             <path
               d="M16 11V21"
               stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </g>
           <defs>

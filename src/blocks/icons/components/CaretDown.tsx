@@ -19,9 +19,9 @@ const CaretDown: FC<IconProps> = (allProps) => {
           <path
             d="M21.45 10.275L14 17.725L6.55005 10.275"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
       }

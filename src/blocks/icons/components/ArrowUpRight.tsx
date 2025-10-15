@@ -16,20 +16,20 @@ const ArrowUpRight: FC<IconProps> = (allProps) => {
           xmlns="http://www.w3.org/2000/svg"
           {...props}
         >
-          <g clip-path="url(#clip0_1868_1867)">
+          <g clipPath="url(#clip0_1868_1867)">
             <path
               d="M4.34952 13.3443L13.6505 4.65573"
               stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             <path
               d="M6.34229 4.40686L13.6506 4.65568L13.4017 11.9639"
               stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </g>
           <defs>

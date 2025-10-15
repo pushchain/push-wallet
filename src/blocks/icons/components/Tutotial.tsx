@@ -24,8 +24,8 @@ const Tutorial: FC<IconProps> = (allProps) => {
           <path
             d="M5.8667 19.9H16.1334"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
+            strokeWidth="2"
+            strokeLinecap="round"
           />
         </svg>
       }

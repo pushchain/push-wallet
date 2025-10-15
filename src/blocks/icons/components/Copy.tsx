@@ -39,20 +39,20 @@ const Copy: FC<IconProps> = (allProps) => {
           fill="none"
           {...props}
         >
-          <g clip-path="url(#clip0_27939_16524)">
+          <g clipPath="url(#clip0_27939_16524)">
             <path
               d="M12.75 12.75H15C16.2426 12.75 17.25 11.7426 17.25 10.5V3C17.25 1.75736 16.2426 0.75 15 0.75H7.5C6.25736 0.75 5.25 1.75736 5.25 3V5.25"
               stroke="#CF59E2"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             <path
               d="M10.5 5.25H3C1.75736 5.25 0.75 6.25736 0.75 7.5V15C0.75 16.2426 1.75736 17.25 3 17.25H10.5C11.7426 17.25 12.75 16.2426 12.75 15V7.5C12.75 6.25736 11.7426 5.25 10.5 5.25Z"
               stroke="#CF59E2"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </g>
           <defs>

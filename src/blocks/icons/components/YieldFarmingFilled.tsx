@@ -29,9 +29,9 @@ const YieldFarmingFilled: FC<IconProps> = (allProps) => {
           <path
             d="M4.9231 26.6155L26.7413 26.6155"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
       }

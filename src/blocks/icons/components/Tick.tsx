@@ -19,8 +19,8 @@ const Tick: FC<IconProps> = (allProps) => {
           <path
             d="M4 17.1316L11.5789 24.7105L28 8.28949"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
+            strokeWidth="2"
+            strokeLinecap="round"
           />
         </svg>
       }
