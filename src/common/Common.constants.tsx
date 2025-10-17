@@ -73,17 +73,17 @@ export const walletCategories: WalletCategoriesType[] = [
     isMobile: false,
   },
   {
-    chain: ChainType.ARBITRUM,
-    wallet: "ethereum",
-    label: "Connect Arbitrum Wallet",
-    icon: <Arbitrum width={24} height={24} />,
-    isMobile: false,
-  },
-  {
     chain: ChainType.BASE,
     wallet: "ethereum",
     label: "Connect Base Wallet",
     icon: <Base width={24} height={24} />,
+    isMobile: false,
+  },
+  {
+    chain: ChainType.ARBITRUM,
+    wallet: "ethereum",
+    label: "Connect Arbitrum Wallet",
+    icon: <Arbitrum width={24} height={24} />,
     isMobile: false,
   },
   {
