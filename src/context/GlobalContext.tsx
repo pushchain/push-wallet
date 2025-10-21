@@ -13,13 +13,14 @@ import {
 } from "../common";
 import { APP_ROUTES } from "../constants";
 import { useExternalWallet } from "./ExternalWalletContext";
-import { WalletConfig, ExternalWalletType } from "../types/wallet.types";
+import { WalletConfig, ExternalWalletType, UniversalAccount } from "../types/wallet.types";
 
 // Define the shape of the global state
 export type GlobalState = {
   wallet: PushWallet | null;
   appConnections: PushWalletAppConnectionData[];
   externalWallet: ExternalWalletType | null;
+  pushWallet: UniversalAccount | null;
   theme: "light" | "dark";
   user: any;
   isAuthenticated: boolean;
@@ -34,6 +35,8 @@ export type GlobalState = {
   | "loading"
   | "rejected"
   | "timeout";
+  isReadOnly: boolean;
+  reconnect: boolean;
 };
 
 // Define actions for state management
@@ -41,6 +44,7 @@ export type GlobalAction =
   | { type: "INITIALIZE_WALLET"; payload: PushWallet }
   | { type: "SET_APP_CONNECTIONS"; payload: PushWalletAppConnectionData[] }
   | { type: "SET_EXTERNAL_WALLET"; payload: ExternalWalletType }
+  | { type: "SET_PUSH_WALLET"; payload: UniversalAccount }
   | { type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE"; payload: GlobalState["externalWalletAuthState"] }
   | { type: "RESET_WALLET" }
   | { type: "SET_THEME"; payload: "light" | "dark" }
@@ -53,12 +57,15 @@ export type GlobalAction =
   | {
     type: "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS";
     payload: GlobalState["externalWalletAppConnectionStatus"];
-  };
+  }
+  | { type: "SET_READ_ONLY"; payload: boolean }
+  | { type: "SET_RECONNECT"; payload: boolean };
 
 // Initial state
 const initialState: GlobalState = {
   wallet: null,
   appConnections: getAllAppConnections(),
+  pushWallet: null,
   externalWallet: null,
   theme: "light",
   user: null,
@@ -69,6 +76,8 @@ const initialState: GlobalState = {
   messageSignState: "idle",
   externalWalletAppConnectionStatus: "pending",
   externalWalletAuthState: "idle",
+  isReadOnly: false,
+  reconnect: false,
 };
 
 // Reducer function to manage state transitions
@@ -88,6 +97,11 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
       return {
         ...state,
         externalWallet: action.payload,
+      };
+    case "SET_PUSH_WALLET":
+      return {
+        ...state,
+        pushWallet: action.payload,
       };
     case "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE":
       return {
@@ -120,6 +134,16 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
       };
     case "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS":
       return { ...state, externalWalletAppConnectionStatus: action.payload };
+    case "SET_READ_ONLY":
+      return {
+        ...state,
+        isReadOnly: action.payload,
+      };
+    case "SET_RECONNECT":
+      return {
+        ...state,
+        reconnect: action.payload,
+      };
     default:
       return state;
   }
@@ -174,7 +198,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
           window.history.replaceState({}, document.title, url.toString());
 
           dispatch({ type: "SET_JWT", payload: jwtToken });
-
+          dispatch({ type: "SET_READ_ONLY", payload: false });
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
         }
 

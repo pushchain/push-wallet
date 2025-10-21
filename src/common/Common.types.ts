@@ -13,6 +13,7 @@ export enum WALLET_TO_APP_ACTION {
   APP_CONNECTION_REJECTED = "appConnectionRejected",
   APP_CONNECTION_SUCCESS = "appConnectionSuccess",
   APP_CONNECTION_RETRY = "appConnectionRetry",
+  APP_CONNECTION_CANCELLED = 'appConnectionCancelled',
 
   SIGN_MESSAGE = "signatureMessage",
   SIGN_TRANSACTION = "signatureTransaction",
@@ -40,10 +41,13 @@ export enum APP_TO_WALLET_ACTION {
   WALLET_CONFIG = "walletConfig",
 
   PUSH_SEND_TRANSACTION_RESPONSE = 'pushSendTransactionResponse',
+  READ_ONLY_CONNECTION_STATUS = 'readOnlyConnectionStatus',
+  RECONNECT_WALLET = 'ReconnectWallet',
 }
 
 export enum WALLET_TO_WALLET_ACTION {
   AUTH_STATE_PARAM = "authStateParam",
+  REAUTH_PARAM = "reauthParam",
   CLOSE_TAB = "closetab",
 }
 

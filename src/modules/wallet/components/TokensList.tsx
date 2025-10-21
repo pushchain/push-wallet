@@ -8,6 +8,7 @@ import { useGlobalState } from '../../../context/GlobalContext';
 import { usePushChain } from '../../../hooks/usePushChain';
 import { convertCaipToObject, getWalletlist } from '../Wallet.utils';
 import { css } from 'styled-components';
+import { PushChain } from '@pushchain/core';
 
 type TokensListProps = {
     setActiveState: (activeStates: ActiveStates) => void;
@@ -21,7 +22,8 @@ const TokensList: FC<TokensListProps> = ({
     const { executorAddress } = usePushChain();
 
     const pushWallet = useMemo(() => getWalletlist(state.wallet)[0], [state.wallet]);
-    const parsedWallet = pushWallet?.fullAddress || state?.externalWallet?.originAddress;
+    const readOnlyWallet = state.pushWallet ? PushChain.utils.account.toChainAgnostic(state.pushWallet.address, { chain: state.pushWallet.chain }) : null;
+    const parsedWallet = pushWallet?.fullAddress || readOnlyWallet || state?.externalWallet?.originAddress;
 
     const { result } = useMemo(() => convertCaipToObject(parsedWallet), [parsedWallet]);
 

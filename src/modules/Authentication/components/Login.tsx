@@ -36,6 +36,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
     validationSchema,
     onSubmit: (values) => {
       setEmail(values.email);
+      localStorage.setItem("pw_user_email", values.email);
 
       if (values.email) {
         if (isOpenedInIframe) {

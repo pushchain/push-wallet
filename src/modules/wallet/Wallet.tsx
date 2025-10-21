@@ -23,6 +23,7 @@ import { Send } from "./components/sendComponent/Send";
 import { WalletDashboardProvider } from "../../context/WalletDashboardContext";
 import { ActiveStates, PushNetworks, WalletListType } from "src/types";
 import { bytesToHex, stringToBytes } from "viem";
+import { Reconnect } from "./components/Reconnect";
 
 export type WalletProps = Record<string, never>;
 
@@ -72,6 +73,11 @@ const Wallet: FC<WalletProps> = () => {
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
 
+      // localStorage.setItem(
+      //   "walletInfo",
+      //   JSON.stringify(instance.universalSigner.account)
+      // );
+
       setSelectedWallet(
         getWalletlist(instance)[0]
       );
@@ -96,6 +102,11 @@ const Wallet: FC<WalletProps> = () => {
       );
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
+
+      // localStorage.setItem(
+      //   "walletInfo",
+      //   JSON.stringify(instance.universalSigner.account)
+      // );
 
       setSelectedWallet(
         getWalletlist(instance)[0]
@@ -202,7 +213,7 @@ const Wallet: FC<WalletProps> = () => {
   useEffect(() => {
     const initializeProfile = async () => {
       try {
-        if (state.jwt) {
+        if (state.jwt && !state.isReadOnly) {
           setCreateAccountLoading(true);
 
           await fetchUserProfile(state.jwt);
@@ -217,7 +228,7 @@ const Wallet: FC<WalletProps> = () => {
 
     initializeProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [state.isReadOnly]);
 
   const handleCreateNewWallet = async () => {
     try {
@@ -309,6 +320,7 @@ const Wallet: FC<WalletProps> = () => {
             {activeState === 'addTokens' && <AddTokens />}
             {activeState === 'receive' && <Receive />}
             {activeState === 'send' && <Send />}
+            <Reconnect />
           </WalletDashboardProvider>
         </Box>
       </BoxLayout>

@@ -38,5 +38,6 @@ export const APP_ROUTES = {
   AUTH: "/auth",
   WALLET: "/wallet",
   VERIFY_EMAIL_OTP: "/verify-email-otp",
+  REVERIFY_EMAIL_OTP: "/reverify-email-otp",
   OAUTH_REDIRECT: "/oauth-redirect",
 };

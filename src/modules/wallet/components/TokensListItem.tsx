@@ -39,7 +39,7 @@ const TokensListItem: FC<TokenListItemProps> = ({ token, handleSelectToken }) =>
             {token.name}
           </Text>
           <Text variant="bs-regular" color="pw-int-text-secondary-color">
-            {loadingTokenBalance
+            {loadingTokenBalance || !tokenBalance
               ? '0'
               : formatTokenValue(tokenBalance, 3)
             } {token.symbol}

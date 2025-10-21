@@ -4,18 +4,24 @@ import { useExternalWallet } from '../context/ExternalWalletContext';
 import { useGlobalState } from '../context/GlobalContext';
 import { PUSH_NETWORK } from '@pushchain/core/src/lib/constants/enums';
 import { getWalletlist } from '../modules/wallet/Wallet.utils';
+import { createGuardedPushChain } from '../helpers/txnAuthGuard';
+import { useEventEmitterContext } from '../context/EventEmitterContext';
 
 export const usePushChain = () => {
-    const { state } = useGlobalState();
+    const { dispatch, state } = useGlobalState();
 
     const [pushChain, setPushChain] = useState<PushChain | null>(null);
     const [error, setError] = useState<Error | null>(null);
     const [executorAddress, setExecutorAddress] = useState(null);
 
+    const { handleReconnectWallet, handleReconnectExternalWallet } = useEventEmitterContext();
+    
     // getting push wallet (if created by social login)
     const pushWallet = getWalletlist(state.wallet)[0];
 
-    const parsedWallet = pushWallet?.fullAddress || state?.externalWallet?.originAddress;
+    const readOnlyWallet = state.pushWallet ? PushChain.utils.account.toChainAgnostic(state.pushWallet.address, { chain: state.pushWallet.chain }) : null;
+
+    const parsedWallet = pushWallet?.fullAddress || readOnlyWallet || state?.externalWallet?.originAddress;
 
     const {
         signMessageRequest,
@@ -57,17 +63,37 @@ export const usePushChain = () => {
                     signerSkeleton
                 );
 
-
-                const pushChainClient = await PushChain.initialize(universalSigner, {
+                const intializeProps = {
                     network: PUSH_NETWORK.TESTNET_DONUT,
                     progressHook: async (progress: any) => {
                         console.log("Progress hook", progress);
                     },
-                });
+                }
 
+                let pushChainClient: PushChain;
+
+                if (state.isReadOnly) {
+                    const client = await PushChain.initialize(universalAccount, {
+                        network: PUSH_NETWORK.TESTNET_DONUT,
+                    });
+                    pushChainClient = createGuardedPushChain(
+                        client,
+                        handleReconnectExternalWallet,
+                        handleReconnectWallet,
+                        universalSigner,
+                        intializeProps,
+                        () => {
+                            dispatch({ type: "SET_READ_ONLY", payload: false });
+                        },
+                    )
+                } else {
+                    pushChainClient = await PushChain.initialize(universalSigner, intializeProps);
+                    
+                }
+
+                setPushChain(pushChainClient);
                 const executorAddress = pushChainClient.universal.account;
                 setExecutorAddress(executorAddress);
-                setPushChain(pushChainClient)
 
             } catch (err) {
                 console.log('Error occured when initialising Push chain', err);

@@ -30,7 +30,6 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
     const version = sessionStorage.getItem('UI_kit_version');
     if (appURL) url.searchParams.set('app', appURL);
     if (version) url.searchParams.set('version', version);
-    console.log(url.toString());
     window.history.replaceState({}, "", url.toString());
   }, []);
 
@@ -65,6 +64,10 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
+    }
+    if (e.key === 'Enter' && otp.every(digit => digit) && !isLoading) {
+      e.preventDefault();
+      void handleSubmit(); 
     }
   };
 

@@ -4,6 +4,7 @@ import { Address } from 'viem';
 
 export const useTokenBalance = (tokenAddress: string, walletAddress: string, decimals: number = 18) => {
     const shouldFetch = !!walletAddress;
+    const pollMs = 10_000;
 
     return useQuery({
         queryKey: ['tokenBalance', walletAddress, tokenAddress],
@@ -13,5 +14,8 @@ export const useTokenBalance = (tokenAddress: string, walletAddress: string, dec
             decimals
         }),
         enabled: shouldFetch,
+        refetchInterval: pollMs,
+        refetchIntervalInBackground: true,
+        staleTime: pollMs - 1000,
     });
 };

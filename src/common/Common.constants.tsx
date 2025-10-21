@@ -42,11 +42,11 @@ import {
   OptimismMonotone,
   Polygon,
   PolygonMonotone,
-  PushAlpha,
   PushChainLogo,
   PushChainMonotone,
   Solana,
   SolanaMonotone,
+  PushLogoNew
 } from "../blocks";
 import { ChainType, WalletCategoriesType } from "../types/wallet.types";
 
@@ -55,7 +55,7 @@ export const walletCategories: WalletCategoriesType[] = [
     chain: ChainType.PUSH_WALLET,
     wallet: "pushWallet",
     label: "Connect Push Wallet",
-    icon: <PushAlpha width={24} height={24} />,
+    icon: <PushLogoNew width={24} height={24} />,
     isMobile: false,
   },
   {
