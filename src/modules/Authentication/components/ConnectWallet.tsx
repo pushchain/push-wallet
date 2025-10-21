@@ -3,6 +3,8 @@ import { Back, Box, CaretRight, deviceSizes, Info, Text } from "blocks";
 import {
   DrawerWrapper,
   ErrorContent,
+  getAppParamValue,
+  isUIKitVersion,
   LoadingContent,
   PoweredByPush,
   useDeviceWidthCheck,
@@ -11,7 +13,7 @@ import {
 import { WalletState } from "../Authentication.types";
 import ChainSelector from "./ChainSelector";
 import { css } from "styled-components";
-import { WalletCategoriesType } from "src/types/wallet.types";
+import { ChainType, WalletCategoriesType } from "../../../types/wallet.types";
 import { useGlobalState } from "../../../context/GlobalContext";
 
 type WalletSelectionProps = {
@@ -21,7 +23,9 @@ type WalletSelectionProps = {
 const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const { dispatch, state: { externalWalletAuthState, walletConfig } } = useGlobalState();
   const isMobile = useDeviceWidthCheck(parseInt(deviceSizes.laptop));
-  const [selectedWalletCategory, setSelectedWalletCategory] = useState<WalletCategoriesType | null>(null)
+  const [selectedWalletCategory, setSelectedWalletCategory] = useState<WalletCategoriesType | null>(null);
+
+  const isOpenedInIframe = !!getAppParamValue();
 
   const filteredWalletCategories = useMemo(() => {
     let filtered = walletCategories;
@@ -30,6 +34,14 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     filtered = isMobile
       ? filtered.filter((wallet) => wallet.isMobile === isMobile)
       : filtered;
+
+    const showArbitrumAndBase = isUIKitVersion('2') || !isOpenedInIframe;
+
+    // Remove arbitrum and base
+    filtered = !showArbitrumAndBase
+      ? filtered.filter((wallet) => wallet.chain !== ChainType.ARBITRUM && wallet.chain !== ChainType.BASE)
+      : filtered;
+
 
     // Filter by configured chains
     if (walletConfig?.loginDefaults?.wallet?.chains?.length) {
@@ -69,6 +81,10 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
             height="299px"
             overflow="hidden scroll"
             customScrollbar
+            css={css`
+              padding-right: 6px;
+              margin-right: -8px;
+            `}
           >
             {!selectedWalletCategory ? (
               <Box display="flex" flexDirection="column" gap="spacing-xxs">

@@ -13,7 +13,7 @@
 
 <h4 align="center">
 
-  <a href="https://discord.com/invite/pushprotocol">
+  <a href="https://discord.com/invite/pushchain">
     <img src="https://img.shields.io/badge/discord-7289da.svg?style=flat-square" alt="discord">
   </a>
   <a href="https://twitter.com/pushprotocol">

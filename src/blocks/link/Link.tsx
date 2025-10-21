@@ -11,13 +11,16 @@ export type LinkProps = RouterLinkProps & {
   isText?: boolean;
 } & TransformedHTMLAttributes<HTMLAnchorElement>;
 
-const StyledLink = styled(RouterLink)<LinkProps>`
+const StyledLink = styled(RouterLink)<{
+  $isTest?: LinkProps['isText'];
+  css?: LinkProps['css'];
+}>`
   /* Link CSS */
 
   text-decoration: none;
 
   &:hover > * {
-    color: ${({ isText }) => (isText ? 'var(--pw-int-text-link-color)' : '')};
+    color: ${({ $isTest }) => ($isTest ? 'var(--pw-int-text-link-color)' : '')};
   }
 
   /* Extra CSS props */
@@ -27,7 +30,7 @@ const StyledLink = styled(RouterLink)<LinkProps>`
 const Link: FC<LinkProps> = ({ textProps, isText = true, ...props }) => {
   return (
     <StyledLink
-      isText={isText}
+      $isTest={isText}
       {...props}
     >
       {isText ? <Text {...textProps}>{props?.children}</Text> : props.children}

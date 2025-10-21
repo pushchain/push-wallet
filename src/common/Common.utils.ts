@@ -41,7 +41,7 @@ export const isUIKitVersion = (v: string) => {
 
   const version = searchParams.get("version");
 
-  return !!app && (version === v);
+  return !!app && (version >= v);
 };
 
 export const getAllAppConnections = (): PushWalletAppConnectionData[] =>

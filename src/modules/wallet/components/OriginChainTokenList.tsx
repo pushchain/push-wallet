@@ -1,27 +1,10 @@
-import { Box, CopyFilled, DefaultChainMonotone, PushMonotone, Text, TickCircleFilled } from 'blocks';
-import { centerMaskWalletAddress, CHAIN_MONOTONE_LOGO, handleCopy } from 'common';
-import React, { useMemo, useState, useCallback } from 'react';
+import { Box, CopyFilled, DefaultChainMonotone, Text, TickCircleFilled } from 'blocks';
+import { centerMaskWalletAddress, handleCopy } from 'common';
+import { useMemo, useState } from 'react';
 import { OriginChainTokenListItem } from './OriginChainTokenListItem';
 import { convertCaipToObject } from '../Wallet.utils';
 import { css } from 'styled-components';
-
-const ETHEREUM_TOKENS = [
-    {
-        name: 'Ethereum',
-        symbol: 'SepoliaETH',
-        address: '',
-        decimals: 18,
-    },
-];
-
-const SOLANA_TOKENS = [
-    {
-        name: 'Solana',
-        symbol: 'SOL',
-        address: '',
-        decimals: 9,
-    },
-];
+import { TOKEN_LISTS } from '../../../helpers/TokenHelper';
 
 const OriginChainTokenList = ({
     originWalletAddress
@@ -32,13 +15,21 @@ const OriginChainTokenList = ({
     const { result } = convertCaipToObject(originWalletAddress);
 
     const tokens = useMemo(() => {
-        if (result.chain?.toLowerCase() === 'eip155' || result.chain?.toLowerCase() === 'ethereum') {
-            return ETHEREUM_TOKENS;
-        } else if (result.chain?.toLowerCase() === 'solana') {
-            return SOLANA_TOKENS;
+        const chainNs = result.chain?.toLowerCase();
+        const chainId = Number(result.chainId);
+
+        if (chainNs === 'solana') return TOKEN_LISTS.SOLANA;
+
+        // EVM chains
+        if (chainNs === 'eip155' || chainNs === 'ethereum') {
+            switch (chainId) {
+                case 11155111: return TOKEN_LISTS.ETHEREUM;
+                case 84532:    return TOKEN_LISTS.BASE;
+                case 421614:   return TOKEN_LISTS.ARBITRUM;
+                default:       return TOKEN_LISTS.ETHEREUM;
+            }
         }
-        return [];
-    }, [result.chain]);
+    }, [result.chain, result.chainId]);
 
     return (
         <Box
@@ -63,18 +54,6 @@ export default OriginChainTokenList;
 
 const OriginChainWalletHeader = ({ result }) => {
     const [copied, setCopied] = useState(false);
-
-    const getMonotoneChainIcon = useCallback((chainId) => {
-        if (chainId == null || chainId === 'devnet') {
-            return <PushMonotone size={20} />
-        }
-        const IconComponent = CHAIN_MONOTONE_LOGO?.[chainId];
-        if (IconComponent) {
-            return <IconComponent size={20} color="pw-int-icon-tertiary-color" />;
-        } else {
-            return <DefaultChainMonotone size={20} />;
-        }
-    }, []);
 
     return (
         <Box className='flex' justifyContent="space-between">
