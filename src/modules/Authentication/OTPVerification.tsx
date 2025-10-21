@@ -65,6 +65,10 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
+    if (e.key === 'Enter' && otp.every(digit => digit) && !isLoading) {
+      e.preventDefault();
+      void handleSubmit(); 
+    }
   };
 
   const handleSubmit = async () => {

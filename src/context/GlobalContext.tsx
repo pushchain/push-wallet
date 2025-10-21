@@ -36,6 +36,7 @@ export type GlobalState = {
   | "rejected"
   | "timeout";
   isReadOnly: boolean;
+  reconnect: boolean;
 };
 
 // Define actions for state management
@@ -57,7 +58,8 @@ export type GlobalAction =
     type: "SET_EXTERNAL_WALLET_APP_CONNECTION_STATUS";
     payload: GlobalState["externalWalletAppConnectionStatus"];
   }
-  | { type: "SET_READ_ONLY"; payload: boolean };
+  | { type: "SET_READ_ONLY"; payload: boolean }
+  | { type: "SET_RECONNECT"; payload: boolean };
 
 // Initial state
 const initialState: GlobalState = {
@@ -75,6 +77,7 @@ const initialState: GlobalState = {
   externalWalletAppConnectionStatus: "pending",
   externalWalletAuthState: "idle",
   isReadOnly: false,
+  reconnect: false,
 };
 
 // Reducer function to manage state transitions
@@ -136,6 +139,11 @@ function globalReducer(state: GlobalState, action: GlobalAction): GlobalState {
         ...state,
         isReadOnly: action.payload,
       };
+    case "SET_RECONNECT":
+      return {
+        ...state,
+        reconnect: action.payload,
+      };
     default:
       return state;
   }
@@ -190,7 +198,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
           window.history.replaceState({}, document.title, url.toString());
 
           dispatch({ type: "SET_JWT", payload: jwtToken });
-
+          dispatch({ type: "SET_READ_ONLY", payload: false });
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
         }
 

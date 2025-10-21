@@ -19,7 +19,8 @@ interface SendTokenContextType {
   sendingTransaction: boolean;
   handleSendTransaction: () => void;
   txhash: string | null;
-  txError: string
+  txError: string,
+  setTxhash: React.Dispatch<React.SetStateAction<string>>
 }
 
 const SendTokenContext = createContext<SendTokenContextType | undefined>(

@@ -19,7 +19,6 @@ import {
   usePersistedQuery,
   WALLET_TO_APP_ACTION,
   useDarkMode,
-  getVersionParamValue,
 } from "../common";
 import { requestToConnectPushWallet } from "../common";
 import { APP_ROUTES } from "../constants";
@@ -44,6 +43,7 @@ export type EventEmitterState = {
   setTxhash: React.Dispatch<React.SetStateAction<string>>;
   handleReconnectWallet: () => void;
   handleReconnectExternalWallet: (walletData: ExternalWalletType) => Promise<void>;
+  handleCancelAppConnection: () => void;
 };
 
 // Create context
@@ -59,6 +59,7 @@ const WalletContext = createContext<EventEmitterState>({
   setTxhash: () => { },
   handleReconnectWallet: () => { },
   handleReconnectExternalWallet: async () => { },
+  handleCancelAppConnection: () => { },
 });
 
 // Custom hook to use the WalletContext
@@ -100,28 +101,28 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [walletRef.current]);
 
-  useEffect(() => {
-    const walletInfo = localStorage.getItem("walletInfo");
-    const walletData = walletInfo ? JSON.parse(walletInfo) : null;
-    if (!walletData) return;
-    dispatch({ type: "SET_READ_ONLY", payload: true });
-    setTimeout(() => {
-      if (walletData.providerName) {
-        handleExternalWalletConnection({
-          status: "successful",
-          address: walletData.originAddress,
-          providerName: walletData.providerName,
-          chainType: walletData.chainType,
-        })
-      } else {
-        handlePushWalletConnection({
-          status: "successful",
-          address: walletData.address,
-          chain: walletData.chain,
-        })
-      }
-    }, 0);
-  }, []);
+  // useEffect(() => {
+  //   const walletInfo = localStorage.getItem("walletInfo");
+  //   const walletData = walletInfo ? JSON.parse(walletInfo) : null;
+  //   if (!walletData) return;
+  //   dispatch({ type: "SET_READ_ONLY", payload: true });
+  //   setTimeout(() => {
+  //     if (walletData.providerName) {
+  //       handleExternalWalletConnection({
+  //         status: "successful",
+  //         address: walletData.originAddress,
+  //         providerName: walletData.providerName,
+  //         chainType: walletData.chainType,
+  //       })
+  //     } else {
+  //       handlePushWalletConnection({
+  //         status: "successful",
+  //         address: walletData.address,
+  //         chain: walletData.chain,
+  //       })
+  //     }
+  //   }, 0);
+  // }, []);
 
   // Event listener for messages
   useEffect(() => {
@@ -180,23 +181,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   const handleIframeReconnectWallet = () => {
-    const email = localStorage.getItem("pw_user_email");
-    dispatch({ type: "SET_READ_ONLY", payload: false });
-    if (email) {
-      const appURL = getAppParamValue();
-      const version = getVersionParamValue();
-      sessionStorage.setItem('App_Connections', appURL);
-      sessionStorage.setItem('UI_kit_version', version);
-
-      window.location.href = getOTPEmailAuthRoute(
-        email,
-        APP_ROUTES.VERIFY_EMAIL_OTP
-      );
-    } else {
-      navigate(`${persistQuery(APP_ROUTES.RECONNECT)}`, {
-        replace: true,
-      });
-    }
+    dispatch({ type: "SET_RECONNECT", payload: true });
   };
 
   const handleReconnectWallet = () => {
@@ -434,10 +419,10 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
     const universalSigner = walletRef?.current?.universalSigner;
 
-    localStorage.setItem(
-      "walletInfo",
-      JSON.stringify(universalSigner.account)
-    );
+    // localStorage.setItem(
+    //   "walletInfo",
+    //   JSON.stringify(universalSigner.account)
+    // );
 
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.APP_CONNECTION_SUCCESS,
@@ -506,6 +491,12 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     });
   };
 
+  const handleCancelAppConnection = () => {
+    sendMessageToMainTab({
+      type: WALLET_TO_APP_ACTION.APP_CONNECTION_CANCELLED,
+    });
+  };
+
   const handleUserLoggedIn = () => {
 
     const universalSigner = walletRef?.current?.universalSigner
@@ -536,6 +527,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
   const handleAuthStateParam = (state: string) => {
     dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "idle" });
+    dispatch({ type: "SET_RECONNECT", payload: false });
     navigate(`${persistQuery(APP_ROUTES.WALLET, state)}`, {
       replace: true,
     });
@@ -554,7 +546,8 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
         txhash,
         setTxhash,
         handleReconnectWallet,
-        handleReconnectExternalWallet
+        handleReconnectExternalWallet,
+        handleCancelAppConnection
       }}
     >
       {children}

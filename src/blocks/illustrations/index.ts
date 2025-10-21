@@ -57,6 +57,8 @@ export { default as PushBot } from './components/PushBot';
 
 export { default as PushDev } from './components/PushDev';
 
+export { default as PushLogoNew } from './components/PushLogoNew';
+
 export { default as Points } from './components/Points';
 
 export { default as Metamask } from './components/Metamask';

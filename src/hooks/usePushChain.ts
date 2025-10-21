@@ -77,15 +77,15 @@ export const usePushChain = () => {
                         network: PUSH_NETWORK.TESTNET_DONUT,
                     });
                     pushChainClient = createGuardedPushChain(
-                            client,
-                            handleReconnectExternalWallet,
-                            handleReconnectWallet,
-                            universalSigner,
-                            intializeProps,
-                            () => {
-                                dispatch({ type: "SET_READ_ONLY", payload: false });
-                            },
-                        )
+                        client,
+                        handleReconnectExternalWallet,
+                        handleReconnectWallet,
+                        universalSigner,
+                        intializeProps,
+                        () => {
+                            dispatch({ type: "SET_READ_ONLY", payload: false });
+                        },
+                    )
                 } else {
                     pushChainClient = await PushChain.initialize(universalSigner, intializeProps);
                     
