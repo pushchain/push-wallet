@@ -73,10 +73,10 @@ const Wallet: FC<WalletProps> = () => {
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
 
-      // localStorage.setItem(
-      //   "walletInfo",
-      //   JSON.stringify(instance.universalSigner.account)
-      // );
+      localStorage.setItem(
+        "walletInfo",
+        JSON.stringify(instance.universalSigner.account)
+      );
 
       setSelectedWallet(
         getWalletlist(instance)[0]
@@ -103,10 +103,10 @@ const Wallet: FC<WalletProps> = () => {
 
       dispatch({ type: "INITIALIZE_WALLET", payload: instance });
 
-      // localStorage.setItem(
-      //   "walletInfo",
-      //   JSON.stringify(instance.universalSigner.account)
-      // );
+      localStorage.setItem(
+        "walletInfo",
+        JSON.stringify(instance.universalSigner.account)
+      );
 
       setSelectedWallet(
         getWalletlist(instance)[0]

@@ -419,10 +419,10 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
 
     const universalSigner = walletRef?.current?.universalSigner;
 
-    // localStorage.setItem(
-    //   "walletInfo",
-    //   JSON.stringify(universalSigner.account)
-    // );
+    localStorage.setItem(
+      "walletInfo",
+      JSON.stringify(universalSigner.account)
+    );
 
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.APP_CONNECTION_SUCCESS,
