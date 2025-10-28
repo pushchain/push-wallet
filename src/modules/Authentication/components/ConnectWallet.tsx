@@ -42,11 +42,24 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
       ? filtered.filter((wallet) => wallet.chain !== ChainType.ARBITRUM && wallet.chain !== ChainType.BASE)
       : filtered;
 
+    const showBnb = isUIKitVersion('3') || !isOpenedInIframe;
+
+    // Remove binance
+    filtered = !showBnb
+      ? filtered.filter((wallet) => wallet.chain !== ChainType.BINANCE)
+      : filtered;
+
 
     // Filter by configured chains
     if (walletConfig?.loginDefaults?.wallet?.chains?.length) {
       filtered = filtered.filter(category =>
         walletConfig.loginDefaults.wallet.chains.includes(category.wallet)
+      );
+    }
+
+    if (walletConfig?.loginDefaults?.wallet?.excludedChains?.length) {
+      filtered = filtered.filter(category =>
+        !walletConfig.loginDefaults.wallet.excludedChains.includes(category.wallet)
       );
     }
 

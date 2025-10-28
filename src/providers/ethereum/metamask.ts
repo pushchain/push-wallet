@@ -24,7 +24,8 @@ export class MetamaskProvider extends BaseWalletProvider {
       ChainType.ETHEREUM,
       ChainType.ARBITRUM,
       ChainType.BASE,
-      ChainType.PUSH_WALLET
+      ChainType.PUSH_WALLET,
+      ChainType.BINANCE,
     ]);
     this.sdk = new MetaMaskSDK({
       dappMetadata: {

@@ -74,16 +74,23 @@ export const walletCategories: WalletCategoriesType[] = [
   },
   {
     chain: ChainType.BASE,
-    wallet: "ethereum",
+    wallet: "base",
     label: "Connect Base Wallet",
     icon: <Base width={24} height={24} />,
     isMobile: false,
   },
   {
     chain: ChainType.ARBITRUM,
-    wallet: "ethereum",
+    wallet: "arbitrum",
     label: "Connect Arbitrum Wallet",
     icon: <Arbitrum width={24} height={24} />,
+    isMobile: false,
+  },
+  {
+    chain: ChainType.BINANCE,
+    wallet: "binance",
+    label: "Connect Binance Wallet",
+    icon: <BNB width={24} height={24} />,
     isMobile: false,
   },
   {
@@ -93,13 +100,6 @@ export const walletCategories: WalletCategoriesType[] = [
     icon: <WalletConnectIcon width={24} height={24} />,
     isMobile: true,
   },
-  // {
-  //   chain: ChainType.BINANCE,
-  //   wallet: "ethereum",
-  //   label: "Connect Binance Wallet",
-  //   icon: <BNB width={24} height={24} />,
-  //   isMobile: false,
-  // },
   // {
   //   chain: ChainType.AVALANCHE,
   //   wallet: "ethereum",

@@ -52,14 +52,22 @@ export type UniversalAccount = {
 
 export type WalletCategoriesType = {
   chain: ChainType;
-  wallet: 'ethereum' | 'solana' | 'walletConnect' | 'pushWallet';
+  wallet: string;
   label: string;
   icon: ReactNode;
   isMobile: boolean;
 };
 
 export const CONSTANTS = {
-  CHAIN: { EVM: 'evm', SOLANA: 'solana' },
+  CHAIN: {
+    PUSH: 'pushWallet',
+    ETHEREUM: 'ethereum',
+    SOLANA: 'solana',
+    BASE: 'base',
+    ARBITRUM: 'arbitrum',
+    BINANCE: 'binance',
+    WALLET_CONNECT: 'walletConnect'
+  },
   THEME: { LIGHT: 'light', DARK: 'dark' },
 }
 
@@ -69,6 +77,7 @@ export type LoginMethodConfig = {
   wallet: {
     enabled: boolean;
     chains?: (typeof CONSTANTS.CHAIN)[keyof typeof CONSTANTS.CHAIN][];
+    excludedChains?: (typeof CONSTANTS.CHAIN)[keyof typeof CONSTANTS.CHAIN][];
   };
   appPreview?: boolean;
 }

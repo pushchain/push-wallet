@@ -162,7 +162,7 @@ const Review = () => {
                 Network Fee
               </Text>
               <Text variant="bs-regular">
-                {feeLoading ? 'Loading...' : feeError ? feeError : `${networkFee} Gwei`}
+                {feeLoading ? 'Loading...' : feeError ? feeError : `${networkFee} uPC`}
               </Text>
             </Box>
           </Box>

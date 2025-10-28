@@ -2,7 +2,7 @@ import { PushWallet } from "src/services/pushWallet/pushWallet";
 import { ChainType, WalletType } from "../../types/wallet.types";
 import { PushChain } from "@pushchain/core";
 import { createPublicClient, http } from 'viem';
-import { mainnet, sepolia, baseSepolia, arbitrumSepolia } from 'viem/chains';
+import { mainnet, sepolia, baseSepolia, arbitrumSepolia, bscTestnet } from 'viem/chains';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 
 export const getWalletlist = (wallet: PushWallet) => {
@@ -169,6 +169,7 @@ const EVM_CHAIN_CONFIGS = {
   11155111: sepolia,
   84532: baseSepolia,
   421614: arbitrumSepolia,
+  97: bscTestnet,
 };
 
 export async function getNativeTokenBalance(token, walletDetail): Promise<{ balance: string, loading: boolean }> {

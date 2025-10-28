@@ -26,6 +26,7 @@ const OriginChainTokenList = ({
                 case 11155111: return TOKEN_LISTS.ETHEREUM;
                 case 84532:    return TOKEN_LISTS.BASE;
                 case 421614:   return TOKEN_LISTS.ARBITRUM;
+                case 97:       return TOKEN_LISTS.BINANCE;
                 default:       return TOKEN_LISTS.ETHEREUM;
             }
         }

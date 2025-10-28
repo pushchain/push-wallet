@@ -123,6 +123,7 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                         >
                             <Text
                                 variant="os-regular"
+                                textTransform="inherit"
                                 color="pw-int-text-tertiary-color"
                                 css={css`
                                     &:hover {

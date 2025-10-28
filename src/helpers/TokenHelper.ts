@@ -32,6 +32,14 @@ export const TOKEN_LISTS = {
             decimals: 18 
         },
     ],
+    BINANCE: [
+        { 
+            name: 'Binance', 
+            symbol: 'TBNB', 
+            address: '', 
+            decimals: 18 
+        },
+    ],
     SOLANA: [
         { 
             name: 'Solana', 
