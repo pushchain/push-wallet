@@ -29,7 +29,7 @@ export const VIEM_PUSH_TESTNET_DONUT = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ['https://evm.rpc-testnet-donut-node1.push.org/'],
+      http: ['https://evm.donut.rpc.push.org/'],
     },
   },
   blockExplorers: {
