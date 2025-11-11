@@ -16,7 +16,7 @@ type ReturnValue = {
     isLoading: boolean;
 };
 
-const rpcURL = 'https://evm.rpc-testnet-donut-node1.push.org';
+const rpcURL = 'https://evm.donut.rpc.push.org/';
 const factoryAddress = '0x00000000000000000000000000000000000000eA';
 
 const useUEAOrigin = (addressHash: string | null | undefined): ReturnValue => {
