@@ -24,6 +24,7 @@ import { WalletDashboardProvider } from "../../context/WalletDashboardContext";
 import { ActiveStates, PushNetworks, WalletListType } from "src/types";
 import { bytesToHex, stringToBytes } from "viem";
 import { Reconnect } from "./components/Reconnect";
+import WalletRecoveryPhrase from "./components/WalletRecoveryPhrase";
 
 export type WalletProps = Record<string, never>;
 
@@ -320,6 +321,7 @@ const Wallet: FC<WalletProps> = () => {
             {activeState === 'addTokens' && <AddTokens />}
             {activeState === 'receive' && <Receive />}
             {activeState === 'send' && <Send />}
+            {activeState === 'recoveryPhrase' && <WalletRecoveryPhrase />}
             <Reconnect />
           </WalletDashboardProvider>
         </Box>

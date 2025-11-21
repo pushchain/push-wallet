@@ -39,6 +39,13 @@ export const OTPVerification: FC<OTPVerificationProps> = ({
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) return;
+    if (value === "") {
+      const newOtp = [...otp];
+      newOtp[index] = "";
+      setOtp(newOtp);
+      return;
+    }
+    if (!/^[0-9]$/.test(value)) return;
 
     const newOtp = [...otp];
     newOtp[index] = value;

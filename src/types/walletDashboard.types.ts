@@ -1,5 +1,5 @@
 
-export type ActiveStates = 'walletDashboard' | 'send' | 'receive' | 'addTokens'
+export type ActiveStates = 'walletDashboard' | 'send' | 'receive' | 'addTokens' | 'recoveryPhrase'
 export type PushNetworks = 'Push Testnet Donut' | 'Push Testnet Sushi';
 
 export type TokenFormat = {

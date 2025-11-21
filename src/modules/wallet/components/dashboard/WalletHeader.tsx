@@ -1,4 +1,5 @@
 import {
+    Asterisk,
     Back,
     Box,
     CopyFilled,
@@ -34,8 +35,8 @@ type WalletHeaderProps = {
 };
 
 const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }) => {
-    const { dispatch } = useGlobalState();
-    const { activeState } = useWalletDashboard();
+    const { state, dispatch } = useGlobalState();
+    const { activeState, setActiveState } = useWalletDashboard();
 
     const { disconnect } = useExternalWallet();
     const navigate = useNavigate();
@@ -173,14 +174,22 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
             {activeState === "walletDashboard" && (
                 <Dropdown
                     css={css`
-            z-index: 3;
-          `}
+                        z-index: 3;
+                    `}
+                    side='bottom'
+                    align='end'
                     overlay={
                         <Menu>
                             {/* <MenuItem label="Linked Accounts" icon={<Pin />} /> */}
                             {/* <MenuItem label="App Permissions" icon={<Cube />} /> */}
                             {/* <MenuItem label="Passkeys" icon={<Lock />} /> */}
-                            {/* <MenuItem label="Secret Recovery Phrase" icon={<Asterisk />} /> */}
+                            {state.wallet && (<MenuItem
+                                label="Secret Recovery Phrase"
+                                icon={<Asterisk />}
+                                onClick={() => {
+                                    setActiveState('recoveryPhrase');
+                                }}
+                            />)}
                             <MenuItem
                                 label="Log Out"
                                 icon={<Logout size={24} color="pw-int-icon-primary-color" />}
