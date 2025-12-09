@@ -1,13 +1,13 @@
 import { pushTestnetChain } from "../utils/chainDetails";
 import { Address, createPublicClient, formatUnits, http } from "viem";
 
+const publicClient = createPublicClient({
+    chain: pushTestnetChain,
+    transport: http(),
+});
+
 export const fetchUserBalance = async (address: string) => {
     try {
-        const publicClient = createPublicClient({
-            chain: pushTestnetChain,
-            transport: http(),
-        });
-
         const balance = await publicClient.getBalance({
             address: address as Address,
         });
