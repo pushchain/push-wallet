@@ -8,10 +8,11 @@ import { formatTokenValue } from "../Wallet.utils";
 
 type TokenListItemProps = {
   token: TokenFormat;
+  isPrc20?: boolean;
   handleSelectToken?: (token: TokenFormat) => void;
 };
 
-const TokensListItem: FC<TokenListItemProps> = ({ token, handleSelectToken }) => {
+const TokensListItem: FC<TokenListItemProps> = ({ token, isPrc20, handleSelectToken }) => {
 
   const { executorAddress } = usePushChain();
 
@@ -19,6 +20,10 @@ const TokensListItem: FC<TokenListItemProps> = ({ token, handleSelectToken }) =>
     data: tokenBalance,
     isLoading: loadingTokenBalance
   } = useTokenBalance(token.address, executorAddress, token.decimals);
+
+  if (isPrc20 && (!tokenBalance || tokenBalance === '0')) {
+    return null;
+  }
 
   return (
     <Box
