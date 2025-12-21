@@ -16,7 +16,6 @@ import {
   OkxIcon,
   OneKeyIcon,
   PhantomIcon,
-  RabbyIcon,
   RainbowIcon,
   SafeIcon,
   SequenceIcon,
@@ -25,7 +24,6 @@ import {
   UnisatIcon,
   UnstoppableIcon,
   WalletConnectIcon,
-  ZeroDevIcon,
 } from "@dynamic-labs/iconic";
 import {
   Arbitrum,
@@ -46,7 +44,9 @@ import {
   PushChainMonotone,
   Solana,
   SolanaMonotone,
-  PushLogoNew
+  PushLogoNew,
+  Zerion,
+  Rabby
 } from "../blocks";
 import { ChainType, WalletCategoriesType } from "../types/wallet.types";
 
@@ -191,8 +191,8 @@ export const WALLETS_LOGO = {
   rainbow: <RainbowIcon />,
   bravesol: <BraveIcon />,
   coinbase: <CoinbaseIcon />,
-  zerion: <ZeroDevIcon />,
-  rabby: <RabbyIcon />,
+  zerion: <Zerion />,
+  rabby: <Rabby />,
   walletconnect: <WalletConnectIcon />,
   magiceden: <MagicEdenIcon />,
   flowwallet: <FlowIcon />,
