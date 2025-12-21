@@ -3,6 +3,10 @@ import { useEffect, useState } from 'react';
 import { TokenFormat } from '../types';
 import { isAddress } from 'viem';
 import { viemClient } from '../utils/viemClient';
+import { PushChain } from '@pushchain/core';
+import { usePushChain } from './usePushChain';
+import { Contract, JsonRpcProvider } from 'ethers';
+import { getPrc20Address } from '../utils/prc20TokenDetails';
 
 const DEFAULT_TOKEN = {
     name: 'Push Chain',
@@ -11,8 +15,27 @@ const DEFAULT_TOKEN = {
     decimals: 18,
 };
 
+const ERC20_ABI = [
+  "function symbol() view returns (string)",
+];
+
 export function useTokenManager() {
     const [tokens, setTokens] = useState<TokenFormat[]>([DEFAULT_TOKEN]);
+    const [prc20Tokens, setPrc20Tokens] = useState<TokenFormat[]>([]);
+
+    const { pushChainClient } = usePushChain();
+
+    const provider = new JsonRpcProvider("https://evm.donut.rpc.push.org/");
+
+    const getTokenSymbol = async (tokenAddress: string) => {
+        try {
+            const contract = new Contract(tokenAddress, ERC20_ABI, provider);
+            return await contract.symbol();
+        } catch (e) {
+            console.error("symbol() failed", e);
+            return null;
+        }
+    }
 
     useEffect(() => {
         const stored = JSON.parse(localStorage.getItem("userTokens") || "[]");
@@ -25,6 +48,58 @@ export function useTokenManager() {
     useEffect(() => {
         localStorage.setItem("userTokens", JSON.stringify(tokens));
     }, [tokens]);
+
+    useEffect(() => {
+        if (!pushChainClient) {
+            setPrc20Tokens([]);
+            return;
+        }
+
+        const loadPrc20Tokens = async () => {
+            try {
+                const moveableTokens = PushChain.utils.tokens.getMoveableTokens(
+                    pushChainClient.universal.origin.chain
+                ).tokens;
+
+                const prc20 = (
+                    await Promise.all(
+                        moveableTokens.map(async (token) => {
+                            try {
+                                const prc20Address = PushChain.utils.tokens.getPRC20Address(token);
+
+                                const prc20Symbol = await getTokenSymbol(prc20Address);
+
+                                return [{
+                                    name: prc20Symbol || token.symbol,
+                                    symbol: prc20Symbol || token.symbol,
+                                    address: prc20Address,
+                                    decimals: token.decimals,
+                                }];
+                            } catch {
+                                const prc20Address = getPrc20Address(token.symbol, token.chain);
+
+                                const prc20Symbol = await getTokenSymbol(prc20Address);
+
+                                return [{
+                                    name: prc20Symbol || token.symbol,
+                                    symbol: prc20Symbol || token.symbol,
+                                    address: prc20Address,
+                                    decimals: token.decimals,
+                                }];
+                            }
+                        })
+                    )
+                ).flatMap((x) => x);
+
+                setPrc20Tokens(prc20);
+            } catch (err) {
+                console.error("Failed to load PRC20 tokens", err);
+            }
+        }
+
+        loadPrc20Tokens();
+        
+    }, [pushChainClient]);
 
     const fetchTokenDetails = async (address: `0x${string}`): Promise<TokenFormat> => {
         try {
@@ -65,5 +140,5 @@ export function useTokenManager() {
         setTokens(prev => prev.filter(t => t.address.toLowerCase() !== address.toLowerCase()));
     };
 
-    return { tokens, addToken, removeToken, fetchTokenDetails };
+    return { tokens, prc20Tokens, addToken, removeToken, fetchTokenDetails };
 }
