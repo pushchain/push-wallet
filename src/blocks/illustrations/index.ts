@@ -128,3 +128,7 @@ export { default as Polygon } from './components/Polygon';
 export { default as PolygonZK } from './components/PolygonZK';
 
 export { default as YellowBonusActivitySubscribers } from './components/YellowBonusActivitySubscribers';
+
+export { default as Zerion } from './components/Zerion';
+
+export { default as Rabby } from './components/Rabby';

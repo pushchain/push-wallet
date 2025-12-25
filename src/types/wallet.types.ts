@@ -36,6 +36,7 @@ export interface IWalletProvider {
   name: string;
   icon: string;
   supportedChains: ChainType[];
+  isInstalled(): Promise<boolean>;
   connect(chainType?: ChainType): Promise<{ caipAddress: string }>;
   signMessage(message: Uint8Array): Promise<Uint8Array>;
   signAndSendTransaction(txn: Uint8Array): Promise<Uint8Array>;

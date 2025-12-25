@@ -70,7 +70,7 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     if (selectedWalletCategory) setSelectedWalletCategory(null);
     else setConnectMethod("authentication");
   };
-
+  
   return (
     <Box flexDirection="column" display="flex" gap="spacing-lg" width="100%">
       <Box cursor="pointer" onClick={() => handleBack()}>

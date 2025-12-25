@@ -34,7 +34,8 @@ export type GlobalState = {
   | "success"
   | "loading"
   | "rejected"
-  | "timeout";
+  | "timeout"
+  | "not_installed";
   isReadOnly: boolean;
   reconnect: boolean;
 };

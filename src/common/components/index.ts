@@ -12,3 +12,4 @@ export * from "./ErrorContent";
 export * from "./PushWalletAppConnection";
 export * from "./TokenLogoComponent";
 export * from "./LoadingScreen";
+export * from "./NotFoundContent";

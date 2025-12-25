@@ -9,6 +9,7 @@ import { EventEmitterProvider } from "./context/EventEmitterContext";
 import { ExternalWalletContextProvider } from "./context/ExternalWalletContext";
 import { useAppState } from "./context/AppContext";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { startEIP6963Listener } from './providers/utils/eip6963';
 
 const GlobalStyle = createGlobalStyle`
   :root{
@@ -34,6 +35,7 @@ export default function App() {
   const { isDarkMode } = useDarkMode();
 
   const { state } = useAppState();
+  startEIP6963Listener();
 
   const queryClient = new QueryClient();
 

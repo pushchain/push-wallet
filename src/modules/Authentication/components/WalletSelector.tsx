@@ -8,7 +8,7 @@ import {
 } from "../../../types/wallet.types";
 import { css } from "styled-components";
 import { useExternalWallet } from "../../../context/ExternalWalletContext";
-import { getAppParamValue, WALLET_TO_APP_ACTION, WALLETS_LOGO } from "common";
+import { getAppParamValue, WALLET_TO_APP_ACTION, WALLETS_LOGO, DrawerWrapper, NotFoundContent } from "common";
 import { useGlobalState } from "../../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import { APP_ROUTES } from "../../../constants";
@@ -22,7 +22,9 @@ const WalletSelector: FC<WalletButtonProps> = ({
   provider,
   walletCategory,
 }) => {
-  const { connect } = useExternalWallet();
+  const [isInstalled, setIsInstalled] = React.useState<boolean | null>(null);
+
+  const { connect, isWalletInstalled } = useExternalWallet();
 
   const navigate = useNavigate();
 
@@ -31,6 +33,15 @@ const WalletSelector: FC<WalletButtonProps> = ({
   const isOpenedInIframe = !!getAppParamValue();
 
   const handleConnect = async (chainType?: ChainType) => {
+    const isInstalled = await isWalletInstalled(provider);
+
+    if (!isInstalled) {
+      setIsInstalled(false);
+      return;
+    }
+
+    setIsInstalled(true);
+    
     if (isOpenedInIframe) {
       window.parent?.postMessage(
         {
@@ -67,6 +78,7 @@ const WalletSelector: FC<WalletButtonProps> = ({
           navigate(APP_ROUTES.WALLET);
         }
       } catch (error) {
+        console.log("Error connecting external wallet:", error);
         dispatch({
           type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
           payload: "rejected",
@@ -83,41 +95,51 @@ const WalletSelector: FC<WalletButtonProps> = ({
   };
 
   return (
-    <Box
-      cursor="pointer"
-      css={css`
-        :hover {
-          border: var(--border-sm, 1px) solid var(--pw-int-brand-primary-color);
-        }
-      `}
-      display="flex"
-      padding="spacing-xs"
-      borderRadius="radius-xs"
-      border="border-sm solid pw-int-border-tertiary-color"
-      backgroundColor="pw-int-bg-transparent"
-      alignItems="center"
-      gap="spacing-xxs"
-      onClick={() => handleClick()}
-    >
+    <>
       <Box
-        width="24px"
-        height="24px"
-        overflow="hidden"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
+        cursor="pointer"
         css={css`
-          flex-shrink: 0;
+          :hover {
+            border: var(--border-sm, 1px) solid var(--pw-int-brand-primary-color);
+          }
         `}
+        display="flex"
+        padding="spacing-xs"
+        borderRadius="radius-xs"
+        border="border-sm solid pw-int-border-tertiary-color"
+        backgroundColor="pw-int-bg-transparent"
+        alignItems="center"
+        gap="spacing-xxs"
+        onClick={() => handleClick()}
       >
-        {WALLETS_LOGO[provider.name.toLowerCase()] || (
-          <FallBackWalletIcon walletKey={provider.name} />
-        )}
+        <Box
+          width="24px"
+          height="24px"
+          overflow="hidden"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          css={css`
+            flex-shrink: 0;
+          `}
+        >
+          {WALLETS_LOGO[provider.name.toLowerCase()] || (
+            <FallBackWalletIcon walletKey={provider.name} />
+          )}
+        </Box>
+        <Text variant="bs-semibold" color="pw-int-text-primary-color">
+          {provider.name}
+        </Text>
       </Box>
-      <Text variant="bs-semibold" color="pw-int-text-primary-color">
-        {provider.name}
-      </Text>
-    </Box>
+      {isInstalled === false && (
+        <DrawerWrapper>
+          <NotFoundContent
+            providerName={provider.name.toLowerCase() as 'metamask' | 'zerion' | 'rabby' | 'phantom'}
+            onClose={() => setIsInstalled(null)}
+          />
+        </DrawerWrapper>
+      )}
+    </>
   );
 };
 

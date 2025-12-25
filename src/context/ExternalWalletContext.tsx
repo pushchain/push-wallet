@@ -19,6 +19,8 @@ type ExternalWalletContextType = {
   signTransactionRequest: (data: Uint8Array) => Promise<Uint8Array>;
   signMessageRequest: (data: Uint8Array) => Promise<Uint8Array>;
   signTypedDataRequest: (data: ITypedData) => Promise<Uint8Array>;
+
+  isWalletInstalled: (provider: IWalletProvider) => Promise<boolean>;
 };
 
 const ExternalWalletContext = createContext<ExternalWalletContextType | undefined>(undefined);
@@ -32,6 +34,16 @@ export const ExternalWalletContextProvider = ({
   const [currentProvider, setCurrentProvider] =
     useState<IWalletProvider | null>(null);
   const [connecting, setConnecting] = useState(false);
+
+  const isWalletInstalled = async (
+    provider: IWalletProvider
+  ): Promise<boolean> => {
+    try {
+      return await provider.isInstalled();
+    } catch {
+      return false;
+    }
+  };
 
   const connect = async (provider: IWalletProvider, chainType?: ChainType) => {
     try {
@@ -134,6 +146,7 @@ export const ExternalWalletContextProvider = ({
         setExternalWallet,
         connecting,
         connect,
+        isWalletInstalled,
         disconnect,
         signTransactionRequest,
         signMessageRequest,

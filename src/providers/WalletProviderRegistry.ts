@@ -1,7 +1,12 @@
 import { ChainType, IWalletProvider } from "../types/wallet.types";
 import { MetamaskProvider } from "./ethereum/metamask";
+import { RabbyProvider } from "./ethereum/rabby";
 import { WalletConnectProvider } from "./ethereum/walletConnect";
+import { ZerionProvider } from "./ethereum/zerion";
 import { PhantomProvider } from "./solana/phantom";
+import { getAppParamValue, isUIKitVersion } from "common";
+
+const showZerionAndRabby = isUIKitVersion("4") || !getAppParamValue();
 
 class WalletProviderRegistry {
   private providers: Map<string, IWalletProvider> = new Map();
@@ -11,6 +16,10 @@ class WalletProviderRegistry {
     this.registerProvider(new MetamaskProvider());
     this.registerProvider(new PhantomProvider());
     this.registerProvider(new WalletConnectProvider());
+    if (showZerionAndRabby) {
+      this.registerProvider(new RabbyProvider());
+      this.registerProvider(new ZerionProvider());
+    }
   }
 
   registerProvider(provider: IWalletProvider): void {
