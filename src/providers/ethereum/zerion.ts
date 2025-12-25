@@ -33,7 +33,6 @@ export class ZerionProvider extends BaseWalletProvider {
 
   private getProvider = () => {
     const provider = getEIP6963ProviderByRdns("io.zerion.wallet");
-    console.log('Zerion provider via EIP-6963:', provider);
     if (!provider) {
       throw new Error("Zerion provider not found via EIP-6963");
     }
@@ -63,8 +62,6 @@ export class ZerionProvider extends BaseWalletProvider {
       method: "eth_requestAccounts",
       params: [],
     })) as string[];
-
-		console.log(accounts);
 
     if (!accounts || accounts.length === 0) {
       throw new Error("No Zerion account returned");
