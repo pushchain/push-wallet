@@ -37,7 +37,7 @@ export class WalletConnectProvider extends BaseWalletProvider {
             }
 
             await this.provider.disconnect();
-            
+
             this.provider = null;
         }
 
@@ -65,7 +65,6 @@ export class WalletConnectProvider extends BaseWalletProvider {
     }
 
     async connect(): Promise<{ caipAddress: string }> {
-        console.log('Connecting to WalletConnect...');
         try {
             const chain = chains['sepolia'] as chains.Chain;
             const chainId = chain.id;

@@ -33,6 +33,15 @@ const WalletSelector: FC<WalletButtonProps> = ({
   const isOpenedInIframe = !!getAppParamValue();
 
   const handleConnect = async (chainType?: ChainType) => {
+    const isInstalled = await isWalletInstalled(provider);
+
+    if (!isInstalled) {
+      setIsInstalled(false);
+      return;
+    }
+
+    setIsInstalled(true);
+    
     if (isOpenedInIframe) {
       window.parent?.postMessage(
         {
@@ -50,19 +59,6 @@ const WalletSelector: FC<WalletButtonProps> = ({
           type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
           payload: "loading",
         });
-
-        const isInstalled = await isWalletInstalled(provider);
-
-        if (!isInstalled) {
-          setIsInstalled(false);
-          dispatch({
-            type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE",
-            payload: "idle",
-          });
-          return;
-        }
-
-        setIsInstalled(true);
 
         const result = await connect(provider, chainType);
 
