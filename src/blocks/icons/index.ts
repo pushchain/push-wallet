@@ -47,6 +47,7 @@ export { default as Clockwise } from "./components/Clockwise";
 export { default as CircleFilled } from "./components/CircleFilled";
 export { default as CloudUpload } from "./components/CloudUpload";
 
+export { default as Connector } from "./components/Connector";
 export { default as Copy } from "./components/Copy";
 export { default as CopyFilled } from "./components/CopyFilled";
 

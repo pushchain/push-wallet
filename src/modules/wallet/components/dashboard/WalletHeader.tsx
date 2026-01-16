@@ -7,12 +7,15 @@ import {
     Logout,
     Menu,
     MenuItem,
+    PushMonotone,
     Settings,
     Text,
     TickCircleFilled,
+    Connector,
 } from "blocks";
 import {
     centerMaskWalletAddress,
+    CHAIN_MONOTONE_LOGO,
     EXPLORER_URL,
     getAppParamValue,
     handleCopy,
@@ -24,10 +27,11 @@ import { APP_ROUTES } from "../../../../constants";
 import { useEventEmitterContext } from "../../../../context/EventEmitterContext";
 import { useGlobalState } from "../../../../context/GlobalContext";
 import { useExternalWallet } from "../../../../context/ExternalWalletContext";
-import { css } from "styled-components";
+import styled, { css } from "styled-components";
 import BlockiesSvg from "blockies-react-svg";
 import { FC, useState } from "react";
 import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
+import { convertCaipToObject } from "../../Wallet.utils";
 
 type WalletHeaderProps = {
     walletAddress: string;
@@ -64,6 +68,9 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
         }
     };
 
+    const originAddress = state.externalWallet && state.externalWallet.originAddress ? convertCaipToObject(state.externalWallet.originAddress).result : null;
+    const IconComponent = CHAIN_MONOTONE_LOGO[originAddress.chainId];
+
     return (
         <Box
             display="flex"
@@ -99,8 +106,8 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                     justifyContent="center"
                 >
                     <Box
-                        width="28px"
-                        height="28px"
+                        width="48px"
+                        height="48px"
                         borderRadius="radius-xl"
                         overflow="hidden"
                         alignSelf="center"
@@ -109,9 +116,8 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                     </Box>
                 </Box>
 
-                <Box display="flex" flexDirection="column" alignItems="flex-start">
-                    <Text variant="bes-semibold">Push Chain Wallet</Text>
-                    <Box
+                <Box gap="spacing-xxxs" display="flex" flexDirection="column" justifyContent="center" alignItems="flex-start">
+                    <AddressRow
                         display="flex"
                         gap="spacing-xxxs"
                         justifyContent="center"
@@ -120,12 +126,16 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                         <Box
                             display='flex'
                             cursor='pointer'
+                            gap="spacing-xxs"
+                            justifyContent="center"
+                            alignItems="center"
                             onClick={() => window.open(`${EXPLORER_URL}/address/${walletAddress}`, "_blank")}
                         >
+                            <PushMonotone size={24} />
                             <Text
-                                variant="os-regular"
+                                variant="bs-regular"
                                 textTransform="inherit"
-                                color="pw-int-text-tertiary-color"
+                                color="pw-int-text-secondary-color"
                                 css={css`
                                     &:hover {
                                         color: var(--pw-int-brand-primary-color);
@@ -138,6 +148,7 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                         <Box
                             cursor="pointer"
                             display='flex'
+                            className="copy-icon"
                         >
 
                             {copied ? (
@@ -156,18 +167,68 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                                 />
                             )}
                         </Box>
-                        {/* <Box
-                            cursor="pointer"
-                            display='flex'
+                    </AddressRow>
+
+                    {originAddress && originAddress.address !== walletAddress && (
+                        <AddressRow
+                            display="flex"
+                            gap="spacing-xxxs"
+                            padding="spacing-none spacing-none spacing-none spacing-xxs"
                         >
-                            <ExternalLinkIcon
-                                autoSize
-                                size={16}
-                                color="pw-int-icon-tertiary-color"
-                                onClick={() => window.open(`${EXPLORER_URL}/address/${walletAddress}`, "_blank")}
-                            />
-                        </Box> */}
-                    </Box>
+                            <Connector />
+                            <Box
+                                display="flex"
+                                gap="spacing-xxxs"
+                                justifyContent="center"
+                                alignItems="center"
+                            >
+                                <Box
+                                    display='flex'
+                                    cursor='pointer'
+                                    gap="spacing-xxs"
+                                    justifyContent="center"
+                                    alignItems="center"
+                                    onClick={() => window.open(`${EXPLORER_URL}/address/${originAddress}`, "_blank")}
+                                >
+                                    <IconComponent size={24} />
+                                    <Text
+                                        variant="bs-regular"
+                                        textTransform="inherit"
+                                        color="pw-int-text-tertiary-color"
+                                        css={css`
+                                            &:hover {
+                                                color: var(--pw-int-brand-primary-subtle-color);
+                                            }    
+                                        `}
+                                    >
+                                        {centerMaskWalletAddress(originAddress.address, 5)}
+                                    </Text>
+                                </Box>
+                                <Box
+                                    cursor="pointer"
+                                    display='flex'
+                                    className="copy-icon"
+                                >
+
+                                    {copied ? (
+                                        <TickCircleFilled
+                                            autoSize
+                                            size={14}
+                                            color="pw-int-icon-success-bold-color"
+                                        />
+                                    ) : (
+                                        <CopyFilled
+                                            color="pw-int-icon-tertiary-color"
+                                            size={14}
+                                            onClick={() => handleCopy(originAddress.address, setCopied)}
+                                            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--pw-int-icon-brand-color)')}
+                                            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--pw-int-icon-tertiary-color)')}
+                                        />
+                                    )}
+                                </Box>
+                            </Box>
+                        </AddressRow>
+                    )}
                 </Box>
             </Box>}
 
@@ -212,3 +273,16 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
 };
 
 export default WalletHeader;
+
+const AddressRow = styled(Box)`
+  .copy-icon {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+
+  &:hover .copy-icon {
+    opacity: 1;
+    pointer-events: auto;
+  }
+`;

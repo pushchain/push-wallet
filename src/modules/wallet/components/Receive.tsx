@@ -1,4 +1,4 @@
-import { Box, Button, Copy, PushAlpha, PushChainLogo, Text, TickCircleFilled } from 'blocks';
+import { Box, Button, Copy, PushChainLogo, Text, TickCircleFilled } from 'blocks';
 import React, { useState, useEffect } from 'react';
 import WalletHeader from './dashboard/WalletHeader';
 import styled, { css } from 'styled-components';
