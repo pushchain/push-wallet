@@ -49,6 +49,7 @@ import {
   Rabby,
   USDT,
   WEthereum,
+  PushMonotone,
 } from "../blocks";
 import { ChainType, WalletCategoriesType } from "../types/wallet.types";
 
@@ -131,8 +132,8 @@ export const CHAIN_MONOTONE_LOGO: {
   "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": SolanaMonotone, // mainnet
   "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z": SolanaMonotone, // testnet
   EtWTRABZaYq6iMfeYKouRu166VU2xqa1: SolanaMonotone, // devnet
-  devnet: PushChainMonotone,
-  42101: PushChainMonotone,
+  devnet: PushMonotone,
+  42101: PushMonotone,
 };
 
 export const CHAIN_LOGO: {

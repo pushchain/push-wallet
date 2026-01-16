@@ -7,7 +7,6 @@ import {
     Logout,
     Menu,
     MenuItem,
-    PushMonotone,
     Settings,
     Text,
     TickCircleFilled,
@@ -46,7 +45,6 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
     const navigate = useNavigate();
     const persistQuery = usePersistedQuery();
     const { handleLogOutEvent } = useEventEmitterContext();
-    const [copied, setCopied] = useState(false);
 
     const isOpenedInIframe = !!getAppParamValue();
 
@@ -69,7 +67,6 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
     };
 
     const originAddress = state.externalWallet && state.externalWallet.originAddress ? convertCaipToObject(state.externalWallet.originAddress).result : null;
-    const IconComponent = CHAIN_MONOTONE_LOGO[originAddress.chainId];
 
     return (
         <Box
@@ -117,117 +114,10 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                 </Box>
 
                 <Box gap="spacing-xxxs" display="flex" flexDirection="column" justifyContent="center" alignItems="flex-start">
-                    <AddressRow
-                        display="flex"
-                        gap="spacing-xxxs"
-                        justifyContent="center"
-                        alignItems="center"
-                    >
-                        <Box
-                            display='flex'
-                            cursor='pointer'
-                            gap="spacing-xxs"
-                            justifyContent="center"
-                            alignItems="center"
-                            onClick={() => window.open(`${EXPLORER_URL}/address/${walletAddress}`, "_blank")}
-                        >
-                            <PushMonotone size={24} />
-                            <Text
-                                variant="bs-regular"
-                                textTransform="inherit"
-                                color="pw-int-text-secondary-color"
-                                css={css`
-                                    &:hover {
-                                        color: var(--pw-int-brand-primary-color);
-                                    }    
-                                `}
-                            >
-                                {centerMaskWalletAddress(walletAddress, 5)}
-                            </Text>
-                        </Box>
-                        <Box
-                            cursor="pointer"
-                            display='flex'
-                            className="copy-icon"
-                        >
-
-                            {copied ? (
-                                <TickCircleFilled
-                                    autoSize
-                                    size={14}
-                                    color="pw-int-icon-success-bold-color"
-                                />
-                            ) : (
-                                <CopyFilled
-                                    color="pw-int-icon-tertiary-color"
-                                    size={14}
-                                    onClick={() => handleCopy(walletAddress, setCopied)}
-                                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--pw-int-icon-brand-color)')}
-                                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--pw-int-icon-tertiary-color)')}
-                                />
-                            )}
-                        </Box>
-                    </AddressRow>
+                    <WalletAddress address={walletAddress} chainId={42101} type='executor' />
 
                     {originAddress && originAddress.address !== walletAddress && (
-                        <AddressRow
-                            display="flex"
-                            gap="spacing-xxxs"
-                            padding="spacing-none spacing-none spacing-none spacing-xxs"
-                        >
-                            <Connector />
-                            <Box
-                                display="flex"
-                                gap="spacing-xxxs"
-                                justifyContent="center"
-                                alignItems="center"
-                            >
-                                <Box
-                                    display='flex'
-                                    cursor='pointer'
-                                    gap="spacing-xxs"
-                                    justifyContent="center"
-                                    alignItems="center"
-                                    onClick={() => window.open(`${EXPLORER_URL}/address/${originAddress}`, "_blank")}
-                                >
-                                    <IconComponent size={24} />
-                                    <Text
-                                        variant="bs-regular"
-                                        textTransform="inherit"
-                                        color="pw-int-text-tertiary-color"
-                                        css={css`
-                                            &:hover {
-                                                color: var(--pw-int-brand-primary-subtle-color);
-                                            }    
-                                        `}
-                                    >
-                                        {centerMaskWalletAddress(originAddress.address, 5)}
-                                    </Text>
-                                </Box>
-                                <Box
-                                    cursor="pointer"
-                                    display='flex'
-                                    className="copy-icon"
-                                >
-
-                                    {copied ? (
-                                        <TickCircleFilled
-                                            autoSize
-                                            size={14}
-                                            color="pw-int-icon-success-bold-color"
-                                        />
-                                    ) : (
-                                        <CopyFilled
-                                            color="pw-int-icon-tertiary-color"
-                                            size={14}
-                                            onClick={() => handleCopy(originAddress.address, setCopied)}
-                                            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--pw-int-icon-brand-color)')}
-                                            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--pw-int-icon-tertiary-color)')}
-                                        />
-                                    )}
-                                </Box>
-                            </Box>
-                        </AddressRow>
+                        <WalletAddress address={originAddress.address} chainId={originAddress.chainId} type='origin' />
                     )}
                 </Box>
             </Box>}
@@ -241,9 +131,6 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                     align='end'
                     overlay={
                         <Menu>
-                            {/* <MenuItem label="Linked Accounts" icon={<Pin />} /> */}
-                            {/* <MenuItem label="App Permissions" icon={<Cube />} /> */}
-                            {/* <MenuItem label="Passkeys" icon={<Lock />} /> */}
                             {state.wallet && (<MenuItem
                                 label="Secret Recovery Phrase"
                                 icon={<Asterisk />}
@@ -273,6 +160,75 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
 };
 
 export default WalletHeader;
+
+const WalletAddress: FC<{ address: string; chainId: string | number, type: 'executor' | 'origin' }> = ({ address, chainId, type }) => {
+    const [copied, setCopied] = useState(false);
+
+    const IconComponent = CHAIN_MONOTONE_LOGO[chainId];
+    
+    return (
+        <AddressRow
+            display="flex"
+            gap="spacing-xxxs"
+            css={css`
+                padding-left: ${type === 'origin' ? '8px' : '0'};
+            `}
+        >
+            {type === 'origin' && <Connector />}
+            <Box
+                display="flex"
+                gap="spacing-xxxs"
+                justifyContent="center"
+                alignItems="center"
+            >
+                <Box
+                    display='flex'
+                    cursor='pointer'
+                    gap="spacing-xxs"
+                    justifyContent="center"
+                    alignItems="center"
+                    onClick={() => window.open(`${EXPLORER_URL}/address/${address}`, "_blank")}
+                >
+                    <IconComponent size={24} />
+                    <Text
+                        variant="bs-regular"
+                        textTransform="inherit"
+                        color="pw-int-text-tertiary-color"
+                        css={css`
+                            &:hover {
+                                color: var(--pw-int-brand-primary-subtle-color);
+                            }    
+                        `}
+                    >
+                        {centerMaskWalletAddress(address, 5)}
+                    </Text>
+                </Box>
+                <Box
+                    cursor="pointer"
+                    display='flex'
+                    className="copy-icon"
+                >
+
+                    {copied ? (
+                        <TickCircleFilled
+                            autoSize
+                            size={14}
+                            color="pw-int-icon-success-bold-color"
+                        />
+                    ) : (
+                        <CopyFilled
+                            color="pw-int-icon-tertiary-color"
+                            size={14}
+                            onClick={() => handleCopy(address, setCopied)}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--pw-int-icon-brand-color)')}
+                            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--pw-int-icon-tertiary-color)')}
+                        />
+                    )}
+                </Box>
+            </Box>
+        </AddressRow>
+    );
+}
 
 const AddressRow = styled(Box)`
   .copy-icon {
