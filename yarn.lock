@@ -13475,9 +13475,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"push-network-keys@workspace:.":
+"push-wallet@workspace:.":
   version: 0.0.0-use.local
-  resolution: "push-network-keys@workspace:."
+  resolution: "push-wallet@workspace:."
   dependencies:
     "@auth0/auth0-react": "npm:^2.2.4"
     "@coral-xyz/anchor": "npm:^0.31.1"
