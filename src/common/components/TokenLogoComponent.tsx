@@ -1,6 +1,6 @@
 import React from 'react';
 import { TOKEN_LOGO } from '../Common.constants';
-import { Box, PushAlpha, PushChainLogo, PushMonotone, Text } from 'blocks';
+import { Box, PushChainLogo, Text } from 'blocks';
 import { css } from 'styled-components';
 
 const TokenLogoComponent = ({ tokenSymbol }: { tokenSymbol: string }) => {
@@ -23,25 +23,23 @@ const TokenLogoComponent = ({ tokenSymbol }: { tokenSymbol: string }) => {
                 >
                     <IconComponent width={36} height={36} />;
                 </Box>
-                {(
-                    <Box
-                        position="absolute"
-                        width="18px"
-                        height="18px"
-                        backgroundColor="pw-int-bg-primary-color"
-                        borderRadius="radius-lg"
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        border="border-sm solid pw-int-border-secondary-color"
-                        css={css`
-                                bottom: 0;
-                                right: 0;
-                            `}
-                    >
-                        <PushChainLogo height={16} width={16} />
-                    </Box>
-                )}
+                <Box
+                    position="absolute"
+                    width="18px"
+                    height="18px"
+                    backgroundColor="pw-int-bg-primary-color"
+                    borderRadius="radius-lg"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    border="border-sm solid pw-int-border-secondary-color"
+                    css={css`
+                            bottom: 0;
+                            right: 0;
+                        `}
+                >
+                    <PushChainLogo height={16} width={16} />
+                </Box>
             </Box>
         )
     } else {

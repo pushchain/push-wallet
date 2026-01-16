@@ -1,4 +1,4 @@
-import { Box, DefaultChainMonotone, Faucet, PushAlpha, Text } from 'blocks';
+import { Box, Faucet, PushChainLogo, Text } from 'blocks';
 import { CHAIN_LOGO, modifyAddress } from 'common';
 import { css } from 'styled-components';
 import { useState, useEffect } from 'react';
@@ -35,13 +35,13 @@ const OriginChainTokenListItem = ({
 
     function getChainIcon(chainId, size) {
         if (chainId == null || chainId === 'devnet') {
-            return <PushAlpha width={size} height={size} />
+            return <PushChainLogo width={size} height={size} />
         }
         const IconComponent = CHAIN_LOGO?.[chainId];
         if (IconComponent) {
             return <IconComponent width={size} height={size} color="pw-int-icon-tertiary-color" />;
         } else {
-            return <PushAlpha width={size} height={size} />;
+            return <PushChainLogo width={size} height={size} />;
         }
     }
 
