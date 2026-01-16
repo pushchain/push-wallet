@@ -33,15 +33,15 @@ const OriginChainTokenListItem = ({
 
     const [faucetHovered, setFaucetHovered] = useState(false);
 
-    function getChainIcon(chainId) {
+    function getChainIcon(chainId, size) {
         if (chainId == null || chainId === 'devnet') {
-            return <PushAlpha width={36} height={36} />
+            return <PushAlpha width={size} height={size} />
         }
         const IconComponent = CHAIN_LOGO?.[chainId];
         if (IconComponent) {
-            return <IconComponent width={36} height={36} color="pw-int-icon-tertiary-color" />;
+            return <IconComponent width={size} height={size} color="pw-int-icon-tertiary-color" />;
         } else {
-            return <PushAlpha width={36} height={36} />;
+            return <PushAlpha width={size} height={size} />;
         }
     }
 
@@ -55,22 +55,23 @@ const OriginChainTokenListItem = ({
                 gap="spacing-xxs"
             >
                 <Box position="relative" width="36px" height="36px" display="inline-block">
-                    {getChainIcon(walletDetail.chainId)}
+                    {getChainIcon(walletDetail.chainId, 36)}
                     <Box
                         position="absolute"
-                        width="14px"
-                        height="14px"
+                        width="18px"
+                        height="18px"
                         backgroundColor="pw-int-bg-primary-color"
                         borderRadius="radius-lg"
                         display="flex"
                         alignItems="center"
                         justifyContent="center"
+                        border="border-sm solid pw-int-border-secondary-color"
                         css={css`
                                 bottom: 0;
                                 right: 0;
                             `}
                     >
-                        <DefaultChainMonotone width={16} height={16} />
+                        {getChainIcon(walletDetail.chainId, 16)}
                     </Box>
                 </Box>
                 <Box
@@ -89,7 +90,7 @@ const OriginChainTokenListItem = ({
                             display='flex'
                             alignItems='center'
                             borderRadius='radius-xs'
-                            backgroundColor='pw-int-bg-primary-color'
+                            backgroundColor='pw-int-bg-tertiary-color'
                             padding='spacing-none spacing-xxxs'
                             gap='spacing-xxxs'
                             cursor='pointer'

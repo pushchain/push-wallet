@@ -46,7 +46,9 @@ import {
   SolanaMonotone,
   PushLogoNew,
   Zerion,
-  Rabby
+  Rabby,
+  USDT,
+  WEthereum,
 } from "../blocks";
 import { ChainType, WalletCategoriesType } from "../types/wallet.types";
 
@@ -160,6 +162,8 @@ export const TOKEN_LOGO = {
   pETH: Ethereum,
   pPOL: Polygon,
   PC: PushChainLogo,
+  USDT: USDT,
+  WETH: WEthereum,
 };
 
 export const WALLETS_LOGO = {

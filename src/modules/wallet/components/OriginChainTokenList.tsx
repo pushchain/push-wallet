@@ -1,6 +1,5 @@
-import { Box, CopyFilled, DefaultChainMonotone, Text, TickCircleFilled } from 'blocks';
-import { centerMaskWalletAddress, handleCopy } from 'common';
-import { useMemo, useState } from 'react';
+import { Box, Text } from 'blocks';
+import { useMemo } from 'react';
 import { OriginChainTokenListItem } from './OriginChainTokenListItem';
 import { convertCaipToObject } from '../Wallet.utils';
 import { css } from 'styled-components';
@@ -39,9 +38,9 @@ const OriginChainTokenList = ({
             borderRadius="radius-sm"
             border="border-sm solid pw-int-border-secondary-color"
             padding="spacing-xs"
-            gap='spacing-xs'
+            backgroundColor="pw-int-bg-tertiary-color"
         >
-            <OriginChainWalletHeader result={result} />
+            <OriginChainWalletHeader />
 
             {tokens && tokens.map((token, id) => (
                 <OriginChainTokenListItem token={token} walletDetail={result} key={id} />
@@ -53,39 +52,10 @@ const OriginChainTokenList = ({
 
 export default OriginChainTokenList;
 
-const OriginChainWalletHeader = ({ result }) => {
-    const [copied, setCopied] = useState(false);
+const OriginChainWalletHeader = () => {
 
     return (
-        <Box className='flex' justifyContent="space-between">
-            <Box
-                display="flex"
-                gap="spacing-xxxs"
-                justifyContent="center"
-                alignItems="center"
-            >
-                <DefaultChainMonotone />
-                <Text variant="os-regular" color="pw-int-text-tertiary-color">
-                    {centerMaskWalletAddress(result.address, 5)}
-                </Text>
-                <Box
-                    cursor='pointer'
-                >
-                    {copied ? (
-                        <TickCircleFilled
-                            autoSize
-                            size={14}
-                            color="pw-int-icon-success-bold-color"
-                        />
-                    ) : (
-                        <CopyFilled
-                            color="pw-int-icon-tertiary-color"
-                            size={14}
-                            onClick={() => handleCopy(result.address, setCopied)}
-                        />
-                    )}
-                </Box>
-            </Box>
+        <Box className='flex' justifyContent="end">
             <Box
                 display="flex"
                 alignItems="center"
@@ -98,8 +68,6 @@ const OriginChainWalletHeader = ({ result }) => {
                 >
                     Origin Chain Funds
                 </Text>
-
-                {/* {getMonotoneChainIcon(result.chainId)} */}
             </Box>
         </Box>
 
