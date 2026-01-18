@@ -11,7 +11,7 @@ const EthereumMonotone: FC<IconProps> = (allProps) => {
         <svg
           width="inherit"
           height="inherit"
-          viewBox="0 0 24 24"
+          viewBox="0 0 20 20"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           {...props}

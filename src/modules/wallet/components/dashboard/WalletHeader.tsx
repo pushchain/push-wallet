@@ -174,7 +174,7 @@ const WalletAddress: FC<{ address: string; chainId: string | number, type: 'exec
                 padding-left: ${type === 'origin' ? '8px' : '0'};
             `}
         >
-            {type === 'origin' && <Connector />}
+            {type === 'origin' && <Connector size={12} />}
             <Box
                 display="flex"
                 gap="spacing-xxxs"
