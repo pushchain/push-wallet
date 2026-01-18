@@ -37,7 +37,7 @@ const TokensList: FC<TokensListProps> = ({
             <Box
                 display='flex'
                 flexDirection='column'
-                gap='spacing-xs'
+                gap='spacing-xxs'
                 overflow="hidden scroll"
                 height='240px'
                 customScrollbar

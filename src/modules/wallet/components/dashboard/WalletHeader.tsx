@@ -103,8 +103,8 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                     justifyContent="center"
                 >
                     <Box
-                        width="48px"
-                        height="48px"
+                        width="44px"
+                        height="44px"
                         borderRadius="radius-xl"
                         overflow="hidden"
                         alignSelf="center"
@@ -189,14 +189,14 @@ const WalletAddress: FC<{ address: string; chainId: string | number, type: 'exec
                     alignItems="center"
                     onClick={() => window.open(`${EXPLORER_URL}/address/${address}`, "_blank")}
                 >
-                    <IconComponent size={24} />
+                    <IconComponent size={20} />
                     <Text
-                        variant="bs-regular"
+                        variant="bes-regular"
                         textTransform="inherit"
-                        color="pw-int-text-tertiary-color"
+                        color={type === 'executor' ? "pw-int-text-primary-color" : "pw-int-text-tertiary-color"}
                         css={css`
                             &:hover {
-                                color: var(--pw-int-brand-primary-subtle-color);
+                                color: ${ type === 'executor' ? 'var(--pw-int-brand-primary-color)' : 'var(--pw-int-brand-primary-subtle-color)'};
                             }    
                         `}
                     >
@@ -212,13 +212,13 @@ const WalletAddress: FC<{ address: string; chainId: string | number, type: 'exec
                     {copied ? (
                         <TickCircleFilled
                             autoSize
-                            size={14}
+                            size={12}
                             color="pw-int-icon-success-bold-color"
                         />
                     ) : (
                         <CopyFilled
                             color="pw-int-icon-tertiary-color"
-                            size={14}
+                            size={12}
                             onClick={() => handleCopy(address, setCopied)}
                             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--pw-int-icon-brand-color)')}
                             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--pw-int-icon-tertiary-color)')}

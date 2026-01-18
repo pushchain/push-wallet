@@ -66,7 +66,7 @@ const OriginChainWalletHeader = () => {
                     textTransform='capitalize'
                     css={css`margin-right: 8px;`}
                 >
-                    Origin Chain Funds
+                    External Connected Chain
                 </Text>
             </Box>
         </Box>

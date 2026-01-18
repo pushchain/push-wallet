@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import {
   Box,
   Download,
@@ -12,6 +12,7 @@ import { useWalletDashboard } from "../../../../context/WalletDashboardContext";
 import { useWalletOperations } from "../../../../hooks/useWalletOperations";
 import { FAUCET_URL } from "common";
 import { formatTokenValue } from "../../Wallet.utils";
+import { css } from "styled-components";
 
 export type WalletProfileProps = {
   walletAddress: string;
@@ -39,12 +40,30 @@ const buttonConfigs = [
 
 const WalletProfile: FC<WalletProfileProps> = ({ walletAddress }) => {
   const { setActiveState } = useWalletDashboard();
+  const [ fontSize, setFontSize ] = useState(34);
 
+  const ref = useRef<HTMLDivElement>(null);
 
   const {
     data: balance,
     isLoading: isBalanceLoading,
   } = useWalletOperations(walletAddress);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    let size = fontSize;
+
+    while (
+      (el.scrollWidth > el.clientWidth)
+    ) {
+      size -= 2;
+      el.style.fontSize = `${size}px`;
+    }
+
+    setFontSize(size);
+  }, [balance]);
 
   return (
     <Box
@@ -65,14 +84,23 @@ const WalletProfile: FC<WalletProfileProps> = ({ walletAddress }) => {
         <Box
           display="flex"
           margin="spacing-none spacing-none spacing-xxxs spacing-none"
+          width="100%"
         >
           {isBalanceLoading ? (
             <Spinner size="extraLarge" variant="primary" />
           ) : (
             <Text
+              ref={ref}
               color="pw-int-text-primary-color"
-              variant="h2-semibold"
               textAlign="center"
+              css={css`
+                width: 100%;
+                font-size: ${fontSize}px;
+                overflow: hidden;
+                white-space: nowrap;
+                font-weight: 500;
+                line-height: 48px;
+              `}
             >
               {formatTokenValue((Number(balance ?? 0)), (Number(balance ?? 0) < 1 ? 6 : 2))} PC
             </Text>
