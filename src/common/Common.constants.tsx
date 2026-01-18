@@ -41,7 +41,6 @@ import {
   Polygon,
   PolygonMonotone,
   PushChainLogo,
-  PushChainMonotone,
   Solana,
   SolanaMonotone,
   PushLogoNew,
@@ -50,6 +49,7 @@ import {
   USDT,
   WEthereum,
   PushMonotone,
+  BaseMonotone,
 } from "../blocks";
 import { ChainType, WalletCategoriesType } from "../types/wallet.types";
 
@@ -123,6 +123,7 @@ export const CHAIN_MONOTONE_LOGO: {
   56: BnbMonotone,
   42161: ArbitrumMonotone,
   421614: ArbitrumMonotone,
+  84532: BaseMonotone,
   11155420: OptimismMonotone,
   10: OptimismMonotone,
   2442: PolygonMonotone,

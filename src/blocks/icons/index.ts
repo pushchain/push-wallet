@@ -16,6 +16,8 @@ export { default as Asterisk } from "./components/Asterisk";
 
 export { default as Back } from "./components/Back";
 
+export { default as BaseMonotone } from "./components/BaseMonotone";
+
 export { default as BellRingFilled } from "./components/BellRingFilled";
 export { default as BellSimple } from "./components/BellSimple";
 export { default as BellSimpleSlash } from "./components/BellSimpleSlash";
