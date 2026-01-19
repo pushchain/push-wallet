@@ -53,17 +53,31 @@ const WalletProfile: FC<WalletProfileProps> = ({ walletAddress }) => {
     const el = ref.current;
     if (!el) return;
 
-    let size = fontSize;
+    const BASE = 34;
+    const MIN = 12;
 
-    while (
-      (el.scrollWidth > el.clientWidth)
-    ) {
-      size -= 2;
+    const fit = () => {
+      let size = BASE;
       el.style.fontSize = `${size}px`;
-    }
 
-    setFontSize(size);
-  }, [balance, ref]);
+      while (
+        (el.scrollWidth > el.clientWidth && size > MIN)
+      ) {
+        size -= 2;
+        el.style.fontSize = `${size}px`;
+      }
+
+      setFontSize(size);
+    };
+
+    const raf1 = requestAnimationFrame(() => {
+      const raf2 = requestAnimationFrame(fit);
+      return () => cancelAnimationFrame(raf2);
+    });
+
+    return () => cancelAnimationFrame(raf1);
+
+  }, [balance, walletAddress]);
 
   return (
     <Box
