@@ -63,7 +63,7 @@ const WalletProfile: FC<WalletProfileProps> = ({ walletAddress }) => {
     }
 
     setFontSize(size);
-  }, [balance]);
+  }, [balance, ref]);
 
   return (
     <Box
@@ -84,6 +84,8 @@ const WalletProfile: FC<WalletProfileProps> = ({ walletAddress }) => {
         <Box
           display="flex"
           margin="spacing-none spacing-none spacing-xxxs spacing-none"
+          alignItems='center'
+          justifyContent='center'
           width="100%"
         >
           {isBalanceLoading ? (
