@@ -16,6 +16,8 @@ const TokensListItem: FC<TokenListItemProps> = ({ token, isPrc20, handleSelectTo
 
   const { executorAddress } = usePushChain();
 
+  console.log(token, 'token in list item');
+
   const {
     data: tokenBalance,
     isLoading: loadingTokenBalance

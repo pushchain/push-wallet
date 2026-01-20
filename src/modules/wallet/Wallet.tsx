@@ -251,11 +251,11 @@ const Wallet: FC<WalletProps> = () => {
   };
 
   useEffect(() => {
-    if (state?.wallet?.universalSigner.account.address)
+    if (state?.wallet?.account.address)
       setSelectedWallet(
         getWalletlist(state.wallet)[0]
       );
-  }, [state?.wallet?.universalSigner]);
+  }, [state?.wallet?.account]);
 
   useEffect(() => {
     if (

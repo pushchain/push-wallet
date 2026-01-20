@@ -14,6 +14,15 @@ import {
 import { WalletConfig } from "src/types/wallet.types";
 import styled from "styled-components";
 import { trimText } from "../../../helpers/AuthHelper";
+import { useWaapAuth } from "../../../waap/useWaapAuth";
+import { PushChain } from '@pushchain/core';
+import { useGlobalState } from "../../../context/GlobalContext";
+import {
+  waapSignMessage,
+  waapSignTypedData,
+  waapSignAndSendTransaction,
+} from '../../../waap/waapProvider';
+import { useNavigate } from "react-router-dom";
 
 export type LoginProps = {
   email: string;
@@ -28,6 +37,10 @@ const validationSchema = Yup.object().shape({
 
 const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig }) => {
   const persistQuery = usePersistedQuery();
+  const { loginWithWaapSocial } = useWaapAuth();
+  const { state, dispatch } = useGlobalState();
+
+  const navigate = useNavigate();
 
   const isOpenedInIframe = !!getAppParamValue();
 
@@ -75,6 +88,34 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
         persistQuery(APP_ROUTES.WALLET)
       );
     }
+  };
+
+  const handleGoogleLogin = async () => {
+    const result = await loginWithWaapSocial();
+    if (!result) return;
+
+    console.log("WaaP login successful:", result);
+    const w = await PushChain.utils.account.convertExecutorToOriginAccount(result.address as `0x${string}`);
+    console.log("Converted address:", w);
+
+    const instance = {
+      signMessage: waapSignMessage,
+      signTypedData: waapSignTypedData,
+      signAndSendTransaction: waapSignAndSendTransaction,
+      account: w.account
+    }
+
+    dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
+    dispatch({ type: "INITIALIZE_WALLET", payload: instance });
+
+    localStorage.setItem(
+      "walletInfo",
+      JSON.stringify(w.account)
+    );
+
+    navigate(`${persistQuery(APP_ROUTES.WALLET)}`, {
+      replace: true,
+    });
   };
 
   const showEmailLogin = isOpenedInIframe ? walletConfig?.loginDefaults.email : true
@@ -149,44 +190,14 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
           width="100%"
           alignItems="center"
         >
-          {showEmailLogin && (
-            <>
-              <Box width="100%">
-                <form onSubmit={formik.handleSubmit}>
-                  <TextInput
-                    value={formik.values.email}
-                    onChange={formik.handleChange("email")}
-                    placeholder="Enter your email"
-                    error={formik.touched?.email && Boolean(formik.errors?.email)}
-                    errorMessage={formik.touched?.email ? formik.errors?.email : ""}
-                    trailingIcon={
-                      <Front
-                        size={24}
-                        onClick={() => {
-                          formik.handleSubmit();
-                          setConnectMethod("social");
-                        }}
-                      />
-                    }
-                  />
-                </form>
-              </Box>
-            </>
-          )}
-
-          {showEmailLogin && showGoogleLogin && (<Text variant="os-regular" color="pw-int-text-tertiary-color">
-            OR
-          </Text>)}
-
           {showGoogleLogin && (
             <>
               <Button
                 variant="outline"
                 block
-                leadingIcon={<Google width={24} height={24} />}
-                onClick={() => handleSocialLogin("google")}
+                onClick={handleGoogleLogin}
               >
-                Continue with Google
+                Continue with Social login
               </Button>
               {/* <Box
             display="flex"

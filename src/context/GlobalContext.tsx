@@ -5,7 +5,6 @@ import {
   useReducer,
   useEffect,
 } from "react";
-import { PushWallet } from "../services/pushWallet/pushWallet";
 import { fetchJwtUsingState } from "../helpers/AuthHelper";
 import {
   getAllAppConnections,
@@ -13,11 +12,18 @@ import {
 } from "../common";
 import { APP_ROUTES } from "../constants";
 import { useExternalWallet } from "./ExternalWalletContext";
-import { WalletConfig, ExternalWalletType, UniversalAccount } from "../types/wallet.types";
+import { WalletConfig, ExternalWalletType, UniversalAccount, ITypedData } from "../types/wallet.types";
+
+export type PushWalletSocial = {
+  signMessage: (message: Uint8Array) => Promise<Uint8Array>;
+  signTypedData: (typedData: ITypedData) => Promise<Uint8Array>;
+  signAndSendTransaction: (txn: Uint8Array) => Promise<Uint8Array>;
+  account: UniversalAccount;
+}
 
 // Define the shape of the global state
 export type GlobalState = {
-  wallet: PushWallet | null;
+  wallet: PushWalletSocial | null;
   appConnections: PushWalletAppConnectionData[];
   externalWallet: ExternalWalletType | null;
   pushWallet: UniversalAccount | null;
@@ -42,7 +48,7 @@ export type GlobalState = {
 
 // Define actions for state management
 export type GlobalAction =
-  | { type: "INITIALIZE_WALLET"; payload: PushWallet }
+  | { type: "INITIALIZE_WALLET"; payload: PushWalletSocial }
   | { type: "SET_APP_CONNECTIONS"; payload: PushWalletAppConnectionData[] }
   | { type: "SET_EXTERNAL_WALLET"; payload: ExternalWalletType }
   | { type: "SET_PUSH_WALLET"; payload: UniversalAccount }
@@ -210,12 +216,16 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
         }
 
+        if (state.wallet?.account) {
+          dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
+        }
+
         if (externalWallet) {
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "success" });
           dispatch({ type: "SET_EXTERNAL_WALLET", payload: externalWallet });
         }
 
-        if (!stateParam && !storedToken && !externalWallet) {
+        if (!stateParam && !storedToken && !externalWallet && !state.wallet?.account) {
           dispatch({ type: "SET_WALLET_LOAD_STATE", payload: "rejected" });
         }
       } catch (error) {
@@ -227,7 +237,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
 
     // We don't need to do jwt token network calls on the oauth route to avoid expiring the token
     window.location.pathname !== APP_ROUTES.OAUTH_REDIRECT && fetchUser();
-  }, [stateParam, storedToken, externalWallet]);
+  }, [stateParam, storedToken, externalWallet, state.wallet]);
 
   return (
     <GlobalContext.Provider

@@ -12,12 +12,12 @@ const WalletRecoveryPhrase = () => {
     const { state } = useGlobalState();
     const { setActiveState } = useWalletDashboard();
 
-    useEffect(() => {
-        if (state.wallet.mnemonic) {
-            const words = state.wallet.mnemonic.split(" ");
-            setPhrase(words);
-        }
-    }, [state.wallet])
+    // useEffect(() => {
+    //     if (state.wallet.mnemonic) {
+    //         const words = state.wallet.mnemonic.split(" ");
+    //         setPhrase(words);
+    //     }
+    // }, [state.wallet])
     
     return (
         <Box
