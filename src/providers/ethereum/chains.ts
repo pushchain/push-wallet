@@ -18,7 +18,7 @@ export const pushWalletDonut = defineChain({
         },
     },
     blockExplorers: {
-        default: { name: 'Push Testnet Explorer', url: 'https://explorer.testnet.push.org' },
+        default: { name: 'Push Testnet Explorer', url: 'https://donut.push.network/' },
     },
 })
 
