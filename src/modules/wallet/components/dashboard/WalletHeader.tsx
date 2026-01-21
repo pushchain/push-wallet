@@ -114,6 +114,9 @@ const WalletHeader: FC<WalletHeaderProps> = ({ walletAddress, handleBackButton }
                 </Box>
 
                 <Box gap="spacing-xxxs" display="flex" flexDirection="column" justifyContent="center" alignItems="flex-start">
+                    {(!originAddress || originAddress.address === walletAddress) && (
+                        <Text variant="bes-semibold">Push Chain Wallet</Text>
+                    )}
                     <WalletAddress address={walletAddress} chainId={42101} type='executor' />
 
                     {originAddress && originAddress.address !== walletAddress && (
