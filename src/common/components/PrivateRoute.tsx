@@ -17,7 +17,7 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
     return <WalletSkeletonScreen content={<PushWalletLoadingContent />} />;
   }
 
-  if (walletLoadState === "success" && (wallet.account || pushWallet)) {
+  if (walletLoadState === "success" && (wallet?.account || pushWallet)) {
     return <>{children}</>;
   }
 

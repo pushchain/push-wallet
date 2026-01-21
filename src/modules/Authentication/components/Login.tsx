@@ -1,16 +1,9 @@
-import { FC } from "react";
-import { Box, Button, Front, Google, Text, TextInput } from "../../../blocks";
-import { getAppParamValue, getVersionParamValue, PoweredByPush } from "../../../common";
-import { SocialProvider, WalletState } from "../Authentication.types";
-import { useFormik } from "formik";
-import * as Yup from "yup";
+import { FC, useEffect } from "react";
+import { Box, Button, Text } from "../../../blocks";
+import { getAppParamValue, PoweredByPush } from "../../../common";
+import { WalletState } from "../Authentication.types";
 import { APP_ROUTES } from "../../../constants";
 import { usePersistedQuery } from "../../../common/hooks/usePersistedQuery";
-import {
-  getAuthWindowConfig,
-  getOTPEmailAuthRoute,
-  getPushSocialAuthRoute,
-} from "../Authentication.utils";
 import { WalletConfig } from "src/types/wallet.types";
 import styled from "styled-components";
 import { trimText } from "../../../helpers/AuthHelper";
@@ -31,72 +24,17 @@ export type LoginProps = {
   walletConfig: WalletConfig
 };
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string().email("Invalid email address").required("Required"),
-});
-
-const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig }) => {
+const Login: FC<LoginProps> = ({ setConnectMethod, walletConfig }) => {
   const persistQuery = usePersistedQuery();
-  const { loginWithWaapSocial } = useWaapAuth();
+  const { loginWithWaapSocial, tryAutoConnect } = useWaapAuth();
   const { state, dispatch } = useGlobalState();
 
   const navigate = useNavigate();
 
   const isOpenedInIframe = !!getAppParamValue();
 
-  const formik = useFormik({
-    initialValues: { email },
-    validationSchema,
-    onSubmit: (values) => {
-      setEmail(values.email);
-      localStorage.setItem("pw_user_email", values.email);
-
-      if (values.email) {
-        if (isOpenedInIframe) {
-
-          const appURL = getAppParamValue();
-          const version = getVersionParamValue();
-          sessionStorage.setItem('App_Connections', appURL);
-          sessionStorage.setItem('UI_kit_version', version);
-
-          window.location.href = getOTPEmailAuthRoute(
-            values.email,
-            APP_ROUTES.VERIFY_EMAIL_OTP
-          );
-
-        } else {
-          window.location.href = getOTPEmailAuthRoute(
-            values.email,
-            persistQuery(APP_ROUTES.VERIFY_EMAIL_OTP)
-          );
-
-        }
-      }
-    }
-  });
-
-  const handleSocialLogin = (provider: SocialProvider) => {
-    if (isOpenedInIframe) {
-      const backendURL = getPushSocialAuthRoute(
-        provider,
-        APP_ROUTES.OAUTH_REDIRECT
-      );
-      window.open(backendURL, "Google OAuth", getAuthWindowConfig());
-    } else {
-      window.location.href = getPushSocialAuthRoute(
-        provider,
-        persistQuery(APP_ROUTES.WALLET)
-      );
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    const result = await loginWithWaapSocial();
-    if (!result) return;
-
-    console.log("WaaP login successful:", result);
-    const w = await PushChain.utils.account.convertExecutorToOriginAccount(result.address as `0x${string}`);
-    console.log("Converted address:", w);
+  const handleLogin = async (addr: `0x${string}`) => {
+    const w = await PushChain.utils.account.convertExecutorToOriginAccount(addr);
 
     const instance = {
       signMessage: waapSignMessage,
@@ -116,7 +54,27 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
     navigate(`${persistQuery(APP_ROUTES.WALLET)}`, {
       replace: true,
     });
+  }
+
+  const handleSocialLogin = async () => {
+    const result = await loginWithWaapSocial();
+    if (!result) return;
+
+    await handleLogin(result.address as `0x${string}`);
   };
+
+  useEffect(() => {
+    const handleReconnect = async () => {
+      if (state?.wallet) return;
+
+      const res = await tryAutoConnect();
+      if (!res?.address) return;
+
+      await handleLogin(res.address as `0x${string}`);
+    };
+
+    handleReconnect();
+  }, []);
 
   const showEmailLogin = isOpenedInIframe ? walletConfig?.loginDefaults.email : true
   const showGoogleLogin = isOpenedInIframe ? walletConfig?.loginDefaults.google : true
@@ -195,7 +153,7 @@ const Login: FC<LoginProps> = ({ email, setEmail, setConnectMethod, walletConfig
               <Button
                 variant="outline"
                 block
-                onClick={handleGoogleLogin}
+                onClick={handleSocialLogin}
               >
                 Continue with Social login
               </Button>

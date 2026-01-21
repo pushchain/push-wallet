@@ -21,37 +21,45 @@ export const useWaapAuth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const loginWithWaapSocial = useCallback(async (): Promise<WaapLoginResult | null> => {
-    try {
-      setLoading(true);
-      setError(null);
+  const ensureConnected = useCallback(
+    async (opts?: { interactive?: boolean }): Promise<WaapLoginResult | null> => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      const waap = getWaap();
-      if (!waap) {
-        throw new Error('WaaP not initialized (window.waap missing)');
+        const waap = getWaap();
+        if (!waap) throw new Error('WaaP not initialized (window.waap missing)');
+
+        let accounts: string[] = await waap.request({ method: 'eth_accounts' });
+        let addr = accounts?.[0];
+
+        if (!addr && opts?.interactive) {
+          const lt = await waap.login(); // opens WaaP UI
+          accounts = await waap.request({ method: 'eth_requestAccounts' });
+          addr = accounts?.[0];
+          setLoginType(lt);
+        }
+
+        if (!addr) return null;
+
+        switchNetwork(ChainType.PUSH_WALLET);
+
+        setAddress(addr);
+        return { address: addr, loginType };
+      } catch (e: any) {
+        console.error('[WaaP] ensureConnected failed', e);
+        setError(e);
+        return null;
+      } finally {
+        setLoading(false);
       }
+    },
+    [loginType]
+  );
 
-      // 1. Open WaaP login modal (this includes Google/social options)
-      const lt = await waap.login();
-
-      const accounts: string[] = await waap.request({ method: 'eth_requestAccounts' });
-      const addr = accounts?.[0];
-      if (!addr) throw new Error('No account returned from WaaP');
-
-      switchNetwork(ChainType.PUSH_WALLET);
-
-      setAddress(addr);
-      setLoginType(lt);
-
-      return { address: addr, loginType: lt };
-    } catch (e: any) {
-      console.error('[WaaP] login failed', e);
-      setError(e);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const loginWithWaapSocial = useCallback(async (): Promise<WaapLoginResult | null> => {
+    return ensureConnected({ interactive: true });
+  }, [ensureConnected]);
 
   const logoutWaap = useCallback(async () => {
     try {
@@ -66,16 +74,9 @@ export const useWaapAuth = () => {
   }, []);
 
   const tryAutoConnect = useCallback(async () => {
-    try {
-      const waap = getWaap();
-      if (!waap) return;
-      const accounts: string[] = await waap.request({ method: 'eth_requestAccounts' });
-      const addr = accounts?.[0];
-      if (addr) setAddress(addr);
-    } catch (e) {
-      console.warn('[WaaP] auto-connect failed', e);
-    }
-  }, []);
+    const res = await ensureConnected({ interactive: false });
+    return res;
+  }, [ensureConnected]);
 
   return {
     address,
