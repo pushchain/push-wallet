@@ -2215,36 +2215,39 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@human.tech/waap-constants@npm:0.0.1":
-  version: 0.0.1
-  resolution: "@human.tech/waap-constants@npm:0.0.1"
+"@human.tech/waap-constants@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@human.tech/waap-constants@npm:0.0.2"
   dependencies:
-    "@silk-wallet/silk-interface-core": "npm:0.4.4"
-  checksum: 10/81fb051b18517e82b2ef6ba9549c30739dda6258e5fc72409b825ed64f2b48e4c98228094bbe02abf4c9981a104f8540d566ba56c896898b85bc7d73c3a23f93
+    "@human.tech/waap-interface-core": "npm:0.1.1"
+  checksum: 10/43c3bd9ce3ec1c7732b7c2bfebba1e119ea439c398efde20b266c0c6ff32b125f4e9d0038c80415f58dfbcd803d18c115f2c0f62a39bd9eb111aef4d2bbdffb6
   languageName: node
   linkType: hard
 
-"@human.tech/waap-interface-core@npm:0.1.0":
-  version: 0.1.0
-  resolution: "@human.tech/waap-interface-core@npm:0.1.0"
-  checksum: 10/baa0110caf14a70859d477d0483204d3071c88753538db97f0644aba67c3de172bda6b6db7a03b00528da94e7f6b80e9ab42f53e9d6baed18f246a81d5c5b28b
+"@human.tech/waap-interface-core@npm:0.1.1":
+  version: 0.1.1
+  resolution: "@human.tech/waap-interface-core@npm:0.1.1"
+  dependencies:
+    crypto-js: "npm:^4.2.0"
+  checksum: 10/6e378c966a71415995d07f94096c9fb620d1428f73ac299d4d87c850d121d31389f1eae31ae1f4d539c188011eff7bcac7266bced3782e7b74cab195b9192359
   languageName: node
   linkType: hard
 
-"@human.tech/waap-sdk@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@human.tech/waap-sdk@npm:1.0.2"
+"@human.tech/waap-sdk@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@human.tech/waap-sdk@npm:1.0.3"
   dependencies:
-    "@human.tech/waap-constants": "npm:0.0.1"
-    "@human.tech/waap-interface-core": "npm:0.1.0"
+    "@human.tech/waap-constants": "npm:0.0.2"
+    "@human.tech/waap-interface-core": "npm:0.1.1"
     "@metamask/rpc-errors": "npm:^5.1.1"
     "@reown/appkit": "npm:^1.7.6"
     "@reown/appkit-adapter-ethers": "npm:^1.7.8"
+    ethers: "npm:^6.16.0"
     events: "npm:^3.3.0"
     pino-pretty: "npm:^10.2.0"
     zod: "npm:^3.21.4"
     zod-validation-error: "npm:^1.3.0"
-  checksum: 10/a85366065638beb48f967cc043300fde682ba4145ffa959d7a9ea89335244c299fa02567717f27ded0b5690e8706f5e7ff0aea18d7381656a7d9789e4debe34e
+  checksum: 10/195f2990a9f03695b9d57ebb89bd55b5f2dcd5c0f6866402f4752603e86d40e9e7967c7e0128f7ae94efd452c7f0ac6cbb6bd80fcc3eadf0f93ed1adec8ef475
   languageName: node
   linkType: hard
 
@@ -5287,13 +5290,6 @@ __metadata:
   version: 2.0.0
   resolution: "@sideway/pinpoint@npm:2.0.0"
   checksum: 10/1ed21800128b2b23280ba4c9db26c8ff6142b97a8683f17639fd7f2128aa09046461574800b30fb407afc5b663c2331795ccf3b654d4b38fa096e41a5c786bf8
-  languageName: node
-  linkType: hard
-
-"@silk-wallet/silk-interface-core@npm:0.4.4":
-  version: 0.4.4
-  resolution: "@silk-wallet/silk-interface-core@npm:0.4.4"
-  checksum: 10/c0bdfafcb10ce909196ccb6fcced1aad34f077fa0ee815c4e08c7b9438a3fe725d081caabbe6692295af38eb869fba8cdf840346da3c640e14a3df43fbebf397
   languageName: node
   linkType: hard
 
@@ -9815,6 +9811,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"crypto-js@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "crypto-js@npm:4.2.0"
+  checksum: 10/c7bcc56a6e01c3c397e95aa4a74e4241321f04677f9a618a8f48a63b5781617248afb9adb0629824792e7ec20ca0d4241a49b6b2938ae6f973ec4efc5c53c924
+  languageName: node
+  linkType: hard
+
 "css-color-keywords@npm:^1.0.0":
   version: 1.0.0
   resolution: "css-color-keywords@npm:1.0.0"
@@ -10755,6 +10758,21 @@ __metadata:
     tslib: "npm:2.7.0"
     ws: "npm:8.17.1"
   checksum: 10/21ab1d31e1b89f62dce5611c3686e4b81e000107aff8dccdbeaa1eac2da43459d5b590efa127470208729ca99a3b5757dd690943cf60745c2393d13db6a3218a
+  languageName: node
+  linkType: hard
+
+"ethers@npm:^6.16.0":
+  version: 6.16.0
+  resolution: "ethers@npm:6.16.0"
+  dependencies:
+    "@adraffy/ens-normalize": "npm:1.10.1"
+    "@noble/curves": "npm:1.2.0"
+    "@noble/hashes": "npm:1.3.2"
+    "@types/node": "npm:22.7.5"
+    aes-js: "npm:4.0.0-beta.5"
+    tslib: "npm:2.7.0"
+    ws: "npm:8.17.1"
+  checksum: 10/7e980f0a77963fbe14321a3b9746c3ca3cad44932e28bb3506406a66c4b4d9dc1e60ed68d9d784224e9f2582a53d6a0a2e55a7c9559659681f4ad1f70e00e325
   languageName: node
   linkType: hard
 
@@ -14815,7 +14833,7 @@ __metadata:
     "@fortawesome/fontawesome-svg-core": "npm:^6.7.0"
     "@fortawesome/free-brands-svg-icons": "npm:^6.6.0"
     "@fortawesome/react-fontawesome": "npm:^0.2.2"
-    "@human.tech/waap-sdk": "npm:^1.0.2"
+    "@human.tech/waap-sdk": "npm:^1.0.3"
     "@metamask/sdk": "npm:^0.32.0"
     "@noble/hashes": "npm:^1.0.0"
     "@pushchain/core": "npm:^4.0.8"

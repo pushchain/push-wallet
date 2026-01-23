@@ -42,7 +42,7 @@ export const useWaapAuth = () => {
 
         if (!addr) return null;
 
-        switchNetwork(ChainType.PUSH_WALLET);
+        await switchNetwork(ChainType.PUSH_WALLET);
 
         setAddress(addr);
         return { address: addr, loginType };

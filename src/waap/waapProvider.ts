@@ -47,7 +47,6 @@ export const switchNetwork = async (chainName: ChainType) => {
 		});
 	} catch (err) {
 		try {
-			console.log("Adding network to WaaP:", network.name, hexNetworkId);
 			await provider.request({
 				method: "wallet_addEthereumChain",
 				params: [{
@@ -58,9 +57,8 @@ export const switchNetwork = async (chainName: ChainType) => {
 					blockExplorerUrls: [network.blockExplorers.default.url]
 				}]
 			});
-			console.log("Network added:", network.name);
 		} catch (addError) {
-			console.error("Error adding network:", addError);
+			console.error("Error switching network:", addError);
 			throw addError
 		}
 	}
@@ -123,16 +121,10 @@ export const waapSignAndSendTransaction = async (
 	txn: Uint8Array
 ): Promise<Uint8Array> => {
 	const provider = getWaapProvider();
-	const account = await getWaapAccount();
 
 	const accounts = (await provider.request({
 		method: "eth_accounts",
 	})) as string[];
-
-	const chainId = await provider.request({ method: "eth_chainId" });
-	console.log("waap chainId", chainId);
-
-	console.log(accounts);
 
 	if (!accounts || accounts.length === 0) {
 		throw new Error("No connected Rabby account");

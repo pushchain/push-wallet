@@ -63,16 +63,16 @@ const Login: FC<LoginProps> = ({ setConnectMethod, walletConfig }) => {
     await handleLogin(result.address as `0x${string}`);
   };
 
+  const handleReconnect = async () => {
+    if (state?.wallet) return;
+
+    const res = await tryAutoConnect();
+    if (!res?.address) return;
+
+    await handleLogin(res.address as `0x${string}`);
+  };
+
   useEffect(() => {
-    const handleReconnect = async () => {
-      if (state?.wallet) return;
-
-      const res = await tryAutoConnect();
-      if (!res?.address) return;
-
-      await handleLogin(res.address as `0x${string}`);
-    };
-
     handleReconnect();
   }, []);
 
