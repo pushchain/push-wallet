@@ -8,5 +8,5 @@ export const waapInitConfig: WaaPConfig = {
     allowedSocials: ['google', 'twitter', 'discord', 'github'],
     showSecured: true,
   },
-  useStaging: true,
+  useStaging: false,
 };
