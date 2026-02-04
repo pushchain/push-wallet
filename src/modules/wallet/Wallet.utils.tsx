@@ -4,6 +4,7 @@ import { PushChain } from "@pushchain/core";
 import { createPublicClient, http } from 'viem';
 import { mainnet, sepolia, baseSepolia, arbitrumSepolia, bscTestnet } from 'viem/chains';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
+import { throttledHttp } from "../../utils/viemClient";
 
 export const getWalletlist = (wallet: PushWallet) => {
   const walletList = [];
@@ -193,7 +194,14 @@ export async function getNativeTokenBalance(token, walletDetail): Promise<{ bala
       // EVM
       const chainId = Number(walletDetail.chainId) || 1;
       const chain = EVM_CHAIN_CONFIGS[chainId] || mainnet;
-      const client = createPublicClient({ chain, transport: http() });
+      const rpcUrl = chain?.rpcUrls?.public?.http?.[0] ?? chain?.rpcUrls?.default?.http?.[0];
+      const client = createPublicClient({
+        chain,
+        transport: !rpcUrl ? http() : http(rpcUrl, {
+          retryCount: 3,
+          retryDelay: 30_000,
+        })
+      });
       const wei = await client.getBalance({ address: walletDetail.address });
       const eth = Number(wei) / 1e18;
       return {

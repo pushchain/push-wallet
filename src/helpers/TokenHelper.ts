@@ -1,3 +1,4 @@
+import { viemClient } from "../utils/viemClient";
 import { pushTestnetChain } from "../utils/chainDetails";
 import { Address, createPublicClient, erc20Abi, formatUnits, http } from "viem";
 
@@ -62,11 +63,11 @@ export const fetchTokenBalance = async ({
     try {
 
         if (!tokenAddress) {
-            const nativeBalance = await publicClient.getBalance({ address: walletAddress });
+            const nativeBalance = await viemClient.getBalance({ address: walletAddress });
             return formatUnits(nativeBalance, decimals);
         }
 
-        const balance = await publicClient.readContract({
+        const balance = await viemClient.readContract({
             address: tokenAddress,
             abi: erc20Abi,
             functionName: 'balanceOf',

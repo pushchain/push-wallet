@@ -1,6 +1,6 @@
-import { createPublicClient, http, formatUnits, type Address, erc20Abi } from 'viem';
+import { formatUnits, type Address, erc20Abi } from 'viem';
 import { useState } from 'react';
-import { pushTestnetChain } from '../../utils/chainDetails';
+import { viemClient } from '../../utils/viemClient';
 
 export const useWalletBalance = () => {
     const [balance, setBalance] = useState<string>('0');
@@ -11,12 +11,8 @@ export const useWalletBalance = () => {
         try {
             setIsLoading(true);
             setError(null);
-            const publicClient = createPublicClient({
-                chain: pushTestnetChain,
-                transport: http(),
-            });
 
-            const balance = await publicClient.getBalance({
+            const balance = await viemClient.getBalance({
                 address: address as Address,
             });
 
@@ -30,12 +26,7 @@ export const useWalletBalance = () => {
 
     const fetchTokenBalance = async (tokenAddress: `0x${string}`, walletAddress: `0x${string}`) => {
         try {
-            const publicClient = createPublicClient({
-                chain: pushTestnetChain,
-                transport: http(),
-            });
-
-            const balance = await publicClient.readContract({
+            const balance = await viemClient.readContract({
                 address: tokenAddress,
                 abi: erc20Abi,
                 functionName: 'balanceOf',

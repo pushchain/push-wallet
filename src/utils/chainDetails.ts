@@ -13,6 +13,10 @@ export const pushTestnetChain = defineChain({
             http: ['https://evm.donut.rpc.push.org/'],
             webSocket: ['wss://evm.pn1.dev.push.org'],
         },
+        public: {
+            http: ['https://evm.donut.rpc.push.org/'],
+            webSocket: ['wss://evm.pn1.dev.push.org'],
+        },
     },
     blockExplorers: {
         default: { name: 'Explorer', url: 'https://donut.push.network/' },

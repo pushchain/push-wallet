@@ -18,6 +18,13 @@ type ReturnValue = {
 
 const rpcURL = 'https://evm.donut.rpc.push.org/';
 const factoryAddress = '0x00000000000000000000000000000000000000eA';
+const COOLDOWN_MS = 30_000;
+let last429 = 0;
+
+const provider = new ethers.JsonRpcProvider(rpcURL, undefined, {
+  staticNetwork: true,
+  polling: false,
+});
 
 const useUEAOrigin = (addressHash: string | null | undefined): ReturnValue => {
     const [ueaOrigin, setUEAOrigin] = useState<UEAOrigin | null>(null);
@@ -26,11 +33,16 @@ const useUEAOrigin = (addressHash: string | null | undefined): ReturnValue => {
     useEffect(() => {
         if (!addressHash) return;
 
+        if (last429 !== 0 && Date.now() - last429 < COOLDOWN_MS) {
+            return;
+        }
+
+        let cancelled = false;
+
         const fetchOrigin = async () => {
             setIsLoading(true);
 
             try {
-                const provider = new ethers.JsonRpcProvider(rpcURL);
                 const factory = new ethers.Contract(
                     factoryAddress,
                     IUEAFactoryABI,
@@ -38,6 +50,9 @@ const useUEAOrigin = (addressHash: string | null | undefined): ReturnValue => {
                 );
 
                 const result = await factory.getOriginForUEA(addressHash);
+
+                if (cancelled) return;
+
                 const account = result.account;
                 const isUEA = result.isUEA;
 
@@ -50,13 +65,25 @@ const useUEAOrigin = (addressHash: string | null | undefined): ReturnValue => {
                     chainId: account.chainId,
                 });
             } catch (err) {
-                setUEAOrigin(null);
+                if (err?.status === 429) {
+                    last429 = Date.now();
+                }
+
+                if (!cancelled) {
+                    setUEAOrigin(null);
+                }
             } finally {
-                setIsLoading(false);
+                if (!cancelled) {
+                    setIsLoading(false);
+                }
             }
         };
 
         fetchOrigin();
+
+        return () => {
+            cancelled = true;
+        };
     }, [addressHash]);
 
     return { ueaOrigin, isLoading };
