@@ -42,7 +42,7 @@ export class WalletConnectProvider extends BaseWalletProvider {
         }
 
         this.provider = await EthereumProvider.init({
-            projectId: '575a3e339ad56f54669c32264c133172',
+            projectId: import.meta.env.VITE_APP_REOWN_PROJECT_ID,
             chains: [chainId],
             methods: [
                 'eth_sendTransaction',
