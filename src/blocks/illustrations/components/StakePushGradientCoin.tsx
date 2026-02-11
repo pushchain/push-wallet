@@ -77,14 +77,14 @@ const StakePushGradientCoin: FC<IllustrationProps> = (allProps) => {
               y2="45.8289"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#D267FC" />
+              <stop stopColor="#D267FC" />
               <stop
                 offset="0.48"
-                stop-color="#896FFF"
+                stopColor="#896FFF"
               />
               <stop
                 offset="0.945"
-                stop-color="#71F0B1"
+                stopColor="#71F0B1"
               />
             </linearGradient>
             <linearGradient
@@ -95,14 +95,14 @@ const StakePushGradientCoin: FC<IllustrationProps> = (allProps) => {
               y2="44.4114"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#D267FC" />
+              <stop stopColor="#D267FC" />
               <stop
                 offset="0.48"
-                stop-color="#896FFF"
+                stopColor="#896FFF"
               />
               <stop
                 offset="0.945"
-                stop-color="#71F0B1"
+                stopColor="#71F0B1"
               />
             </linearGradient>
           </defs>

@@ -301,30 +301,30 @@ const AlphaAccessPoints: FC<IllustrationProps> = (allProps) => {
               gradientUnits="userSpaceOnUse"
               gradientTransform="translate(24 24) rotate(90) scale(24)"
             >
-              <stop stop-color="#F39FF8" />
+              <stop stopColor="#F39FF8" />
               <stop
                 offset="0.14"
-                stop-color="#B17CFB"
+                stopColor="#B17CFB"
               />
               <stop
                 offset="0.31"
-                stop-color="#FF6AFD"
+                stopColor="#FF6AFD"
               />
               <stop
                 offset="0.46"
-                stop-color="#C67CFF"
+                stopColor="#C67CFF"
               />
               <stop
                 offset="0.625"
-                stop-color="#ECB1FF"
+                stopColor="#ECB1FF"
               />
               <stop
                 offset="0.81"
-                stop-color="#E550F2"
+                stopColor="#E550F2"
               />
               <stop
                 offset="1"
-                stop-color="#F4A7F5"
+                stopColor="#F4A7F5"
               />
             </radialGradient>
           </defs>

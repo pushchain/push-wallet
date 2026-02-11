@@ -40,7 +40,7 @@ export default function App() {
   const queryClient = new QueryClient();
 
   return (
-    <ThemeProvider theme={{ ...(isDarkMode ? themeConfig.dark : themeConfig.light), themeOverrides: state.themeOverrides }}>
+    <ThemeProvider theme={{ ...(isDarkMode ? themeConfig.dark : themeConfig.dark), themeOverrides: state.themeOverrides }}>
       <GlobalStyle />
       <QueryClientProvider client={queryClient}>
         <Router basename={getAppBasePath()}>

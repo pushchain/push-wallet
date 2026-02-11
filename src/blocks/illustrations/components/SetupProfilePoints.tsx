@@ -155,55 +155,55 @@ const SetupProfilePoints: FC<IllustrationProps> = (allProps) => {
             >
               <stop
                 offset="0.02"
-                stop-color="#CD45FF"
+                stopColor="#CD45FF"
               />
               <stop
                 offset="0.05"
-                stop-color="#BE48F9"
+                stopColor="#BE48F9"
               />
               <stop
                 offset="0.12"
-                stop-color="#9A50EC"
+                stopColor="#9A50EC"
               />
               <stop
                 offset="0.2"
-                stop-color="#7C57E1"
+                stopColor="#7C57E1"
               />
               <stop
                 offset="0.29"
-                stop-color="#655CD9"
+                stopColor="#655CD9"
               />
               <stop
                 offset="0.38"
-                stop-color="#5560D3"
+                stopColor="#5560D3"
               />
               <stop
                 offset="0.48"
-                stop-color="#4C62D0"
+                stopColor="#4C62D0"
               />
               <stop
                 offset="0.61"
-                stop-color="#4963CF"
+                stopColor="#4963CF"
               />
               <stop
                 offset="0.68"
-                stop-color="#4868CE"
+                stopColor="#4868CE"
               />
               <stop
                 offset="0.76"
-                stop-color="#4777CC"
+                stopColor="#4777CC"
               />
               <stop
                 offset="0.84"
-                stop-color="#4691C9"
+                stopColor="#4691C9"
               />
               <stop
                 offset="0.94"
-                stop-color="#43B4C6"
+                stopColor="#43B4C6"
               />
               <stop
                 offset="1"
-                stop-color="#42D1C3"
+                stopColor="#42D1C3"
               />
             </linearGradient>
             <linearGradient
@@ -214,14 +214,14 @@ const SetupProfilePoints: FC<IllustrationProps> = (allProps) => {
               y2="52.8289"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#FF94A6" />
+              <stop stopColor="#FF94A6" />
               <stop
                 offset="0.51"
-                stop-color="#E03DC1"
+                stopColor="#E03DC1"
               />
               <stop
                 offset="1"
-                stop-color="#8247E5"
+                stopColor="#8247E5"
               />
             </linearGradient>
             <linearGradient
@@ -234,55 +234,55 @@ const SetupProfilePoints: FC<IllustrationProps> = (allProps) => {
             >
               <stop
                 offset="0.02"
-                stop-color="#CD45FF"
+                stopColor="#CD45FF"
               />
               <stop
                 offset="0.05"
-                stop-color="#BE48F9"
+                stopColor="#BE48F9"
               />
               <stop
                 offset="0.12"
-                stop-color="#9A50EC"
+                stopColor="#9A50EC"
               />
               <stop
                 offset="0.2"
-                stop-color="#7C57E1"
+                stopColor="#7C57E1"
               />
               <stop
                 offset="0.29"
-                stop-color="#655CD9"
+                stopColor="#655CD9"
               />
               <stop
                 offset="0.38"
-                stop-color="#5560D3"
+                stopColor="#5560D3"
               />
               <stop
                 offset="0.48"
-                stop-color="#4C62D0"
+                stopColor="#4C62D0"
               />
               <stop
                 offset="0.61"
-                stop-color="#4963CF"
+                stopColor="#4963CF"
               />
               <stop
                 offset="0.68"
-                stop-color="#4868CE"
+                stopColor="#4868CE"
               />
               <stop
                 offset="0.76"
-                stop-color="#4777CC"
+                stopColor="#4777CC"
               />
               <stop
                 offset="0.84"
-                stop-color="#4691C9"
+                stopColor="#4691C9"
               />
               <stop
                 offset="0.94"
-                stop-color="#43B4C6"
+                stopColor="#43B4C6"
               />
               <stop
                 offset="1"
-                stop-color="#42D1C3"
+                stopColor="#42D1C3"
               />
             </linearGradient>
           </defs>

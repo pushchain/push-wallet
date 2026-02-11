@@ -49,10 +49,10 @@ const SubscribePoints: FC<IllustrationProps> = (allProps) => {
               y2="-3.041e-06"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#EE8BFD" />
+              <stop stopColor="#EE8BFD" />
               <stop
                 offset="1"
-                stop-color="#795CFA"
+                stopColor="#795CFA"
               />
             </linearGradient>
           </defs>

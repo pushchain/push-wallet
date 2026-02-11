@@ -17,8 +17,8 @@ const ReceiveNotificationFilled: FC<IconProps> = (allProps) => {
           {...props}
         >
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M25.1817 3C22.5207 3 20.3635 5.15717 20.3635 7.81818C20.3635 10.4792 22.5207 12.6364 25.1817 12.6364C27.8427 12.6364 29.9999 10.4792 29.9999 7.81818C29.9999 5.15717 27.8427 3 25.1817 3Z"
             fill="currentColor"
           />

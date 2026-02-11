@@ -40,26 +40,26 @@ const Communication: FC<IllustrationProps> = (allProps) => {
             d="M34.6488 31.4915C18.2675 41.1428 3.25455 44.6574 1.63247 41.8059C0.582755 39.9609 4.63925 35.8306 11.5096 31.2165"
             stroke="#17181B"
             strokeWidth="1.26925"
-            stroke-miterlimit="10"
+            strokeMiterlimit="10"
             strokeLinecap="round"
           />
           <path
             d="M12.6182 11.7807C12.6182 8.64072 10.0847 6.08952 6.96655 6.08952C10.0847 6.08952 12.6182 3.53832 12.6182 0.398376C12.6182 3.53832 15.1517 6.08952 18.2699 6.08952C15.1517 6.08952 12.6182 8.64072 12.6182 11.7807Z"
             stroke="#17181B"
             strokeWidth="1.26925"
-            stroke-miterlimit="10"
+            strokeMiterlimit="10"
           />
           <path
             d="M46.1002 14.781C46.1002 12.5739 44.3194 10.7807 42.1277 10.7807C44.3194 10.7807 46.1002 8.98745 46.1002 6.7804C46.1002 8.98745 47.881 10.7807 50.0728 10.7807C47.881 10.7807 46.1002 12.5739 46.1002 14.781Z"
             stroke="#17181B"
             strokeWidth="1.26925"
-            stroke-miterlimit="10"
+            strokeMiterlimit="10"
           />
           <path
             d="M21.5997 27.752C20.4929 29.9107 16.441 30.0451 12.5431 28.0494C8.64513 26.0634 6.38338 22.7054 7.49019 20.5466L8.70289 18.1864L22.7258 25.5741L21.6093 27.752H21.5997Z"
             stroke="#17181B"
             strokeWidth="1.26925"
-            stroke-miterlimit="10"
+            strokeMiterlimit="10"
             strokeLinecap="round"
           />
           <path
@@ -67,14 +67,14 @@ const Communication: FC<IllustrationProps> = (allProps) => {
             fill="#F3AEFF"
             stroke="#17181B"
             strokeWidth="1.26925"
-            stroke-miterlimit="10"
+            strokeMiterlimit="10"
             strokeLinecap="round"
           />
           <path
             d="M46.1981 41.7012C47.4728 42.7273 47.0077 45.4222 45.1566 47.7243C43.312 50.0276 40.7846 51.0626 39.5099 50.0364L38.1166 48.9128L44.9134 40.6596L46.1994 41.6948L46.1981 41.7012Z"
             stroke="#17181B"
             strokeWidth="1.26925"
-            stroke-miterlimit="10"
+            strokeMiterlimit="10"
             strokeLinecap="round"
           />
           <path
@@ -82,7 +82,7 @@ const Communication: FC<IllustrationProps> = (allProps) => {
             fill="#F3AEFF"
             stroke="#17181B"
             strokeWidth="1.26925"
-            stroke-miterlimit="10"
+            strokeMiterlimit="10"
             strokeLinecap="round"
           />
         </svg>

@@ -16,7 +16,7 @@ const Connector: FC<IconProps> = (allProps) => {
           fill="none"
           {...props}
         >
-          <path d="M0.5 0.5V8.5C0.5 11.8137 3.18629 14.5 6.5 14.5H13.5" stroke="#C4CBD5" stroke-linecap="round"/>
+          <path d="M0.5 0.5V8.5C0.5 11.8137 3.18629 14.5 6.5 14.5H13.5" stroke="#C4CBD5" strokeLinecap="round"/>
         </svg>
       }
       {...restProps}
