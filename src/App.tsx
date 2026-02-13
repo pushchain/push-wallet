@@ -10,6 +10,8 @@ import { ExternalWalletContextProvider } from "./context/ExternalWalletContext";
 import { useAppState } from "./context/AppContext";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { startEIP6963Listener } from './providers/utils/eip6963';
+import { useEffect } from "react";
+import { ensureWaapInit } from "./waap/initWaap";
 
 const GlobalStyle = createGlobalStyle`
   :root{
@@ -38,6 +40,10 @@ export default function App() {
   startEIP6963Listener();
 
   const queryClient = new QueryClient();
+
+  useEffect(() => {
+    ensureWaapInit(isDarkMode);
+  }, []);
 
   return (
     <ThemeProvider theme={{ ...(isDarkMode ? themeConfig.dark : themeConfig.light), themeOverrides: state.themeOverrides }}>

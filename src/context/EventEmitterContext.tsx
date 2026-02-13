@@ -505,6 +505,7 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     sessionStorage.removeItem("jwt");
     localStorage.removeItem("pw_user_email");
     localStorage.removeItem("walletInfo");
+    logoutWaap();
 
     sendMessageToMainTab({
       type: WALLET_TO_APP_ACTION.IS_LOGGED_OUT,
@@ -514,8 +515,6 @@ export const EventEmitterProvider: React.FC<{ children: ReactNode }> = ({
     });
     setLoginEmitterStatus(false);
     walletRef.current = null;
-
-    logoutWaap();
   };
 
   const handleAuthStateParam = (state: string) => {

@@ -1,6 +1,7 @@
 import { chains } from "../providers/ethereum/chains";
 import { ChainType, ITypedData } from "../types/wallet.types";
-import { bytesToHex, Chain, hexToBytes, parseTransaction, toHex } from "viem";
+import { bytesToHex, Chain, hexToBytes, isHash, parseTransaction, toHex } from "viem";
+import { waitForTxHashFromPendingTxId } from "./waapEvents";
 
 export const getWaapProvider = () => {
   if (typeof window === 'undefined') return null;
@@ -147,10 +148,17 @@ export const waapSignAndSendTransaction = async (
 			: undefined,
 	};
 
-	const txHash = await provider.request({
+	const res = await provider.request({
 		method: "eth_sendTransaction",
 		params: [txParams],
+		async: true,
 	});
+
+	if (isHash(res)) return hexToBytes(res);
+
+	const pendingTxId = (res as any)?.pendingTxId as string | undefined;
+
+	const txHash = await waitForTxHashFromPendingTxId(provider, pendingTxId);
 
 	return hexToBytes(txHash as `0x${string}`);
 };

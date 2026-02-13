@@ -1,5 +1,4 @@
-import { createContext, ReactNode, useContext, useEffect, useReducer } from "react";
-import { ensureWaapInit } from "../waap/initWaap";
+import { createContext, ReactNode, useContext, useReducer } from "react";
 
 // Define the shape of the app state
 export type AppState = {
@@ -65,10 +64,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
-
-  useEffect(() => {
-    ensureWaapInit();
-  }, []);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

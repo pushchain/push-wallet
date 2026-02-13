@@ -3,10 +3,10 @@ import { waapInitConfig } from './waap.config';
 
 let waapInitialized = false;
 
-export const ensureWaapInit = () => {
+export const ensureWaapInit = (isDarkMode: boolean) => {
   if (typeof window === 'undefined') return;
   if (waapInitialized) return;
 
-  initWaaP(waapInitConfig);
+  initWaaP(waapInitConfig(isDarkMode));
   waapInitialized = true;
 };

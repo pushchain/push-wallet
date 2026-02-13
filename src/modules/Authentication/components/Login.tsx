@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { Box, Button, Text } from "../../../blocks";
-import { getAppParamValue, PoweredByPush } from "../../../common";
+import { DrawerWrapper, getAppParamValue, LoadingContent, PoweredByPush } from "../../../common";
 import { WalletState } from "../Authentication.types";
 import { APP_ROUTES } from "../../../constants";
 import { usePersistedQuery } from "../../../common/hooks/usePersistedQuery";
@@ -26,7 +26,7 @@ export type LoginProps = {
 
 const Login: FC<LoginProps> = ({ setConnectMethod, walletConfig }) => {
   const persistQuery = usePersistedQuery();
-  const { loginWithWaapSocial, tryAutoConnect } = useWaapAuth();
+  const { loading, loginWithWaapSocial, tryAutoConnect, setLoading } = useWaapAuth();
   const { state, dispatch } = useGlobalState();
 
   const navigate = useNavigate();
@@ -61,6 +61,8 @@ const Login: FC<LoginProps> = ({ setConnectMethod, walletConfig }) => {
     if (!result) return;
 
     await handleLogin(result.address as `0x${string}`);
+
+    setLoading(false);
   };
 
   const handleReconnect = async () => {
@@ -72,9 +74,9 @@ const Login: FC<LoginProps> = ({ setConnectMethod, walletConfig }) => {
     await handleLogin(res.address as `0x${string}`);
   };
 
-  useEffect(() => {
-    handleReconnect();
-  }, []);
+  // useEffect(() => {
+  //   handleReconnect();
+  // }, []);
 
   const showEmailLogin = isOpenedInIframe ? walletConfig?.loginDefaults.email : true
   const showGoogleLogin = isOpenedInIframe ? walletConfig?.loginDefaults.google : true
@@ -205,6 +207,12 @@ const Login: FC<LoginProps> = ({ setConnectMethod, walletConfig }) => {
         {/* <Text variant="bes-semibold" color="text-brand-medium">
           Recover using Secret Key{" "}
         </Text> */}
+        {loading && (<DrawerWrapper>
+          <LoadingContent
+              title={"Verifying..."}
+              subTitle={"FInishing signing up in the new window to continue..."}
+          />
+        </DrawerWrapper>)}
       </Box>
       <PoweredByPush />
     </Box>

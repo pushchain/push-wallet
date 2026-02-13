@@ -24,7 +24,6 @@ export const useWaapAuth = () => {
   const ensureConnected = useCallback(
     async (opts?: { interactive?: boolean }): Promise<WaapLoginResult | null> => {
       try {
-        setLoading(true);
         setError(null);
 
         const waap = getWaap();
@@ -34,13 +33,17 @@ export const useWaapAuth = () => {
         let addr = accounts?.[0];
 
         if (!addr && opts?.interactive) {
-          const lt = await waap.login(); // opens WaaP UI
+          const lt = await waap.login();
           accounts = await waap.request({ method: 'eth_requestAccounts' });
           addr = accounts?.[0];
           setLoginType(lt);
         }
 
-        if (!addr) return null;
+        if (!addr) {
+          return null
+        }
+
+        setLoading(true);
 
         await switchNetwork(ChainType.PUSH_WALLET);
 
@@ -50,8 +53,6 @@ export const useWaapAuth = () => {
         console.error('[WaaP] ensureConnected failed', e);
         setError(e);
         return null;
-      } finally {
-        setLoading(false);
       }
     },
     [loginType]
@@ -83,6 +84,7 @@ export const useWaapAuth = () => {
     loginType,
     loading,
     error,
+    setLoading,
     loginWithWaapSocial,
     logoutWaap,
     tryAutoConnect,
