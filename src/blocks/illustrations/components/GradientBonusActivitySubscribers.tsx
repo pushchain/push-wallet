@@ -60,14 +60,14 @@ const GradientBonusActivitySubscribers: FC<IllustrationProps> = (allProps) => {
               y2="44.0669"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#D267FC" />
+              <stop stopColor="#D267FC" />
               <stop
                 offset="0.48"
-                stop-color="#9982FF"
+                stopColor="#9982FF"
               />
               <stop
                 offset="0.945"
-                stop-color="#F0B571"
+                stopColor="#F0B571"
               />
             </linearGradient>
             <linearGradient
@@ -78,14 +78,14 @@ const GradientBonusActivitySubscribers: FC<IllustrationProps> = (allProps) => {
               y2="40.6424"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#D267FC" />
+              <stop stopColor="#D267FC" />
               <stop
                 offset="0.45"
-                stop-color="#9982FF"
+                stopColor="#9982FF"
               />
               <stop
                 offset="1"
-                stop-color="#F0B571"
+                stopColor="#F0B571"
               />
             </linearGradient>
           </defs>

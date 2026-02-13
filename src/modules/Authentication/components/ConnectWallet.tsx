@@ -15,6 +15,8 @@ import ChainSelector from "./ChainSelector";
 import { css } from "styled-components";
 import { ChainType, WalletCategoriesType } from "../../../types/wallet.types";
 import { useGlobalState } from "../../../context/GlobalContext";
+import { useConnectExternalWallet } from "../../../hooks/useConnectExternalWallet";
+import { walletRegistry } from "../../../providers/WalletProviderRegistry";
 
 type WalletSelectionProps = {
   setConnectMethod: (connectMethod: WalletState) => void;
@@ -24,8 +26,11 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
   const { dispatch, state: { externalWalletAuthState, walletConfig } } = useGlobalState();
   const isMobile = useDeviceWidthCheck(parseInt(deviceSizes.laptop));
   const [selectedWalletCategory, setSelectedWalletCategory] = useState<WalletCategoriesType | null>(null);
+  const [activeWalletCategory, setActiveWalletCategory] = useState<WalletCategoriesType | null>(null);
 
   const isOpenedInIframe = !!getAppParamValue();
+
+  const { connectWithProvider } = useConnectExternalWallet();
 
   const filteredWalletCategories = useMemo(() => {
     let filtered = walletCategories;
@@ -66,9 +71,29 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
     return filtered;
   }, [walletConfig?.loginDefaults?.wallet?.chains, isMobile]);
 
+  const handleCategoryClick = async (walletCategory: WalletCategoriesType) => {
+    setActiveWalletCategory(walletCategory);
+    if (walletCategory.chain === ChainType.WALLET_CONNECT) {
+      const providers = walletRegistry.getProvidersByChain(walletCategory.chain);
+      const provider = providers[0];
+      if (!provider) return;
+
+      const chainToConnect = provider.supportedChains.find(
+        (c) => c === walletCategory.chain
+      );
+
+      await connectWithProvider(provider, chainToConnect);
+      return;
+    }
+
+    setSelectedWalletCategory(walletCategory);
+  }
+
   const handleBack = () => {
     if (selectedWalletCategory) setSelectedWalletCategory(null);
     else setConnectMethod("authentication");
+
+    setActiveWalletCategory(null);
   };
   
   return (
@@ -119,7 +144,7 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
                     justifyContent="space-between"
                     key={walletCategory.chain}
                     onClick={() => {
-                      setSelectedWalletCategory(walletCategory)
+                      handleCategoryClick(walletCategory)
                     }}
                   >
                     <Box alignItems="center" display="flex" gap="spacing-xxs">
@@ -142,7 +167,7 @@ const ConnectWallet: FC<WalletSelectionProps> = ({ setConnectMethod }) => {
       {externalWalletAuthState === "loading" && (
         <DrawerWrapper>
           <LoadingContent
-            title={`${selectedWalletCategory.label}`}
+            title={`${activeWalletCategory.label}`}
             subTitle="Click connect in your wallet"
             onClose={() => dispatch({ type: "SET_EXTERNAL_WALLET_AUTH_LOAD_STATE", payload: "idle" })}
           />

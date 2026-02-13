@@ -31,9 +31,11 @@ export type ButtonProps = {
   loading?: boolean;
 } & TransformedHTMLAttributes<HTMLButtonElement>;
 
-const StyledButton = styled.button<ButtonProps>`
-  /* Common Button CSS */
+type StyledButtonProps = Omit<ButtonProps, 'loading'> & {
+  $loading?: boolean;
+};
 
+const StyledButton = styled.button<StyledButtonProps>`
   align-items: center;
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   display: flex;
@@ -42,33 +44,41 @@ const StyledButton = styled.button<ButtonProps>`
   white-space: nowrap;
   flex-shrink: 0;
 
-  /* Common icon css added through CSS class */
   .icon {
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  /* Button variant CSS styles */
-  ${({ variant, loading }) => getButtonVariantStyles(variant || 'primary', loading!)}
 
-  ${({ loading }) => loading && 'opacity: var(--opacity-80);'}
+  /* Button variant styles */
+  ${({ variant, $loading }) =>
+    getButtonVariantStyles(variant || 'primary', !!$loading)}
 
-  /* Button and font size CSS styles */
-  ${({ iconOnly, size }) => getButtonSizeStyles({ iconOnly: !!iconOnly, size: size || 'medium' })}
+  /* Loading state */
+  ${({ $loading }) => $loading && 'opacity: var(--opacity-80);'}
 
-  /* Circular CSS for rounded icon only buttons */
-  ${({ circular, iconOnly }) => circular && iconOnly && `border-radius: var(--r10);`}
+  /* Size styles */
+  ${({ iconOnly, size }) =>
+    getButtonSizeStyles({
+      iconOnly: !!iconOnly,
+      size: size || 'medium',
+    })}
 
-  /* Prop specific CSS */
+  /* Circular icon-only button */
+  ${({ circular, iconOnly }) =>
+    circular && iconOnly && `border-radius: var(--r10);`}
+
+  /* Full width */
   ${({ block }) => block && 'width: 100%;'}
 
-  /* Custom CSS applied via styled component css prop */
+  /* Custom css */
   ${(props) => props.css || ''}
 `;
 
 const SpinnerContainer = styled.div`
   padding: 5px;
 `;
+
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
@@ -90,8 +100,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       circular={circular}
       disabled={disabled || loading}
       iconOnly={iconOnly}
-      loading={loading}
-      role="button"
+      $loading={loading}
       ref={ref}
       size={size}
       variant={variant}
@@ -102,10 +111,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           <Spinner />
         </SpinnerContainer>
       )}
+
       {leadingIcon && <span className="icon icon-text">{leadingIcon}</span>}
       {!iconOnly && children}
       {trailingIcon && <span className="icon icon-text">{trailingIcon}</span>}
-      {iconOnly && !loading && !children && <span className="icon icon-only">{iconOnly}</span>}
+      {iconOnly && !loading && !children && (
+        <span className="icon icon-only">{iconOnly}</span>
+      )}
     </StyledButton>
   )
 );

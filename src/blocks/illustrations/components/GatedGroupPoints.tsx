@@ -41,7 +41,7 @@ const GatedGroupPoints: FC<IllustrationProps> = (allProps) => {
           <path
             d="M29.9272 24.8832V29.0593L33.4569 30.6365L29.9272 24.8832Z"
             fill="white"
-            fill-opacity="0.602"
+            fillOpacity="0.602"
           />
           <path
             d="M29.9271 24.8832L26.397 30.6365L29.9271 29.0593V24.8832Z"
@@ -50,7 +50,7 @@ const GatedGroupPoints: FC<IllustrationProps> = (allProps) => {
           <path
             d="M29.9272 33.3428V36.1803L33.4593 31.2938L29.9272 33.3428Z"
             fill="white"
-            fill-opacity="0.602"
+            fillOpacity="0.602"
           />
           <path
             d="M29.9271 36.1803V33.3423L26.397 31.2938L29.9271 36.1803Z"
@@ -59,12 +59,12 @@ const GatedGroupPoints: FC<IllustrationProps> = (allProps) => {
           <path
             d="M29.9272 32.686L33.4569 30.6365L29.9272 29.0603V32.686Z"
             fill="white"
-            fill-opacity="0.2"
+            fillOpacity="0.2"
           />
           <path
             d="M26.397 30.6365L29.9271 32.686V29.0603L26.397 30.6365Z"
             fill="white"
-            fill-opacity="0.602"
+            fillOpacity="0.602"
           />
         </svg>
       }

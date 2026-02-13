@@ -62,7 +62,7 @@ const PushDev: FC<IllustrationProps> = (allProps) => {
               <stop />
               <stop
                 offset="1"
-                stop-color="#3C3A95"
+                stopColor="#3C3A95"
               />
             </linearGradient>
             <linearGradient
@@ -73,14 +73,14 @@ const PushDev: FC<IllustrationProps> = (allProps) => {
               y2="10.1239"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#D060ED" />
+              <stop stopColor="#D060ED" />
               <stop
                 offset="0.23"
-                stop-color="#CFC6EE"
+                stopColor="#CFC6EE"
               />
               <stop
                 offset="0.47"
-                stop-color="white"
+                stopColor="white"
               />
             </linearGradient>
             <linearGradient
@@ -91,14 +91,14 @@ const PushDev: FC<IllustrationProps> = (allProps) => {
               y2="6.79144"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#D060ED" />
+              <stop stopColor="#D060ED" />
               <stop
                 offset="0.23"
-                stop-color="#CFC6EE"
+                stopColor="#CFC6EE"
               />
               <stop
                 offset="0.54"
-                stop-color="white"
+                stopColor="white"
               />
             </linearGradient>
             <linearGradient
@@ -109,14 +109,14 @@ const PushDev: FC<IllustrationProps> = (allProps) => {
               y2="11.1545"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#D060ED" />
+              <stop stopColor="#D060ED" />
               <stop
                 offset="0.16"
-                stop-color="#CDC4ED"
+                stopColor="#CDC4ED"
               />
               <stop
                 offset="1"
-                stop-color="white"
+                stopColor="white"
               />
             </linearGradient>
           </defs>

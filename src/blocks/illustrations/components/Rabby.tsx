@@ -16,7 +16,7 @@ const Rabby: FC<IllustrationProps> = (allProps) => {
           xmlns="http://www.w3.org/2000/svg"
           {...props}
         >
-          <g clip-path="url(#clip0_37008_22581)">
+          <g clipPath="url(#clip0_37008_22581)">
 					<mask id="mask0_37008_22581" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">
 					<path d="M32 0H0V32H32V0Z" fill="white"/>
 					</mask>
@@ -35,20 +35,20 @@ const Rabby: FC<IllustrationProps> = (allProps) => {
 					</g>
 					<defs>
 					<linearGradient id="paint0_linear_37008_22581" x1="11.3687" y1="15.1708" x2="26.6521" y2="19.6333" gradientUnits="userSpaceOnUse">
-					<stop stop-color="#4C65FE"/>
-					<stop offset="1" stop-color="#8F9FFF"/>
+					<stop stopColor="#4C65FE"/>
+					<stop offset="1" stopColor="#8F9FFF"/>
 					</linearGradient>
 					<linearGradient id="paint1_linear_37008_22581" x1="24.1354" y1="14.8873" x2="13.3827" y2="3.78907" gradientUnits="userSpaceOnUse">
-					<stop stop-color="#4C65FE"/>
-					<stop offset="1" stop-color="#5156D8" stop-opacity="0"/>
+					<stop stopColor="#4C65FE"/>
+					<stop offset="1" stopColor="#5156D8" stopOpacity="0"/>
 					</linearGradient>
 					<linearGradient id="paint2_linear_37008_22581" x1="18.4149" y1="20.9192" x2="7.93116" y2="14.7133" gradientUnits="userSpaceOnUse">
-					<stop stop-color="#2D46E2"/>
-					<stop offset="1" stop-color="#8697FF" stop-opacity="0"/>
+					<stop stopColor="#2D46E2"/>
+					<stop offset="1" stopColor="#8697FF" stopOpacity="0"/>
 					</linearGradient>
 					<linearGradient id="paint3_linear_37008_22581" x1="12.2853" y1="15.0595" x2="19.2199" y2="24.1318" gradientUnits="userSpaceOnUse">
-					<stop stop-color="#4C65FE"/>
-					<stop offset="1" stop-color="#4C65FE"/>
+					<stop stopColor="#4C65FE"/>
+					<stop offset="1" stopColor="#4C65FE"/>
 					</linearGradient>
 					<clipPath id="clip0_37008_22581">
 					<rect width='32' height='32' fill="white"/>

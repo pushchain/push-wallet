@@ -37,9 +37,9 @@ const PushChainLogo: FC<IllustrationProps> = (allProps) => {
                             gradientUnits="userSpaceOnUse"
                             gradientTransform="translate(7 26.5) rotate(-45.4244) scale(47.731 46.8673)"
                         >
-                            <stop stop-color="#484AF0" />
-                            <stop offset="0.514423" stop-color="#BA39ED" />
-                            <stop offset="1" stop-color="#D548EC" />
+                            <stop stopColor="#484AF0" />
+                            <stop offset="0.514423" stopColor="#BA39ED" />
+                            <stop offset="1" stopColor="#D548EC" />
                         </radialGradient>
                         <clipPath id="clip0_20474_38975">
                             <rect

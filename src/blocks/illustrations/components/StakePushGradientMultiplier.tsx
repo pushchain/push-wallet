@@ -25,24 +25,24 @@ const StakePushGradientMultiplier: FC<IllustrationProps> = (allProps) => {
             fill="url(#paint0_linear_8470_4104)"
           />
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M11.1064 0.5H37.1251C43.195 0.5 48.1157 5.42068 48.1157 11.4907V28.0046C48.1157 31.5071 46.4463 34.7999 43.6211 36.8701L30.5543 46.4444C28.7316 47.78 26.5308 48.5 24.2711 48.5C22.0447 48.5 19.8744 47.8009 18.0665 46.5014L4.69161 36.8877C1.81882 34.8228 0.115723 31.5012 0.115723 27.9633V11.4907C0.115723 5.42069 5.0364 0.5 11.1064 0.5ZM11.1064 4.31308C7.14231 4.31308 3.92881 7.5266 3.92881 11.4907V27.9633C3.92881 30.2738 5.04104 32.443 6.91714 33.7915L20.292 43.4052C21.4514 44.2386 22.8433 44.6869 24.2711 44.6869C25.7203 44.6869 27.1317 44.2252 28.3006 43.3687L41.3673 33.7943C43.2124 32.4424 44.3026 30.292 44.3026 28.0046V11.4907C44.3026 7.52659 41.0891 4.31308 37.1251 4.31308H11.1064Z"
             fill="url(#paint1_linear_8470_4104)"
           />
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M31.3276 41.1505L28.3005 43.3686C27.1316 44.2251 25.7202 44.6868 24.271 44.6868C22.8432 44.6868 21.4513 44.2385 20.2919 43.4051L16.9038 40.9698V18.0166H31.3276V41.1505Z"
             fill="url(#paint2_linear_8470_4104)"
-            fill-opacity="0.6"
+            fillOpacity="0.6"
           />
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M42.4107 32.8604C42.097 33.2018 41.7482 33.515 41.3672 33.7942L33.2495 39.7423V22.5972H42.4107V32.8604Z"
             fill="url(#paint3_linear_8470_4104)"
-            fill-opacity="0.6"
+            fillOpacity="0.6"
           />
           <path
             d="M30.8641 17.4771C30.8641 17.4771 30.408 17.3249 29.7745 17.1139C27.5894 16.3856 25.85 14.6462 25.1217 12.4612C24.9107 11.8276 24.7585 11.3715 24.7585 11.3715C24.6662 11.0948 24.4072 10.9082 24.1155 10.9082C23.8239 10.9082 23.5649 11.0949 23.4726 11.3715C23.4726 11.3715 23.3205 11.8276 23.1095 12.461C22.3812 14.6461 20.6418 16.3856 18.4568 17.1139C17.8232 17.3249 17.3671 17.4771 17.3671 17.4771C17.0904 17.5693 16.9038 17.8283 16.9038 18.12C16.9038 18.4117 17.0905 18.6707 17.3672 18.763C17.3672 18.763 17.8232 18.9151 18.4566 19.126C20.6417 19.8544 22.3812 21.5938 23.1095 23.7787C23.3205 24.4123 23.4726 24.8684 23.4726 24.8684C23.5649 25.1451 23.8238 25.3317 24.1155 25.3317C24.4072 25.3317 24.6663 25.1451 24.7585 24.8684C24.7585 24.8684 24.9107 24.4124 25.1217 23.7789C25.85 21.5938 27.5894 19.8544 29.7744 19.1261C30.408 18.9151 30.8641 18.763 30.8641 18.763C31.1407 18.6707 31.3274 18.4117 31.3274 18.12C31.3274 17.8283 31.1407 17.5693 30.8641 17.4771Z"
@@ -53,11 +53,11 @@ const StakePushGradientMultiplier: FC<IllustrationProps> = (allProps) => {
             fill="white"
           />
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M14.982 39.5884L6.91704 33.7914C6.5155 33.5028 6.14894 33.1766 5.8208 32.8194V22.7004H14.982V39.5884Z"
             fill="url(#paint4_linear_8470_4104)"
-            fill-opacity="0.6"
+            fillOpacity="0.6"
           />
           <path
             d="M14.6878 22.2922C14.6878 22.2922 14.3981 22.1955 13.9958 22.0615C12.6079 21.5989 11.5031 20.4941 11.0405 19.1063C10.9065 18.7038 10.8098 18.4141 10.8098 18.4141C10.7512 18.2384 10.5867 18.1199 10.4014 18.1199C10.2161 18.1199 10.0517 18.2384 9.99302 18.4142C9.99302 18.4142 9.89642 18.7038 9.76244 19.1062C9.29981 20.4941 8.19501 21.5989 6.80719 22.0615C6.40475 22.1955 6.11507 22.2922 6.11507 22.2922C5.93933 22.3508 5.8208 22.5153 5.8208 22.7005C5.8208 22.8858 5.93936 23.0503 6.1151 23.1089C6.1151 23.1089 6.40477 23.2055 6.80707 23.3395C8.19498 23.8021 9.29982 24.9069 9.76241 26.2947C9.89642 26.6972 9.99302 26.9868 9.99302 26.9868C10.0517 27.1626 10.2161 27.2811 10.4014 27.2811H10.4014C10.5867 27.2811 10.7512 27.1626 10.8098 26.9869C10.8098 26.9869 10.9065 26.6972 11.0405 26.2948C11.5031 24.907 12.6079 23.8021 13.9957 23.3395C14.3981 23.2055 14.6878 23.1089 14.6878 23.1089C14.8635 23.0503 14.9821 22.8858 14.9821 22.7005C14.9821 22.5152 14.8635 22.3508 14.6878 22.2922Z"
@@ -72,14 +72,14 @@ const StakePushGradientMultiplier: FC<IllustrationProps> = (allProps) => {
               y2="47.2757"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#D267FC" />
+              <stop stopColor="#D267FC" />
               <stop
                 offset="0.48"
-                stop-color="#896FFF"
+                stopColor="#896FFF"
               />
               <stop
                 offset="0.945"
-                stop-color="#71F0B1"
+                stopColor="#71F0B1"
               />
             </linearGradient>
             <linearGradient
@@ -90,14 +90,14 @@ const StakePushGradientMultiplier: FC<IllustrationProps> = (allProps) => {
               y2="48.5"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#D267FC" />
+              <stop stopColor="#D267FC" />
               <stop
                 offset="0.48"
-                stop-color="#896FFF"
+                stopColor="#896FFF"
               />
               <stop
                 offset="0.945"
-                stop-color="#71F0B1"
+                stopColor="#71F0B1"
               />
             </linearGradient>
             <linearGradient
@@ -108,11 +108,11 @@ const StakePushGradientMultiplier: FC<IllustrationProps> = (allProps) => {
               y2="44.6868"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#A9FFEE" />
+              <stop stopColor="#A9FFEE" />
               <stop
                 offset="1"
-                stop-color="white"
-                stop-opacity="0"
+                stopColor="white"
+                stopOpacity="0"
               />
             </linearGradient>
             <linearGradient
@@ -123,11 +123,11 @@ const StakePushGradientMultiplier: FC<IllustrationProps> = (allProps) => {
               y2="39.7423"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#A9FFEE" />
+              <stop stopColor="#A9FFEE" />
               <stop
                 offset="1"
-                stop-color="white"
-                stop-opacity="0"
+                stopColor="white"
+                stopOpacity="0"
               />
             </linearGradient>
             <linearGradient
@@ -138,11 +138,11 @@ const StakePushGradientMultiplier: FC<IllustrationProps> = (allProps) => {
               y2="39.5884"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stop-color="#A9FFEE" />
+              <stop stopColor="#A9FFEE" />
               <stop
                 offset="1"
-                stop-color="white"
-                stop-opacity="0"
+                stopColor="white"
+                stopOpacity="0"
               />
             </linearGradient>
           </defs>
